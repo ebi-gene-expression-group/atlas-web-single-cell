@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+    <definition name="home" extends="base">
+        <put-attribute name="title" value="Home &lt; "/>
+        <put-attribute name="content">
+            <definition template="/WEB-INF/jsp/tiles/views/home.jsp">
+                <put-attribute name="release-stats" value="/WEB-INF/jsp/tiles/views/home/release-stats.jsp"/>
+                <put-attribute name="search" value="/WEB-INF/jsp/tiles/views/home/search.jsp"/>
+                <put-attribute name="species-summary" value="/WEB-INF/jsp/tiles/views/home/species-summary.jsp"/>
+                <put-attribute name="experiments-summary-panel" value="/WEB-INF/jsp/tiles/views/home/experiments-summary-panel.jsp"/>
+            </definition>
+        </put-attribute>
+    </definition>
+
+    <definition name="experiments" extends="base">
+        <put-attribute name="title" value="Experiments &lt; "/>
+        <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/experiments.jsp"/>
+    </definition>
+
+    <definition name="gene-search-results" extends="base">
+        <put-attribute name="title" value="Search results &lt; "/>
+        <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/gene-search-results.jsp"/>
+    </definition>
+
+    <definition name="experiment-page" extends="base">
+        <put-attribute name="title" value="Experiment &lt; "/>
+        <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/experiment-page.jsp"/>
+    </definition>
+
+    <definition name="static" extends="base">
+        <put-attribute name="title" value=""/>
+        <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/static-page.jsp"/>
+    </definition>
+
+    <definition name="hca-landing-page" extends="base-no-branding">
+        <put-attribute name="title" value="Human Cell Atlas Portal at the Wellcome Genome Campus"/>
+        <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/hca-landing-page.jsp"/>
+    </definition>
+</tiles-definitions>

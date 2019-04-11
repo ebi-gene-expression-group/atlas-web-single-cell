@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyMap;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
+import static uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils.extractSimpleOrderedMaps;
+import static uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils.getValuesForFacetField;
 
 @Component
 public class GeneSearchDao {
@@ -151,7 +153,7 @@ public class GeneSearchDao {
                         .setRows(0);
 
         List<SimpleOrderedMap> resultsByExperiment =
-                extractSimpleOrderdMaps(
+                extractSimpleOrderedMaps(
                         singleCellAnalyticsCollectionProxy
                                 .query(queryBuilder)
                                 .getResponse()
@@ -170,26 +172,5 @@ public class GeneSearchDao {
                                         subFacetField -> getValuesForFacetField(subFacetValues, subFacetField.name())
                                 ))
                 ));
-    }
-
-    private List<String> getValuesForFacetField(SimpleOrderedMap map, String facetField) {
-        List<SimpleOrderedMap> results = extractSimpleOrderdMaps(map.findRecursive(facetField, "buckets"));
-
-        return results
-                .stream()
-                .map(x -> x.get("val").toString())
-                .collect(Collectors.toList());
-    }
-
-    private static List<SimpleOrderedMap> extractSimpleOrderdMaps(Object o) {
-        ImmutableList.Builder<SimpleOrderedMap> builder = ImmutableList.builder();
-        if (o instanceof ArrayList) {
-            for (Object element : (ArrayList) o) {
-                if (element instanceof SimpleOrderedMap) {
-                    builder.add((SimpleOrderedMap) element);
-                }
-            }
-        }
-        return builder.build();
     }
 }

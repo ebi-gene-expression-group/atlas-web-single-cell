@@ -8,6 +8,7 @@ import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.metadata.CellMetadataDao;
+import uk.ac.ebi.atlas.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 
 import java.util.Arrays;
@@ -22,16 +23,16 @@ public class ExperimentPageContentService {
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
     private final TsnePlotSettingsService tsnePlotSettingsService;
-    private final CellMetadataDao cellMetadataDao;
+    private final CellMetadataService cellMetadataService;
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
                                         TsnePlotSettingsService tsnePlotSettingsService,
-                                        CellMetadataDao cellMetadataDao) {
+                                        CellMetadataService cellMetadataService) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.dataFileHub = dataFileHub;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
-        this.cellMetadataDao = cellMetadataDao;
+        this.cellMetadataService = cellMetadataService;
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
@@ -48,9 +49,8 @@ public class ExperimentPageContentService {
         result.add("perplexities", perplexityArray);
 
         JsonArray metadataArray = new JsonArray();
-        Stream.concat(
-                cellMetadataDao.getMetadataFieldNames(experimentAccession).stream(),
-                cellMetadataDao.getAdditionalAttributesFieldNames(experimentAccession).stream())
+        cellMetadataService.getMetadataTypes(experimentAccession)
+                .stream()
                 .map(x -> ImmutableMap.of("value", x.name(), "label", x.displayName()))
                 .collect(Collectors.toSet())
                 .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));

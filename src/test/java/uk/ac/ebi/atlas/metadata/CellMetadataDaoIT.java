@@ -85,24 +85,24 @@ class CellMetadataDaoIT {
     }
 
     @ParameterizedTest
-    @MethodSource("experimentsWithMetadataProvider")
+    @MethodSource("experimentsWithFactorsProvider")
     void validExperimentAccessionHasMetadataFields(String experimentAccession) {
-        assertThat(subject.getMetadataFieldNames(experimentAccession)).isNotEmpty();
+        assertThat(subject.getFactorTypes(experimentAccession, Optional.empty())).isNotEmpty();
     }
 
     @Test
     void invalidExperimentAccessionHasNoMetadata() {
         String experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
 
-        assertThat(subject.getMetadataFieldNames(experimentAccession)).isEmpty();
+        assertThat(subject.getFactorTypes(experimentAccession, Optional.empty())).isEmpty();
     }
 
     @ParameterizedTest
-    @MethodSource("experimentsWithMetadataProvider")
+    @MethodSource("experimentsWithFactorsProvider")
     void invalidCellIdHasNoMetadata(String experimentAccession) {
         String cellId = "FOOBAR";
 
-        List<SingleCellAnalyticsSchemaField> metadataFieldNames = subject.getMetadataFieldNames(experimentAccession);
+        List<SingleCellAnalyticsSchemaField> metadataFieldNames = subject.getFactorTypes(experimentAccession, Optional.of(cellId));
 
         assertThat(metadataFieldNames)
                 .isNotEmpty()
@@ -112,12 +112,13 @@ class CellMetadataDaoIT {
     }
 
     @ParameterizedTest
-    @MethodSource("experimentsWithMetadataProvider")
+    @MethodSource("experimentsWithFactorsProvider")
     void validCellIdHasMetadataValues(String experimentAccession) {
         String cellId = jdbcUtils.fetchRandomCellFromExperiment(experimentAccession);
 
-        LOGGER.info("Retrieving metadata field names for experiment {}", experimentAccession);
-        List<SingleCellAnalyticsSchemaField> metadataFieldNames = subject.getMetadataFieldNames(experimentAccession);
+        LOGGER.info("Retrieving factor field names for experiment {}", experimentAccession);
+        List<SingleCellAnalyticsSchemaField> metadataFieldNames =
+                subject.getFactorTypes(experimentAccession, Optional.of(cellId));
 
         assertThat(metadataFieldNames)
                 .isNotEmpty()
@@ -136,7 +137,7 @@ class CellMetadataDaoIT {
         String cellId = jdbcUtils.fetchRandomCellFromExperiment(experimentAccession);
 
         LOGGER.info("Retrieving factor fields for cell ID {} from experiment {}", cellId, experimentAccession);
-        assertThat(subject.getFactorFieldNames(experimentAccession, cellId)).isNotEmpty();
+        assertThat(subject.getFactorTypes(experimentAccession, Optional.of(cellId))).isNotEmpty();
     }
 
     @Test
@@ -148,14 +149,15 @@ class CellMetadataDaoIT {
     }
 
     @ParameterizedTest
-    @MethodSource("experimentsWithMetadataProvider")
+    @MethodSource("experimentsWithFactorsProvider")
     void validCellIdsHaveMetadataValues(String experimentAccession) {
         List<String> cellIds =
                 jdbcUtils.fetchRandomListOfCellsFromExperiment(
                         experimentAccession, ThreadLocalRandom.current().nextInt(1, 2000));
 
-        LOGGER.info("Retrieving metadata field names for experiment {}", experimentAccession);
-        List<SingleCellAnalyticsSchemaField> metadataFieldNames = subject.getMetadataFieldNames(experimentAccession);
+        LOGGER.info("Retrieving factor field names for experiment {}", experimentAccession);
+        List<SingleCellAnalyticsSchemaField> metadataFieldNames =
+                subject.getFactorTypes(experimentAccession, Optional.empty());
 
         assertThat(metadataFieldNames)
                 .isNotEmpty()
@@ -190,26 +192,17 @@ class CellMetadataDaoIT {
         assertThat(subject.getAdditionalAttributesFieldNames(experimentAccession)).isEmpty();
     }
 
-    private Stream<String> experimentsWithMetadataProvider() {
-        // E-GEOD-99058 does not have any metadata (factors or inferred cell types)
+    private Stream<String> experimentsWithFactorsProvider() {
+        // E-GEOD-99058 does not have any factors
         return jdbcUtils.fetchPublicSingleCellExperimentAccessions()
                 .stream()
                 .filter(accession -> !accession.equalsIgnoreCase("E-GEOD-99058"));
     }
 
-    private Stream<String> experimentsWithFactorsProvider() {
-        // E-GEOD-99058 and E-ENAD-13 do not have any factors
-        return jdbcUtils.fetchPublicSingleCellExperimentAccessions()
-                .stream()
-                .filter(accession ->
-                        !accession.equalsIgnoreCase("E-GEOD-99058")
-                                && !accession.equalsIgnoreCase("E-ENAD-13"));
-    }
-
     private Stream<String> experimentsWithAdditionalAttributesProvider() {
         return jdbcUtils.fetchPublicSingleCellExperimentAccessions()
                 .stream()
-                .filter(accession -> hasAdditionalAttributesInIdf(accession));
+                .filter(this::hasAdditionalAttributesInIdf);
     }
 
     private Stream<String> experimentsWithoutAdditionalAttributesProvider() {

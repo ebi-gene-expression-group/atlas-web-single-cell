@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.util.SimpleOrderedMap;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
@@ -11,6 +12,7 @@ import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
+import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static java.util.Collections.emptyList;
@@ -29,8 +32,11 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_INFERRED_CELL_TYPE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTORS;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTOR_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.attributeNameToFieldName;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.characteristicAsSchemaField;
+import static uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils.extractSimpleOrderedMaps;
+
 
 @Component
 public class CellMetadataDao {
@@ -44,27 +50,31 @@ public class CellMetadataDao {
         this.idfParser = idfParser;
     }
 
-    // Retrieves a list of metadata fields available in Solr for a particular experiment. This includes all factor
-    // fields (except single_cell_identifier), as well as the characteristic_inferred_cell_type field.
-    public List<SingleCellAnalyticsSchemaField> getMetadataFieldNames(String experimentAccession) {
-        Map<String, Collection<Object>> queryResult =
-                getQueryResultForMultiValueFields(
-                        experimentAccession,
-                        Optional.empty(),
-                        ImmutableSet.of(FACTORS, CHARACTERISTIC_INFERRED_CELL_TYPE));
+    // Returns a list of available factor types for a given experiment (and optionally, a cell ID).
+    // Note: it is possible that a cell has missing factors...
+    public List<SingleCellAnalyticsSchemaField> getFactorTypes(String experimentAccession, Optional<String> cellId) {
+        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .setFacetField(FACTOR_NAME)
+                        .setRows(0);
 
-        List<SingleCellAnalyticsSchemaField> metadataFields =
-                queryResult.getOrDefault(FACTORS.name(), Collections.emptyList())
-                        .stream()
-                        .filter(factor -> !factor.toString().equalsIgnoreCase("single_cell_identifier"))
-                        .map(factor -> SingleCellAnalyticsCollectionProxy.factorAsSchemaField(factor.toString()))
-                        .collect(toList());
+        cellId.ifPresent(id -> queryBuilder.addQueryFieldByTerm(CELL_ID, id));
 
-        if (queryResult.containsKey(CHARACTERISTIC_INFERRED_CELL_TYPE.name())) {
-            metadataFields.add(CHARACTERISTIC_INFERRED_CELL_TYPE);
-        }
+        List<SimpleOrderedMap> results =
+                extractSimpleOrderedMaps(
+                        singleCellAnalyticsCollectionProxy
+                                .query(queryBuilder)
+                                .getResponse()
+                                .findRecursive("facets", FACTOR_NAME.name(), "buckets"));
 
-        return metadataFields;
+        return results
+                .stream()
+                .map(x -> x.get("val").toString())
+                .filter(factor -> !factor.equalsIgnoreCase("single_cell_identifier"))
+                .map(SingleCellAnalyticsCollectionProxy::factorAsSchemaField) // TODO: This is no longer a schema field, rather a value. Should come up with some other mechanism
+                .collect(Collectors.toList());
+
     }
 
     // Retrieves a list of additional attributes (i.e. characteristics of interest) from the experiment idf file

@@ -145,7 +145,7 @@ class CellMetadataDaoIT {
         String experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
         String cellId = "FOO";
 
-        assertThat(subject.getFactorFieldNames(experimentAccession, cellId)).isEmpty();
+        assertThat(subject.getFactorTypes(experimentAccession, Optional.of(cellId))).isEmpty();
     }
 
     @ParameterizedTest

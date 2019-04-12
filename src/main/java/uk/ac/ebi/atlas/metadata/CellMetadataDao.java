@@ -12,11 +12,9 @@ import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
-import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,9 +27,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_INFERRED_CELL_TYPE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTORS;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTOR_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.attributeNameToFieldName;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.characteristicAsSchemaField;
@@ -88,19 +84,6 @@ public class CellMetadataDao {
         return idfParserOutput.getMetadataFieldsOfInterest()
                 .stream()
                 .map(attribute -> characteristicAsSchemaField(attributeNameToFieldName(attribute)))
-                .collect(toList());
-    }
-
-    // Retrieves all the available factors stored in the Solr scxa-analytics collection for a particular cell
-    public List<SingleCellAnalyticsSchemaField> getFactorFieldNames(String experimentAccession, String cellId) {
-
-        Map<String, Collection<Object>> queryResult =
-                getQueryResultForMultiValueFields(experimentAccession, Optional.of(cellId), ImmutableSet.of(FACTORS));
-
-        return queryResult.getOrDefault(FACTORS.name(), Collections.emptyList())
-                .stream()
-                .filter(factor -> !factor.toString().equalsIgnoreCase("single_cell_identifier"))
-                .map(factor -> SingleCellAnalyticsCollectionProxy.factorAsSchemaField(factor.toString()))
                 .collect(toList());
     }
 

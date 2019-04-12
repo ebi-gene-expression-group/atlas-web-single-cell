@@ -53,7 +53,7 @@ public class HighchartsHeatmapAdapter {
                     Map<String, Object> heatmapCell = new HashMap<>();
                     heatmapCell.put("x", markerGene.clusterId() - 1);
                     heatmapCell.put("y", geneIdIndices.get(markerGene.geneId()));
-                    heatmapCell.put("name", symbolsForGeneIds.getOrDefault(markerGene.geneId(), markerGene.geneId()));
+                    heatmapCell.put("geneName", symbolsForGeneIds.getOrDefault(markerGene.geneId(), markerGene.geneId()));
                     heatmapCell.put("value", markerGene.medianExpression());
                     heatmapCell.put("clusterIdWhereMarker", markerGene.clusterIdWhereMarker());
                     heatmapCell.put("pValue", markerGene.pValue());

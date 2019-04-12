@@ -56,8 +56,8 @@ public class HighchartsHeatmapAdapterTest {
         List<Map<String, Object>> result = subject.getMarkerGeneHeatmapData(markerGenes);
         assertThat(result).hasSize(3);
 
-        assertThat(result).element(0).extracting("name").containsOnly(geneSymbol1);
-        assertThat(result).element(1).extracting("name").containsOnly(geneSymbol2);
-        assertThat(result).element(2).extracting("name").containsOnly(gene3);
+        assertThat(result).element(0).extracting("geneName").containsOnly(geneSymbol1);
+        assertThat(result).element(1).extracting("geneName").containsOnly(geneSymbol2);
+        assertThat(result).element(2).extracting("geneName").containsOnly(gene3);
     }
 }

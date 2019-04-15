@@ -10,6 +10,7 @@ import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +52,7 @@ public class ExperimentPageContentService {
         JsonArray metadataArray = new JsonArray();
         cellMetadataService.getMetadataTypes(experimentAccession)
                 .stream()
-                .map(x -> ImmutableMap.of("value", x, "label", x))
+                .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
                 .collect(Collectors.toSet())
                 .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
 

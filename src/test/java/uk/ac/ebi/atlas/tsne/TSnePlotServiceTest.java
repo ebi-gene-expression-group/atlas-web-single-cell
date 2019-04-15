@@ -27,6 +27,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -113,7 +114,7 @@ class TSnePlotServiceTest {
 
         when(
                 cellMetadataDaoMock.getMetadataValueForCellIds(
-                        eq(experimentAccession), any(SingleCellAnalyticsSchemaField.class), eq(cellIds)))
+                        eq(experimentAccession), anyString(), eq(cellIds)))
                 .thenReturn(cellMetadata);
 
         Map<String, Set<TSnePoint>> results =

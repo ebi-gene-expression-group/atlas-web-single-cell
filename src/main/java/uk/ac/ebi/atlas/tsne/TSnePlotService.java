@@ -70,7 +70,7 @@ public class TSnePlotService {
         Map<String, String> metadataValuesForCells =
                 cellMetadataDao.getMetadataValueForCellIds(
                         experimentAccession,
-                        SingleCellAnalyticsCollectionProxy.metadataAsSchemaField(metadataCategory),
+                        metadataCategory,
                         cellIds);
 
         return pointDtos.stream()

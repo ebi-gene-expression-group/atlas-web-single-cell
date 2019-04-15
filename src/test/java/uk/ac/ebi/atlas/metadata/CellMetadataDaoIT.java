@@ -28,10 +28,12 @@ import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -139,29 +141,28 @@ class CellMetadataDaoIT {
                 .isEmpty();
     }
 
-//    @ParameterizedTest
-//    @MethodSource("experimentsWithFactorsProvider")
-//    void validCellIdsHaveMetadataValues(String experimentAccession) {
-//        List<String> cellIds =
-//                jdbcUtils.fetchRandomListOfCellsFromExperiment(
-//                        experimentAccession, ThreadLocalRandom.current().nextInt(1, 2000));
-//
-//        LOGGER.info("Retrieving factor field names for experiment {}", experimentAccession);
-//        List<SingleCellAnalyticsSchemaField> metadataFieldNames =
-//                subject.getFactorTypes(experimentAccession, Optional.empty());
-//
-//        assertThat(metadataFieldNames)
-//                .isNotEmpty()
-//                .allSatisfy(field -> {
-//                    LOGGER.info(
-//                            "Retrieving values for {} metadata for {} random cell IDs from experiment {}",
-//                            field.displayName(), cellIds.size(), experimentAccession);
-//
-//                    assertThat(subject.getMetadataValueForCellIds(experimentAccession, field, cellIds))
-//                            .isNotEmpty()
-//                            .containsKeys(cellIds.toArray(new String[0]));
-//                });
-//    }
+    @ParameterizedTest
+    @MethodSource("experimentsWithFactorsProvider")
+    void validCellIdsHaveMetadataValues(String experimentAccession) {
+        Set<String> cellIds = new HashSet<>(jdbcUtils.fetchRandomListOfCellsFromExperiment(
+                experimentAccession, ThreadLocalRandom.current().nextInt(1, 2000)));
+
+        LOGGER.info("Retrieving factor types for experiment {}", experimentAccession);
+
+        Set<String> factorTypes = subject.getFactorTypes(experimentAccession, Optional.empty());
+
+        assertThat(factorTypes)
+                .isNotEmpty()
+                .allSatisfy(factor -> {
+                    LOGGER.info(
+                            "Retrieving values for {} metadata for {} random cell IDs from experiment {}",
+                            factor, cellIds.size(), experimentAccession);
+
+                    assertThat(subject.getMetadataValueForCellIds(experimentAccession, factor, cellIds))
+                            .isNotEmpty()
+                            .containsKeys(cellIds.toArray(new String[0]));
+                });
+    }
 
     @ParameterizedTest
     @MethodSource("experimentsWithAdditionalAttributesProvider")

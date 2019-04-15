@@ -130,7 +130,7 @@ public class CellMetadataDao {
                 .collect(toImmutableMap(
                         entry -> (String) ((ArrayList) entry.getOrDefault(FACTOR_NAME.name(),
                                 entry.get(CHARACTERISTIC_NAME.name()))).get(0),
-                        entry -> (List) ((ArrayList) entry.getOrDefault(FACTOR_VALUE.name(),
+                        entry -> (ArrayList) ((ArrayList) entry.getOrDefault(FACTOR_VALUE.name(),
                                 entry.get(CHARACTERISTIC_VALUE.name())))
                                 .stream()
                                 .map(Object::toString)
@@ -139,19 +139,25 @@ public class CellMetadataDao {
 
     }
 
-    // Given a Solr field where metadata is stored, this method retrieves the value of that field for list of cell IDs.
+    // Given a type of metadata, this method retrieves the value of that metadata for list of cell IDs.
     public Map<String, String> getMetadataValueForCellIds(String experimentAccession,
-                                                          SingleCellAnalyticsSchemaField metadataField,
-                                                          List<String> cellIds) {
-        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> solrQueryBuilder =
+                                                             String metadataType,
+                                                             Collection<String> cellIds) {
+        // We need to do this because we don't know if the metadata type is a factor or a characteristic
+        ImmutableMap<SingleCellAnalyticsSchemaField, Collection<String>> fields = ImmutableMap.of(
+                CHARACTERISTIC_NAME, ImmutableSet.of(metadataType),
+                FACTOR_NAME, ImmutableSet.of(metadataType));
+
+        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(CELL_ID, cellIds)
-                        .setFieldList(ImmutableSet.of(metadataField, CELL_ID));
+                        .addQueryFieldByTerm(fields)
+                        .setFieldList(ImmutableSet.of(CELL_ID, CHARACTERISTIC_VALUE, FACTOR_VALUE));
 
-        QueryResponse response = singleCellAnalyticsCollectionProxy.query(solrQueryBuilder);
+        SolrDocumentList results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
 
-        return response.getResults()
+        return results
                 .stream()
                 .collect(groupingBy(solrDocument -> (String) solrDocument.getFieldValue("cell_id")))
                 .entrySet()
@@ -163,9 +169,19 @@ public class CellMetadataDao {
                                 // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
                                 // value. This was confirmed by curators in this Slack conversation:
                                 // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
-                                entry -> (String) ((ArrayList) entry
-                                                .getValue().get(0).getFieldValue(metadataField.name()))
-                                                .get(0)));
+                                entry -> {
+                                    SolrDocument result = entry.getValue().get(0);
+
+                                    if (result.containsKey(CHARACTERISTIC_VALUE.name()) || result.containsKey(FACTOR_VALUE.name())) {
+                                        return (String) ((ArrayList) result.getOrDefault(FACTOR_VALUE.name(),
+                                                result.get(CHARACTERISTIC_VALUE.name()))).get(0);
+                                    } else {
+                                        // Some fields could be blank, in which case they wouldn't even be stored in Solr
+                                        return "not available";
+                                    }
+                                }));
+
+
     }
 
     private boolean hasInferredCellType(String experimentAccession) {

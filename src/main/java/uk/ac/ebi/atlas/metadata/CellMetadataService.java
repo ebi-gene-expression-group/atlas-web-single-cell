@@ -2,8 +2,9 @@ package uk.ac.ebi.atlas.metadata;
 
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
-import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField;
+import uk.ac.ebi.atlas.utils.StringUtil;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_INFERRED_CELL_TYPE;
 
 @Component
 public class CellMetadataService {
@@ -21,15 +21,19 @@ public class CellMetadataService {
         this.cellMetadataDao = cellMetadataDao;
     }
 
-    public Map<String, String> getMetadata(String experimentAccession, String cellId) {
-        Set<SingleCellAnalyticsSchemaField> metadataTypes = getMetadataTypes(experimentAccession);
+    // Retrieves all metadata values of interest (factors and characteristics) for a given cell ID
+    public Map<String, String> getMetadataValues(String experimentAccession, String cellId) {
+        Set<String> factorTypes = cellMetadataDao.getFactorTypes(experimentAccession, Optional.empty());
+        Set<String> characteristicTypes = cellMetadataDao.getCharacteristicTypes(experimentAccession);
 
         return cellMetadataDao
-                .getQueryResultForMultiValueFields(experimentAccession, Optional.of(cellId), metadataTypes)
+                .getMetadataValuesForCellId(experimentAccession, cellId, factorTypes, characteristicTypes)
                 .entrySet().stream()
                 .collect(toMap(
-                        entry -> SingleCellAnalyticsCollectionProxy.metadataFieldNameToDisplayName(entry.getKey()),
-                        entry -> entry.getValue().stream().map(Object::toString).collect(Collectors.joining(","))));
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(","))));
     }
 
     /*
@@ -37,15 +41,10 @@ public class CellMetadataService {
      * single cell identifier), curated attributes found in the IDF file, as well as the inferred cell type
      * characteristic.
      */
-    public Set<SingleCellAnalyticsSchemaField> getMetadataTypes(String experimentAccession) {
-        Set<SingleCellAnalyticsSchemaField> metadataTypes = Stream.concat(
+    public Set<String> getMetadataTypes(String experimentAccession) {
+        return Stream.concat(
                 cellMetadataDao.getFactorTypes(experimentAccession, Optional.empty()).stream(),
-                cellMetadataDao.getAdditionalAttributesFieldNames(experimentAccession).stream())
+                cellMetadataDao.getCharacteristicTypes(experimentAccession).stream())
                 .collect(Collectors.toSet());
-
-        // Inferred cell type is special and we are always interested in retrieving it, if it is available
-        metadataTypes.add(CHARACTERISTIC_INFERRED_CELL_TYPE);
-
-        return metadataTypes;
     }
 }

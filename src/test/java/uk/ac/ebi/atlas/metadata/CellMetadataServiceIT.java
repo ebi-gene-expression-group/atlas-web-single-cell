@@ -71,16 +71,29 @@ class CellMetadataServiceIT {
 
     @ParameterizedTest
     @MethodSource("experimentsWithMetadataProvider")
-    void metadataForValidExperimentAccession(String experimentAccession) {
+    void metadataValuesForValidExperimentAccession(String experimentAccession) {
         String cellId = jdbcUtils.fetchRandomCellFromExperiment(experimentAccession);
 
-        assertThat(subject.getMetadata(experimentAccession, cellId)).isNotEmpty();
+        assertThat(subject.getMetadataValues(experimentAccession, cellId)).isNotEmpty();
+    }
+
+    @ParameterizedTest
+    @MethodSource("experimentsWithMetadataProvider")
+    void experimentWithMetadataReturnsMetadataTypes(String experimentAccession) {
+        assertThat(subject.getMetadataTypes(experimentAccession))
+                .isNotEmpty()
+                .contains("inferred_cell_type");
+    }
+
+    @Test
+    void experimentWithoutMetadataReturnsEmptyMetadataTypes() {
+        assertThat(subject.getMetadataTypes(EXPERIMENT_WITHOUT_METADATA_ACCESSION)).isEmpty();
     }
 
     @Test
     void metadataForInvalidExperiment() {
         assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(
-                () -> subject.getMetadata("FOO", "FOO"))
+                () -> subject.getMetadataValues("FOO", "FOO"))
                 .withCauseInstanceOf(NoSuchFileException.class);;
     }
 

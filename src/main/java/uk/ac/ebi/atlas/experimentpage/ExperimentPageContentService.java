@@ -51,7 +51,7 @@ public class ExperimentPageContentService {
         JsonArray metadataArray = new JsonArray();
         cellMetadataService.getMetadataTypes(experimentAccession)
                 .stream()
-                .map(x -> ImmutableMap.of("value", x.name(), "label", x.displayName()))
+                .map(x -> ImmutableMap.of("value", x, "label", x))
                 .collect(Collectors.toSet())
                 .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
 

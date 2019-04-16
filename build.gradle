@@ -44,6 +44,7 @@ dependencies {
     implementation 'org.springframework:spring-web:5.1.5.RELEASE'
     implementation 'org.springframework:spring-webmvc:5.1.5.RELEASE'
 
+    implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.200'
     implementation 'org.jetbrains:annotations:17.0.0'
 
     implementation 'com.google.guava:guava:27.1-jre'

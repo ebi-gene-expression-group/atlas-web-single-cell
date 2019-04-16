@@ -4,8 +4,6 @@ import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentimport.ExperimentDto;
 import uk.ac.ebi.atlas.experimentimport.ScxaExperimentDao;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
-import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
-import uk.ac.ebi.atlas.model.experiment.ExperimentDesign;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
 
@@ -22,11 +20,10 @@ public class ScxaExperimentTrader extends ExperimentTrader {
     }
 
     @Override
-    public SingleCellBaselineExperiment getExperiment(String experimentAccession, String accessKey) {
-        ExperimentDesign experimentDesign = experimentDesignParser.parse(experimentAccession);
-        IdfParserOutput idfParserOutput = idfParser.parse(experimentAccession);
-        ExperimentDto experimentDto = experimentDao.findExperiment(experimentAccession, accessKey);
-
-        return experimentFactory.create(experimentDto, experimentDesign, idfParserOutput);
+    protected SingleCellBaselineExperiment buildExperiment(ExperimentDto experimentDto) {
+        return experimentFactory.create(
+                experimentDto,
+                experimentDesignParser.parse(experimentDto.getExperimentAccession()),
+                idfParser.parse(experimentDto.getExperimentAccession()));
     }
 }

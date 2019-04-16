@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.trader;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentimport.ExperimentDto;
 import uk.ac.ebi.atlas.experimentimport.ScxaExperimentDao;
@@ -9,7 +8,6 @@ import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
 
 @Component
-@NonNullByDefault
 public class ScxaExperimentTrader extends ExperimentTrader {
     private final SingleCellBaselineExperimentFactory experimentFactory;
 

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -105,6 +106,11 @@ public class MarkerGenesDaoIT {
         List<String> geneIds = Collections.singletonList("FAKE_GENE_ID");
 
         assertThat(subject.getSymbolsForGeneIds(geneIds)).isEmpty();
+    }
+
+    @Test
+    void emptyGeneIdListReturnsNoResults() {
+        assertThat(subject.getSymbolsForGeneIds(emptyList())).isEmpty();
     }
 
     @Test

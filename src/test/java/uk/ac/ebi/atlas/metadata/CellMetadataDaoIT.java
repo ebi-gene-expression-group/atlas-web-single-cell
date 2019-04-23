@@ -37,6 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -174,6 +175,14 @@ class CellMetadataDaoIT {
     @MethodSource("experimentsWithoutAdditionalAttributesProvider")
     void invalidExperimentAccessionHasNoAdditionalAttributes(String experimentAccession) {
         assertThat(subject.getCharacteristicTypes(experimentAccession)).isEmpty();
+    }
+
+    @Test
+    void noMetadataIsRetrievedForEmptyCellIdList() {
+        String experimentAccession = jdbcUtils.fetchRandomSingleCellExperimentAccession();
+
+        assertThat(subject.getMetadataValueForCellIds(experimentAccession, "organism", emptyList()))
+            .isEmpty();
     }
 
     private Stream<String> experimentsWithFactorsProvider() {

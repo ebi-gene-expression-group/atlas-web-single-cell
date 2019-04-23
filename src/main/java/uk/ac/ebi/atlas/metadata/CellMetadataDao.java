@@ -13,6 +13,7 @@ import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
+import uk.ac.ebi.atlas.solr.cloud.search.jsonfacets.SolrJsonFacetBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,10 +55,14 @@ public class CellMetadataDao {
     // Returns a list of available factor types for a given experiment (and optionally, a cell ID).
     // Note: it is possible that a cell has missing factors...
     public Set<String> getFactorTypes(String experimentAccession, Optional<String> cellId) {
+        SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy> facetBuilder =
+                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                    .setFacetField(FACTOR_NAME);
+
         SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
-                        .setFacetField(FACTOR_NAME)
+                        .setFacets(facetBuilder)
                         .setRows(0);
 
         cellId.ifPresent(id -> queryBuilder.addQueryFieldByTerm(CELL_ID, id));

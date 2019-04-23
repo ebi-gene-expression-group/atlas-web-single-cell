@@ -41,7 +41,7 @@ public class GeneSearchService {
     public Map<String, Map<String, List<String>>> getFacets(List<String> cellIds) {
         return geneSearchDao.getFacets(
                 cellIds,
-                CHARACTERISTIC_INFERRED_CELL_TYPE, CHARACTERISTIC_ORGANISM_PART, CHARACTERISTIC_SPECIES);
+                "inferred_cell_type", "organism", "organism_part");
     }
 
     // Map<Gene ID, Map<Experiment accession, Map<K, Cluster ID>>>

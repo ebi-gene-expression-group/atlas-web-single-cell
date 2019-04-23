@@ -142,7 +142,7 @@ class GeneSearchDaoIT {
         Map<String, Map<String, List<String>>> result =
                 subject.getFacets(
                         cellIds,
-                        CHARACTERISTIC_INFERRED_CELL_TYPE, CHARACTERISTIC_ORGANISM_PART, CHARACTERISTIC_SPECIES);
+                        "inferred_cell_type", "organism_part", "organism");
 
         assertThat(result).isNotEmpty();
     }
@@ -152,7 +152,7 @@ class GeneSearchDaoIT {
         Map<String, Map<String, List<String>>> result =
                 subject.getFacets(
                         emptyList(),
-                        CHARACTERISTIC_INFERRED_CELL_TYPE, CHARACTERISTIC_ORGANISM_PART, CHARACTERISTIC_SPECIES);
+                        "inferred_cell_type", "organism_part", "organism");
 
         assertThat(result).isEmpty();
     }

@@ -15,9 +15,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_INFERRED_CELL_TYPE;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_ORGANISM_PART;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_SPECIES;
 
 @Component
 public class GeneSearchService {

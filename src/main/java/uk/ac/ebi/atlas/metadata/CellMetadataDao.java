@@ -14,6 +14,7 @@ import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.jsonfacets.SolrJsonFacetBuilder;
+import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,7 +98,7 @@ public class CellMetadataDao {
 
         Set<String> characteristicsFromIdf = idfParserOutput.getMetadataFieldsOfInterest()
                 .stream()
-                .map(SingleCellAnalyticsCollectionProxy::attributeNameToFieldName)
+                .map(StringUtil::wordsToSnakeCase)
                 .collect(toSet());
 
         characteristics.addAll(characteristicsFromIdf);

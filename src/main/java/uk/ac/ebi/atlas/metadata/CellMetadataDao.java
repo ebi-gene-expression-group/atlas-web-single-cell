@@ -177,16 +177,9 @@ public class CellMetadataDao {
                                 entry -> {
                                     SolrDocument result = entry.getValue().get(0);
 
-                                    if (result.containsKey(CHARACTERISTIC_VALUE.name()) || result.containsKey(FACTOR_VALUE.name())) {
-                                        return (String) ((ArrayList) result.getOrDefault(FACTOR_VALUE.name(),
-                                                result.get(CHARACTERISTIC_VALUE.name()))).get(0);
-                                    } else {
-                                        // Some fields could be blank, in which case they wouldn't even be stored in Solr
-                                        return "not available";
-                                    }
+                                    return (String) ((ArrayList) result.getOrDefault(FACTOR_VALUE.name(),
+                                            result.get(CHARACTERISTIC_VALUE.name()))).get(0);
                                 }));
-
-
     }
 
     private boolean hasInferredCellType(String experimentAccession) {

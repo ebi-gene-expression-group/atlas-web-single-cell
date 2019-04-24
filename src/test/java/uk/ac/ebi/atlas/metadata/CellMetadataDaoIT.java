@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.metadata;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -115,6 +116,24 @@ class CellMetadataDaoIT {
         String cellId = "FOO";
 
         assertThat(subject.getFactorTypes(experimentAccession, Optional.of(cellId))).isEmpty();
+    }
+
+    @Test
+    void experimentWithMissingValuesReturnsNotAvailable() {
+        String experimentAccession = "E-GEOD-71585";
+
+        // TODO: Retrieve randomly sampled cell IDs from Solr
+        ImmutableList<String> cellIdsWithMissingValues = ImmutableList.of(
+                "SRR2138737",
+                "SRR2140225",
+                "SRR2139550",
+                "SRR2139566");
+
+        Map<String, String> result = subject.getMetadataValueForCellIds(experimentAccession,
+                "inferred_cell_type",
+                cellIdsWithMissingValues);
+
+        assertThat(result).isEmpty();
     }
 
     @ParameterizedTest

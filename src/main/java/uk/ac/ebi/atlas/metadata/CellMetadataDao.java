@@ -105,7 +105,7 @@ public class CellMetadataDao {
         return characteristics;
     }
 
-    public Map<String, List<String>> getMetadataValuesForCellId(String experimentAccession,
+    public Map<String, String> getMetadataValuesForCellId(String experimentAccession,
                                                    String cellId,
                                                    Collection<String> factorFields,
                                                    Collection<String> characteristicFields) {
@@ -132,14 +132,16 @@ public class CellMetadataDao {
 
         return results
                 .stream()
-                .collect(toImmutableMap(
-                        entry -> (String) ((ArrayList) entry.getOrDefault(FACTOR_NAME.name(),
-                                entry.get(CHARACTERISTIC_NAME.name()))).get(0),
-                        entry -> (ArrayList) ((ArrayList) entry.getOrDefault(FACTOR_VALUE.name(),
-                                entry.get(CHARACTERISTIC_VALUE.name())))
-                                .stream()
-                                .map(Object::toString)
-                                .collect(toList())
+                .collect(
+                        toMap(
+                                entry -> ((ArrayList) entry.getOrDefault(FACTOR_NAME.name(),
+                                        entry.get(CHARACTERISTIC_NAME.name()))).get(0).toString(),
+                                // The factor fields in Solr are all multi-value fields, even though they technically
+                                // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
+                                // value. This was confirmed by curators in this Slack conversation:
+                                // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
+                                entry -> ((ArrayList) entry.getOrDefault(FACTOR_VALUE.name(),
+                                        entry.get(CHARACTERISTIC_VALUE.name()))).get(0).toString()
                 ));
 
     }
@@ -177,8 +179,8 @@ public class CellMetadataDao {
                                 entry -> {
                                     SolrDocument result = entry.getValue().get(0);
 
-                                    return (String) ((ArrayList) result.getOrDefault(FACTOR_VALUE.name(),
-                                            result.get(CHARACTERISTIC_VALUE.name()))).get(0);
+                                    return ((ArrayList) result.getOrDefault(FACTOR_VALUE.name(),
+                                            result.get(CHARACTERISTIC_VALUE.name()))).get(0).toString();
                                 }));
     }
 

@@ -1,17 +1,12 @@
 package uk.ac.ebi.atlas.metadata;
 
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
-import uk.ac.ebi.atlas.utils.StringUtil;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toMap;
 
 @Component
 public class CellMetadataService {
@@ -26,14 +21,11 @@ public class CellMetadataService {
         Set<String> factorTypes = cellMetadataDao.getFactorTypes(experimentAccession, Optional.empty());
         Set<String> characteristicTypes = cellMetadataDao.getCharacteristicTypes(experimentAccession);
 
-        return cellMetadataDao
-                .getMetadataValuesForCellId(experimentAccession, cellId, factorTypes, characteristicTypes)
-                .entrySet().stream()
-                .collect(toMap(
-                        Map.Entry::getKey,
-                        entry -> entry.getValue().stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(","))));
+        return cellMetadataDao.getMetadataValuesForCellId(
+                experimentAccession,
+                cellId,
+                factorTypes,
+                characteristicTypes);
     }
 
     /*

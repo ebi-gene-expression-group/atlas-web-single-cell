@@ -29,6 +29,7 @@ import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +145,7 @@ class CellMetadataDaoIT {
         Set<String> factors = subject.getFactorTypes(experimentAccession, Optional.of(cellId));
         Set<String> characteristics = subject.getCharacteristicTypes(experimentAccession);
 
-        Map<String, List<String>> result = subject.getMetadataValuesForCellId(experimentAccession, cellId, factors, characteristics);
+        Map<String, String> result = subject.getMetadataValuesForCellId(experimentAccession, cellId, factors, characteristics);
 
         assertThat(result)
                 .isNotEmpty()
@@ -202,6 +203,17 @@ class CellMetadataDaoIT {
 
         assertThat(subject.getMetadataValueForCellIds(experimentAccession, "organism", emptyList()))
             .isEmpty();
+    }
+
+    @Test
+    void noResultsAreReturnedForInvalidIds() {
+        assertThat(
+                subject.getMetadataValuesForCellId(
+                        "FOO",
+                        "BAR",
+                        emptyList(),
+                        Collections.singletonList("organism")))
+                .isEmpty();
     }
 
     private Stream<String> experimentsWithFactorsProvider() {

@@ -1,6 +1,8 @@
 package uk.ac.ebi.atlas.download;
 
 import com.google.common.collect.ImmutableList;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.model.resource.AtlasResource;
 import uk.ac.ebi.atlas.resource.DataFileHub;
@@ -12,8 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@NonNullByDefault
 public class ExperimentFileLocationService {
-
     private final DataFileHub dataFileHub;
 
     private static final String EXPERIMENT_FILES_URI_TEMPLATE =
@@ -25,6 +27,7 @@ public class ExperimentFileLocationService {
         this.dataFileHub = dataFileHub;
     }
 
+    @Nullable
     public Path getFilePath(String experimentAccession, ExperimentFileType fileType) {
         switch (fileType) {
             case EXPERIMENT_DESIGN:
@@ -42,6 +45,7 @@ public class ExperimentFileLocationService {
         }
     }
 
+    @Nullable
     public List<Path> getFilePathsForArchive(String experimentAccession, ExperimentFileType fileType) {
         switch (fileType) {
             case QUANTIFICATION_FILTERED:
@@ -63,10 +67,11 @@ public class ExperimentFileLocationService {
                                 dataFileHub.getSingleCellExperimentFiles(experimentAccession).filteredCountsCellIdsTsv.getPath(),
                                 dataFileHub.getSingleCellExperimentFiles(experimentAccession).filteredCountsGeneIdsTsv.getPath());
             case NORMALISED:
-                return  ImmutableList.of(
-                        dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsMatrix.getPath(),
-                        dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsCellIdsTsv.getPath(),
-                        dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsGeneIdsTsv.getPath());
+                return
+                        ImmutableList.of(
+                                dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsMatrix.getPath(),
+                                dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsCellIdsTsv.getPath(),
+                                dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsGeneIdsTsv.getPath());
 
             default:
                 return null;

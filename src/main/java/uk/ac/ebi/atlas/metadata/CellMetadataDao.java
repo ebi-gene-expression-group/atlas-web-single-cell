@@ -109,7 +109,7 @@ public class CellMetadataDao {
                                                    String cellId,
                                                    Collection<String> factorFields,
                                                    Collection<String> characteristicFields) {
-        if(factorFields.isEmpty() || characteristicFields.isEmpty()) {
+        if (factorFields.isEmpty() && characteristicFields.isEmpty()) {
             return ImmutableMap.of();
         }
 

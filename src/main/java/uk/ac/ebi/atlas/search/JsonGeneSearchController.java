@@ -20,6 +20,7 @@ import uk.ac.ebi.atlas.solr.BioentityPropertyName;
 import uk.ac.ebi.atlas.species.Species;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
+import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static uk.ac.ebi.atlas.search.FacetType.MARKER_GENE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.ID_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -56,8 +58,8 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     }
 
     @RequestMapping(value = "/json/search",
-                    method = RequestMethod.GET,
-                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
         Optional<Species> species = Optional.ofNullable(requestParams.getFirst("species")).map(speciesFactory::create);
 
@@ -83,13 +85,13 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         if (category.equals("q")) {
             geneQuery =
                     species.map(_species -> GeneQuery.create(queryTerm, _species))
-                           .orElseGet(() -> GeneQuery.create(queryTerm));
+                            .orElseGet(() -> GeneQuery.create(queryTerm));
         } else {
             geneQuery =
                     species.map(
                             _species ->
                                     GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category), _species))
-                           .orElseGet(() -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category)));
+                            .orElseGet(() -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category)));
 
         }
         Optional<ImmutableSet<String>> geneIds = geneIdSearchService.search(geneQuery);
@@ -144,13 +146,13 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                             .getOrDefault(experimentAccession, ImmutableMap.of()));
 
                             if (markerGeneFacets.containsKey(geneId) &&
-                                markerGeneFacets.get(geneId).containsKey(experimentAccession)) {
+                                    markerGeneFacets.get(geneId).containsKey(experimentAccession)) {
                                 facets.add(
                                         ImmutableMap.of(
-                                                "group", "Marker genes",
+                                                "group", MARKER_GENE.getTitle(),
                                                 "value", "experiments with marker genes",
                                                 "label", "Experiments with marker genes",
-                                                "description", FacetsToTooltipMapping.MARKER_GENE.getTooltip()));
+                                                "description", MARKER_GENE.getTooltip()));
                                 experimentAttributes.put(
                                         "markerGenes",
                                         convertMarkerGeneModel(
@@ -185,32 +187,30 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     }
 
     private List<Map<String, String>> unfoldFacets(Map<String, List<String>> model) {
-
         List<SimpleEntry<String, String>> unfoldedModel = unfoldListMultimap(model);
         List<Map<String, String>> results = new ArrayList<>();
 
         for (Map.Entry<String, String> entry : unfoldedModel) {
+            FacetType facetType = FacetType.fromName(entry.getKey());
+
             ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
-                    .put("group", entry.getKey())
                     .put("value", entry.getValue())
                     .put("label", StringUtils.capitalize(entry.getValue()));
 
-            if (!isNullOrEmpty(getTooltipText(entry.getKey()))) {
-                mapBuilder.put("description", getTooltipText(entry.getKey()));
+            // If this facet is "known", i.e. needs a particular title or tooltip
+            if (facetType != null) {
+                mapBuilder.put("group", facetType.getTitle());
+                if (!isNullOrEmpty(facetType.getTooltip())) {
+                    mapBuilder.put("description", facetType.getTooltip());
+                }
+            }
+            else {
+                mapBuilder.put("group", StringUtil.snakeCaseToDisplayName(entry.getKey()));
             }
 
             results.add(mapBuilder.build());
         }
         return results;
-    }
-
-    private String getTooltipText(String group) {
-        for (FacetsToTooltipMapping tooltip : FacetsToTooltipMapping.values()) {
-            if (tooltip.getTitle().equalsIgnoreCase(group)) {
-               return tooltip.getTooltip();
-            }
-        }
-        return null;
     }
 
     private Map<String, Object> getExperimentInformation(String experimentAccession, String geneId) {
@@ -236,11 +236,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     }
 
     private static String createExperimentPageURL(String experimentAccession, String geneId) {
-       return ServletUriComponentsBuilder.fromCurrentContextPath()
-               .path("/experiments/{experimentAccession}")
-               .query("geneId={geneId}")
-               .buildAndExpand(experimentAccession, geneId)
-               .toUriString();
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/experiments/{experimentAccession}")
+                .query("geneId={geneId}")
+                .buildAndExpand(experimentAccession, geneId)
+                .toUriString();
     }
 
     private static String createResultsPageURL(String experimentAccession,

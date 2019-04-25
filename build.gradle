@@ -113,6 +113,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    maxHeapSize = '4096m'
 }
 
 if (!hasProperty('buildProfile')) ext.buildProfile = 'dev'

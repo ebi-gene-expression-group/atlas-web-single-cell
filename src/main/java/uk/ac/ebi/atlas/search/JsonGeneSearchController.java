@@ -248,11 +248,12 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                                Integer k,
                                                List<Integer> clusterId) {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/experiments/{experimentAccession}/Results")
+                .path("/experiments/{experimentAccession}/results")
                 .query("geneId={geneId}")
                 .query("k={k}")
                 .query("clusterId={clusterId}")
                 .buildAndExpand(experimentAccession, geneId, k, clusterId)
+                .encode()
                 .toUriString();
     }
 }

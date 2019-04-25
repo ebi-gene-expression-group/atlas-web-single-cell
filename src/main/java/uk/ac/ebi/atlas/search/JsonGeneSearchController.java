@@ -30,7 +30,6 @@ import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.ebi.atlas.search.FacetType.MARKER_GENE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.ID_PROPERTY_NAMES;
@@ -170,7 +169,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
         String matchingGeneIds = "";
         if (geneIds.get().size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) {
-            matchingGeneIds = "(" + geneIds.get().stream().collect(joining(", ")) + ")";
+            matchingGeneIds = "(" + String.join(", ", geneIds.get()) + ")";
         }
 
         return GSON.toJson(

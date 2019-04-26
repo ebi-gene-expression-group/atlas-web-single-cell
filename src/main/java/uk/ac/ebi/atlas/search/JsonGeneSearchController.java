@@ -32,6 +32,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.ebi.atlas.search.FacetType.MARKER_GENE;
+import static uk.ac.ebi.atlas.search.FacetType.ORGANISM;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.ID_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -176,7 +177,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                 ImmutableMap.of(
                         "matchingGeneId", matchingGeneIds,
                         "results", results,
-                        "checkboxFacetGroups", ImmutableList.of("Marker genes", "Species")));
+                        "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
     }
 
     private <K, V> List<SimpleEntry<K, V>> unfoldListMultimap(Map<K, List<V>> multimap) {

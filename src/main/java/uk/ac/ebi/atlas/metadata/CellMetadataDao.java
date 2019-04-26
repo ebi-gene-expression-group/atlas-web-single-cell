@@ -46,6 +46,9 @@ public class CellMetadataDao {
     private SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
     private IdfParser idfParser;
 
+    private final static String INFERRED_CELL_TYPE_SOLR_VALUE = "inferred_cell_type";
+    private final static String SINGLE_CELL_IDENTIFIER_SOLR_VALUE = "single_cell_identifier";
+
     public CellMetadataDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory,
                            IdfParser idfParser) {
         this.singleCellAnalyticsCollectionProxy =
@@ -78,7 +81,7 @@ public class CellMetadataDao {
         return results
                 .stream()
                 .map(x -> x.get("val").toString())
-                .filter(factor -> !factor.equalsIgnoreCase("single_cell_identifier"))
+                .filter(factor -> !factor.equalsIgnoreCase(SINGLE_CELL_IDENTIFIER_SOLR_VALUE))
                 .collect(Collectors.toSet());
     }
 
@@ -89,7 +92,7 @@ public class CellMetadataDao {
         Set<String> characteristics = new HashSet<>();
         // We are ALWAYS interested in the inferred cell type
         if (hasInferredCellType(experimentAccession)) {
-            characteristics.add("inferred_cell_type");
+            characteristics.add(INFERRED_CELL_TYPE_SOLR_VALUE);
         }
 
         if (idfParserOutput.getMetadataFieldsOfInterest().isEmpty()) {
@@ -167,7 +170,7 @@ public class CellMetadataDao {
 
         return results
                 .stream()
-                .collect(groupingBy(solrDocument -> (String) solrDocument.getFieldValue("cell_id")))
+                .collect(groupingBy(solrDocument -> (String) solrDocument.getFieldValue(CELL_ID.name())))
                 .entrySet()
                 .stream()
                 .collect(
@@ -189,7 +192,7 @@ public class CellMetadataDao {
         SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
-                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, "inferred_cell_type");
+                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, INFERRED_CELL_TYPE_SOLR_VALUE);
 
         return !singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults().isEmpty();
     }

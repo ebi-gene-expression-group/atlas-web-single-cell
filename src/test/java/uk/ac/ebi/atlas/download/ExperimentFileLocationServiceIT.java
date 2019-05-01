@@ -21,7 +21,6 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExperimentFileLocationServiceIT {
     private static final String EXPERIMENT_DESIGN_FILE_NAME_TEMPLATE = "ExpDesign-{0}.tsv";
     private static final String SDRF_FILE_NAME_TEMPLATE = "{0}.sdrf.txt";
+    private static final String IDF_FILE_NAME_TEMPLATE = "{0}.idf.txt";
     private static final String CLUSTERS_FILE_NAME_TEMPLATE = "{0}.clusters.tsv";
     private static final String MARKER_GENES_FILE_NAME_TEMPLATE = "{0}.marker_genes_{1}.tsv";
 
@@ -108,6 +108,12 @@ class ExperimentFileLocationServiceIT {
     void existingSdrfFile() {
         existingFileOfType(jdbcTestUtils.fetchRandomSingleCellExperimentAccession(),
                 ExperimentFileType.SDRF, SDRF_FILE_NAME_TEMPLATE);
+    }
+
+    @Test
+    void existingIdfFile() {
+        existingFileOfType(jdbcTestUtils.fetchRandomSingleCellExperimentAccession(),
+                ExperimentFileType.IDF, IDF_FILE_NAME_TEMPLATE);
     }
 
     @Test

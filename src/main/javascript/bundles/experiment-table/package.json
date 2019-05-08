@@ -1,0 +1,18 @@
+{
+  "name": "autocomplete",
+  "version": "1.0.0",
+  "description": "Wrapper bundle for atlas-autocomplete",
+  "main": "index.js",
+  "author": "Expression Atlas developers <atlas-developers@ebi.ac.uk>",
+  "collaborators": [
+    "Elisabet Barrera <barrera@ebi.ac.uk>",
+    "Wojciech Bażant <wbazant@ebi.ac.uk>",
+    "Alfonso Muñoz-Pomer Fuentes <amunoz@ebi.ac.uk>"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "atlas-experiment-table": "^1.0.0-rc2",
+    "react": "^16.8.5",
+    "react-dom": "^16.8.5"
+  }
+}

@@ -7,7 +7,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
-      console.log(${data});
       experimentTable.render({
         host: '${pageContext.request.contextPath}/',
         resource: 'json/experiments',
@@ -20,9 +19,9 @@
           {type: 'sort', title: 'Number of assays', width: 260, dataParam: 'numberOfAssays',
               link: 'experimentAccession', resource: 'experiments', endpoint: 'Experiment%20Design'}
         ],
+        species: '${species}',
         noResultsMessageFormatter: function(data) { return 'Your search yielded no results: ' + data.reason },
-        enableDownload: true,
-        aaData: ${data}
+        enableDownload: true
       }, 'experiments');
     });
 </script>

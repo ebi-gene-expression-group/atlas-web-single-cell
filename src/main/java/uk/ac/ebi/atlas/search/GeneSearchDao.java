@@ -117,7 +117,7 @@ public class GeneSearchDao {
     public  Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
             String geneId, String experimentAccession, int preferredK) {
 
-        Map<String, Object> namedParameters =
+        var namedParameters =
                 ImmutableMap.of(
                         "gene_id", geneId,
                         "threshold", MARKER_GENE_P_VALUE_THRESHOLD,
@@ -145,32 +145,30 @@ public class GeneSearchDao {
 
     // Returns all the metadata values for each experiment accession, given a subset of metadata types
     public Map<String, Map<String, List<String>>> getFacets(List<String> cellIds, String... metadataTypes) {
-        List<String> facetFieldValues = Arrays.asList(metadataTypes);
-
-        SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy> characteristicValueFacet =
+        var characteristicValueFacet =
                 new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                         .setFacetField(CHARACTERISTIC_VALUE)
                         .setNestedFacet(true);
 
-        SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy> characteristicNameFacet =
+        var characteristicNameFacet =
                 new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                         .setFacetField(CHARACTERISTIC_NAME)
                         .addSubFacets(ImmutableList.of(characteristicValueFacet))
                         .setNestedFacet(true);
 
-        SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy> facets =
+        var facets =
                 new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                         .setFacetField(EXPERIMENT_ACCESSION)
                         .addSubFacets(ImmutableList.of(characteristicNameFacet));
 
-        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
+        var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, facetFieldValues)
+                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, Arrays.asList(metadataTypes))
                         .addQueryFieldByTerm(CELL_ID, cellIds)
                         .setFacets(facets)
                         .setRows(0);
 
-        List<SimpleOrderedMap> resultsByExperiment =
+        var resultsByExperiment =
                 extractSimpleOrderedMaps(
                         singleCellAnalyticsCollectionProxy
                                 .query(queryBuilder)

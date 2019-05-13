@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experiments;
 
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,21 +10,12 @@ import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 
 @Controller
 public class ExperimentsController extends HtmlExceptionHandlingController {
+
     @RequestMapping(value = "/experiments", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     public String
-    getExperimentsListParameters(@RequestParam(value = "experimentType", required = false) String experimentType,
-                                 @RequestParam(value = "kingdom", required = false) String kingdom,
-                                 @RequestParam(value = "species", required = false) String species,
-                                 @RequestParam(value = "experimentSet", required = false) String experimentSet,
-                                 Model model) {
-
-        model.addAttribute("experimentType", experimentType);
-        model.addAttribute("kingdom", kingdom);
+    getExperimentsListParameters( @RequestParam(value = "species", required = false) String species,
+                                  Model model) {
         model.addAttribute("species", species);
-        model.addAttribute("experimentSet", experimentSet);
-
-        model.addAttribute("mainTitle", "Experiments ");
-
         return "experiments";
     }
 }

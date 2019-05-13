@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
-import uk.ac.ebi.atlas.solr.cloud.search.jsonfacets.SolrJsonFacetBuilder;
+import uk.ac.ebi.atlas.solr.cloud.search.SolrJsonFacetBuilder;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -150,13 +150,13 @@ public class GeneSearchDao {
         SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy> characteristicValueFacet =
                 new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                         .setFacetField(CHARACTERISTIC_VALUE)
-                        .isNestedFacet(true);
+                        .setNestedFacet(true);
 
         SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy> characteristicNameFacet =
                 new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                         .setFacetField(CHARACTERISTIC_NAME)
                         .addSubFacets(ImmutableList.of(characteristicValueFacet))
-                        .isNestedFacet(true);
+                        .setNestedFacet(true);
 
         SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy> facets =
                 new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()

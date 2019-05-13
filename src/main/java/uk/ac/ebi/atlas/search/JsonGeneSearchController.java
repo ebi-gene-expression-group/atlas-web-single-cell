@@ -31,8 +31,8 @@ import java.util.Optional;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.stream.Collectors.toList;
-import static uk.ac.ebi.atlas.search.FacetType.MARKER_GENE;
-import static uk.ac.ebi.atlas.search.FacetType.ORGANISM;
+import static uk.ac.ebi.atlas.search.FacetGroupName.MARKER_GENE;
+import static uk.ac.ebi.atlas.search.FacetGroupName.ORGANISM;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.ID_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -191,17 +191,17 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         List<Map<String, String>> results = new ArrayList<>();
 
         for (Map.Entry<String, String> entry : unfoldedModel) {
-            FacetType facetType = FacetType.fromName(entry.getKey());
-
             ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
                     .put("value", entry.getValue())
                     .put("label", StringUtils.capitalize(entry.getValue()));
 
+            FacetGroupName facetGroupName = FacetGroupName.fromName(entry.getKey());
+
             // If this facet is "known", i.e. needs a particular title or tooltip
-            if (facetType != null) {
-                mapBuilder.put("group", facetType.getTitle());
-                if (!isNullOrEmpty(facetType.getTooltip())) {
-                    mapBuilder.put("description", facetType.getTooltip());
+            if (facetGroupName != null) {
+                mapBuilder.put("group", facetGroupName.getTitle());
+                if (!isNullOrEmpty(facetGroupName.getTooltip())) {
+                    mapBuilder.put("description", facetGroupName.getTooltip());
                 }
             }
             else {

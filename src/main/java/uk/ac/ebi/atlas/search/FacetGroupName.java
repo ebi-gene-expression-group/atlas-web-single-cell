@@ -1,6 +1,6 @@
 package uk.ac.ebi.atlas.search;
 
-public enum FacetType {
+public enum FacetGroupName {
     INFERRED_CELL_TYPE("Inferred cell type", "Submitter-defined cell identity for a cell based on post-sequencing expression profile"),
     MARKER_GENE("Marker genes", "A gene that comprises part of the specific expression profile for that cluster"),
     ORGANISM_PART("Organism part", "The tissue from which the sample is originally derived, e.g. lung"),
@@ -10,7 +10,7 @@ public enum FacetType {
     String title;
 
 
-    FacetType(String title, String tooltip) {
+    FacetGroupName(String title, String tooltip) {
         this.title = title;
         this.tooltip = tooltip;
     }
@@ -23,10 +23,10 @@ public enum FacetType {
         return title;
     }
 
-    public static FacetType fromName(String name) {
-        for (FacetType facetType : FacetType.values()) {
-            if (facetType.name().equalsIgnoreCase(name)) {
-                return facetType;
+    public static FacetGroupName fromName(String name) {
+        for (FacetGroupName facetGroupName : FacetGroupName.values()) {
+            if (facetGroupName.name().equalsIgnoreCase(name)) {
+                return facetGroupName;
             }
         }
         return null;

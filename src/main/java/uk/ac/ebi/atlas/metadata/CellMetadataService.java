@@ -3,7 +3,6 @@ package uk.ac.ebi.atlas.metadata;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,7 +17,7 @@ public class CellMetadataService {
 
     // Retrieves all metadata values of interest (factors and characteristics) for a given cell ID
     public Map<String, String> getMetadataValues(String experimentAccession, String cellId) {
-        Set<String> factorTypes = cellMetadataDao.getFactorTypes(experimentAccession, Optional.empty());
+        Set<String> factorTypes = cellMetadataDao.getFactorTypes(experimentAccession);
         Set<String> characteristicTypes = cellMetadataDao.getCharacteristicTypes(experimentAccession);
 
         return cellMetadataDao.getMetadataValuesForCellId(
@@ -35,7 +34,7 @@ public class CellMetadataService {
      */
     public Set<String> getMetadataTypes(String experimentAccession) {
         return Stream.concat(
-                cellMetadataDao.getFactorTypes(experimentAccession, Optional.empty()).stream(),
+                cellMetadataDao.getFactorTypes(experimentAccession).stream(),
                 cellMetadataDao.getCharacteristicTypes(experimentAccession).stream())
                 .collect(Collectors.toSet());
     }

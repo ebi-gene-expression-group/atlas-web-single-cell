@@ -96,7 +96,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         }
         Optional<ImmutableSet<String>> geneIds = geneIdSearchService.search(geneQuery);
 
-        if (!geneIds.isPresent()) {
+        if (geneIds.isEmpty()) {
             return GSON.toJson(
                     ImmutableMap.of(
                             "results", ImmutableList.of(),

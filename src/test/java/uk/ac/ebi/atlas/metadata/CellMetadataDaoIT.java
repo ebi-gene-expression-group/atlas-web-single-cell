@@ -92,14 +92,14 @@ class CellMetadataDaoIT {
     @ParameterizedTest
     @MethodSource("experimentsWithFactorsProvider")
     void validExperimentAccessionHasMetadataFields(String experimentAccession) {
-        assertThat(subject.getFactorTypes(experimentAccession, Optional.empty())).isNotEmpty();
+        assertThat(subject.getFactorTypes(experimentAccession)).isNotEmpty();
     }
 
     @Test
     void invalidExperimentAccessionHasNoMetadata() {
         String experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
 
-        assertThat(subject.getFactorTypes(experimentAccession, Optional.empty())).isEmpty();
+        assertThat(subject.getFactorTypes(experimentAccession)).isEmpty();
     }
 
     @ParameterizedTest
@@ -108,7 +108,7 @@ class CellMetadataDaoIT {
         String cellId = jdbcUtils.fetchRandomCellFromExperiment(experimentAccession);
 
         LOGGER.info("Retrieving factor fields for cell ID {} from experiment {}", cellId, experimentAccession);
-        assertThat(subject.getFactorTypes(experimentAccession, Optional.of(cellId))).isNotEmpty();
+        assertThat(subject.getFactorTypes(experimentAccession, cellId)).isNotEmpty();
     }
 
     @Test
@@ -116,7 +116,7 @@ class CellMetadataDaoIT {
         String experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
         String cellId = "FOO";
 
-        assertThat(subject.getFactorTypes(experimentAccession, Optional.of(cellId))).isEmpty();
+        assertThat(subject.getFactorTypes(experimentAccession, cellId)).isEmpty();
     }
 
     @Test
@@ -142,7 +142,7 @@ class CellMetadataDaoIT {
     void validCellIdHasMetadataValues(String experimentAccession) {
         String cellId = jdbcUtils.fetchRandomCellFromExperiment(experimentAccession);
 
-        Set<String> factors = subject.getFactorTypes(experimentAccession, Optional.of(cellId));
+        Set<String> factors = subject.getFactorTypes(experimentAccession, cellId);
         Set<String> characteristics = subject.getCharacteristicTypes(experimentAccession);
 
         Map<String, String> result = subject.getMetadataValuesForCellId(experimentAccession, cellId, factors, characteristics);
@@ -170,7 +170,7 @@ class CellMetadataDaoIT {
 
         LOGGER.info("Retrieving factor types for experiment {}", experimentAccession);
 
-        Set<String> factorTypes = subject.getFactorTypes(experimentAccession, Optional.empty());
+        Set<String> factorTypes = subject.getFactorTypes(experimentAccession);
 
         assertThat(factorTypes)
                 .isNotEmpty()

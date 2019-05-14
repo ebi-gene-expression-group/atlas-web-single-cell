@@ -18,10 +18,8 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,47 +50,34 @@ public class CellMetadataDao {
         this.idfParser = idfParser;
     }
 
-    // Returns a list of available factor types for a given experiment (and optionally, a cell ID).
-    // Note: it is possible that a cell has missing factors...
-    public Set<String> getFactorTypes(String experimentAccession, Optional<String> cellId) {
-        SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy> facetBuilder =
-                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
-                    .setFacetField(FACTOR_NAME);
+    // Returns a list of available factor types for a given experiment
+    public Set<String> getFactorTypes(String experimentAccession) {
+        var queryBuilder = buildFactorTypeQuery(experimentAccession);
 
-        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
-                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
-                        .setFacets(facetBuilder)
-                        .setRows(0);
+        return extractFactorTypesFromSolrQueryResults(queryBuilder);
+    }
 
-        cellId.ifPresent(id -> queryBuilder.addQueryFieldByTerm(CELL_ID, id));
+    // Returns a list of available factor types for a given cell in an experiment
+    // Note: it is possible that a cell has missing factors, i.e. it has fewer factors than the experiment
+    public Set<String> getFactorTypes(String experimentAccession, String cellId) {
+        var queryBuilder = buildFactorTypeQuery(experimentAccession);
+        queryBuilder.addQueryFieldByTerm(CELL_ID, cellId);
 
-        List<SimpleOrderedMap> results =
-                extractSimpleOrderedMaps(
-                        singleCellAnalyticsCollectionProxy
-                                .query(queryBuilder)
-                                .getResponse()
-                                .findRecursive("facets", FACTOR_NAME.name(), "buckets"));
-
-        return results
-                .stream()
-                .map(x -> x.get("val").toString())
-                .filter(factor -> !factor.equalsIgnoreCase(SINGLE_CELL_IDENTIFIER_SOLR_VALUE))
-                .collect(Collectors.toSet());
+        return extractFactorTypesFromSolrQueryResults(queryBuilder);
     }
 
     // Retrieves a list of additional attributes (i.e. characteristics of interest) from the experiment idf file
     public Set<String> getCharacteristicTypes(String experimentAccession) {
-        IdfParserOutput idfParserOutput = idfParser.parse(experimentAccession);
-
-        Set<String> characteristics = new HashSet<>();
+        ImmutableSet.Builder<String> characteristics = ImmutableSet.builder();
         // We are ALWAYS interested in the inferred cell type
         if (hasInferredCellType(experimentAccession)) {
             characteristics.add(INFERRED_CELL_TYPE_SOLR_VALUE);
         }
 
+        IdfParserOutput idfParserOutput = idfParser.parse(experimentAccession);
+
         if (idfParserOutput.getMetadataFieldsOfInterest().isEmpty()) {
-            return characteristics;
+            return characteristics.build();
         }
 
         Set<String> characteristicsFromIdf = idfParserOutput.getMetadataFieldsOfInterest()
@@ -102,7 +87,7 @@ public class CellMetadataDao {
 
         characteristics.addAll(characteristicsFromIdf);
 
-        return characteristics;
+        return characteristics.build();
     }
 
     public Map<String, String> getMetadataValuesForCellId(String experimentAccession,
@@ -182,6 +167,34 @@ public class CellMetadataDao {
                                     return ((ArrayList) result.getOrDefault(FACTOR_VALUE.name(),
                                             result.get(CHARACTERISTIC_VALUE.name()))).get(0).toString();
                                 }));
+    }
+
+    private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> buildFactorTypeQuery(String experimentAccession) {
+        var facetBuilder =
+                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .setFacetField(FACTOR_NAME);
+
+        return
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .setFacets(facetBuilder)
+                        .setRows(0);
+    }
+
+    private Set<String> extractFactorTypesFromSolrQueryResults(
+            SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder) {
+        List<SimpleOrderedMap> results =
+                extractSimpleOrderedMaps(
+                        singleCellAnalyticsCollectionProxy
+                                .query(queryBuilder)
+                                .getResponse()
+                                .findRecursive("facets", FACTOR_NAME.name(), "buckets"));
+
+        return results
+                .stream()
+                .map(x -> x.get("val").toString())
+                .filter(factor -> !factor.equalsIgnoreCase(SINGLE_CELL_IDENTIFIER_SOLR_VALUE))
+                .collect(Collectors.toSet());
     }
 
     private boolean hasInferredCellType(String experimentAccession) {

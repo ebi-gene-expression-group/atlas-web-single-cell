@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import ExperimentsSummaryPanel from 'experiments-summary-panel'
-import withFetchLoader from 'atlas-react-fetch-loader'
+import { withFetchLoader } from 'atlas-react-fetch-loader'
 
 const FetchLoadExperimentsSummaryPanel = withFetchLoader(ExperimentsSummaryPanel)
 

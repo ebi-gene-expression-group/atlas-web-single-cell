@@ -134,11 +134,7 @@ processResources {
                 zkHost: zkHost,
                 zkPort: zkPort,
                 solrHost: solrHost,
-                solrPort: solrPort,
-                buildNumber: '',
-                buildBranch: '',
-                buildRevision: '',
-                tomcatHostname: ''
+                solrPort: solrPort
         )
     }
 }
@@ -160,11 +156,7 @@ processTestResources {
                 zkHost: zkHost,
                 zkPort: zkPort,
                 solrHost: solrHost,
-                solrPort: solrPort,
-                buildNumber: '',
-                buildBranch: '',
-                buildRevision: '',
-                tomcatHostname: ''
+                solrPort: solrPort
         )
     }
 }

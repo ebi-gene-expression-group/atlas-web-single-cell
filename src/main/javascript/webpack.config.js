@@ -13,7 +13,8 @@ module.exports = {
     feedbackForm: `atlas-feedback-form`,
     homepageSpeciesSummaryPanel: `./bundles/homepage-species-summary-panel`,
     homepageExperimentsSummaryPanel: `./bundles/homepage-experiments-summary-panel`,
-    homepageCards: `./bundles/homepage-cards`
+    homepageCards: `./bundles/homepage-cards`,
+    experimentTable: `./bundles/experiment-table`
   },
 
   plugins: [

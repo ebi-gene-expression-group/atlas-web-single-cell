@@ -89,7 +89,7 @@ public class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].clusterIdWhereMarker", isA(Number.class)))
                 .andExpect(jsonPath("$[0].x", isA(Number.class)))
                 .andExpect(jsonPath("$[0].y", isA(Number.class)))
-                .andExpect(jsonPath("$[0].name", isA(String.class)))
+                .andExpect(jsonPath("$[0].geneName", isA(String.class)))
                 .andExpect(jsonPath("$[0].value", isA(Number.class)))
                 .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
     }

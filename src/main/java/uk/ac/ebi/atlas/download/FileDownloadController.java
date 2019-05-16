@@ -1,6 +1,9 @@
 package uk.ac.ebi.atlas.download;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,12 +19,10 @@ import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -30,6 +31,7 @@ import java.util.zip.ZipOutputStream;
 public class FileDownloadController extends HtmlExceptionHandlingController {
     private final ExperimentFileLocationService experimentFileLocationService;
     private final ScxaExperimentTrader experimentTrader;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Inject
     public FileDownloadController(ExperimentFileLocationService experimentFileLocationService,
@@ -47,10 +49,10 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
 
         Experiment experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
-        File file =
+        var file =
                 experimentFileLocationService.getFilePath(
                         experiment.getAccession(), ExperimentFileType.fromId(fileTypeId)).toFile();
-        FileSystemResource resource = new FileSystemResource(file);
+        var resource = new FileSystemResource(file);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -67,19 +69,19 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                     @PathVariable String experimentAccession,
                     @RequestParam(value = "fileType") String fileTypeId) throws IOException {
 
-        Experiment experiment = experimentTrader.getPublicExperiment(experimentAccession);
-        List<Path> paths =
-                experimentFileLocationService.getFilePathsForArchive(
-                        experiment.getAccession(), ExperimentFileType.fromId(fileTypeId));
+        var experiment = experimentTrader.getPublicExperiment(experimentAccession);
+        var paths =
+                experimentFileLocationService
+                        .getFilePathsForArchive(experiment.getAccession(), ExperimentFileType.fromId(fileTypeId));
 
-        String archiveName = experimentAccession + "-" + fileTypeId + "-files.zip";
+        var archiveName = experimentAccession + "-" + fileTypeId + "-files.zip";
         response.setStatus(HttpServletResponse.SC_OK);
         response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + archiveName);
         response.setContentType("application/zip");
-        ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
+        var zipOutputStream = new ZipOutputStream(response.getOutputStream());
 
-        for (Path path : paths) {
-            File file = path.toFile();
+        for (var path : paths) {
+            var file = path.toFile();
 
             zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
             FileInputStream fileInputStream = new FileInputStream(file);
@@ -93,41 +95,55 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
         zipOutputStream.close();
     }
 
-    @RequestMapping(value = "experimentlist/download/zip",
-            method = RequestMethod.GET,
-            produces = "application/zip")
+    @RequestMapping(value = "experiments/download/zip",
+                    method = RequestMethod.GET,
+                    produces = "application/zip")
     public void
     downloadMultipleExperimentsArchive(HttpServletResponse response,
-                    @RequestParam(value= "experimentAccessions", defaultValue = "") List<String> accessions,
-                    @RequestParam(value = "accessKey", defaultValue = "") String accessKey) throws IOException {
+                                       @RequestParam(value = "accession", defaultValue = "") List<String> accessions)
+            throws IOException {
 
-        String archiveName = accessions.size() + "-" + "experiments" + "-files.zip";
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + archiveName);
-        response.setContentType("application/zip");
-        ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
-
-        for (String experimentAccession : accessions){
-            Experiment experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
-
-            List<Path> paths = new ArrayList<>();
-            paths.addAll(experimentFileLocationService.getFilePathsForArchive(experiment.getAccession(), ExperimentFileType.QUANTIFICATION_FILTERED));
-            paths.addAll(experimentFileLocationService.getFilePathsForArchive(experiment.getAccession(), ExperimentFileType.QUANTIFICATION_RAW));
-            paths.addAll(experimentFileLocationService.getFilePathsForArchive(experiment.getAccession(), ExperimentFileType.NORMALISED));
-            paths.add(experimentFileLocationService.getFilePath(experiment.getAccession(), ExperimentFileType.SDRF));
-
-            for (Path path : paths) {
-                File file = path.toFile();
-
-                zipOutputStream.putNextEntry(new ZipEntry(experiment.getAccession() + "/" + file.getName()));
-                FileInputStream fileInputStream = new FileInputStream(file);
-
-                IOUtils.copy(fileInputStream, zipOutputStream);
-
-                fileInputStream.close();
-                zipOutputStream.closeEntry();
+        var experiments = new ArrayList<Experiment>();
+        for (var accession : accessions) {
+            try {
+                experiments.add(experimentTrader.getPublicExperiment(accession));
+            } catch (Exception e) {
+                LOGGER.debug("Invalid experiment accession: {}", accession);
             }
         }
-        zipOutputStream.close();
+
+        if (!experiments.isEmpty()) {
+            var archiveName = experiments.size() + "-experiment-files.zip";
+            response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + archiveName);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/zip");
+            var zipOutputStream = new ZipOutputStream(response.getOutputStream());
+
+            for (var experiment : experiments) {
+                var paths = ImmutableList.<Path>builder()
+                        .addAll(experimentFileLocationService.getFilePathsForArchive(
+                                experiment.getAccession(), ExperimentFileType.QUANTIFICATION_FILTERED))
+                        .addAll(experimentFileLocationService.getFilePathsForArchive(
+                                experiment.getAccession(), ExperimentFileType.QUANTIFICATION_RAW))
+                        .addAll(experimentFileLocationService.getFilePathsForArchive(
+                                experiment.getAccession(), ExperimentFileType.NORMALISED))
+                        .add(experimentFileLocationService.getFilePath(
+                                experiment.getAccession(), ExperimentFileType.SDRF))
+                        .build();
+
+                for (var path : paths) {
+                    var file = path.toFile();
+                    if (file.exists()) {
+                        zipOutputStream.putNextEntry(new ZipEntry(experiment.getAccession() + "/" + file.getName()));
+                        FileInputStream fileInputStream = new FileInputStream(file);
+
+                        IOUtils.copy(fileInputStream, zipOutputStream);
+                        fileInputStream.close();
+                        zipOutputStream.closeEntry();
+                    }
+                }
+            }
+            zipOutputStream.close();
+        }
     }
 }

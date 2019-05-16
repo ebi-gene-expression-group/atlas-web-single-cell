@@ -175,19 +175,17 @@ public class GeneSearchDao {
                                 .getResponse()
                                 .findRecursive("facets", EXPERIMENT_ACCESSION.name(), "buckets"));
 
-        return isEmpty(resultsByExperiment) ?
-                emptyMap() :
-                resultsByExperiment
-                        .stream()
-                        .collect(Collectors.toMap(
-                                x -> x.get("val").toString(), // experiment accession
-                                x -> extractSimpleOrderedMaps(
-                                        x.findRecursive(CHARACTERISTIC_NAME.name(), "buckets"))
-                                        .stream()
-                                        .collect(Collectors.toMap(
-                                                y -> y.get("val").toString(), // metadata type, i.e. organism part, species
-                                                y -> getValuesForFacetField(y, CHARACTERISTIC_VALUE.name())
-                                        )))
-                        );
+        return resultsByExperiment
+                .stream()
+                .collect(Collectors.toMap(
+                        x -> x.get("val").toString(), // experiment accession
+                        x -> extractSimpleOrderedMaps(
+                                x.findRecursive(CHARACTERISTIC_NAME.name(), "buckets"))
+                                .stream()
+                                .collect(Collectors.toMap(
+                                        y -> y.get("val").toString(), // metadata type, i.e. organism part, species
+                                        y -> getValuesForFacetField(y, CHARACTERISTIC_VALUE.name())
+                                )))
+                );
     }
 }

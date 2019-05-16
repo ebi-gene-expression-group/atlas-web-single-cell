@@ -5,7 +5,6 @@ import org.apache.commons.math.util.MathUtils;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import uk.ac.ebi.atlas.metadata.CellMetadataDao;
-import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,8 @@ import static java.util.stream.Collectors.toSet;
 public class TSnePlotService {
     private final TSnePlotDao tSnePlotDao;
     private final CellMetadataDao cellMetadataDao;
+
+    static final String MISSING_METADATA_VALUE_PLACEHOLDER = "not available";
 
     public TSnePlotService(TSnePlotDao tSnePlotDao, CellMetadataDao cellMetadataDao) {
         this.tSnePlotDao = tSnePlotDao;
@@ -70,7 +71,7 @@ public class TSnePlotService {
         Map<String, String> metadataValuesForCells =
                 cellMetadataDao.getMetadataValueForCellIds(
                         experimentAccession,
-                        SingleCellAnalyticsCollectionProxy.metadataAsSchemaField(metadataCategory),
+                        metadataCategory,
                         cellIds);
 
         return pointDtos.stream()
@@ -80,7 +81,11 @@ public class TSnePlotService {
                                         pointDto.x(),
                                         pointDto.y(),
                                         pointDto.name(),
-                                        StringUtils.capitalize(metadataValuesForCells.get(pointDto.name()))))
+                                        StringUtils.capitalize(
+                                                metadataValuesForCells.getOrDefault(
+                                                        pointDto.name(),
+                                                        MISSING_METADATA_VALUE_PLACEHOLDER)
+                                        )))
                 .collect(groupingBy(TSnePoint::metadata, mapping(Function.identity(), Collectors.toSet())));
     }
 }

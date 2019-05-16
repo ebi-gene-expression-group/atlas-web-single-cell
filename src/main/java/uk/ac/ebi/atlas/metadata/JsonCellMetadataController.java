@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.experimentpage.json.JsonExperimentController;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
+import uk.ac.ebi.atlas.utils.StringUtil;
 
 import javax.inject.Inject;
 
@@ -38,8 +39,9 @@ public class JsonCellMetadataController extends JsonExperimentController {
 
         JsonArray result = new JsonArray();
 
-        cellMetadataService.getMetadata(experiment.getAccession(), cellId).forEach((metadataName, metadataValue) ->
-                result.add(createMetadataJson(metadataName, metadataValue)));
+        cellMetadataService.getMetadataValues(experiment.getAccession(), cellId)
+                .forEach((metadataName, metadataValue) ->
+                        result.add(createMetadataJson(metadataName, metadataValue)));
 
         return result.toString();
     }
@@ -47,7 +49,7 @@ public class JsonCellMetadataController extends JsonExperimentController {
     private JsonObject createMetadataJson(String name, String value) {
         JsonObject result = new JsonObject();
 
-        result.addProperty("displayName", name);
+        result.addProperty("displayName", StringUtil.snakeCaseToDisplayName(name));
         result.addProperty("value", value);
 
         return  result;

@@ -31,9 +31,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CellMetadataServiceIT {
-    // Ideally we would retrieve a random experiment accession, but not all experiments have the inferred cell
-    // type characteristic
-    private static final String EXPERIMENT_ACCESSION = "E-MTAB-5061";
+    // Ideally we would retrieve a random experiment accession, but not all experiments have metadata of interest
+    // (i.e factors, inferred cell types and additional attributes in the IDF)
     private static final String EXPERIMENT_WITHOUT_METADATA_ACCESSION = "E-GEOD-99058";
 
     @Inject
@@ -69,68 +68,40 @@ class CellMetadataServiceIT {
         this.subject = new CellMetadataService(cellMetadataDao);
     }
 
-    @Test
-    void existingInferredCellType() {
-        String cellId = jdbcUtils.fetchRandomCellFromExperiment(EXPERIMENT_ACCESSION);
-        assertThat(
-                subject.getInferredCellType(
-                        EXPERIMENT_ACCESSION,
-                        cellId))
-                .isPresent();
-    }
-
-    @Test
-    void inferredCellTypeForInvalidExperimentId() {
-        assertThat(subject.getInferredCellType("FOO", "FOO")).isNotPresent();
-    }
-
-    @Test
-    void inferredCellTypeForInvalidCellId() {
-        assertThat(subject.getInferredCellType(EXPERIMENT_ACCESSION, "FOO")).isNotPresent();
-    }
 
     @ParameterizedTest
-    @MethodSource("experimentsWithFactorsProvider")
-    void factorsForValidExperimentAccession(String experimentAccession) {
+    @MethodSource("experimentsWithMetadataProvider")
+    void metadataValuesForValidExperimentAccession(String experimentAccession) {
         String cellId = jdbcUtils.fetchRandomCellFromExperiment(experimentAccession);
 
-        assertThat(subject.getFactors(experimentAccession, cellId)).isNotEmpty();
-    }
-
-    @Test
-    void factorsForInvalidExperiment() {
-        assertThat(subject.getFactors("FOO", "FOO")).isEmpty();
+        assertThat(subject.getMetadataValues(experimentAccession, cellId)).isNotEmpty();
     }
 
     @ParameterizedTest
     @MethodSource("experimentsWithMetadataProvider")
-    void metadataForValidExperimentAccession(String experimentAccession) {
-        String cellId = jdbcUtils.fetchRandomCellFromExperiment(experimentAccession);
+    void experimentWithMetadataReturnsMetadataTypes(String experimentAccession) {
+        assertThat(subject.getMetadataTypes(experimentAccession))
+                .isNotEmpty()
+                .contains("inferred_cell_type");
+    }
 
-        assertThat(subject.getMetadata(experimentAccession, cellId)).isNotEmpty();
+    @Test
+    void experimentWithoutMetadataReturnsEmptyMetadataTypes() {
+        assertThat(subject.getMetadataTypes(EXPERIMENT_WITHOUT_METADATA_ACCESSION)).isEmpty();
     }
 
     @Test
     void metadataForInvalidExperiment() {
         assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(
-                () -> subject.getMetadata("FOO", "FOO"))
+                () -> subject.getMetadataValues("FOO", "FOO"))
                 .withCauseInstanceOf(NoSuchFileException.class);;
     }
 
     private Iterable<String> experimentsWithMetadataProvider() {
-        // E-GEOD-99058 does not have any metadata (factors or inferred cell types)
+        // E-GEOD-99058 does not have any metadata (factors or inferred cell type)
         return jdbcUtils.fetchPublicSingleCellExperimentAccessions()
                 .stream()
-                .filter(accession -> !accession.equalsIgnoreCase("E-GEOD-99058"))
-                .collect(Collectors.toSet());
-    }
-
-    private Iterable<String> experimentsWithFactorsProvider() {
-        // E-GEOD-99058 and E-ENAD-13 do not have any factors
-        return jdbcUtils.fetchPublicSingleCellExperimentAccessions()
-                .stream()
-                .filter(accession ->
-                        !accession.equalsIgnoreCase("E-GEOD-99058") && !accession.equalsIgnoreCase("E-ENAD-13"))
+                .filter(accession -> !accession.equalsIgnoreCase(EXPERIMENT_WITHOUT_METADATA_ACCESSION))
                 .collect(Collectors.toSet());
     }
 }

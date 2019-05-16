@@ -1,9 +1,9 @@
 package uk.ac.ebi.atlas.search;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -32,9 +32,6 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_INFERRED_CELL_TYPE;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_ORGANISM_PART;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_SPECIES;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -142,7 +139,7 @@ class GeneSearchDaoIT {
         Map<String, Map<String, List<String>>> result =
                 subject.getFacets(
                         cellIds,
-                        CHARACTERISTIC_INFERRED_CELL_TYPE, CHARACTERISTIC_ORGANISM_PART, CHARACTERISTIC_SPECIES);
+                        "inferred_cell_type", "organism_part", "organism");
 
         assertThat(result).isNotEmpty();
     }
@@ -152,7 +149,7 @@ class GeneSearchDaoIT {
         Map<String, Map<String, List<String>>> result =
                 subject.getFacets(
                         emptyList(),
-                        CHARACTERISTIC_INFERRED_CELL_TYPE, CHARACTERISTIC_ORGANISM_PART, CHARACTERISTIC_SPECIES);
+                        "inferred_cell_type", "organism_part", "organism");
 
         assertThat(result).isEmpty();
     }

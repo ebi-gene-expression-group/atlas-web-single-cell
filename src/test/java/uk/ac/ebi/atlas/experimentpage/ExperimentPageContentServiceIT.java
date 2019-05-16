@@ -19,6 +19,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.metadata.CellMetadataDao;
+import uk.ac.ebi.atlas.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
@@ -49,7 +50,7 @@ class ExperimentPageContentServiceIT {
     private TsnePlotSettingsService tsnePlotSettingsService;
 
     @Inject
-    private CellMetadataDao cellMetadataDao;
+    private CellMetadataService cellMetadataService;
 
     private ExperimentPageContentService subject;
 
@@ -77,7 +78,7 @@ class ExperimentPageContentServiceIT {
     void setUp() {
         this.subject =
                 new ExperimentPageContentService(
-                        experimentFileLocationService, dataFileHub, tsnePlotSettingsService, cellMetadataDao);
+                        experimentFileLocationService, dataFileHub, tsnePlotSettingsService, cellMetadataService);
     }
 
     @Test

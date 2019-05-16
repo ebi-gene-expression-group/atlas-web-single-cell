@@ -65,9 +65,7 @@ class GeneIdSearchDaoIT {
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-//                new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
-//                new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"));
         populator.execute(dataSource);
     }
 

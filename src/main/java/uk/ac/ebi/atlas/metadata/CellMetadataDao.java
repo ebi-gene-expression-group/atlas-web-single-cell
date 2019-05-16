@@ -2,40 +2,46 @@ package uk.ac.ebi.atlas.metadata;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.util.SimpleOrderedMap;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField;
+import uk.ac.ebi.atlas.solr.cloud.search.SolrJsonFacetBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
+import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.google.common.collect.ImmutableMap.toImmutableMap;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_INFERRED_CELL_TYPE;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTORS;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.attributeNameToFieldName;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.characteristicAsSchemaField;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTOR_NAME;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTOR_VALUE;
+import static uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils.extractSimpleOrderedMaps;
+
 
 @Component
 public class CellMetadataDao {
     private SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
     private IdfParser idfParser;
+
+    private final static String INFERRED_CELL_TYPE_SOLR_VALUE = "inferred_cell_type";
+    private final static String SINGLE_CELL_IDENTIFIER_SOLR_VALUE = "single_cell_identifier";
 
     public CellMetadataDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory,
                            IdfParser idfParser) {
@@ -44,119 +50,108 @@ public class CellMetadataDao {
         this.idfParser = idfParser;
     }
 
-    // Retrieves a list of metadata fields available in Solr for a particular experiment. This includes all factor
-    // fields (except single_cell_identifier), as well as the characteristic_inferred_cell_type field.
-    public List<SingleCellAnalyticsSchemaField> getMetadataFieldNames(String experimentAccession) {
-        Map<String, Collection<Object>> queryResult =
-                getQueryResultForMultiValueFields(
-                        experimentAccession,
-                        Optional.empty(),
-                        ImmutableSet.of(FACTORS, CHARACTERISTIC_INFERRED_CELL_TYPE));
+    // Returns a list of available factor types for a given experiment
+    public Set<String> getFactorTypes(String experimentAccession) {
+        var queryBuilder = buildFactorTypeQuery(experimentAccession);
 
-        List<SingleCellAnalyticsSchemaField> metadataFields =
-                queryResult.getOrDefault(FACTORS.name(), Collections.emptyList())
-                        .stream()
-                        .filter(factor -> !factor.toString().equalsIgnoreCase("single_cell_identifier"))
-                        .map(factor -> SingleCellAnalyticsCollectionProxy.factorAsSchemaField(factor.toString()))
-                        .collect(toList());
+        return extractFactorTypesFromSolrQueryResults(queryBuilder);
+    }
 
-        if (queryResult.containsKey(CHARACTERISTIC_INFERRED_CELL_TYPE.name())) {
-            metadataFields.add(CHARACTERISTIC_INFERRED_CELL_TYPE);
-        }
+    // Returns a list of available factor types for a given cell in an experiment
+    // Note: it is possible that a cell has missing factors, i.e. it has fewer factors than the experiment
+    public Set<String> getFactorTypes(String experimentAccession, String cellId) {
+        var queryBuilder = buildFactorTypeQuery(experimentAccession);
+        queryBuilder.addQueryFieldByTerm(CELL_ID, cellId);
 
-        return metadataFields;
+        return extractFactorTypesFromSolrQueryResults(queryBuilder);
     }
 
     // Retrieves a list of additional attributes (i.e. characteristics of interest) from the experiment idf file
-    public List<SingleCellAnalyticsSchemaField> getAdditionalAttributesFieldNames(String experimentAccession) {
+    public Set<String> getCharacteristicTypes(String experimentAccession) {
+        ImmutableSet.Builder<String> characteristics = ImmutableSet.builder();
+        // We are ALWAYS interested in the inferred cell type
+        if (hasInferredCellType(experimentAccession)) {
+            characteristics.add(INFERRED_CELL_TYPE_SOLR_VALUE);
+        }
+
         IdfParserOutput idfParserOutput = idfParser.parse(experimentAccession);
 
         if (idfParserOutput.getMetadataFieldsOfInterest().isEmpty()) {
-            return emptyList();
+            return characteristics.build();
         }
 
-        return idfParserOutput.getMetadataFieldsOfInterest()
+        Set<String> characteristicsFromIdf = idfParserOutput.getMetadataFieldsOfInterest()
                 .stream()
-                .map(attribute -> characteristicAsSchemaField(attributeNameToFieldName(attribute)))
-                .collect(toList());
+                .map(StringUtil::wordsToSnakeCase)
+                .collect(toSet());
+
+        characteristics.addAll(characteristicsFromIdf);
+
+        return characteristics.build();
     }
 
-    // Retrieves all the available factors stored in the Solr scxa-analytics collection for a particular cell
-    public List<SingleCellAnalyticsSchemaField> getFactorFieldNames(String experimentAccession, String cellId) {
-
-        Map<String, Collection<Object>> queryResult =
-                getQueryResultForMultiValueFields(experimentAccession, Optional.of(cellId), ImmutableSet.of(FACTORS));
-
-        return queryResult.getOrDefault(FACTORS.name(), Collections.emptyList())
-                .stream()
-                .filter(factor -> !factor.toString().equalsIgnoreCase("single_cell_identifier"))
-                .map(factor -> SingleCellAnalyticsCollectionProxy.factorAsSchemaField(factor.toString()))
-                .collect(toList());
-    }
-
-    // Returns Solr query results for a list of multi-value fields of interest
-    public ImmutableMap<String, Collection<Object>> getQueryResultForMultiValueFields(String experimentAccession,
-                                      Optional<String> cellId,
-                                      Collection<SingleCellAnalyticsSchemaField> fieldsOfInterest) {
-        if (fieldsOfInterest.isEmpty()) {
+    public Map<String, String> getMetadataValuesForCellId(String experimentAccession,
+                                                   String cellId,
+                                                   Collection<String> factorFields,
+                                                   Collection<String> characteristicFields) {
+        if (factorFields.isEmpty() && characteristicFields.isEmpty()) {
             return ImmutableMap.of();
         }
 
-        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> solrQueryBuilder =
+        ImmutableMap<SingleCellAnalyticsSchemaField, Collection<String>> fields = ImmutableMap.of(
+                CHARACTERISTIC_NAME, characteristicFields,
+                FACTOR_NAME, factorFields);
+
+        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addFilterFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
-                        .setFieldList(fieldsOfInterest)
-                        .setRows(1);
-
-        cellId.ifPresent(s -> solrQueryBuilder.addQueryFieldByTerm(CELL_ID, s));
-
-        QueryResponse queryResponse = this.singleCellAnalyticsCollectionProxy.query(solrQueryBuilder);
-
-        if (queryResponse.getResults().isEmpty()) {
-            return ImmutableMap.of();
-        }
-
-        // The map created by getFieldValuesMap has, for a reason I can’t grasp, quite a few unsupported operations.
-        // Among them entrySet, which is the basis for all streaming methods in maps and forEach D:
-        SolrDocument solrDocument = queryResponse.getResults().get(0);
-        return solrDocument.getFieldNames().stream()
-                .collect(toImmutableMap(Function.identity(), solrDocument::getFieldValues));
-    }
-
-    // Given a Solr field where metadata is stored, this method retrieves the value of that field for a cell ID.
-    public Optional<String> getMetadataValueForCellId(String experimentAccession,
-                                                      SingleCellAnalyticsSchemaField metadataField,
-                                                      String cellId) {
-        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> solrQueryBuilder =
-                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addFilterFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(CELL_ID, cellId)
-                        .setFieldList(metadataField);
-        QueryResponse queryResponse = this.singleCellAnalyticsCollectionProxy.query(solrQueryBuilder);
+                        .addQueryFieldByTerm(fields)
+                        .setFieldList(Arrays.asList(CHARACTERISTIC_NAME, CHARACTERISTIC_VALUE, FACTOR_NAME, FACTOR_VALUE));
 
-        if (queryResponse.getResults().isEmpty() ||
-                !queryResponse.getResults().get(0).containsKey(metadataField.name())) {
-            return Optional.empty();
+        SolrDocumentList results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
+
+        if (results.isEmpty()) {
+            return ImmutableMap.of();
         }
 
-        return Optional.of((String) queryResponse.getResults().get(0).getFirstValue(metadataField.name()));
+        return results
+                .stream()
+                .collect(
+                        toMap(
+                                entry -> ((ArrayList) entry.getOrDefault(FACTOR_NAME.name(),
+                                        entry.get(CHARACTERISTIC_NAME.name()))).get(0).toString(),
+                                // The factor fields in Solr are all multi-value fields, even though they technically
+                                // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
+                                // value. This was confirmed by curators in this Slack conversation:
+                                // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
+                                entry -> ((ArrayList) entry.getOrDefault(FACTOR_VALUE.name(),
+                                        entry.get(CHARACTERISTIC_VALUE.name()))).get(0).toString()
+                ));
+
     }
 
-    // Given a Solr field where metadata is stored, this method retrieves the value of that field for list of cell IDs.
+    // Given a type of metadata, this method retrieves the value of that metadata for list of cell IDs.
     public Map<String, String> getMetadataValueForCellIds(String experimentAccession,
-                                                          SingleCellAnalyticsSchemaField metadataField,
-                                                          List<String> cellIds) {
-        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> solrQueryBuilder =
+                                                             String metadataType,
+                                                             Collection<String> cellIds) {
+        // We need to do this because we don't know if the metadata type is a factor or a characteristic
+        ImmutableMap<SingleCellAnalyticsSchemaField, Collection<String>> fields = ImmutableMap.of(
+                CHARACTERISTIC_NAME, ImmutableSet.of(metadataType),
+                FACTOR_NAME, ImmutableSet.of(metadataType));
+
+        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(CELL_ID, cellIds)
-                        .setFieldList(ImmutableSet.of(metadataField, CELL_ID));
+                        .addQueryFieldByTerm(fields)
+                        .setFieldList(ImmutableSet.of(CELL_ID, CHARACTERISTIC_VALUE, FACTOR_VALUE));
 
-        QueryResponse response = singleCellAnalyticsCollectionProxy.query(solrQueryBuilder);
+        SolrDocumentList results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
 
-        return response.getResults()
+        return results
                 .stream()
-                .collect(groupingBy(solrDocument -> (String) solrDocument.getFieldValue("cell_id")))
+                .collect(groupingBy(solrDocument -> (String) solrDocument.getFieldValue(CELL_ID.name())))
                 .entrySet()
                 .stream()
                 .collect(
@@ -166,8 +161,48 @@ public class CellMetadataDao {
                                 // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
                                 // value. This was confirmed by curators in this Slack conversation:
                                 // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
-                                entry -> (String) ((ArrayList) entry
-                                                .getValue().get(0).getFieldValue(metadataField.name()))
-                                                .get(0)));
+                                entry -> {
+                                    SolrDocument result = entry.getValue().get(0);
+
+                                    return ((ArrayList) result.getOrDefault(FACTOR_VALUE.name(),
+                                            result.get(CHARACTERISTIC_VALUE.name()))).get(0).toString();
+                                }));
+    }
+
+    private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> buildFactorTypeQuery(String experimentAccession) {
+        var facetBuilder =
+                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .setFacetField(FACTOR_NAME);
+
+        return
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .setFacets(facetBuilder)
+                        .setRows(0);
+    }
+
+    private Set<String> extractFactorTypesFromSolrQueryResults(
+            SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder) {
+        List<SimpleOrderedMap> results =
+                extractSimpleOrderedMaps(
+                        singleCellAnalyticsCollectionProxy
+                                .query(queryBuilder)
+                                .getResponse()
+                                .findRecursive("facets", FACTOR_NAME.name(), "buckets"));
+
+        return results
+                .stream()
+                .map(x -> x.get("val").toString())
+                .filter(factor -> !factor.equalsIgnoreCase(SINGLE_CELL_IDENTIFIER_SOLR_VALUE))
+                .collect(Collectors.toSet());
+    }
+
+    private boolean hasInferredCellType(String experimentAccession) {
+        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, INFERRED_CELL_TYPE_SOLR_VALUE);
+
+        return !singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults().isEmpty();
     }
 }

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
-import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
+import uk.ac.ebi.atlas.solr.cloud.search.SolrJsonFacetBuilder;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -22,8 +22,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyMap;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
+import static uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils.extractSimpleOrderedMaps;
+import static uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils.getValuesForFacetField;
 
 @Component
 public class GeneSearchDao {
@@ -96,7 +101,7 @@ public class GeneSearchDao {
     }
 
     // Retrieves cluster IDs the preferred K value (if present), as well as for the minimum p-value. If the minimum
-    // p-value is equal for multiple Ks (and a preferred K is not passed in), all K values will be returned. */
+    // p-value is equal for multiple Ks (and a preferred K is not passed in), all K values will be returned.
     private static final String SELECT_PREFERREDK_AND_MINP_CLUSTER_ID_FOR_GENE_STATEMENT =
     "SELECT k, cluster_id FROM scxa_marker_genes AS markers " +
             "WHERE experiment_accession=:experiment_accession " +
@@ -112,7 +117,7 @@ public class GeneSearchDao {
     public  Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
             String geneId, String experimentAccession, int preferredK) {
 
-        Map<String, Object> namedParameters =
+        var namedParameters =
                 ImmutableMap.of(
                         "gene_id", geneId,
                         "threshold", MARKER_GENE_P_VALUE_THRESHOLD,
@@ -138,58 +143,49 @@ public class GeneSearchDao {
         );
     }
 
-    // Returns inferred cell types and organism parts for each experiment accession
-    public Map<String, Map<String, List<String>>>
-    getFacets(List<String> cellIds, SingleCellAnalyticsSchemaField... singleCellAnalyticsSchemaFields) {
-        List<SingleCellAnalyticsSchemaField> subFacetFields = Arrays.asList(singleCellAnalyticsSchemaFields);
+    // Returns all the metadata values for each experiment accession, given a subset of metadata types
+    public Map<String, Map<String, List<String>>> getFacets(List<String> cellIds, String... metadataTypes) {
+        var characteristicValueFacet =
+                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .setFacetField(CHARACTERISTIC_VALUE)
+                        .setNestedFacet(true);
 
-        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder =
-                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(CELL_ID, cellIds)
+        var characteristicNameFacet =
+                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .setFacetField(CHARACTERISTIC_NAME)
+                        .addSubFacets(ImmutableList.of(characteristicValueFacet))
+                        .setNestedFacet(true);
+
+        var facets =
+                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                         .setFacetField(EXPERIMENT_ACCESSION)
-                        .setSubFacetList(subFacetFields)
+                        .addSubFacets(ImmutableList.of(characteristicNameFacet));
+
+        var queryBuilder =
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, Arrays.asList(metadataTypes))
+                        .addQueryFieldByTerm(CELL_ID, cellIds)
+                        .setFacets(facets)
                         .setRows(0);
 
-        List<SimpleOrderedMap> resultsByExperiment =
-                extractSimpleOrderdMaps(
+        var resultsByExperiment =
+                extractSimpleOrderedMaps(
                         singleCellAnalyticsCollectionProxy
                                 .query(queryBuilder)
                                 .getResponse()
                                 .findRecursive("facets", EXPERIMENT_ACCESSION.name(), "buckets"));
 
-
-        return resultsByExperiment == null ?
-                emptyMap() :
-                resultsByExperiment.stream()
+        return resultsByExperiment
+                .stream()
                 .collect(Collectors.toMap(
-                        subFacetValues -> subFacetValues.get("val").toString(),
-                        subFacetValues -> subFacetFields
+                        x -> x.get("val").toString(), // experiment accession
+                        x -> extractSimpleOrderedMaps(
+                                x.findRecursive(CHARACTERISTIC_NAME.name(), "buckets"))
                                 .stream()
                                 .collect(Collectors.toMap(
-                                        SingleCellAnalyticsSchemaField::displayName,
-                                        subFacetField -> getValuesForFacetField(subFacetValues, subFacetField.name())
-                                ))
-                ));
-    }
-
-    private List<String> getValuesForFacetField(SimpleOrderedMap map, String facetField) {
-        List<SimpleOrderedMap> results = extractSimpleOrderdMaps(map.findRecursive(facetField, "buckets"));
-
-        return results
-                .stream()
-                .map(x -> x.get("val").toString())
-                .collect(Collectors.toList());
-    }
-
-    private static List<SimpleOrderedMap> extractSimpleOrderdMaps(Object o) {
-        ImmutableList.Builder<SimpleOrderedMap> builder = ImmutableList.builder();
-        if (o instanceof ArrayList) {
-            for (Object element : (ArrayList) o) {
-                if (element instanceof SimpleOrderedMap) {
-                    builder.add((SimpleOrderedMap) element);
-                }
-            }
-        }
-        return builder.build();
+                                        y -> y.get("val").toString(), // metadata type, i.e. organism part, species
+                                        y -> getValuesForFacetField(y, CHARACTERISTIC_VALUE.name())
+                                )))
+                );
     }
 }

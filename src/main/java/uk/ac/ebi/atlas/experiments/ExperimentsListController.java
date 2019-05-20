@@ -37,4 +37,9 @@ public class ExperimentsListController {
         return GSON.toJson(experimentInfoListService.getExperimentsJson());
     }
 
+
+    public String getExperimentsListAPI() {
+        return GSON.toJson(experimentInfoListService.getExperimentsJson());
+    }
+
 }

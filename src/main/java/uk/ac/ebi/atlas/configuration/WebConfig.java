@@ -38,7 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(timingInterceptor).addPathPatterns("/**");
     }
 
-    @Bean
+
     public TilesConfigurer tilesConfigurer() {
         TilesConfigurer configurer = new TilesConfigurer();
         configurer.setDefinitions(

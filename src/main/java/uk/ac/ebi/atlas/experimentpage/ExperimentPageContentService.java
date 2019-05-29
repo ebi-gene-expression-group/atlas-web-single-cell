@@ -14,6 +14,7 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -47,14 +48,7 @@ public class ExperimentPageContentService {
         tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).forEach(perplexityArray::add);
         result.add("perplexities", perplexityArray);
 
-        JsonArray metadataArray = new JsonArray();
-        cellMetadataService.getMetadataTypes(experimentAccession)
-                .stream()
-                .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
-                .collect(Collectors.toSet())
-                .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
-
-        result.add("metadata", metadataArray);
+        result.add("metadata", getMetadata(experimentAccession));
 
         JsonArray units = new JsonArray();
         units.add("TPM");
@@ -64,6 +58,10 @@ public class ExperimentPageContentService {
         result.addProperty("suggesterEndpoint", "json/suggestions");
 
         return result;
+    }
+
+    public JsonArray getTsnePlotMetaData(String experimentAccession) {
+        return getMetadata(experimentAccession);
     }
 
     public JsonObject getExperimentDesign(String experimentAccession,
@@ -144,5 +142,16 @@ public class ExperimentPageContentService {
         section.add("files", files);
 
         return section;
+    }
+
+    private JsonArray getMetadata(String experimentAccession) {
+        JsonArray metadataArray = new JsonArray();
+        cellMetadataService.getMetadataTypes(experimentAccession)
+                .stream()
+                .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
+                .collect(Collectors.toSet())
+                .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
+
+        return metadataArray;
     }
 }

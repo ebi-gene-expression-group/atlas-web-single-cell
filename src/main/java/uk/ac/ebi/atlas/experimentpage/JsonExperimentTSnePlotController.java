@@ -29,11 +29,13 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 @RestController
 public class JsonExperimentTSnePlotController extends JsonExperimentController {
     private final TSnePlotService tSnePlotService;
+    private final ExperimentPageContentService experimentPageContentService;
 
     @Inject
-    public JsonExperimentTSnePlotController(ScxaExperimentTrader experimentTrader, TSnePlotService tSnePlotService) {
+    public JsonExperimentTSnePlotController(ScxaExperimentTrader experimentTrader, TSnePlotService tSnePlotService, ExperimentPageContentService experimentPageContentService) {
         super(experimentTrader);
         this.tSnePlotService = tSnePlotService;
+        this.experimentPageContentService = experimentPageContentService;
     }
 
     @RequestMapping(
@@ -123,6 +125,15 @@ public class JsonExperimentTSnePlotController extends JsonExperimentController {
         min.ifPresent(n -> model.put("min", n));
 
         return GSON.toJson(model);
+    }
+
+    @RequestMapping(
+            value = "json/experiments/{experimentAccession}/metadata",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String getTSnePlotMetadata(
+            @PathVariable String experimentAccession) {
+        return GSON.toJson(experimentPageContentService.getTsnePlotMetaData(experimentAccession));
     }
 
     private List<Map<String, Object>> modelForHighcharts(String seriesNamePrefix, Map<?, Set<TSnePoint>> points) {

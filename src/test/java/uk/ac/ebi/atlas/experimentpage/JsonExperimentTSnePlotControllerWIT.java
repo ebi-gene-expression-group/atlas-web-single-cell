@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -21,6 +23,8 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
+
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
@@ -38,6 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonExperimentTSnePlotControllerWIT {
+    private static final String URL = "/json/experiments/{experimentAccession}/metadata";
+
     @Inject
     private DataSource dataSource;
 
@@ -163,5 +169,58 @@ class JsonExperimentTSnePlotControllerWIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.series", hasSize(1)));
+    }
+
+    @Test
+    void validJsonForValidMetadata() throws Exception {
+        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        int k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
+
+        int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
+
+        this.mockMvc
+                .perform(get(
+                        "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
+                                "/metadata/" + k))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                // With full experiments this test could be even better:
+                // .andExpect(jsonPath("$.series", hasSize(k)))
+                // .andExpect(jsonPath("$.series[" + Integer.toString(RNG.nextInt(0, k)) + "].data").isNotEmpty());
+                .andExpect(jsonPath("$.series", hasSize(greaterThan(0))))
+                .andExpect(jsonPath("$.series[0].data").isNotEmpty());
+    }
+
+    @Test
+    void validJsonForInvalidMetadata() throws Exception {
+        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
+
+        this.mockMvc
+                .perform(get(
+                        "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
+                                "/metadata/foo"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.series", hasSize(1)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("experimentsWithMetadataProvider")
+    void validJsonWithValidExperimentAccession(String experimentAccession) throws Exception {
+        mockMvc.perform(get(URL, experimentAccession))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.[0].label").exists())
+                .andExpect(jsonPath("$.[*]", hasSize(greaterThan(0))));
+    }
+
+
+    private Iterable<String> experimentsWithMetadataProvider() {
+        // E-GEOD-99058 does not have any metadata (factors or inferred cell types)
+        return jdbcTestUtils.fetchPublicSingleCellExperimentAccessions()
+                .stream()
+                .filter(accession -> !accession.equalsIgnoreCase("E-GEOD-99058"))
+                .collect(Collectors.toSet());
     }
 }

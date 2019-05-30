@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonExperimentTSnePlotControllerWIT {
-    private static final String URL = "/json/experiments/{experimentAccession}/metadata";
+    private static final String EXPERIMENT_METADATA_ENDPOINT_URL = "/json/experiments/{experimentAccession}/metadata";
 
     @Inject
     private DataSource dataSource;
@@ -205,10 +205,19 @@ class JsonExperimentTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series", hasSize(1)));
     }
 
+    @Test
+    void emptyJsonForExperimentWithNoMetadata() throws Exception {
+        mockMvc.perform(get(EXPERIMENT_METADATA_ENDPOINT_URL, "E-GEOD-99058"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.[0].label").doesNotExist())
+                .andExpect(jsonPath("$.[*]", hasSize(0)));
+    }
+
     @ParameterizedTest
     @MethodSource("experimentsWithMetadataProvider")
     void validJsonWithValidExperimentAccession(String experimentAccession) throws Exception {
-        mockMvc.perform(get(URL, experimentAccession))
+        mockMvc.perform(get(EXPERIMENT_METADATA_ENDPOINT_URL, experimentAccession))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.[0].label").exists())

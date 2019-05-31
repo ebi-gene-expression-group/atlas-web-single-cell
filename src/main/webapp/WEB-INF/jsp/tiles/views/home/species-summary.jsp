@@ -5,28 +5,9 @@
 </div>
 <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
 <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
-<style>
-  .slick-slide img {
-    margin: auto;
-  }
-  .slick-slider {
-    margin: 30px auto 50px;
-  }
-  .slick-prev:before {
-    color: #3497c5;
-  }
 
-  .slick-next:before{
-    color: #3497c5;
-  }
-  .slick-prev:hover {
-    color: #2f5767;
-  }
-  .slick-next:hover{
-    color: #2f5767;
-  }
-</style>
 <script defer src="${pageContext.request.contextPath}/resources/js-bundles/homepageSpeciesSummaryPanel.bundle.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/atlas-slide.css" type="text/css" media="all">
 
 <!-- Set to http://localhost:8080/gxa/ or http://localhost:8080/gxa_sc/ -- Remember the trailing slash! -->
 <script>
@@ -36,9 +17,10 @@
       infinite: true,
       speed: 500,
       slidesToShow: 6,
-      slidesToScroll: 1,
+      slidesToScroll: 6,
       autoplay: true,
       autoplaySpeed: 2000,
+      adaptiveHeight: true,
       responsive: [
         {
           breakpoint: 1024,
@@ -53,14 +35,16 @@
           breakpoint: 600,
           settings: {
             slidesToShow: 2,
-            slidesToScroll: 2
+            slidesToScroll: 2,
+            dots: true
           }
         },
         {
           breakpoint: 480,
           settings: {
             slidesToShow: 1,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            dots: true
           }
         }
       ]

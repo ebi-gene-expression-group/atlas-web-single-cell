@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
@@ -23,9 +26,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Controller
 public class FileDownloadController extends HtmlExceptionHandlingController {
@@ -143,5 +152,56 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
             }
             zipOutputStream.close();
         }
+    }
+
+    @RequestMapping(value = "experiments/check/zip",
+            method = RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public String
+    checkMultipleExperimentsFileValid(@RequestParam(value = "accession", defaultValue = "") List<String> accessions)
+    {
+        List<Experiment> experiments = new ArrayList<>();
+        for (var accession : accessions) {
+            try {
+                experiments.add(experimentTrader.getPublicExperiment(accession));
+            } catch (Exception e) {
+                LOGGER.debug("Invalid experiment accession: {}", accession);
+            }
+        }
+        List<ExperimentFileType> fileTypeCheckList = new ArrayList<>(Arrays.asList(
+                ExperimentFileType.QUANTIFICATION_FILTERED,
+                ExperimentFileType.QUANTIFICATION_FILTERED,
+                ExperimentFileType.QUANTIFICATION_RAW,
+                ExperimentFileType.NORMALISED,
+                ExperimentFileType.SDRF));
+
+       Map<String, List<String>> inValidFilesList = new HashMap<>();
+
+        if (!experiments.isEmpty()) {
+            for (var experiment : experiments) {
+                List<String> invalidFiles = new ArrayList<>();
+                for (var fileType : fileTypeCheckList){
+
+                    if (fileType==ExperimentFileType.SDRF &&
+                            !experimentFileLocationService.getFilePath(experiment.getAccession(), fileType).toFile().exists()) {
+                        invalidFiles.add(fileType.getId());
+                    }
+
+                    else if (fileType!=ExperimentFileType.SDRF) {
+                        var paths = experimentFileLocationService.getFilePathsForArchive(experiment.getAccession(), fileType);
+                        for (var path:paths){
+                            if(path.toFile().exists() == false) {
+                                invalidFiles.add(path.getFileName().toString());
+                            }
+                        }
+                    }
+                }
+
+                inValidFilesList.put(experiment.getAccession(), invalidFiles);
+            }
+        }
+        return GSON.toJson(Collections.singletonMap("invalidFiles", inValidFilesList));
     }
 }

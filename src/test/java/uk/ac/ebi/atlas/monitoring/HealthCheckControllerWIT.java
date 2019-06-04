@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 class HealthCheckControllerWIT {
-
     @Autowired
     private WebApplicationContext wac;
 

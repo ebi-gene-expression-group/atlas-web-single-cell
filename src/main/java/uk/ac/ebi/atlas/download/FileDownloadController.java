@@ -191,7 +191,7 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
 
                     else if (fileType!=ExperimentFileType.SDRF) {
                         var paths = experimentFileLocationService.getFilePathsForArchive(experiment.getAccession(), fileType);
-                        for (var path:paths){
+                        for (var path : paths){
                             if(path.toFile().exists() == false) {
                                 invalidFiles.add(path.getFileName().toString());
                             }

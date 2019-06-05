@@ -6,8 +6,14 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
+import uk.ac.ebi.atlas.model.card.CardModel;
+import uk.ac.ebi.atlas.model.card.CardModelAdapter;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static uk.ac.ebi.atlas.model.card.CardIconType.IMAGE;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentLink;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentsSummaryImageUrl;
 
 @RestController
 public class JsonExperimentsSummaryController extends JsonExceptionHandlingController {
@@ -25,6 +31,24 @@ public class JsonExperimentsSummaryController extends JsonExceptionHandlingContr
                         "latestExperiments",
                         latestExperimentsService.fetchLatestExperimentsAttributes().get("latestExperiments"),
                         "featuredExperiments",
-                        ImmutableList.of()));
+                        featuredExperimentsCards().stream()
+                                .map(CardModelAdapter::serialize)
+                                .collect(toImmutableList())));
+    }
+
+    private static ImmutableList<CardModel> featuredExperimentsCards() {
+        return ImmutableList.of(
+                CardModel.create(
+                        IMAGE,
+                        getExperimentsSummaryImageUrl("hca"),
+                        getExperimentLink("E-EHCA-2"),
+                        ImmutableList.of(
+                                getExperimentLink("Mouse cells – Small intestinal epithelium", "E-EHCA-2"))),
+                CardModel.create(
+                        IMAGE,
+                        getExperimentsSummaryImageUrl("cz-biohub"),
+                        getExperimentLink("E-ENAD-15"),
+                        ImmutableList.of(
+                                getExperimentLink("Tabula Muris", "E-ENAD-15"))));
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
@@ -13,13 +14,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class TsnePlotSettingsService {
+public class TSnePlotSettingsService {
     private final DataFileHub dataFileHub;
     private final IdfParser idfParser;
     private final TSnePlotDao tSnePlotDao;
     private final MarkerGenesDao markerGenesDao;
 
-    public TsnePlotSettingsService(DataFileHub dataFileHub,
+    public TSnePlotSettingsService(DataFileHub dataFileHub,
                                    IdfParser idfParser,
                                    TSnePlotDao tSnePlotDao,
                                    MarkerGenesDao markerGenesDao) {
@@ -47,6 +48,7 @@ public class TsnePlotSettingsService {
         return tSnePlotDao.fetchPerplexities(experimentAccession);
     }
 
+    @Cacheable("cellClusters")
     public Optional<Integer> getExpectedClusters(String experimentAccession) {
         IdfParserOutput idfParserOutput = idfParser.parse(experimentAccession);
 
@@ -64,5 +66,10 @@ public class TsnePlotSettingsService {
                         .findFirst();
             }
         }
+    }
+
+    @Cacheable("cellCounts")
+    public int getCellCount(String experimentAccession) {
+        return tSnePlotDao.fetchNumberOfCellsByExperimentAccession(experimentAccession);
     }
 }

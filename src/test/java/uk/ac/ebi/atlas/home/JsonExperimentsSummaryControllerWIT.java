@@ -59,11 +59,11 @@ public class JsonExperimentsSummaryControllerWIT {
     }
 
     @Test
-    void returnsAtLeastOneLatestExperiment() throws Exception {
+    void hasLatestAndFeaturedExperiments() throws Exception {
         mockMvc.perform(get(ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.latestExperiments").exists())
-                .andExpect(jsonPath("$.featuredExperiments").exists());
+                .andExpect(jsonPath("$.latestExperiments").isNotEmpty())
+                .andExpect(jsonPath("$.featuredExperiments").isNotEmpty());
     }
 }

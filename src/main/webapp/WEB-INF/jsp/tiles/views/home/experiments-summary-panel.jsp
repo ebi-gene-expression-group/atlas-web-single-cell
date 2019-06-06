@@ -4,7 +4,7 @@
 <script defer src="${pageContext.request.contextPath}/resources/js-bundles/homepageExperimentsSummaryPanel.bundle.js"></script>
 <!-- Set to http://localhost:8080/gxa/ or http://localhost:8080/gxa_sc/ -- Remember the trailing slash! -->
 <script>
-  document.addEventListener("DOMContentLoaded", function(event) {
+  document.addEventListener('DOMContentLoaded', function(event) {
     homepageExperimentsSummaryPanel.render(
       {
         host: '${pageContext.request.contextPath}/',

@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "atlas-react-fetch-loader": "^1.0.1",
+    "atlas-react-fetch-loader": "^1.1.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "experiments-summary-panel": "file:../../modules/experiments-summary-panel"

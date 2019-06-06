@@ -18,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
-import uk.ac.ebi.atlas.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
@@ -47,7 +46,7 @@ class ExperimentPageContentServiceIT {
     private DataFileHub dataFileHub;
 
     @Inject
-    private TsnePlotSettingsService tsnePlotSettingsService;
+    private TSnePlotSettingsService tsnePlotSettingsService;
 
     @Inject
     private CellMetadataService cellMetadataService;

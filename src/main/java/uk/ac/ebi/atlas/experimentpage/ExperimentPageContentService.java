@@ -21,12 +21,12 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 public class ExperimentPageContentService {
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
-    private final TsnePlotSettingsService tsnePlotSettingsService;
+    private final TSnePlotSettingsService tsnePlotSettingsService;
     private final CellMetadataService cellMetadataService;
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
-                                        TsnePlotSettingsService tsnePlotSettingsService,
+                                        TSnePlotSettingsService tsnePlotSettingsService,
                                         CellMetadataService cellMetadataService) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.dataFileHub = dataFileHub;

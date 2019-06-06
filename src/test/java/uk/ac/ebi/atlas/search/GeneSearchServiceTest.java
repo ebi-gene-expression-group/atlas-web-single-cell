@@ -9,8 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.ac.ebi.atlas.experimentpage.TsnePlotSettingsService;
-import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField;
+import uk.ac.ebi.atlas.experimentpage.TSnePlotSettingsService;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -38,13 +37,13 @@ class GeneSearchServiceTest {
     private GeneSearchDao geneSearchDaoMock;
 
     @Mock
-    private TsnePlotSettingsService tsnePlotSettingsServiceMock;
+    private TSnePlotSettingsService tSnePlotSettingsServiceMock;
 
     private GeneSearchService subject;
 
     @BeforeEach
     void setUp() {
-        subject = new GeneSearchService(geneSearchDaoMock, tsnePlotSettingsServiceMock);
+        subject = new GeneSearchService(geneSearchDaoMock, tSnePlotSettingsServiceMock);
     }
 
     @Test
@@ -107,8 +106,8 @@ class GeneSearchServiceTest {
         String experimentAccession2 = generateRandomExperimentAccession();
         String geneId = generateRandomEnsemblGeneId();
 
-        when(tsnePlotSettingsServiceMock.getExpectedClusters(experimentAccession1)).thenReturn(Optional.of(5));
-        when(tsnePlotSettingsServiceMock.getExpectedClusters(experimentAccession2)).thenReturn(Optional.of(10));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession1)).thenReturn(Optional.of(5));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession2)).thenReturn(Optional.of(10));
 
         when(geneSearchDaoMock
                 .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId, experimentAccession1, 5))
@@ -141,8 +140,8 @@ class GeneSearchServiceTest {
         String geneId1 = generateRandomEnsemblGeneId();
         String geneId2 = generateRandomEnsemblGeneId();
 
-        when(tsnePlotSettingsServiceMock.getExpectedClusters(experimentAccession1)).thenReturn(Optional.of(5));
-        when(tsnePlotSettingsServiceMock.getExpectedClusters(experimentAccession2)).thenReturn(Optional.of(10));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession1)).thenReturn(Optional.of(5));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession2)).thenReturn(Optional.of(10));
 
         when(geneSearchDaoMock
                 .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId1, experimentAccession1, 5))
@@ -151,8 +150,8 @@ class GeneSearchServiceTest {
                 .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId1, experimentAccession2, 10))
                 .thenReturn(ImmutableMap.of(10, ImmutableList.of(1)));
 
-        when(tsnePlotSettingsServiceMock.getExpectedClusters(experimentAccession3)).thenReturn(Optional.of(2));
-        when(tsnePlotSettingsServiceMock.getExpectedClusters(experimentAccession4)).thenReturn(Optional.of(4));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession3)).thenReturn(Optional.of(2));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession4)).thenReturn(Optional.of(4));
 
         when(geneSearchDaoMock
                 .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId2, experimentAccession3, 2))

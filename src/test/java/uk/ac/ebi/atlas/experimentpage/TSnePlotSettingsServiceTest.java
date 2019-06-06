@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TsnePlotSettingsServiceTest {
+class TSnePlotSettingsServiceTest {
     @Mock
     private IdfParser idfParserMock;
 
@@ -32,7 +32,7 @@ class TsnePlotSettingsServiceTest {
 
     private static MockDataFileHub dataFileHubMock;
 
-    private TsnePlotSettingsService subject;
+    private TSnePlotSettingsService subject;
 
     private static final String EXPERIMENT_ACCESSION = "E-MTAB-5061";
     private static final String IDF_PREFERRED_K = "6";
@@ -66,7 +66,7 @@ class TsnePlotSettingsServiceTest {
     @BeforeEach
     void setUp() {
         dataFileHubMock = MockDataFileHub.create();
-        subject = new TsnePlotSettingsService(dataFileHubMock, idfParserMock, tSnePlotDaoMock, markerGenesDaoMock);
+        subject = new TSnePlotSettingsService(dataFileHubMock, idfParserMock, tSnePlotDaoMock, markerGenesDaoMock);
     }
 
     @Test

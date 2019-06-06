@@ -3,7 +3,7 @@ package uk.ac.ebi.atlas.search;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.atlas.experimentpage.TsnePlotSettingsService;
+import uk.ac.ebi.atlas.experimentpage.TSnePlotSettingsService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,9 +19,9 @@ import static java.util.stream.Collectors.toMap;
 @Component
 public class GeneSearchService {
     private GeneSearchDao geneSearchDao;
-    private TsnePlotSettingsService tsnePlotSettingsService;
+    private TSnePlotSettingsService tsnePlotSettingsService;
 
-    public GeneSearchService(GeneSearchDao geneSearchDao, TsnePlotSettingsService tsnePlotSettingsService) {
+    public GeneSearchService(GeneSearchDao geneSearchDao, TSnePlotSettingsService tsnePlotSettingsService) {
         this.geneSearchDao = geneSearchDao;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
 

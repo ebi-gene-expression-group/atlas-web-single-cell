@@ -17,7 +17,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.markergenes.MarkerGenesDao;
-import uk.ac.ebi.atlas.markergenes.MarkerGenesDaoIT;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import uk.ac.ebi.atlas.tsne.TSnePlotDao;
@@ -37,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TsnePlotSettingsServiceIT {
+class TSnePlotSettingsServiceIT {
     @Inject
     private DataSource dataSource;
 
@@ -56,7 +55,7 @@ class TsnePlotSettingsServiceIT {
     @Inject
     private MarkerGenesDao markerGenesDao;
 
-    private TsnePlotSettingsService subject;
+    private TSnePlotSettingsService subject;
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -82,7 +81,7 @@ class TsnePlotSettingsServiceIT {
 
     @BeforeEach
     void setUp() {
-        this.subject = new TsnePlotSettingsService(dataFileHub, idfParser, tSnePlotDao, markerGenesDao);
+        this.subject = new TSnePlotSettingsService(dataFileHub, idfParser, tSnePlotDao, markerGenesDao);
     }
 
     @Test

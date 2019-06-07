@@ -122,8 +122,6 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
             for (var experiment : experiments) {
                 var paths = ImmutableList.<Path>builder()
                         .addAll(experimentFileLocationService.getFilePathsForArchive(
-                                experiment.getAccession(), ExperimentFileType.QUANTIFICATION_FILTERED))
-                        .addAll(experimentFileLocationService.getFilePathsForArchive(
                                 experiment.getAccession(), ExperimentFileType.QUANTIFICATION_RAW))
                         .addAll(experimentFileLocationService.getFilePathsForArchive(
                                 experiment.getAccession(), ExperimentFileType.NORMALISED))

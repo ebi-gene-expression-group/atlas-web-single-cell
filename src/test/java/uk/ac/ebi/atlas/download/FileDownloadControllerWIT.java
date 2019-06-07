@@ -16,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.atlas.configuration.TestConfig;
@@ -204,15 +203,11 @@ class FileDownloadControllerWIT {
     private ImmutableList<String> getSourceValidFileNames() {
         var paths = ImmutableList.<Path>builder()
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
-                        EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.QUANTIFICATION_FILTERED))
-                .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.QUANTIFICATION_RAW))
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.NORMALISED))
                 .add(experimentFileLocationService.getFilePath(
                         EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.SDRF))
-                .addAll(experimentFileLocationService.getFilePathsForArchive(
-                        EXPERIMENT_ACCESSION_LIST.get(1), ExperimentFileType.QUANTIFICATION_FILTERED))
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(1), ExperimentFileType.QUANTIFICATION_RAW))
                 .addAll(experimentFileLocationService.getFilePathsForArchive(

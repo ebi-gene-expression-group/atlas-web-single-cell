@@ -15,6 +15,7 @@ import static uk.ac.ebi.atlas.species.AtlasInformationDataType.EFO;
 import static uk.ac.ebi.atlas.species.AtlasInformationDataType.EG;
 import static uk.ac.ebi.atlas.species.AtlasInformationDataType.ENSEMBL;
 import static uk.ac.ebi.atlas.species.AtlasInformationDataType.WBPS;
+import static uk.ac.ebi.atlas.species.AtlasInformationDataType.EFOURL;
 
 @Controller
 public class HomeController extends HtmlExceptionHandlingController {
@@ -55,7 +56,7 @@ public class HomeController extends HtmlExceptionHandlingController {
         model.addAttribute("genomes", EG.getId());
         model.addAttribute("paraSite", WBPS.getId());
         model.addAttribute("efo", EFO.getId());
-
+        model.addAttribute("efoURL", EFOURL.getId());
         return "home";
     }
 }

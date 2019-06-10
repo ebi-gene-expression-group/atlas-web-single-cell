@@ -6,6 +6,7 @@
 <%--@elvariable id="eg" type="String"--%>
 <%--@elvariable id="wbps" type="String"--%>
 <%--@elvariable id="efo" type="String"--%>
+<%--@elvariable id="efoURL" type="String"--%>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -25,7 +26,7 @@
       Ensembl&nbsp;${info.get(ensembl)},
       Ensembl&nbsp;Genomes&nbsp;${info.get(eg)},
       WormBase&nbsp;ParaSite&nbsp;${info.get(wbps)},
-      EFO&nbsp;${info.get(efo)}
+      <a href="${info.get(efoURL)}">EFO&nbsp;${info.get(efo)}</a>
     </small>
   </h4>
 </div>

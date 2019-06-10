@@ -16,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.atlas.configuration.TestConfig;
@@ -118,6 +117,20 @@ class FileDownloadControllerWIT {
 
         this.mockMvc.perform(get(ARCHIVE_DOWNLOAD_URL, EXPERIMENT_ACCESSION)
                 .param("fileType", ExperimentFileType.QUANTIFICATION_FILTERED.getId()))
+                .andExpect(status().isOk())
+                .andExpect(
+                        header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + expectedArchiveName))
+                .andExpect(content().contentType("application/zip"));
+    }
+
+    @Test
+    void downloadMetadataArchiveForValidExperimentAccession() throws Exception {
+        var expectedArchiveName =
+                MessageFormat.format(
+                        ARCHIVE_NAME, EXPERIMENT_ACCESSION, ExperimentFileType.EXPERIMENT_METADATA.getId());
+
+        this.mockMvc.perform(get(ARCHIVE_DOWNLOAD_URL, EXPERIMENT_ACCESSION)
+                .param("fileType", ExperimentFileType.EXPERIMENT_METADATA.getId()))
                 .andExpect(status().isOk())
                 .andExpect(
                         header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + expectedArchiveName))

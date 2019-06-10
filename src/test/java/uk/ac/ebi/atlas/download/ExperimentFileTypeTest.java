@@ -38,7 +38,8 @@ class ExperimentFileTypeTest {
                 Arguments.of("cluster", ExperimentFileType.CLUSTERING),
                 Arguments.of("quantification-raw", ExperimentFileType.QUANTIFICATION_RAW),
                 Arguments.of("quantification-filtered", ExperimentFileType.QUANTIFICATION_FILTERED),
-                Arguments.of("normalised", ExperimentFileType.NORMALISED)
+                Arguments.of("normalised", ExperimentFileType.NORMALISED),
+                Arguments.of("experiment-metadata", ExperimentFileType.EXPERIMENT_METADATA)
         );
     }
 }

@@ -44,9 +44,7 @@ public class ExperimentPageContentService {
         tsnePlotSettingsService.getExpectedClusters(experimentAccession)
                 .ifPresent(value -> result.addProperty("selectedK", value));
 
-        JsonArray perplexityArray = new JsonArray();
-        tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).forEach(perplexityArray::add);
-        result.add("perplexities", perplexityArray);
+        result.add("perplexities", getPerplexities(experimentAccession));
 
         result.add("metadata", getMetadata(experimentAccession));
 
@@ -60,8 +58,13 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    public JsonArray getTsnePlotMetaData(String experimentAccession) {
-        return getMetadata(experimentAccession);
+    public JsonObject getTsnePlotMetaDataAndPerplexities(String experimentAccession) {
+        JsonObject result = new JsonObject();
+
+        result.add("perplexities", getPerplexities(experimentAccession));
+        result.add("metadata", getMetadata(experimentAccession));
+
+        return result;
     }
 
     public JsonObject getExperimentDesign(String experimentAccession,
@@ -153,5 +156,11 @@ public class ExperimentPageContentService {
                 .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
 
         return metadataArray;
+    }
+
+    private JsonArray getPerplexities(String experimentAccession) {
+        JsonArray perplexityArray = new JsonArray();
+        tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).forEach(perplexityArray::add);
+        return perplexityArray;
     }
 }

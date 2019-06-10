@@ -133,7 +133,7 @@ public class JsonExperimentTSnePlotController extends JsonExperimentController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getTSnePlotMetadata(
             @PathVariable String experimentAccession) {
-        return GSON.toJson(experimentPageContentService.getTsnePlotMetaData(experimentAccession));
+        return GSON.toJson(experimentPageContentService.getTsnePlotMetaDataAndPerplexities(experimentAccession));
     }
 
     private List<Map<String, Object>> modelForHighcharts(String seriesNamePrefix, Map<?, Set<TSnePoint>> points) {

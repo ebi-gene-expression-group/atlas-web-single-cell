@@ -21,7 +21,9 @@ public enum ExperimentFileType {
     NORMALISED(
             "normalised", "Normalised counts files (MatrixMarket)", IconType.TSV, true),
     MARKER_GENES(
-            "marker-genes", "Marker gene files (.tsv)", IconType.TSV, true);
+            "marker-genes", "Marker gene files (.tsv)", IconType.TSV, true),
+    EXPERIMENT_METADATA(
+            "experiment-metadata", "Experiment metadata files (.txt)", IconType.TSV, true);
 
     // IDs should be used when generating URLs
     private final String id;

@@ -95,7 +95,7 @@ class JsonExperimentTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.min", is(greaterThan(0.0))))
                 .andExpect(jsonPath("$.max", isA(Number.class)))
                 .andExpect(jsonPath("$.max", is(greaterThan(0.0))))
-                .andExpect(jsonPath("$.unit", is(oneOf("TPM"))))
+                .andExpect(jsonPath("$.unit", is(oneOf("CPM"))))
                 .andExpect(jsonPath("$.series", hasSize(greaterThan(0))));
     }
 
@@ -111,7 +111,7 @@ class JsonExperimentTSnePlotControllerWIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.min").doesNotExist())
                 .andExpect(jsonPath("$.max").doesNotExist())
-                .andExpect(jsonPath("$.unit", is(oneOf("TPM"))))
+                .andExpect(jsonPath("$.unit", is(oneOf("CPM"))))
                 .andExpect(jsonPath("$.series", hasSize(greaterThan(0))))
                 .andExpect(jsonPath("$.series..expressionLevel", everyItem(is(0.0))));
     }
@@ -127,7 +127,7 @@ class JsonExperimentTSnePlotControllerWIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.min").doesNotExist())
                 .andExpect(jsonPath("$.max").doesNotExist())
-                .andExpect(jsonPath("$.unit", is(oneOf("TPM"))))
+                .andExpect(jsonPath("$.unit", is(oneOf("CPM"))))
                 .andExpect(jsonPath("$.series", hasSize(greaterThan(0))))
                 .andExpect(jsonPath("$.series..expressionLevel", everyItem(is(0.0))));
     }

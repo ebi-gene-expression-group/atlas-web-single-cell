@@ -1,6 +1,6 @@
 {
   "name": "experiment-page",
-  "version": "2.0.0",
+  "version": "2.1.0-beta1",
   "description": "",
   "main": "index.js",
   "author": "Expression Atlas developers <atlas-developers@ebi.ac.uk>",
@@ -10,7 +10,7 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "expression-atlas-experiment-page-tsne-plot": "^3.6.1",
+    "expression-atlas-experiment-page-tsne-plot": "^4.0.0-beta2",
     "linkifyjs": "^2.1.8",
     "lodash": "^4.17.11",
     "pluralize": "^8.0.0",

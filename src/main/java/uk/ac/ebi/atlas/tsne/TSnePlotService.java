@@ -88,4 +88,8 @@ public class TSnePlotService {
                                         )))
                 .collect(groupingBy(TSnePoint::metadata, mapping(Function.identity(), Collectors.toSet())));
     }
+
+    public int getCellCount(String experimentAccession) {
+        return tSnePlotDao.fetchNumberOfCellsByExperimentAccession(experimentAccession);
+    }
 }

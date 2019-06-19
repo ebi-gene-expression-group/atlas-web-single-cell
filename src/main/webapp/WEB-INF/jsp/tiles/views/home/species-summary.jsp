@@ -11,12 +11,12 @@
   document.addEventListener('DOMContentLoaded', function(event) {
     var sliderSettings = {
       dots: true,
-      infinite: true,
+      infinite: false,
       speed: 500,
       slidesToShow: 6,
       slidesToScroll: 6,
       adaptiveHeight: true,
-      autoplay: true,
+      autoplay: false,
       autoplaySpeed: 2000,
       responsive: [
         {

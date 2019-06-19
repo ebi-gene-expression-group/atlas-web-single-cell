@@ -124,6 +124,20 @@ class FileDownloadControllerWIT {
     }
 
     @Test
+    void downloadMetadataArchiveForValidExperimentAccession() throws Exception {
+        var expectedArchiveName =
+                MessageFormat.format(
+                        ARCHIVE_NAME, EXPERIMENT_ACCESSION, ExperimentFileType.EXPERIMENT_METADATA.getId());
+
+        this.mockMvc.perform(get(ARCHIVE_DOWNLOAD_URL, EXPERIMENT_ACCESSION)
+                .param("fileType", ExperimentFileType.EXPERIMENT_METADATA.getId()))
+                .andExpect(status().isOk())
+                .andExpect(
+                        header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + expectedArchiveName))
+                .andExpect(content().contentType("application/zip"));
+    }
+
+    @Test
     void downloadArchiveForInvalidExperimentAccession() throws Exception {
         this.mockMvc.perform(get(ARCHIVE_DOWNLOAD_URL, "FOO")
                 .param("fileType", ExperimentFileType.EXPERIMENT_DESIGN.getId()))

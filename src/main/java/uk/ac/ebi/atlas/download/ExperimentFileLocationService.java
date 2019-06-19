@@ -72,6 +72,11 @@ public class ExperimentFileLocationService {
                                 dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsMatrix.getPath(),
                                 dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsCellIdsTsv.getPath(),
                                 dataFileHub.getSingleCellExperimentFiles(experimentAccession).normalisedCountsGeneIdsTsv.getPath());
+            case EXPERIMENT_METADATA:
+                return
+                        ImmutableList.of(
+                                dataFileHub.getSingleCellExperimentFiles(experimentAccession).experimentFiles.sdrf.getPath(),
+                                dataFileHub.getSingleCellExperimentFiles(experimentAccession).experimentFiles.idf.getPath());
 
             default:
                 return null;

@@ -87,8 +87,7 @@ public class ExperimentPageContentService {
 
         List<ExperimentFileType> metadataFiles =
                 Arrays.asList(
-                        ExperimentFileType.SDRF,
-                        ExperimentFileType.IDF,
+                        ExperimentFileType.EXPERIMENT_METADATA,
                         ExperimentFileType.EXPERIMENT_DESIGN);
         List<ExperimentFileType> resultFiles =
                 Arrays.asList(

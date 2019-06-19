@@ -28,7 +28,9 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import java.util.ArrayList;
+
 import java.util.List;
+
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
@@ -68,6 +70,16 @@ class ExperimentPageContentServiceIT {
                     ExperimentFileType.SDRF,
                     ExperimentFileType.IDF,
                     ExperimentFileType.EXPERIMENT_DESIGN);
+
+    private final ImmutableList<ExperimentFileType> resultFiles = ImmutableList.of(
+            ExperimentFileType.CLUSTERING,
+            ExperimentFileType.QUANTIFICATION_FILTERED,
+            ExperimentFileType.MARKER_GENES,
+            ExperimentFileType.NORMALISED,
+            ExperimentFileType.QUANTIFICATION_RAW);
+    private final ImmutableList<ExperimentFileType> metadataFiles = ImmutableList.of(
+            ExperimentFileType.EXPERIMENT_METADATA,
+            ExperimentFileType.EXPERIMENT_DESIGN);
 
     @BeforeAll
     void populateDatabaseTables() {

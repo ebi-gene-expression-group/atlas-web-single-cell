@@ -93,7 +93,9 @@ public class ExperimentPageContentService {
                 Arrays.asList(
                         ExperimentFileType.CLUSTERING,
                         ExperimentFileType.QUANTIFICATION_FILTERED,
-                        ExperimentFileType.MARKER_GENES);
+                        ExperimentFileType.MARKER_GENES,
+                        ExperimentFileType.NORMALISED,
+                        ExperimentFileType.QUANTIFICATION_RAW);
 
         result.add(getDownloadSection("Metadata files", metadataFiles, experimentAccession, accessKey));
         result.add(getDownloadSection("Result files", resultFiles, experimentAccession, accessKey));

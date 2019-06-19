@@ -217,15 +217,11 @@ class FileDownloadControllerWIT {
     private ImmutableList<String> getSourceValidFileNames() {
         var paths = ImmutableList.<Path>builder()
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
-                        EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.QUANTIFICATION_FILTERED))
-                .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.QUANTIFICATION_RAW))
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.NORMALISED))
                 .add(experimentFileLocationService.getFilePath(
                         EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.SDRF))
-                .addAll(experimentFileLocationService.getFilePathsForArchive(
-                        EXPERIMENT_ACCESSION_LIST.get(1), ExperimentFileType.QUANTIFICATION_FILTERED))
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(1), ExperimentFileType.QUANTIFICATION_RAW))
                 .addAll(experimentFileLocationService.getFilePathsForArchive(

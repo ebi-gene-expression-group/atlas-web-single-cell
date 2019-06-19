@@ -28,6 +28,9 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import java.util.ArrayList;
+
+import java.util.List;
+
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
@@ -57,6 +60,16 @@ class ExperimentPageContentServiceIT {
     private CellMetadataService cellMetadataService;
 
     private ExperimentPageContentService subject;
+    private final List<ExperimentFileType> resultFiles = ImmutableList.of(
+                    ExperimentFileType.CLUSTERING,
+                    ExperimentFileType.QUANTIFICATION_FILTERED,
+                    ExperimentFileType.MARKER_GENES,
+                    ExperimentFileType.NORMALISED,
+                    ExperimentFileType.QUANTIFICATION_RAW);
+    private final ImmutableList<ExperimentFileType> metadataFiles = ImmutableList.of(
+                    ExperimentFileType.SDRF,
+                    ExperimentFileType.IDF,
+                    ExperimentFileType.EXPERIMENT_DESIGN);
 
     private final ImmutableList<ExperimentFileType> resultFiles = ImmutableList.of(
             ExperimentFileType.CLUSTERING,
@@ -178,7 +191,7 @@ class ExperimentPageContentServiceIT {
                     .map(resultFile -> resultFile.getDescription()).collect(Collectors.toList());
 
             if (downloadObject.get("title").getAsString().equals("Result files")) {
-              //  assertThat(fileDescriptions).isEqualTo(predefinedResultFileDescriptions);
+                assertThat(fileDescriptions).isEqualTo(predefinedResultFileDescriptions);
             } else {
                 assertThat(fileDescriptions).isEqualTo(predefinedMetadataFileDescriptions);
             }

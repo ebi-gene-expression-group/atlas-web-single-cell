@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -18,12 +19,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
+import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +58,16 @@ class ExperimentPageContentServiceIT {
 
     private ExperimentPageContentService subject;
 
+    private final ImmutableList<ExperimentFileType> resultFiles = ImmutableList.of(
+            ExperimentFileType.CLUSTERING,
+            ExperimentFileType.QUANTIFICATION_FILTERED,
+            ExperimentFileType.MARKER_GENES,
+            ExperimentFileType.NORMALISED,
+            ExperimentFileType.QUANTIFICATION_RAW);
+    private final ImmutableList<ExperimentFileType> metadataFiles = ImmutableList.of(
+            ExperimentFileType.EXPERIMENT_METADATA,
+            ExperimentFileType.EXPERIMENT_DESIGN);
+
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
@@ -79,6 +94,35 @@ class ExperimentPageContentServiceIT {
                 new ExperimentPageContentService(
                         experimentFileLocationService, dataFileHub, tsnePlotSettingsService, cellMetadataService);
     }
+
+    @Test
+    void getPredefinedDownloadFiles() {
+        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        JsonArray result = this.subject.getDownloads(experimentAccession, "");
+
+        for (JsonElement download : result) {
+            JsonObject downloadObject = download.getAsJsonObject();
+            JsonArray downloadFiles = downloadObject.get("files").getAsJsonArray();
+
+            var fileDescriptions = new ArrayList<String>();
+            for (JsonElement file : downloadFiles) {
+                JsonObject fileObject = file.getAsJsonObject();
+                fileDescriptions.add(fileObject.get("description").getAsString());
+            }
+
+            var predefinedResultFileDescriptions = resultFiles.stream()
+                    .map(resultFile -> resultFile.getDescription()).collect(Collectors.toList());
+            var predefinedMetadataFileDescriptions = metadataFiles.stream()
+                    .map(resultFile -> resultFile.getDescription()).collect(Collectors.toList());
+
+            if (downloadObject.get("title").getAsString().equals("Result files")) {
+                assertThat(fileDescriptions).isEqualTo(predefinedResultFileDescriptions);
+            } else {
+                assertThat(fileDescriptions).isEqualTo(predefinedMetadataFileDescriptions);
+            }
+        }
+    }
+
 
     @Test
     void getValidExperimentDesignJson() {

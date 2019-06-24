@@ -37,7 +37,7 @@ public class HighchartsHeatmapAdapter {
 
         List<String> uniqueGeneIds = sortedMarkerGenes
                 .stream()
-                .map(MarkerGene::geneId)
+                .map(markerGene -> markerGene.geneId() + markerGene.clusterIdWhereMarker())
                 .distinct()
                 .collect(Collectors.toList());
 
@@ -52,7 +52,7 @@ public class HighchartsHeatmapAdapter {
                 .map(markerGene -> {
                     Map<String, Object> heatmapCell = new HashMap<>();
                     heatmapCell.put("x", markerGene.clusterId() - 1);
-                    heatmapCell.put("y", geneIdIndices.get(markerGene.geneId()));
+                    heatmapCell.put("y", geneIdIndices.get(markerGene.geneId() + markerGene.clusterIdWhereMarker()));
                     heatmapCell.put("geneName", symbolsForGeneIds.getOrDefault(markerGene.geneId(), markerGene.geneId()));
                     heatmapCell.put("value", markerGene.medianExpression());
                     heatmapCell.put("clusterIdWhereMarker", markerGene.clusterIdWhereMarker());

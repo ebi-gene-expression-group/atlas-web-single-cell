@@ -135,9 +135,11 @@ processResources {
                 solrHost: solrHost,
                 solrPort: solrPort,
                 testLogs: testLogs,
-                buildNumber: '${buildNumber}',
-                buildBranch: '${buildBranch}',
-                buildRevision: '${buildRevision}',
+                // Set at compile time with ./gradlew -PbuildNumber={...} ...
+                buildNumber: buildNumber,
+                buildBranch: buildBranch,
+                buildRevision: buildRevision,
+                // Set at runtime by Tomcat
                 catalinaBase: '${catalina.base}',
                 tomcatHostname: '${tomcat.hostname}'
         )
@@ -162,9 +164,9 @@ processTestResources {
                 solrHost: solrHost,
                 solrPort: solrPort,
                 testLogs: testLogs,
-                buildNumber: '${buildNumber}',
-                buildBranch: '${buildBranch}',
-                buildRevision: '${buildRevision}',
+                buildNumber: buildNumber,
+                buildBranch: buildBranch,
+                buildRevision: buildRevision,
                 catalinaBase: '${catalina.base}',
                 tomcatHostname: '${tomcat.hostname}'
         )

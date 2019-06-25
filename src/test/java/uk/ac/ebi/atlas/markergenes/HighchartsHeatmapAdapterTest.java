@@ -41,7 +41,10 @@ public class HighchartsHeatmapAdapterTest {
         String geneSymbol1 = generateRandomGeneSymbol();
         String geneSymbol2 = generateRandomGeneSymbol();
 
-        List<String> randomGeneIds = Arrays.asList(gene1, gene2, gene3);
+        List<Integer> clusterWhereMarkers = Arrays.asList(1, 3, 5);
+        List<String> randomGeneIds = Arrays.asList(gene1 + clusterWhereMarkers.get(0),
+                gene2 + clusterWhereMarkers.get(1),
+                gene3 + clusterWhereMarkers.get(2));
 
         when(markerGenesDaoMock.getSymbolsForGeneIds(randomGeneIds)).thenReturn(ImmutableMap.of(
                 gene1, geneSymbol1,
@@ -49,9 +52,9 @@ public class HighchartsHeatmapAdapterTest {
         ));
 
         List<MarkerGene> markerGenes = Arrays.asList(
-                MarkerGene.create(gene1, 1, 1, 0.004, 1, 199, 185),
-                MarkerGene.create(gene2, 1, 3, 0.0006, 2, 12, 1.11),
-                MarkerGene.create(gene3, 1, 5, 0.001, 6, 1000, 10000));
+                MarkerGene.create(gene1, 1, clusterWhereMarkers.get(0), 0.004, 1, 199, 185),
+                MarkerGene.create(gene2, 1, clusterWhereMarkers.get(1), 0.0006, 2, 12, 1.11),
+                MarkerGene.create(gene3, 1, clusterWhereMarkers.get(2), 0.001, 6, 1000, 10000));
 
         List<Map<String, Object>> result = subject.getMarkerGeneHeatmapData(markerGenes);
         assertThat(result).hasSize(3);

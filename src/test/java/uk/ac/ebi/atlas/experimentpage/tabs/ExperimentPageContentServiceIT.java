@@ -1,14 +1,12 @@
 package uk.ac.ebi.atlas.experimentpage.tabs;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -143,7 +141,7 @@ class ExperimentPageContentServiceIT {
         }
     }
 
-    @RepeatedTest(100)
+    @Test
     void getValidTsnePlotDataJson() {
         var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
         var result = this.subject.getTsnePlotData(experimentAccession);

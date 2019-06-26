@@ -42,12 +42,13 @@ public class GeneIdSearchDao {
     public Optional<ImmutableSet<String>> searchGeneIds(String propertyValue, String propertyName, String species) {
         SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
-                        .addFilterFieldByTerm(SPECIES, species)
                         .addQueryFieldByTerm(PROPERTY_VALUE, propertyValue)
                         .addQueryFieldByTerm(PROPERTY_NAME, propertyName)
                         .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER)
                         .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
-
+        if (species != "") {
+            bioentitiesQueryBuilder.addFilterFieldByTerm(SPECIES, species);
+        }
         return searchInTwoSteps(bioentitiesQueryBuilder);
     }
 

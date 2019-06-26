@@ -18,10 +18,14 @@ public class CacheConfig {
                 builder -> builder.name("arrayDesignByAccession"),
                 builder -> builder.name("experimentByAccession"),
                 builder -> builder.name("experimentsByType"),
-                builder -> builder.name("experimentContent"),
                 builder -> builder.name("experimentAttributes"),
-                builder -> builder.name("cellClusters"),
-                builder -> builder.name("cellCounts"));
+                builder -> builder.name("bioentityProperties"),
+                builder -> builder.name("cellCounts"),
+                builder -> builder.name("jsonCellMetadata"),
+                builder -> builder.name("jsonExperimentPageTabs"),
+                builder -> builder.name("jsonTSnePlotWithClusters"),
+                builder -> builder.name("jsonTSnePlotWithMetadata"),
+                builder -> builder.name("jsonTSnePlotWithExpression"));
         return cacheManager;
     }
 }

@@ -2,7 +2,6 @@ package uk.ac.ebi.atlas.search;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.apache.solr.common.util.SimpleOrderedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -21,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyMap;
-import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_VALUE;
@@ -114,7 +112,7 @@ public class GeneSearchDao {
                             "WHERE markers.experiment_accession = :experiment_accession " +
                             "AND gene_id=:gene_id))";
     @Transactional(readOnly = true)
-    public  Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
+    public Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
             String geneId, String experimentAccession, int preferredK) {
 
         var namedParameters =
@@ -144,7 +142,7 @@ public class GeneSearchDao {
     }
 
     // Returns all the metadata values for each experiment accession, given a subset of metadata types
-    public Map<String, Map<String, List<String>>> getFacets(List<String> cellIds, String... metadataTypes) {
+    public ImmutableMap<String, Map<String, List<String>>> getFacets(List<String> cellIds, String... metadataTypes) {
         var characteristicValueFacet =
                 new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                         .setFacetField(CHARACTERISTIC_VALUE)
@@ -177,15 +175,13 @@ public class GeneSearchDao {
 
         return resultsByExperiment
                 .stream()
-                .collect(Collectors.toMap(
+                .collect(toImmutableMap(
                         x -> x.get("val").toString(), // experiment accession
                         x -> extractSimpleOrderedMaps(
                                 x.findRecursive(CHARACTERISTIC_NAME.name(), "buckets"))
                                 .stream()
                                 .collect(Collectors.toMap(
                                         y -> y.get("val").toString(), // metadata type, i.e. organism part, species
-                                        y -> getValuesForFacetField(y, CHARACTERISTIC_VALUE.name())
-                                )))
-                );
+                                        y -> getValuesForFacetField(y, CHARACTERISTIC_VALUE.name())))));
     }
 }

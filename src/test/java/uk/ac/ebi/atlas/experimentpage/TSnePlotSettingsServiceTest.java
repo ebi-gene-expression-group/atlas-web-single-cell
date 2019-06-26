@@ -8,9 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
-import uk.ac.ebi.atlas.markergenes.MarkerGenesDao;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.testutils.MockDataFileHub;
-import uk.ac.ebi.atlas.tsne.TSnePlotDao;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
 
 import java.util.Arrays;
 import java.util.Collections;

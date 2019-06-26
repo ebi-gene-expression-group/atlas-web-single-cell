@@ -7,23 +7,23 @@ import java.util.Arrays;
 public enum ExperimentFileType {
     // Could include icon name (similar to Description class in ExternallyAvailableContent)
     EXPERIMENT_DESIGN(
-            "experiment-design", "Experiment design file (.tsv)", IconType.EXPERIMENT_DESIGN, false),
+            "experiment-design", "Experiment design file (TSV format)", IconType.EXPERIMENT_DESIGN, false),
     SDRF(
             "sdrf", "SDRF file (.txt)", IconType.TSV, false),
     IDF(
             "idf", "IDF file (.txt)", IconType.TSV, false),
     CLUSTERING(
-            "cluster", "Clustering file (.tsv)", IconType.TSV, false),
+            "cluster", "Clustering file (TSV format)", IconType.TSV, false),
     QUANTIFICATION_RAW(
-            "quantification-raw", "Raw quantification files (MatrixMarket)", IconType.TSV, true),
+            "quantification-raw", "Raw quantification files (MatrixMarket archive)", IconType.TSV, true),
     QUANTIFICATION_FILTERED(
-            "quantification-filtered", "Filtered quantification files (MatrixMarket)", IconType.TSV, true),
+            "quantification-filtered", "Filtered quantification files (MatrixMarket archive)", IconType.TSV, true),
     NORMALISED(
-            "normalised", "Normalised counts files (MatrixMarket)", IconType.TSV, true),
+            "normalised", "Normalised counts files (MatrixMarket archive)", IconType.TSV, true),
     MARKER_GENES(
-            "marker-genes", "Marker gene files (.tsv)", IconType.TSV, true),
+            "marker-genes", "Marker gene files (TSV files archive)", IconType.TSV, true),
     EXPERIMENT_METADATA(
-            "experiment-metadata", "Experiment metadata files (.txt)", IconType.TSV, true);
+            "experiment-metadata", "Experiment metadata (SDRF and IDF files archive)", IconType.TSV, true);
 
     // IDs should be used when generating URLs
     private final String id;

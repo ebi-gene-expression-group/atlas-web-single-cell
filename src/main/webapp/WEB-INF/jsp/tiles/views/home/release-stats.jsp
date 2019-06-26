@@ -3,8 +3,8 @@
 <%--@elvariable id="numberOfStudies" type="Number"--%>
 <%--@elvariable id="numberOfAssays" type="Number"--%>
 <%--@elvariable id="ensembl" type="String"--%>
-<%--@elvariable id="eg" type="String"--%>
-<%--@elvariable id="wbps" type="String"--%>
+<%--@elvariable id="genomes" type="String"--%>
+<%--@elvariable id="paraSite" type="String"--%>
 <%--@elvariable id="efo" type="String"--%>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -23,8 +23,8 @@
   <h4>
     <small>
       Ensembl&nbsp;${info.get(ensembl)},
-      Ensembl&nbsp;Genomes&nbsp;${info.get(eg)},
-      WormBase&nbsp;ParaSite&nbsp;${info.get(wbps)},
+      Ensembl&nbsp;Genomes&nbsp;${info.get(genomes)},
+      WormBase&nbsp;ParaSite&nbsp;${info.get(paraSite)},
       EFO&nbsp;${info.get(efo)}
     </small>
   </h4>

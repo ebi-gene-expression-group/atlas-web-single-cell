@@ -164,9 +164,9 @@ processTestResources {
                 solrHost: solrHost,
                 solrPort: solrPort,
                 testLogs: testLogs,
-                buildNumber: buildNumber,
-                buildBranch: buildBranch,
-                buildRevision: buildRevision,
+                buildNumber: 'test',
+                buildBranch: 'test',
+                buildRevision: 'test',
                 catalinaBase: '${catalina.base}',
                 tomcatHostname: '${tomcat.hostname}'
         )

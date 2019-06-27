@@ -24,8 +24,7 @@ public class CacheConfig {
                 builder -> builder.name("jsonCellMetadata"),
                 builder -> builder.name("jsonExperimentPageTabs"),
                 builder -> builder.name("jsonTSnePlotWithClusters"),
-                builder -> builder.name("jsonTSnePlotWithMetadata"),
-                builder -> builder.name("jsonTSnePlotWithExpression"));
+                builder -> builder.name("jsonTSnePlotWithMetadata"));
         return cacheManager;
     }
 }

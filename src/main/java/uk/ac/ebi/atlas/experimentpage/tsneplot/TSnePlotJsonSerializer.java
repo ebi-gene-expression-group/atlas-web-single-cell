@@ -61,7 +61,6 @@ public class TSnePlotJsonSerializer {
         return tSnePlotWithExpression(experimentAccession, perplexity, "", accessKey);
     }
 
-    @Cacheable(cacheNames = "jsonTSnePlotWithExpression", key = "{#experimentAccession, #perplexity, #geneId}")
     public String tSnePlotWithExpression(String experimentAccession, int perplexity, String geneId, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 

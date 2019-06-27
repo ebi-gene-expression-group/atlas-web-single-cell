@@ -12,7 +12,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "atlas-experiment-table": "^1.1.4",
-    "atlas-react-fetch-loader": "^1.1.0",
+    "atlas-react-fetch-loader": "^1.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }

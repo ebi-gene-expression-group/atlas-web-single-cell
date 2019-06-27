@@ -126,7 +126,7 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                         .addAll(experimentFileLocationService.getFilePathsForArchive(
                                 experiment.getAccession(), ExperimentFileType.NORMALISED))
                         .add(experimentFileLocationService.getFilePath(
-                                experiment.getAccession(), ExperimentFileType.SDRF))
+                                experiment.getAccession(), ExperimentFileType.EXPERIMENT_DESIGN))
                         .build();
 
                 for (var path : paths) {

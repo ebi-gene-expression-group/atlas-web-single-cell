@@ -13,7 +13,7 @@
         downloadTooltip: `<ul>
           <li>Raw filtered count matrix after quantification</li>
           <li>Normalised filtered count matrix after quantification</li>
-          <li>SDRF file with the experimental design metadata</li>
+          <li>Experiment design file with experimental metadata</li>
         </ul>`,
         tableHeader: [
           {type: 'sort', title: 'Loaded date', width: 240, dataParam: 'lastUpdate'},

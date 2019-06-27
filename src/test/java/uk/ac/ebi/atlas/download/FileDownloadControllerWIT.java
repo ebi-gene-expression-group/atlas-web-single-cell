@@ -221,13 +221,13 @@ class FileDownloadControllerWIT {
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.NORMALISED))
                 .add(experimentFileLocationService.getFilePath(
-                        EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.SDRF))
+                        EXPERIMENT_ACCESSION_LIST.get(0), ExperimentFileType.EXPERIMENT_DESIGN))
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(1), ExperimentFileType.QUANTIFICATION_RAW))
                 .addAll(experimentFileLocationService.getFilePathsForArchive(
                         EXPERIMENT_ACCESSION_LIST.get(1), ExperimentFileType.NORMALISED))
                 .add(experimentFileLocationService.getFilePath(
-                        EXPERIMENT_ACCESSION_LIST.get(1), ExperimentFileType.SDRF))
+                        EXPERIMENT_ACCESSION_LIST.get(1), ExperimentFileType.EXPERIMENT_DESIGN))
                 .build();
 
         return paths.stream()

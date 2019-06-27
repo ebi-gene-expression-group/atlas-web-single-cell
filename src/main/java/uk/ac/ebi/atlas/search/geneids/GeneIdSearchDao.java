@@ -16,6 +16,7 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStrea
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES;
@@ -40,19 +41,22 @@ public class GeneIdSearchDao {
     // be to return a Pair<String, Set> where the left would contain a message if the right is empty or null (like
     // monads similar to Try, Maybe or Either).
     public Optional<ImmutableSet<String>> searchGeneIds(String propertyValue, String propertyName, String species) {
-        SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder =
+        var bioentitiesQueryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
-                        .addFilterFieldByTerm(SPECIES, species)
                         .addQueryFieldByTerm(PROPERTY_VALUE, propertyValue)
                         .addQueryFieldByTerm(PROPERTY_NAME, propertyName)
                         .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER)
                         .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
 
+        if (isNotEmpty(species)) {
+            bioentitiesQueryBuilder.addFilterFieldByTerm(SPECIES, species);
+        }
+
         return searchInTwoSteps(bioentitiesQueryBuilder);
     }
 
     public Optional<ImmutableSet<String>> searchGeneIds(String propertyValue, String propertyName) {
-        SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder =
+        var bioentitiesQueryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
                         .addQueryFieldByTerm(PROPERTY_VALUE, propertyValue)
                         .addQueryFieldByTerm(PROPERTY_NAME, propertyName)
@@ -66,11 +70,11 @@ public class GeneIdSearchDao {
             SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder) {
         bioentitiesQueryBuilder.setRows(1);
 
-        SearchStreamBuilder<BioentitiesCollectionProxy> bioentitiesSearchBuilder =
+        var bioentitiesSearchBuilder =
                 new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder);
 
         LOGGER.debug("Searching bioentities collection: [{}]", bioentitiesQueryBuilder.build().getQuery());
-        try (TupleStreamer tupleStreamer = TupleStreamer.of(bioentitiesSearchBuilder.build())) {
+        try (var tupleStreamer = TupleStreamer.of(bioentitiesSearchBuilder.build())) {
             return tupleStreamer.get()
                     .findFirst()
                     .map((x) ->
@@ -84,20 +88,17 @@ public class GeneIdSearchDao {
     private ImmutableSet<String> searchWithinGeneIdsExpressedInExperiments(
             SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder) {
 
-        SolrQueryBuilder<Gene2ExperimentCollectionProxy> g2eQueryBuilder =
+        var g2eQueryBuilder =
                 new SolrQueryBuilder<Gene2ExperimentCollectionProxy>()
                         .setFieldList(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER)
                         .sortBy(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc)
                         .setRows(SOLR_MAX_ROWS);
 
-        SearchStreamBuilder<BioentitiesCollectionProxy> bioentitiesSearchBuilder =
-                new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder);
-        SearchStreamBuilder<Gene2ExperimentCollectionProxy> g2eSearchBuilder =
-                new SearchStreamBuilder<>(gene2ExperimentCollectionProxy, g2eQueryBuilder);
+        var bioentitiesSearchBuilder = new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder);
+        var g2eSearchBuilder = new SearchStreamBuilder<>(gene2ExperimentCollectionProxy, g2eQueryBuilder);
 
-        String sortField = BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER.name();
-        IntersectStreamBuilder intersectBuilder =
-                new IntersectStreamBuilder(bioentitiesSearchBuilder, g2eSearchBuilder, sortField);
+        var sortField = BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER.name();
+        var intersectBuilder = new IntersectStreamBuilder(bioentitiesSearchBuilder, g2eSearchBuilder, sortField);
 
         // There’s no easy way to get a string representation of a streaming expression unless we set up a
         // StreamFactory, add all functions, equalitors, comparators, collection, etc. :(

@@ -12,14 +12,9 @@
                 <p>
                     <strong>SCXA-Workflows</strong><br>
                     A flexible pipeline for Single Cell RNA-seq analysis that integrates many existing tools for filtering and
-                    mapping reads, quantifying expression, clustering, finding marker genes and variable genes. Our new
+                    mapping reads, quantifying expression, clustering, finding marker genes and variable genes. The
                     workflows maximize reproducibility by making use of Bioconda, Biocontainers, NextFlow and Galaxy.
-                    Through these frameworks, Single Cell Expression Atlas data analysis pipelines can be run easily on
-                    the cloud, local machines (memory and disk resources allowing) or local premises.
-                    Alignment and quantification workflows are developed in NextFlow, whereas the clustering and
-                    downstream analysis was built on Galaxy. All of the Galaxy tools used here are available from the
-                    Galaxy Toolshed to be installed on any instance. The tools and workflows are available for direct
-                    use as well on the Human Cell Atlas European Galaxy instance.
+                    and can be run easily on the cloud, local machines or local premises.
                 </p>
             </div>
         </div>

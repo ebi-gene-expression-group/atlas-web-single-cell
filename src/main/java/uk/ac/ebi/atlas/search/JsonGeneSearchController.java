@@ -21,8 +21,10 @@ import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -34,7 +36,6 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class JsonGeneSearchController extends JsonExceptionHandlingController {
-
     private final GeneIdSearchService geneIdSearchService;
     private final SpeciesFactory speciesFactory;
     private final GeneSearchService geneSearchService;
@@ -54,10 +55,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     }
 
     @RequestMapping(value = "/json/search",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    method = RequestMethod.GET,
+                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
-        var species = requestParams.get("species").stream()
+        var species = Stream.ofNullable(requestParams.getFirst("species"))
                 .filter(org.apache.commons.lang3.StringUtils::isNotEmpty)
                 .map(speciesFactory::create)
                 .findFirst();
@@ -123,20 +124,21 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         // geneSearchServiceDao guarantees that values in the inner maps can’t be empty. The map itself may be empty
         // but if there’s an entry the list will have at least on element
         var results =
-                expressedGeneIdEntries.stream().parallel()
+                expressedGeneIdEntries.stream()
+                        // TODO Measure in production if parallelising the stream below results in any speedup
+                        // TODO (the more experiments we have the better)
                         .flatMap(entry -> entry.getValue().entrySet().stream().map(exp2cells -> {
 
                             // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...
-                            var geneId = entry.getKey();
-                            var experimentAccession = exp2cells.getKey();
+                            String geneId = entry.getKey();
+                            String experimentAccession = exp2cells.getKey();
                             var cellIds = exp2cells.getValue();
 
                             var experimentAttributes =
-                                    ImmutableMap.<String, Object>builder()
-                                            .putAll(getExperimentInformation(experimentAccession, geneId));
+                                    ImmutableMap.<String, Object>builder().putAll(
+                                            getExperimentInformation(experimentAccession, geneId));
                             var facets =
-                                    ImmutableList.<ImmutableMap<String, String>>builder()
-                                    .addAll(
+                                    ImmutableList.<Map<String, String>>builder().addAll(
                                             unfoldFacets(geneSearchService.getFacets(cellIds)
                                                     .getOrDefault(experimentAccession, ImmutableMap.of())));
 
@@ -210,10 +212,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
     private ImmutableMap<String, Object> getExperimentInformation(String experimentAccession, String geneId) {
         var experiment = (SingleCellBaselineExperiment) experimentTrader.getPublicExperiment(experimentAccession);
-        var experimentAttributes = experimentAttributesService.getAttributes(experiment);
+        var experimentAttributes =
+                ImmutableMap.<String, Object>builder().putAll(experimentAttributesService.getAttributes(experiment));
         experimentAttributes.put("url", createExperimentPageURL(experimentAccession, geneId));
 
-        return ImmutableMap.copyOf(experimentAttributes);
+        return experimentAttributes.build();
     }
 
     private ImmutableList<ImmutableMap<String, Object>> convertMarkerGeneModel(String experimentAccession,

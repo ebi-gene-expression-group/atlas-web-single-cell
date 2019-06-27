@@ -5,17 +5,14 @@ import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
-import static java.util.stream.Collectors.toMap;
 
 @Component
 public class GeneSearchService {

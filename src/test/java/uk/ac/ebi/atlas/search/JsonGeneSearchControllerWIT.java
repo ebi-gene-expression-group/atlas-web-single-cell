@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.search;
 
-import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy;
@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.ac.ebi.atlas.solr.BioentityPropertyName.SYMBOL;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_VALUE;
@@ -53,6 +54,9 @@ class JsonGeneSearchControllerWIT {
     private JdbcUtils jdbcTestUtils;
 
     @Inject
+    private BioEntityPropertyDao bioEntityPropertyDao;
+
+    @Inject
     private SolrCloudCollectionProxyFactory collectionProxyFactory;
 
     @Autowired
@@ -64,7 +68,7 @@ class JsonGeneSearchControllerWIT {
 
     @BeforeAll
     void populateDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/scxa_experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
@@ -73,7 +77,7 @@ class JsonGeneSearchControllerWIT {
 
     @AfterAll
     void cleanDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
@@ -106,7 +110,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void validJsonForValidGeneId() throws Exception {
-        String geneId = jdbcTestUtils.fetchRandomGene();
+        var geneId = jdbcTestUtils.fetchRandomGene();
 
         this.mockMvc.perform(get("/json/search").param("ensgene", geneId))
                 .andExpect(status().isOk())
@@ -123,20 +127,32 @@ class JsonGeneSearchControllerWIT {
     }
 
     @Test
-    void ifQueryMatchesUniqueGeneIdIncludeIt() throws Exception {
-        String geneId = jdbcTestUtils.fetchRandomGene();
+    void ifSymbolQueryMatchesUniqueGeneIdIncludeIt() throws Exception {
+        var geneId = jdbcTestUtils.fetchRandomGene();
 
-        SolrQueryBuilder<BioentitiesCollectionProxy> solrQueryBuilder = new SolrQueryBuilder<>();
-        solrQueryBuilder
-                .addQueryFieldByTerm(BIOENTITY_IDENTIFIER, geneId)
-                .addQueryFieldByTerm(PROPERTY_NAME, "symbol")
-                .setFieldList(PROPERTY_VALUE)
-                .setFieldList(SPECIES)
-                .setRows(1);
+        // Some gene IDs don’t have a symbol, e.g. ERCC-00044
+        // Also, it turns out that some gene symbols like Vmn1r216 match more than one gene ID within the same species:
+        // ENSMUSG00000115697 and ENSMUSG00000116057
+        // We don’t want any of those pesky gene IDs!
+        var matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(geneId, SYMBOL);
+        while (matchingSymbols.isEmpty() ||
+                bioEntityPropertyDao.fetchGeneIdsForPropertyValue(
+                        SYMBOL, matchingSymbols.iterator().next()).size() > 1) {
+            geneId = jdbcTestUtils.fetchRandomGene();
+            matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(geneId, SYMBOL);
+        }
 
-        SolrDocumentList docList = bioentitiesCollectionProxy.query(solrQueryBuilder).getResults();
-        String symbol = docList.get(0).getFieldValue(PROPERTY_VALUE.name()).toString();
-        String species = docList.get(0).getFieldValue(SPECIES.name()).toString();
+        var solrQueryBuilder =
+                new SolrQueryBuilder<BioentitiesCollectionProxy>()
+                        .addQueryFieldByTerm(BIOENTITY_IDENTIFIER, geneId)
+                        .addQueryFieldByTerm(PROPERTY_NAME, "symbol")
+                        .setFieldList(PROPERTY_VALUE)
+                        .setFieldList(SPECIES)
+                        .setRows(1);
+
+        var docList = bioentitiesCollectionProxy.query(solrQueryBuilder).getResults();
+        var symbol = docList.get(0).getFieldValue(PROPERTY_VALUE.name()).toString();
+        var species = docList.get(0).getFieldValue(SPECIES.name()).toString();
 
         this.mockMvc.perform(get("/json/search").param("symbol", symbol).param("species", species))
                 .andExpect(status().isOk())
@@ -152,8 +168,8 @@ class JsonGeneSearchControllerWIT {
     }
 
     @Test
-    public void jsonPayloadContainsFacetDescription() throws Exception {
-        String geneId = jdbcTestUtils.fetchRandomGene();
+    void jsonPayloadContainsFacetDescription() throws Exception {
+        var geneId = jdbcTestUtils.fetchRandomGene();
 
         this.mockMvc.perform(get("/json/search").param("ensgene", geneId))
                 .andExpect(status().isOk())

@@ -10,7 +10,7 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "expression-atlas-experiment-page-tsne-plot": "^4.0.1",
+    "expression-atlas-experiment-page-tsne-plot": "^4.1.0",
     "linkifyjs": "^2.1.8",
     "lodash": "^4.17.11",
     "pluralize": "^8.0.0",
@@ -36,7 +36,7 @@
     "file-loader": "^4.0.0",
     "image-webpack-loader": "^5.0.0",
     "webpack": "^4.35.0",
-    "webpack-cli": "^3.3.4",
+    "webpack-cli": "^3.3.5",
     "webpack-dev-server": "^3.7.2",
     "whatwg-fetch": "^3.0.0"
   }

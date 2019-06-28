@@ -7,18 +7,18 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
-    "eslint": "^5.16.0",
+    "eslint": "^6.0.1",
     "eslint-config-gene-expression": "^0.5.0",
     "file-loader": "^4.0.0",
     "image-webpack-loader": "^5.0.0",
-    "webpack": "^4.33.0",
+    "webpack": "^4.35.0",
     "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-cli": "^3.3.2"
+    "webpack-cli": "^3.3.5"
   },
   "dependencies": {
     "atlas-feedback-form": "^1.2.1",
     "atlas-homepage-cards": "^2.1.4",
-    "atlas-react-fetch-loader": "^1.1.0",
+    "atlas-react-fetch-loader": "^1.1.1",
     "expression-atlas-autocomplete": "^3.2.0",
     "lodash": "^4.17.11",
     "prop-types": "^15.7.2",
@@ -27,9 +27,9 @@
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
     "react-select": "^3.0.4",
-    "scxa-gene-search-form": "^1.4.0",
+    "scxa-gene-search-form": "^1.4.1",
     "scxa-homepage-panels": "0.1.0",
-    "styled-components": "^4.3.0",
+    "styled-components": "^4.3.2",
     "urijs": "^1.19.1"
   }
 }

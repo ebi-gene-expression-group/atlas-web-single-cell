@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.ac.ebi.atlas.experimentpage.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

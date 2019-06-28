@@ -2,7 +2,6 @@ package uk.ac.ebi.atlas.search;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
@@ -17,7 +16,6 @@ import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.solr.BioentityPropertyName;
-import uk.ac.ebi.atlas.species.Species;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
@@ -26,7 +24,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -38,7 +36,6 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class JsonGeneSearchController extends JsonExceptionHandlingController {
-
     private final GeneIdSearchService geneIdSearchService;
     private final SpeciesFactory speciesFactory;
     private final GeneSearchService geneSearchService;
@@ -58,12 +55,15 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     }
 
     @RequestMapping(value = "/json/search",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    method = RequestMethod.GET,
+                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
-        Optional<Species> species = Optional.ofNullable(requestParams.getFirst("species")).map(speciesFactory::create);
+        var species = Stream.ofNullable(requestParams.getFirst("species"))
+                .filter(org.apache.commons.lang3.StringUtils::isNotEmpty)
+                .map(speciesFactory::create)
+                .findFirst();
 
-        List<String> validQueryFields =
+        var validQueryFields =
                 ImmutableList.<String>builder()
                         .add("q")
                         .addAll(ID_PROPERTY_NAMES.stream().map(propertyName -> propertyName.name).collect(toList()))
@@ -72,29 +72,24 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         // We support currently only one query term; in the unlikely case that somebody fabricates a URL with more than
         // one we’ll build the query with the first match. Remember that in order to support multiple terms we’ll
         // likely need to change GeneQuery and use internally a SemanticQuery
-        String category =
+        var category =
                 requestParams.keySet().stream()
                         // We rely on "q" and BioentityPropertyName::name’s being lower case
                         .filter(actualField -> validQueryFields.contains(actualField.toLowerCase()))
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Error parsing query"));
 
-        String queryTerm = requestParams.getFirst(category);
+        var queryTerm = requestParams.getFirst(category);
 
-        GeneQuery geneQuery;
-        if (category.equals("q")) {
-            geneQuery =
-                    species.map(_species -> GeneQuery.create(queryTerm, _species))
-                            .orElseGet(() -> GeneQuery.create(queryTerm));
-        } else {
-            geneQuery =
-                    species.map(
-                            _species ->
-                                    GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category), _species))
-                            .orElseGet(() -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category)));
+        var geneQuery = category.equals("q") ?
+                species
+                        .map(_species -> GeneQuery.create(queryTerm, _species))
+                        .orElseGet(() -> GeneQuery.create(queryTerm)) :
+                species
+                        .map(_species -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category), _species))
+                        .orElseGet(() -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category)));
 
-        }
-        Optional<ImmutableSet<String>> geneIds = geneIdSearchService.search(geneQuery);
+        var geneIds = geneIdSearchService.search(geneQuery);
 
         if (geneIds.isEmpty()) {
             return GSON.toJson(
@@ -112,15 +107,15 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
         // We found expressed gene IDs, let’s get to it now...
 
-        Map<String, Map<String, List<String>>> geneIds2ExperimentAndCellIds =
+        var geneIds2ExperimentAndCellIds =
                 geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
 
-        List<Map.Entry<String, Map<String, List<String>>>> expressedGeneIdEntries =
+        var expressedGeneIdEntries =
                 geneIds2ExperimentAndCellIds.entrySet().stream()
                         .filter(entry -> !entry.getValue().isEmpty())
                         .collect(toList());
 
-        Map<String, Map<String, Map<Integer, List<Integer>>>> markerGeneFacets =
+        var markerGeneFacets =
                 geneSearchService.getMarkerGeneProfile(
                         expressedGeneIdEntries.stream()
                                 .map(Map.Entry::getKey)
@@ -128,7 +123,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
         // geneSearchServiceDao guarantees that values in the inner maps can’t be empty. The map itself may be empty
         // but if there’s an entry the list will have at least on element
-        ImmutableList<ImmutableMap<String, Object>> results =
+        var results =
                 expressedGeneIdEntries.stream()
                         // TODO Measure in production if parallelising the stream below results in any speedup
                         // TODO (the more experiments we have the better)
@@ -137,13 +132,15 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                             // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...
                             String geneId = entry.getKey();
                             String experimentAccession = exp2cells.getKey();
-                            List<String> cellIds = exp2cells.getValue();
+                            var cellIds = exp2cells.getValue();
 
-                            Map<String, Object> experimentAttributes =
-                                    getExperimentInformation(experimentAccession, geneId);
-                            List<Map<String, String>> facets =
-                                    unfoldFacets(geneSearchService.getFacets(cellIds)
-                                            .getOrDefault(experimentAccession, ImmutableMap.of()));
+                            var experimentAttributes =
+                                    ImmutableMap.<String, Object>builder().putAll(
+                                            getExperimentInformation(experimentAccession, geneId));
+                            var facets =
+                                    ImmutableList.<Map<String, String>>builder().addAll(
+                                            unfoldFacets(geneSearchService.getFacets(cellIds)
+                                                    .getOrDefault(experimentAccession, ImmutableMap.of())));
 
                             if (markerGeneFacets.containsKey(geneId) &&
                                     markerGeneFacets.get(geneId).containsKey(experimentAccession)) {
@@ -164,11 +161,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                         "markerGenes", ImmutableList.of());
                             }
 
-                            return ImmutableMap.of("element", experimentAttributes, "facets", facets);
+                            return ImmutableMap.of("element", experimentAttributes.build(), "facets", facets.build());
 
                         })).collect(toImmutableList());
 
-        String matchingGeneIds = "";
+        var matchingGeneIds = "";
         if (geneIds.get().size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) {
             matchingGeneIds = "(" + String.join(", ", geneIds.get()) + ")";
         }
@@ -180,22 +177,22 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
     }
 
-    private <K, V> List<SimpleEntry<K, V>> unfoldListMultimap(Map<K, List<V>> multimap) {
+    private <K, V> ImmutableList<SimpleEntry<K, V>> unfoldListMultimap(Map<K, List<V>> multimap) {
         return multimap.entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream().map(value -> new SimpleEntry<>(entry.getKey(), value)))
-                .collect(toList());
+                .collect(toImmutableList());
     }
 
-    private List<Map<String, String>> unfoldFacets(Map<String, List<String>> model) {
-        List<SimpleEntry<String, String>> unfoldedModel = unfoldListMultimap(model);
-        List<Map<String, String>> results = new ArrayList<>();
+    private ImmutableList<ImmutableMap<String, String>> unfoldFacets(Map<String, List<String>> model) {
+        var unfoldedModel = unfoldListMultimap(model);
+        var results = ImmutableList.<ImmutableMap<String, String>>builder();
 
-        for (Map.Entry<String, String> entry : unfoldedModel) {
-            ImmutableMap.Builder<String, String> mapBuilder = ImmutableMap.<String, String>builder()
+        for (var entry : unfoldedModel) {
+            var mapBuilder = ImmutableMap.<String, String>builder()
                     .put("value", entry.getValue())
                     .put("label", StringUtils.capitalize(entry.getValue()));
 
-            FacetGroupName facetGroupName = FacetGroupName.fromName(entry.getKey());
+            var facetGroupName = FacetGroupName.fromName(entry.getKey());
 
             // If this facet is "known", i.e. needs a particular title or tooltip
             if (facetGroupName != null) {
@@ -210,21 +207,21 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
             results.add(mapBuilder.build());
         }
-        return results;
+        return results.build();
     }
 
-    private Map<String, Object> getExperimentInformation(String experimentAccession, String geneId) {
-        SingleCellBaselineExperiment experiment =
-                (SingleCellBaselineExperiment) experimentTrader.getPublicExperiment(experimentAccession);
-        Map<String, Object> experimentAttributes = experimentAttributesService.getAttributes(experiment);
+    private ImmutableMap<String, Object> getExperimentInformation(String experimentAccession, String geneId) {
+        var experiment = (SingleCellBaselineExperiment) experimentTrader.getPublicExperiment(experimentAccession);
+        var experimentAttributes =
+                ImmutableMap.<String, Object>builder().putAll(experimentAttributesService.getAttributes(experiment));
         experimentAttributes.put("url", createExperimentPageURL(experimentAccession, geneId));
 
-        return experimentAttributes;
+        return experimentAttributes.build();
     }
 
-    private List<Map<String, Object>> convertMarkerGeneModel(String experimentAccession,
-                                                             String geneId,
-                                                             Map<Integer, List<Integer>> model) {
+    private ImmutableList<ImmutableMap<String, Object>> convertMarkerGeneModel(String experimentAccession,
+                                                                               String geneId,
+                                                                               Map<Integer, List<Integer>> model) {
         return model.entrySet().stream()
                 .map(entry ->
                         ImmutableMap.of(
@@ -232,7 +229,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                 "clusterIds", entry.getValue(),
                                 "url", createResultsPageURL(
                                         experimentAccession, geneId, entry.getKey(), entry.getValue())))
-                .collect(toList());
+                .collect(toImmutableList());
     }
 
     private static String createExperimentPageURL(String experimentAccession, String geneId) {

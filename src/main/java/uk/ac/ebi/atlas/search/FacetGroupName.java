@@ -9,7 +9,6 @@ public enum FacetGroupName {
     String tooltip;
     String title;
 
-
     FacetGroupName(String title, String tooltip) {
         this.title = title;
         this.tooltip = tooltip;

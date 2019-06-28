@@ -138,7 +138,6 @@ processResources {
                 zkPort: zkPort,
                 solrHost: solrHost,
                 solrPort: solrPort,
-                testLogs: testLogs,
                 // Set at compile time with ./gradlew -PbuildNumber={...} ...
                 buildNumber: buildNumber,
                 buildBranch: buildBranch,

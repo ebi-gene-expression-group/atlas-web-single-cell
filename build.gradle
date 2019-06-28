@@ -23,7 +23,7 @@ task explodedWar(type: Copy) {
 war.dependsOn explodedWar
 
 group 'uk.ac.ebi.ge'
-version '1.0.0-SNAPSHOT'
+version '6.0.0'
 sourceCompatibility = 11
 targetCompatibility = 11
 
@@ -112,6 +112,10 @@ dependencies {
 }
 
 test {
+    testLogging {
+        outputs.upToDateWhen {false}
+        showStandardStreams = true
+    }
     useJUnitPlatform()
     maxHeapSize = '4096m'
 }
@@ -147,28 +151,10 @@ processResources {
 }
 
 processTestResources {
-    from('src/main/resources') {
-        include 'configuration.properties'
-    }
-    from("src/main/resources/${buildEnvironment}")
-
     filesMatching(['*.properties', '*.xml']) {
         expand(
                 projectBuildDirectory: buildDir,
-                dataFilesLocation: dataFilesLocation,
-                jdbcUrl: jdbcUrl,
-                jdbcUsername: jdbcUsername,
-                jdbcPassword: jdbcPassword,
-                zkHost: zkHost,
-                zkPort: zkPort,
-                solrHost: solrHost,
-                solrPort: solrPort,
-                testLogs: testLogs,
-                buildNumber: 'test',
-                buildBranch: 'test',
-                buildRevision: 'test',
-                catalinaBase: '${catalina.base}',
-                tomcatHostname: '${tomcat.hostname}'
+                testLogs: testLogs
         )
     }
 }

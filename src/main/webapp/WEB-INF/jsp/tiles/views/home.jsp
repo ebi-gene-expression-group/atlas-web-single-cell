@@ -16,6 +16,11 @@
 <div class="row column margin-bottom-xlarge expanded">
   <tiles:insertAttribute name="experiments-summary-panel"/>
 </div>
+<div class="row expanded margin-top-large" data-equalizer>
+  <div class="small-12 medium-12 large-12 columns">
+    <tiles:insertAttribute name="tools-box"/>
+  </div>
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function(event) {

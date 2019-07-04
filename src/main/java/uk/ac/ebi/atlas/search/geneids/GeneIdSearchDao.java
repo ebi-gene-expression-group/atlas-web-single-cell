@@ -16,7 +16,6 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStrea
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES;

@@ -31,12 +31,6 @@ hr {
     border-bottom: 1px solid lightgrey;
 }
 
-/* Most popular species box */
-.combo:hover {
-    background-color: #eaeaea;
-    border-radius: 0;
-}
-
 /* Override EBI VF styles for components that use React-Select */
 #gene-search input, #experiment-page input, #search-form input {
     height: unset;
@@ -62,6 +56,7 @@ hr {
     text-decoration: none;
     border-bottom: none;
 }
+
 .experiment-page-side-nav a:focus {
     box-shadow: none;
 }
@@ -76,7 +71,6 @@ hr {
 }
 
 /* Experiment page - tab styling */
-
 #experiment-page .tabs {
     background: #ffffff;
 }
@@ -133,4 +127,13 @@ hr {
 img.experiment-thumbnail {
     height: 100px;
     margin-bottom: 20px;
+}
+
+/* Reveal anchored links icons */
+.anchored a {
+    visibility: hidden;
+}
+
+.anchored:hover a {
+    visibility: visible;
 }

@@ -15,48 +15,52 @@
         </p>
 
         <p>
-            <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/home_search.png" alt="Single Cell Expression Atlas home page search">
+            <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/home_search.png"
+                 alt="Single Cell Expression Atlas home page search">
         </p>
 
-        <h3> Search Results</h3>
+        <h4> Search Results</h4>
         <p>
             Once you have selected the gene symbol of interest click <b>Search</b> and this will load a new page of
             all experiments where your selected gene is expressed.
         </p>
 
         <p>
-            Search results can be filtered using the selection criteria along the left hand side of the search results page.
-            Selecting a filter criteria will remove all non-applicable experiments from the search results. For example: selecting
-            <b>Species: Homo sapiens</b> will show only human experiments, similar to searching only on the human specific gene symbol in
-            the Home page Search bar. You can also select experiments where your gene of interest is expressed only in a particular <b>Organism part</b>
-            or <b>Inferred cell type</b> by selecting these from the relevant drop-down menus.
+            Search results can be filtered using the selection criteria along the left hand side of the search results
+            page. Selecting a filter criteria will remove all non-applicable experiments from the search results. For
+            example: selecting<b>Species: Homo sapiens</b> will show only human experiments, similar to searching only
+            on the human specific gene symbol in the Home page Search bar. You can also select experiments where your
+            gene of interest is expressed only in a particular <b>Organism part</b>or <b>Inferred cell type</b> by
+            selecting these from the relevant drop-down menus.
         </p>
 
         <p>
-            Additionally, by clicking on the <b>"Marker gene"</b> filter you can return search results based on whether your gene of interest comprises part
-            of the specific expression profile for a cluster.
+            Additionally, by clicking on the <b>"Marker gene"</b> filter you can return search results based on whether
+            your gene of interest comprises part of the specific expression profile for a cluster.
         </p>
 
         <p>
-            <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/search_results_page.png" alt="Single Cell Expression Atlas home page search results">
+            <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/search_results_page.png"
+                 alt="Single Cell Expression Atlas home page search results">
         </p>
 
         <h3>Featured and Latest Experiments</h3>
         <p>
-            Here, you can toggle between featured experiments and the latest experiments added to the Single Cell Expression Atlas.
+            Here, you can toggle between featured experiments and the latest experiments added to the Single Cell
+            Expression Atlas.
         </p>
         <p>
-            <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/featured_and_latestexps.png" alt="Featured and Latest experiments">
+            <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/featured_and_latestexps.png"
+                 alt="Featured and Latest experiments">
        </p>
 
-        <h3>Latest Experiments</h3>
+        <h4>Latest Experiments</h4>
         <p>
             This is a list of the latest experiments added to the Single Cell Expression Atlas, their title and
             upload date. You can click on the <b>Results</b> link or the experiment title to jump directly to the
-            results page for that dataset. The number of assays is related to the number of sequencing runs. This is not
-            equivalent to the number of cells as some cells do not pass sequencing file quality checks or you can have multiple
-            sequencing runs or libraries generated from the same cell (technical replicates).
-
+            results page for that dataset. The number of assays is related to the number of sequencing runs. This is
+            not equivalent to the number of cells as some cells do not pass sequencing file quality checks or you can
+            have multiple sequencing runs or libraries generated from the same cell (technical replicates).
        </p>
 
         <p>
@@ -74,13 +78,16 @@
             Expression Atlas.
         </p>
         <p>
-            In the latest release, this table has had a number of exciting new features added.
+            The table allows you to quickly browse, filter and download experiment data.
         </p>
-            <ol>
-                <li>Searchable headers: type in your species or a keyword of interest to filter the table based your search results</li>
-                <li>Download experiments: Click on the button next to your dataset of interest to download the data bundle (see tooltip) for that experiment</li>
-                <li>Quick links: Click on the title or assay number for a dataset to jump directly to its Experiment page results and design</li>
-            </ol>
+        <ol>
+            <li>Searchable headers: type in your species or a keyword of interest to filter the table results</li>
+            <li>Download experiments: click on the checkbox next to your datasets of interest and click on the
+                <i>Download</i> link on the table header to download a bundle (see tooltip) for those experiments</li>
+            <li>Quick links: click on the title to jump directly to the <a href="#results-tab">results tab</a> in the
+                experiment page, or the assay number to go the the <a href="#experiment-design-tab">experiment design
+                tab</a></li>
+        </ol>
 
         <p>
             <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/experiments_table.png" alt="Browse experiments">
@@ -105,22 +112,27 @@
             The Experiment page is comprised of four sections:
         </p>
         <ol>
-            <li>Results: this is where you can visualise the t-SNE plots (clustering and gene expression) as well as the marker gene heatmap of the data</li>
+            <li>Results: this is where you can visualise the t-SNE plots (clustering and gene expression) as well as
+                the marker gene heatmap of the data</li>
             <li>Experiment Design: this is where you can find the simplified sample metadata for the experiment</li>
-            <li>Supplementary Information: here you can find the data analysis pipelines and corresponding documentation</li>
+            <li>Supplementary Information: here you can find the data analysis pipelines and corresponding
+                documentation</li>
             <li>Downloads: links to the raw data files; analysis results and sample metadata files</li>
         </ol>
 
-        <h4>Results tab</h4>
+        <h4 class="anchored">Results tab
+            <a class="icon icon-generic clear small" data-icon="L" name="results-tab"
+               href="#results-tab"></a>
+        </h4>
         <p>
-            Here you can view the results of the data analysis. This comprises of two visualisation methods: t-SNE plots and the marker gene heatmap.
-            The t-SNE plots display subpopulations within the data and on the left and gene expression variation at single-cell resolution on the right.
-            Each plot can be saved by clicking on the drop down menu symbol at the top right-hand side of the plot.
+            Here you can view the results of the data analysis. This comprises of two visualisation methods: t-SNE
+            plots and the marker gene heatmap. The t-SNE plots display subpopulations within the data and on the left
+            and gene expression variation at single-cell resolution on the right. Each plot can be saved by clicking on
+            the drop down menu symbol at the top right-hand side of the plot.
         </p>
 
         <p>
-            <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/experiments_page_update_annotated.png"
-                 alt="Results page">
+            <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/experiments_page_update_annotated.png" alt="Results page">
         </p>
 
         <h5>t-SNE plot with clusters</h5>
@@ -134,7 +146,8 @@
 
         <p>
             The number of clusters (<i>k</i> value) shows the output of the
-            <a href="https://scanpy.readthedocs.io/en/latest/api/scanpy.api.tl.louvain.html">Scanpy clustering algorithm</a>.
+            <a href="https://scanpy.readthedocs.io/en/latest/api/scanpy.api.tl.louvain.html">Scanpy clustering
+                algorithm</a>.
             Scanpy clusters cells into subgroups using the Louvain algorithm.
             This also colours the data to allow easier visualisation of different sub-populations within a dataset.
         </p>
@@ -143,9 +156,8 @@
             It is also possible to colour the clusters by metadata! The colour legend for each
             group of cells is displayed along the bottom of the t-SNE plot.
 
-            The metadata used to colour the clusters is derived from different experimental groups described by the authors.
-            This is displayed in the <b>Experiment Design</b> tab along the top of the results page.
-
+            The metadata used to colour the clusters is derived from different experimental groups described by the
+            authors. This is displayed in the <b>Experiment Design</b> tab along the top of the results page.
         </p>
 
         <p>
@@ -161,9 +173,10 @@
         </p>
 
         <p>
-          t-SNE plots are calculated at a range of perplexities by the analysis pipeline. The central value is selected by default.
-
-          Clustering is performed over range of values for resolution in Louvain clustering by Scanpy (producing variable numbers of clusters), and by default the number of clusters corresponding to the default resolution of 1 is selected
+            t-SNE plots are calculated at a range of perplexities by the analysis pipeline. The central value is
+            selected by default. Clustering is performed over range of values for resolution in Louvain clustering by
+            Scanpy (producing variable numbers of clusters), and by default the number of clusters corresponding to the
+            default resolution of 1 is selected.
         </p>
 
         <h5>t-SNE plot with gene expression</h5>
@@ -187,19 +200,22 @@
         </p>
 
         <h5>Marker Gene heatmap</h5>
-
         <p>
-            Genes which comprise part of the specific expression profile for a cell population (cluster) are defined as <b>marker genes</b>.
-            These are displayed - 5 per cluster in the <b>Marker Genes</b> tab under <b>Results</b>. Along the top of the page, you can specify
-            the number of clusters or to view only a subset of clusters. As with the t-SNE plots, the heatmap can also be saved either an image
-            or you can also directly download the data as expression values for each gene per cluster.
-
+            Genes which comprise part of the specific expression profile for a cell population (cluster) are defined as
+            <b>marker genes</b>. These are displayed - 5 per cluster in the <b>Marker Genes</b> tab under
+            <b>Results</b>. Along the top of the page, you can specify the number of clusters or to view only a subset
+            of clusters. As with the t-SNE plots, the heatmap can also be saved either an image or you can also
+            directly download the data as expression values for each gene per cluster.
         </p>
 
         <p>
             <img style="max-height: 650px; display:block; margin-left: auto; margin-right: auto;" src="resources/images/help/HCA_heatmap_annotated.png" alt="Marker Gene heatmap">
+        </p>
 
-        <h4>Experiment Design tab</h4>
+        <h4 class="anchored">Experiment Design tab
+            <a class="icon icon-generic clear small" data-icon="L" name="experiment-design-tab"
+               href="#experiment-design-tab"></a>
+        </h4>
         <p>
             This tab displays the <b>Experiment design file</b> – a simplified table of the the sample metadata and
             experimental variables. <b>Sample characteristics</b> are generally intrinsic metadata required to
@@ -260,7 +276,8 @@
                     <li>
                         Clustering file: output of Scanpy analysis for clustering of filtered cells for the different
                         <i>k</i> values
-                        <a href="https://scanpy.readthedocs.io/en/latest/api/scanpy.api.tl.louvain.html">(Scanpy clustering algorithm)</a>
+                        <a href="https://scanpy.readthedocs.io/en/latest/api/scanpy.api.tl.louvain.html">(Scanpy
+                            clustering algorithm)</a>
                     </li>
                     <li>
                         Filtered quantification file: provides the measured gene expression in CPMs for each filtered

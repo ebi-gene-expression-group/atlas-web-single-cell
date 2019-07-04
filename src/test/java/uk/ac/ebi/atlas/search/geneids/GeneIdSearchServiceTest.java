@@ -16,6 +16,7 @@ import uk.ac.ebi.atlas.species.SpeciesProperties;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -34,7 +35,7 @@ class GeneIdSearchServiceTest {
                     SpeciesProperties.create("Homo_sapiens", "ORGANISM_PART", "animals", ImmutableList.of()));
 
     @Mock
-    private GeneIdSearchDao geneIdSearchDao;
+    private GeneIdSearchDao geneIdSearchDaoMock;
 
     private InOrder inOrder;
 
@@ -42,8 +43,8 @@ class GeneIdSearchServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new GeneIdSearchService(geneIdSearchDao);
-        inOrder = inOrder(geneIdSearchDao);
+        subject = new GeneIdSearchService(geneIdSearchDaoMock);
+        inOrder = inOrder(geneIdSearchDaoMock);
     }
 
     @Test
@@ -52,21 +53,21 @@ class GeneIdSearchServiceTest {
         subject.search(GeneQuery.create("foobar", HUMAN));
 
         ID_PROPERTY_NAMES.forEach(propertyName ->
-                inOrder.verify(geneIdSearchDao).searchGeneIds("foobar", propertyName.name));
+                inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", propertyName.name));
 
         ID_PROPERTY_NAMES.forEach(propertyName ->
-                inOrder.verify(geneIdSearchDao).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()));
+                inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()));
     }
 
     @Test
     void speciesSpecificCategoriesIgnoreSpecies() {
         SPECIES_OVERRIDE_PROPERTY_NAMES.forEach(propertyName -> {
             subject.search(GeneQuery.create("foobar", propertyName, HUMAN));
-            inOrder.verify(geneIdSearchDao).searchGeneIds("foobar", propertyName.name);
+            inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", propertyName.name);
         });
 
         SPECIES_OVERRIDE_PROPERTY_NAMES.forEach(propertyName ->
-            verify(geneIdSearchDao, never()).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()));
+            verify(geneIdSearchDaoMock, never()).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()));
     }
 
     @Test
@@ -77,7 +78,7 @@ class GeneIdSearchServiceTest {
         }
 
         subject.search(GeneQuery.create("foobar", propertyName, HUMAN));
-        verify(geneIdSearchDao).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName());
+        verify(geneIdSearchDaoMock).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName());
     }
 
     @Test
@@ -95,15 +96,15 @@ class GeneIdSearchServiceTest {
         }
 
         ID_PROPERTY_NAMES.forEach(propertyName -> {
-            when(geneIdSearchDao.searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()))
+            when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()))
                     .thenReturn(Optional.empty());
-            when(geneIdSearchDao.searchGeneIds("foobar", propertyName.name))
+            when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name))
                     .thenReturn(Optional.empty());
         });
 
-        when(geneIdSearchDao.searchGeneIds("foobar", randomIdPropertyName.name, HUMAN.getEnsemblName()))
+        when(geneIdSearchDaoMock.searchGeneIds("foobar", randomIdPropertyName.name, HUMAN.getEnsemblName()))
                 .thenReturn(Optional.of(ImmutableSet.of()));
-        when(geneIdSearchDao.searchGeneIds("foobar", randomIdPropertyName.name))
+        when(geneIdSearchDaoMock.searchGeneIds("foobar", randomIdPropertyName.name))
                 .thenReturn(Optional.of(ImmutableSet.of()));
 
         assertThat(subject.search(GeneQuery.create("foobar", HUMAN)))
@@ -127,22 +128,22 @@ class GeneIdSearchServiceTest {
                         ID_PROPERTY_NAMES.indexOf(randomIdPropertyName) + 1, ID_PROPERTY_NAMES.size());
 
         idPropertyNamesBefore.forEach(propertyName -> {
-            when(geneIdSearchDao.searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()))
+            when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()))
                     .thenReturn(Optional.of(ImmutableSet.of()));
-            when(geneIdSearchDao.searchGeneIds("foobar", propertyName.name))
+            when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name))
                     .thenReturn(Optional.of(ImmutableSet.of()));
         });
 
         idPropertyNamesAfter.forEach(propertyName -> {
-            when(geneIdSearchDao.searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()))
+            when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()))
                     .thenReturn(Optional.of(ImmutableSet.of("ENSFOOBAR0000002")));
-            when(geneIdSearchDao.searchGeneIds("foobar", propertyName.name))
+            when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name))
                     .thenReturn(Optional.of(ImmutableSet.of("ENSFOOBAR0000002")));
         });
 
-        when(geneIdSearchDao.searchGeneIds("foobar", randomIdPropertyName.name, HUMAN.getEnsemblName()))
+        when(geneIdSearchDaoMock.searchGeneIds("foobar", randomIdPropertyName.name, HUMAN.getEnsemblName()))
                 .thenReturn(Optional.of(ImmutableSet.of("ENSFOOBAR0000001")));
-        when(geneIdSearchDao.searchGeneIds("foobar", randomIdPropertyName.name))
+        when(geneIdSearchDaoMock.searchGeneIds("foobar", randomIdPropertyName.name))
                 .thenReturn(Optional.of(ImmutableSet.of("ENSFOOBAR0000001")));
 
         assertThat(subject.search(GeneQuery.create("foobar", HUMAN)))
@@ -150,16 +151,30 @@ class GeneIdSearchServiceTest {
                 .hasValue(ImmutableSet.of("ENSFOOBAR0000001"));
 
         idPropertyNamesBefore.forEach(propertyName ->
-                inOrder.verify(geneIdSearchDao).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()));
-        inOrder.verify(geneIdSearchDao).searchGeneIds("foobar", randomIdPropertyName.name, HUMAN.getEnsemblName());
+                inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()));
+        inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", randomIdPropertyName.name, HUMAN.getEnsemblName());
 
         idPropertyNamesBefore.forEach(propertyName ->
-                inOrder.verify(geneIdSearchDao).searchGeneIds("foobar", propertyName.name));
-        inOrder.verify(geneIdSearchDao).searchGeneIds("foobar", randomIdPropertyName.name);
+                inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", propertyName.name));
+        inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", randomIdPropertyName.name);
 
         idPropertyNamesAfter.forEach(propertyName -> {
-            verify(geneIdSearchDao, never()).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName());
-            verify(geneIdSearchDao, never()).searchGeneIds("foobar", propertyName.name);
+            verify(geneIdSearchDaoMock, never()).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName());
+            verify(geneIdSearchDaoMock, never()).searchGeneIds("foobar", propertyName.name);
         });
+    }
+
+    @Test
+    void ifQueryHasEmptySpeciesSearchAllSpecies() {
+        var searchString = randomAlphanumeric(3, 20);
+        subject.search(GeneQuery.create(searchString));
+        verify(geneIdSearchDaoMock).searchGeneIds(searchString, "ensgene");
+        verify(geneIdSearchDaoMock).searchGeneIds(searchString, "symbol");
+        verify(geneIdSearchDaoMock).searchGeneIds(searchString, "entrezgene");
+        verify(geneIdSearchDaoMock).searchGeneIds(searchString, "hgnc_symbol");
+        verify(geneIdSearchDaoMock).searchGeneIds(searchString, "mgi_id");
+        verify(geneIdSearchDaoMock).searchGeneIds(searchString, "mgi_symbol");
+        verify(geneIdSearchDaoMock).searchGeneIds(searchString, "flybase_gene_id");
+        verify(geneIdSearchDaoMock).searchGeneIds(searchString, "wbpsgene");
     }
 }

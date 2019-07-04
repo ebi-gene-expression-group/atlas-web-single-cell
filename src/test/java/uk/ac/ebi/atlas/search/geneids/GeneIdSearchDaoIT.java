@@ -156,14 +156,4 @@ class GeneIdSearchDaoIT {
     private Stream<String> randomGeneIdProvider() {
         return Stream.of(jdbcTestUtils.fetchRandomGene());
     }
-
-    @Test
-    void showAllSpeciesByNotDefinedFilter() {
-        String multiSpeciesPropertyValue = "GO:0005622";
-        String propertyName = "go";
-
-        assertThat(subject.searchGeneIds(multiSpeciesPropertyValue, propertyName, ""))
-                .hasValueSatisfying(results ->
-                        assertThat(results).allMatch(geneId -> geneId.matches("(ENSG|ENSMUSG)\\d+")));
-    }
 }

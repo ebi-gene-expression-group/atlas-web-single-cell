@@ -1,9 +1,9 @@
 {
   "devDependencies": {
-    "@babel/cli": "^7.4.4",
-    "@babel/core": "^7.4.5",
+    "@babel/cli": "^7.5.0",
+    "@babel/core": "^7.5.0",
     "@babel/polyfill": "^7.4.4",
-    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-env": "^7.5.0",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
@@ -11,7 +11,7 @@
     "eslint-config-gene-expression": "^0.5.0",
     "file-loader": "^4.0.0",
     "image-webpack-loader": "^5.0.0",
-    "webpack": "^4.35.0",
+    "webpack": "^4.35.2",
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.3.5"
   },

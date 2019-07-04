@@ -21,7 +21,6 @@ import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -124,9 +123,9 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         // geneSearchServiceDao guarantees that values in the inner maps can’t be empty. The map itself may be empty
         // but if there’s an entry the list will have at least on element
         var results =
-                expressedGeneIdEntries.stream()
-                        // TODO Measure in production if parallelising the stream below results in any speedup
-                        // TODO (the more experiments we have the better)
+                expressedGeneIdEntries.stream().parallel()
+                        // TODO Measure in production if parallelising the stream results in any speedup
+                        //      (the more experiments we have the better)
                         .flatMap(entry -> entry.getValue().entrySet().stream().map(exp2cells -> {
 
                             // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...

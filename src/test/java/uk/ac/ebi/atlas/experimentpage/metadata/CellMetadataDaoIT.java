@@ -118,7 +118,7 @@ class CellMetadataDaoIT {
     void experimentWithMissingValuesReturnsNotAvailable() {
         var experimentAccession = "E-GEOD-71585";
 
-        // TODO: Retrieve randomly sampled cell IDs from Solr
+        // TODO Retrieve randomly sampled cell IDs from Solr
         var cellIdsWithMissingValues = ImmutableList.of(
                 "SRR2138737",
                 "SRR2140225",

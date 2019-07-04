@@ -10,11 +10,11 @@
       experimentTable.render({
         host: '${pageContext.request.contextPath}/',
         resource: 'json/experiments',
-        downloadTooltip: `<ul>
-          <li>Raw filtered count matrix after quantification</li>
-          <li>Normalised filtered count matrix after quantification</li>
-          <li>Experiment design file with experimental metadata</li>
-        </ul>`,
+        downloadTooltip: '<ul>' +
+          '<li>Raw filtered count matrix after quantification</li>' +
+          '<li>Normalised filtered count matrix after quantification</li>' +
+          '<li>Experiment design file with experimental metadata</li>' +
+        '</ul>',
         tableHeader: [
           {type: 'sort', title: 'Loaded date', width: 240, dataParam: 'lastUpdate'},
           {type: 'search', title: 'species', width: 260, dataParam: 'species'},

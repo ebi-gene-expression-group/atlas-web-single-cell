@@ -68,6 +68,7 @@
 <script src="${pageContext.request.contextPath}/resources/js/lib/babel-polyfill.min.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/lib/fetch-polyfill.min.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/lib/url-search-params-polyfill.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/lib/append-polyfill.min.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js-bundles/vendorCommons.bundle.js"></script>
 
 <!-- JavaScript -->

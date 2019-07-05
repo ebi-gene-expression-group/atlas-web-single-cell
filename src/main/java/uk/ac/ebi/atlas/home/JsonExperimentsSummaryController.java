@@ -56,6 +56,6 @@ public class JsonExperimentsSummaryController extends JsonExceptionHandlingContr
                         getExperimentsSummaryImageUrl("malaria-cell-atlas"),
                         getExperimentLink("E-CURD-2"),
                         ImmutableList.of(
-                                getExperimentLink("Malaria parasites", "E-CURD-2"))));
+                                getExperimentLink("Malaria Cell Atlas – Malaria parasites", "E-CURD-2"))));
     }
 }

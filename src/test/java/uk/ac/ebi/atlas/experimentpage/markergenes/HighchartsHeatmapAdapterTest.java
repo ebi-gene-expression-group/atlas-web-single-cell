@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,10 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -43,12 +40,13 @@ class HighchartsHeatmapAdapterTest {
         var geneSymbol1 = generateRandomGeneSymbol();
         var geneSymbol2 = generateRandomGeneSymbol();
 
-        var randomGeneIds = Arrays.asList(gene1, gene2, gene3);
+        var randomGeneIds = ImmutableSet.of(gene1, gene2, gene3);
 
-        when(bioEntityPropertyDaoMock.getSymbolsForGeneIds(randomGeneIds)).thenReturn(ImmutableMap.of(
-                gene1, geneSymbol1,
-                gene2, geneSymbol2
-        ));
+        when(bioEntityPropertyDaoMock.getSymbolsForGeneIds(randomGeneIds))
+                .thenReturn(
+                        ImmutableMap.of(
+                                gene1, geneSymbol1,
+                                gene2, geneSymbol2));
 
         var markerGenes = ImmutableList.of(
                 MarkerGene.create(gene1, 1, 1, 0.004, 1, 199, 185),

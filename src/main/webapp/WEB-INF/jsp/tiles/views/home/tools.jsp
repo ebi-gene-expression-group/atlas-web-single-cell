@@ -11,10 +11,10 @@
             <div class="media-object-section middle">
                 <p>
                     <strong>SCXA-Workflows</strong><br>
-                    A flexible pipeline for Single Cell RNA-seq analysis that integrates many existing tools for filtering and
-                    mapping reads, quantifying expression, clustering, finding marker genes and variable genes. The
-                    workflows maximize reproducibility by making use of Bioconda, Biocontainers, NextFlow and Galaxy.
-                    and can be run easily on the cloud, local machines or local premises.
+                    A flexible pipeline for Single Cell RNA-seq analysis that integrates many existing tools for
+                    filtering and mapping reads, quantifying expression, clustering, finding marker genes and variable
+                    genes. The workflows maximize reproducibility by making use of Bioconda, Biocontainers, NextFlow
+                    and Galaxy. They can be run on the cloud, local machines or local premises.
                 </p>
             </div>
         </div>
@@ -28,9 +28,9 @@
             <div class="media-object-section middle">
                 <p>
                     <strong>Single Cell Expression Atlas t-SNE plot widget</strong><br>
-                    You can embed the Single Cell Expression Atlas t-SNE plots as a JavaScript widget on your site. You can build it
-                    from source or you can link directly to our built bundles. Instructions for both methods are
-                    provided in the GitHub repository.
+                    You can embed the Single Cell Expression Atlas t-SNE plots as a JavaScript widget on your site.
+                    There are detailed instructions to integrate the plots in your service in the linked GitHub
+                    repository.
                 </p>
             </div>
         </div>

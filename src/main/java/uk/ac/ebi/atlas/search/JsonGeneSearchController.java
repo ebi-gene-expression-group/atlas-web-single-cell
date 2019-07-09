@@ -57,7 +57,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
-        var species = Stream.ofNullable(requestParams.getFirst("species"))
+            var species = Stream.ofNullable(requestParams.getFirst("species"))
                 .filter(org.apache.commons.lang3.StringUtils::isNotEmpty)
                 .map(speciesFactory::create)
                 .findFirst();
@@ -123,9 +123,9 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         // geneSearchServiceDao guarantees that values in the inner maps can’t be empty. The map itself may be empty
         // but if there’s an entry the list will have at least on element
         var results =
-                expressedGeneIdEntries.stream().parallel()
+                expressedGeneIdEntries.stream()
                         // TODO Measure in production if parallelising the stream results in any speedup
-                        //      (the more experiments we have the better)
+                        //      (the more experiments we have the better). BEWARE: just adding parallel() throws! (?)
                         .flatMap(entry -> entry.getValue().entrySet().stream().map(exp2cells -> {
 
                             // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...

@@ -28,9 +28,9 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    // For patched version of SolrJ (see dependencies below)
+    mavenLocal()
     maven {
         url "http://bar.ebi.ac.uk:8081/artifactory/repo/"
     }
@@ -80,11 +80,14 @@ dependencies {
 
     // Nasty bug in HttpClient 4.5.3 (bundled with Solr)
     // https://issues.apache.org/jira/browse/HTTPCLIENT-1831
-    implementation 'org.apache.httpcomponents:httpclient:4.5.5'
-    implementation ('org.apache.solr:solr-core:7.1.0') {
-        exclude module: 'httpclient'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.8'
+    // We’re using a patched version of SolrJ in which QueryRequest uses POST instead of GET to avoid erros due to very
+    // long (i.e. unparseable) URIs. You need to install this on your local Maven repository: see mavenLocal() above
+    implementation ('org.apache.solr:solr-core:7.1.0-QUERY_REQUEST_WITH_POST') {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
-    implementation 'org.apache.solr:solr-solrj:7.1.0'
+    // solr-core includes/depends on SolrJ
+    // implementation 'org.apache.solr:solr-solrj:7.1.0
 
     implementation 'org.postgresql:postgresql:42.2.5.jre7'
     implementation 'org.apache.tiles:tiles-extras:3.0.8'

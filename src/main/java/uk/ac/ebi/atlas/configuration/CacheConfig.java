@@ -11,9 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
-        SpringCache2kCacheManager cacheManager = new SpringCache2kCacheManager();
-
-        cacheManager.addCaches(
+        return new SpringCache2kCacheManager().addCaches(
                 builder -> builder.name("designElementsByGeneId"),
                 builder -> builder.name("arrayDesignByAccession"),
                 builder -> builder.name("experimentByAccession"),
@@ -24,7 +22,7 @@ public class CacheConfig {
                 builder -> builder.name("jsonCellMetadata"),
                 builder -> builder.name("jsonExperimentPageTabs"),
                 builder -> builder.name("jsonTSnePlotWithClusters"),
-                builder -> builder.name("jsonTSnePlotWithMetadata"));
-        return cacheManager;
+                builder -> builder.name("jsonTSnePlotWithMetadata"),
+                builder -> builder.name("jsonExperimentMetadata"));
     }
 }

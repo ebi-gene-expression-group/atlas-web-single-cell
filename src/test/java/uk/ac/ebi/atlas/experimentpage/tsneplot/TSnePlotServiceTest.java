@@ -13,15 +13,13 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -49,17 +47,16 @@ class TSnePlotServiceTest {
     @Test
     @DisplayName("Points retrieved by the DAO class are assigned the right cluster")
     void testFetchPlotWithClusters() {
-        String experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
-        int[] perplexities = new int[] {1, 5, 10, 15, 20};
-        int perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
-        int k = ThreadLocalRandom.current().nextInt(5, 20);
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        var perplexities = new int[] {1, 5, 10, 15, 20};
+        var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
+        var k = ThreadLocalRandom.current().nextInt(5, 20);
 
-        Set<TSnePoint.Dto> randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithClusters(NUMBER_OF_CELLS, k);
+        var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithClusters(NUMBER_OF_CELLS, k);
         when(tSnePlotDaoMock.fetchTSnePlotWithClusters(experimentAccession, perplexity, k))
                 .thenReturn(ImmutableList.copyOf(randomPointDtos));
 
-        Map<Integer, Set<TSnePoint>> results = subject.fetchTSnePlotWithClusters(experimentAccession, perplexity, k);
-
+        var results = subject.fetchTSnePlotWithClusters(experimentAccession, perplexity, k);
         for (TSnePoint.Dto tSnePointDto : randomPointDtos) {
             assertThat(results.get(tSnePointDto.clusterId()))
                     .contains(TSnePoint.create(tSnePointDto.x(), tSnePointDto.y(), tSnePointDto.name()));
@@ -86,28 +83,28 @@ class TSnePlotServiceTest {
     @Test
     @DisplayName("Points retrieved by the DAO class are correctly grouped according to metadata values")
     void testFetchPlotWithMetadata() {
-        String experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
-        int[] perplexities = new int[] {1, 5, 10, 15, 20};
-        int perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
-        String metadataCategory = "characteristic_inferred_cell_type";
-        List<String> metadataValues = Arrays.asList("neuron", "stem cell", "B cell");
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        var perplexities = new int[] {1, 5, 10, 15, 20};
+        var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
+        var metadataCategory = "characteristic_inferred_cell_type";
+        var metadataValues = ImmutableList.of("neuron", "stem cell", "B cell");
 
-        Set<TSnePoint.Dto> randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtos(NUMBER_OF_CELLS);
+        var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtos(NUMBER_OF_CELLS);
         when(tSnePlotDaoMock.fetchTSnePlotForPerplexity(experimentAccession, perplexity))
                 .thenReturn(ImmutableList.copyOf(randomPointDtos));
 
         // Extract list of cell IDs from t-SNE points
-        List<String> cellIds = randomPointDtos
+        var cellIds = randomPointDtos
                 .stream()
                 .map(TSnePoint.Dto::name)
-                .collect(Collectors.toList());
+                .collect(toImmutableList());
 
         assertThat(cellIds).doesNotHaveDuplicates();
 
         // Assign random metadata value to each cell ID
-        Map<String, String> cellMetadata = cellIds
+        var cellMetadata = cellIds
                 .stream()
-                .collect(Collectors.toMap(
+                .collect(toImmutableMap(
                         Function.identity(),
                         value -> metadataValues.get(ThreadLocalRandom.current().nextInt(0, metadataValues.size()))));
 
@@ -116,9 +113,7 @@ class TSnePlotServiceTest {
                         eq(experimentAccession), anyString(), eq(cellIds)))
                 .thenReturn(cellMetadata);
 
-        Map<String, Set<TSnePoint>> results =
-                subject.fetchTSnePlotWithMetadata(experimentAccession, perplexity, metadataCategory);
-
+        var results = subject.fetchTSnePlotWithMetadata(experimentAccession, perplexity, metadataCategory);
         assertThat(results)
                 .containsOnlyKeys(metadataValues.stream().map(StringUtils::capitalize).toArray(String[]::new));
     }
@@ -126,17 +121,16 @@ class TSnePlotServiceTest {
     @Test
     @DisplayName("Points DTOs retrieved by the DAO class are correctly transformed to their non-DTO counterparts")
     void testFetchPlotWithExpressionLevels() {
-        String experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
-        int[] perplexities = new int[] {1, 5, 10, 15, 20};
-        int perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
-        String geneId = RandomDataTestUtils.generateRandomEnsemblGeneId();
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        var perplexities = new int[] {1, 5, 10, 15, 20};
+        var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
+        var geneId = RandomDataTestUtils.generateRandomEnsemblGeneId();
 
-        Set<TSnePoint.Dto> randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithExpression(NUMBER_OF_CELLS);
+        var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithExpression(NUMBER_OF_CELLS);
         when(tSnePlotDaoMock.fetchTSnePlotWithExpression(experimentAccession, perplexity, geneId))
                 .thenReturn(ImmutableList.copyOf(randomPointDtos));
 
-        Set<TSnePoint> results = subject.fetchTSnePlotWithExpression(experimentAccession, perplexity, geneId);
-
+        var results = subject.fetchTSnePlotWithExpression(experimentAccession, perplexity, geneId);
         assertThat(results)
                 .containsExactlyInAnyOrder(
                         randomPointDtos.stream()

@@ -3,17 +3,16 @@ package uk.ac.ebi.atlas.experimentimport;
 import com.google.common.collect.Sets;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Named
+@Component
 public class ScxaExperimentDao extends ExperimentDao {
     // Create
     private static final String INSERT_NEW_EXPERIMENT =
@@ -33,7 +32,6 @@ public class ScxaExperimentDao extends ExperimentDao {
     // Delete
     private static final String DELETE_EXPERIMENT = "DELETE FROM scxa_experiment WHERE accession=?";
 
-    @Inject
     public ScxaExperimentDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }

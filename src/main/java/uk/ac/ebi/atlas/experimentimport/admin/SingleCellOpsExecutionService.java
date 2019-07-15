@@ -3,8 +3,9 @@ package uk.ac.ebi.atlas.experimentimport.admin;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.ebi.atlas.experimentimport.ExperimentCrud;
+import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentimport.ExperimentDto;
+import uk.ac.ebi.atlas.experimentimport.ScxaExperimentCrud;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -16,15 +17,16 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
+@Component
 public class SingleCellOpsExecutionService implements ExperimentOpsExecutionService {
-    private final ExperimentCrud experimentCrud;
+    private final ScxaExperimentCrud scxaExperimentCrud;
 
-    public SingleCellOpsExecutionService(ExperimentCrud experimentCrud) {
-        this.experimentCrud = experimentCrud;
+    public SingleCellOpsExecutionService(ScxaExperimentCrud scxaExperimentCrud) {
+        this.scxaExperimentCrud = scxaExperimentCrud;
     }
 
     private Stream<ExperimentDto> allDtos() {
-        return experimentCrud.findAllExperiments().stream()
+        return scxaExperimentCrud.findAllExperiments().stream()
                 .filter(experimentDTO -> experimentDTO.getExperimentType().isSingleCell());
     }
 
@@ -37,7 +39,7 @@ public class SingleCellOpsExecutionService implements ExperimentOpsExecutionServ
     public Optional<JsonElement> attemptExecuteOneStatelessOp(String accession, Op op) {
         switch (op) {
             case LIST:
-                return Optional.of(experimentCrud.findExperiment(accession).toJson());
+                return Optional.of(scxaExperimentCrud.findExperiment(accession).toJson());
             default:
                 return Optional.empty();
         }
@@ -74,22 +76,22 @@ public class SingleCellOpsExecutionService implements ExperimentOpsExecutionServ
         boolean isPrivate = true;
         switch (op) {
             case UPDATE_PRIVATE:
-                experimentCrud.makeExperimentPrivate(accession);
+                scxaExperimentCrud.makeExperimentPrivate(accession);
                 break;
             case UPDATE_PUBLIC:
-                experimentCrud.makeExperimentPublic(accession);
+                scxaExperimentCrud.makeExperimentPublic(accession);
                 break;
             case UPDATE_DESIGN:
-                experimentCrud.updateSingleCellExperimentDesign(accession);
+                scxaExperimentCrud.updateExperimentDesign(accession);
                 break;
             case IMPORT_PUBLIC:
                 isPrivate = false;
             case IMPORT:
-                UUID accessKeyUUID = experimentCrud.importSingleCellExperiment(accession, isPrivate);
+                UUID accessKeyUUID = scxaExperimentCrud.importExperiment(accession, isPrivate);
                 resultOfTheOp = new JsonPrimitive("success, access key UUID: " + accessKeyUUID);
                 break;
             case DELETE:
-                experimentCrud.deleteExperiment(accession);
+                scxaExperimentCrud.deleteExperiment(accession);
                 break;
 
             default:

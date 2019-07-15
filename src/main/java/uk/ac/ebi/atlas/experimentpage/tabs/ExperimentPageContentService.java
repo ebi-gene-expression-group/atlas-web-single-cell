@@ -14,7 +14,6 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,17 +49,8 @@ public class ExperimentPageContentService {
         tsnePlotSettingsService.getExpectedClusters(experimentAccession)
                 .ifPresent(value -> result.addProperty("selectedK", value));
 
-        var perplexityArray = new JsonArray();
-        tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).forEach(perplexityArray::add);
-        result.add("perplexities", perplexityArray);
-
-        var metadataArray = new JsonArray();
-        cellMetadataService.getMetadataTypes(experimentAccession)
-                .stream()
-                .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
-                .collect(Collectors.toSet())
-                .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
-        result.add("metadata", metadataArray);
+        result.add("perplexities", getPerplexities(experimentAccession));
+        result.add("metadata", getMetadata(experimentAccession));
 
         var units = new JsonArray();
         units.add("CPM");
@@ -122,6 +112,33 @@ public class ExperimentPageContentService {
         return supplementaryInformationTabs;
     }
 
+    public JsonArray getAnalysisMethods(String experimentAccession) {
+        var result = new JsonArray();
+
+        try (TsvStreamer tsvStreamer =
+                     dataFileHub.getSingleCellExperimentFiles(experimentAccession).softwareUsed.get()) {
+            result = GSON.toJsonTree(tsvStreamer.get().collect(Collectors.toList())).getAsJsonArray();
+        }
+
+        return result;
+    }
+
+    public JsonArray getPerplexities(String experimentAccession) {
+        var perplexityArray = new JsonArray();
+        tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).forEach(perplexityArray::add);
+        return perplexityArray;
+    }
+
+    public JsonArray getMetadata(String experimentAccession) {
+        var metadataArray = new JsonArray();
+        cellMetadataService.getMetadataTypes(experimentAccession)
+                .stream()
+                .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
+                .collect(Collectors.toSet())
+                .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
+        return metadataArray;
+    }
+
     private JsonObject getExperimentFile(ExperimentFileType experimentFileType,
                                          String experimentAccession,
                                          String accessKey) {
@@ -166,17 +183,6 @@ public class ExperimentPageContentService {
         result.addProperty("type", tabType);
         result.addProperty("name", name);
         result.add("props", props);
-        return result;
-    }
-
-    public JsonArray getAnalysisMethods(String experimentAccession) {
-        var result = new JsonArray();
-
-        try (TsvStreamer tsvStreamer =
-                     dataFileHub.getSingleCellExperimentFiles(experimentAccession).softwareUsed.get()) {
-            result = GSON.toJsonTree(tsvStreamer.get().collect(Collectors.toList())).getAsJsonArray();
-        }
-
         return result;
     }
 }

@@ -9,15 +9,13 @@ import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toSet;
 
 @Component
 public class TSnePlotService {
@@ -45,9 +43,9 @@ public class TSnePlotService {
                 .collect(toImmutableSet());
     }
 
-    public ImmutableMap<Integer, Set<TSnePoint>> fetchTSnePlotWithClusters(String experimentAccession,
-                                                                           int perplexity,
-                                                                           int k) {
+    public ImmutableMap<Integer, ImmutableSet<TSnePoint>> fetchTSnePlotWithClusters(String experimentAccession,
+                                                                                    int perplexity,
+                                                                                    int k) {
         var points = tSnePlotDao.fetchTSnePlotWithClusters(experimentAccession, perplexity, k);
 
         return points.stream()
@@ -57,13 +55,13 @@ public class TSnePlotService {
                         Map.Entry::getKey,
                         entry -> entry.getValue().stream()
                                 .map(pointDto -> TSnePoint.create(pointDto.x(), pointDto.y(), pointDto.name()))
-                                .collect(toSet())));
+                                .collect(toImmutableSet())));
     }
 
 
-    public Map<String, Set<TSnePoint>> fetchTSnePlotWithMetadata(String experimentAccession,
-                                                                 int perplexity,
-                                                                 String metadataCategory) {
+    public ImmutableMap<String, ImmutableSet<TSnePoint>> fetchTSnePlotWithMetadata(String experimentAccession,
+                                                                                   int perplexity,
+                                                                                   String metadataCategory) {
         var pointDtos = tSnePlotDao.fetchTSnePlotForPerplexity(experimentAccession, perplexity);
 
         // An alternative implementation would be to get the metadata for each cell in the tSnePlotServiceDao method
@@ -80,18 +78,18 @@ public class TSnePlotService {
                         metadataCategory,
                         cellIds);
 
-        return pointDtos.stream()
-                .map(
-                        pointDto ->
-                                TSnePoint.create(
-                                        pointDto.x(),
-                                        pointDto.y(),
-                                        pointDto.name(),
-                                        StringUtils.capitalize(
-                                                metadataValuesForCells.getOrDefault(
-                                                        pointDto.name(),
-                                                        MISSING_METADATA_VALUE_PLACEHOLDER)
-                                        )))
-                .collect(groupingBy(TSnePoint::metadata, mapping(Function.identity(), Collectors.toSet())));
+        return ImmutableMap.copyOf(
+                pointDtos.stream()
+                        .map(
+                                pointDto ->
+                                        TSnePoint.create(
+                                                pointDto.x(),
+                                                pointDto.y(),
+                                                pointDto.name(),
+                                                StringUtils.capitalize(
+                                                        metadataValuesForCells.getOrDefault(
+                                                                pointDto.name(),
+                                                                MISSING_METADATA_VALUE_PLACEHOLDER))))
+                        .collect(groupingBy(TSnePoint::metadata, mapping(identity(), toImmutableSet()))));
     }
 }

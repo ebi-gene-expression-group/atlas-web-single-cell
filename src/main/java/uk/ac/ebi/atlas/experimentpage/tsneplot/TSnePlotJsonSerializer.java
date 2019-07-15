@@ -6,16 +6,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
-import uk.ac.ebi.atlas.model.experiment.Experiment;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
@@ -92,7 +88,8 @@ public class TSnePlotJsonSerializer {
         return GSON.toJson(model);
     }
 
-    private ImmutableList<Map<String, Object>> modelForHighcharts(String seriesNamePrefix, Map<?, Set<TSnePoint>> points) {
+    private ImmutableList<ImmutableMap<String, Object>> modelForHighcharts(String seriesNamePrefix,
+                                                                           Map<?, ? extends Set<TSnePoint>> points) {
         return points.entrySet().stream()
                 .map(entry -> ImmutableMap.of(
                         "name", seriesNamePrefix + entry.getKey().toString(),
@@ -100,7 +97,7 @@ public class TSnePlotJsonSerializer {
                 .collect(toImmutableList());
     }
 
-    private ImmutableList<Map<String, Object>> modelForHighcharts(String seriesName, Set<TSnePoint> points) {
+    private ImmutableList<ImmutableMap<String, Object>> modelForHighcharts(String seriesName, Set<TSnePoint> points) {
         return ImmutableList.of(ImmutableMap.of("name", seriesName, "data", points));
     }
 }

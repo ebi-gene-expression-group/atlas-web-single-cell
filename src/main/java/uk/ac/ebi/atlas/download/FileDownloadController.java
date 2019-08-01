@@ -171,11 +171,9 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
             }
         }
         List<ExperimentFileType> fileTypeCheckList = new ArrayList<>(Arrays.asList(
-                ExperimentFileType.QUANTIFICATION_FILTERED,
-                ExperimentFileType.QUANTIFICATION_FILTERED,
                 ExperimentFileType.QUANTIFICATION_RAW,
                 ExperimentFileType.NORMALISED,
-                ExperimentFileType.SDRF));
+                ExperimentFileType.EXPERIMENT_DESIGN));
 
        Map<String, List<String>> inValidFilesList = new HashMap<>();
 
@@ -184,12 +182,12 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 List<String> invalidFiles = new ArrayList<>();
                 for (var fileType : fileTypeCheckList){
 
-                    if (fileType==ExperimentFileType.SDRF &&
+                    if (fileType == ExperimentFileType.EXPERIMENT_DESIGN &&
                             !experimentFileLocationService.getFilePath(experiment.getAccession(), fileType).toFile().exists()) {
                         invalidFiles.add(fileType.getId());
                     }
 
-                    else if (fileType!=ExperimentFileType.SDRF) {
+                    else if (fileType != ExperimentFileType.EXPERIMENT_DESIGN) {
                         var paths = experimentFileLocationService.getFilePathsForArchive(experiment.getAccession(), fileType);
                         for (var path : paths){
                             if(path.toFile().exists() == false) {

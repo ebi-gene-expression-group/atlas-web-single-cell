@@ -6,7 +6,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//@EnableCaching
+@EnableCaching
 @Configuration
 public class CacheConfig {
     @Bean
@@ -18,11 +18,6 @@ public class CacheConfig {
                 builder -> builder.name("experimentsByType"),
                 builder -> builder.name("experimentAttributes"),
                 builder -> builder.name("bioentityProperties"),
-                builder -> builder.name("cellCounts"),
-                builder -> builder.name("jsonCellMetadata"),
-                builder -> builder.name("jsonExperimentPageTabs"),
-                builder -> builder.name("jsonTSnePlotWithClusters"),
-                builder -> builder.name("jsonTSnePlotWithMetadata"),
-                builder -> builder.name("jsonExperimentMetadata"));
+                builder -> builder.name("cellCounts"));
     }
 }

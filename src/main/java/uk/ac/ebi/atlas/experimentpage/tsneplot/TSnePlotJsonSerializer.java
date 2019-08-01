@@ -27,7 +27,6 @@ public class TSnePlotJsonSerializer {
         this.tSnePlotService = tSnePlotService;
     }
 
-    @Cacheable(cacheNames = "jsonTSnePlotWithClusters", key = "{#experimentAccession, #perplexity, #k}")
     public String tSnePlotWithClusters(String experimentAccession, int perplexity, int k, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
@@ -39,7 +38,6 @@ public class TSnePlotJsonSerializer {
                                 tSnePlotService.fetchTSnePlotWithClusters(experiment.getAccession(), perplexity, k))));
     }
 
-    @Cacheable(cacheNames = "jsonTSnePlotWithMetadata", key = "{#experimentAccession, #perplexity, #metadata}")
     public String tSnePlotWithMetadata(String experimentAccession, int perplexity, String metadata, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 

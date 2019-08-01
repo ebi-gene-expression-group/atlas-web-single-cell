@@ -20,7 +20,6 @@ public class ExperimentPageContentSerializer {
         this.experimentPageContentService = experimentPageContentService;
     }
 
-    @Cacheable(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession")
     public String experimentPageContentForExperiment(String experimentAccession, final String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
         var result = new JsonObject();

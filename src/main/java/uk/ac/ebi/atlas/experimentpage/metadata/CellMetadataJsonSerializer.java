@@ -19,7 +19,6 @@ public class CellMetadataJsonSerializer {
         this.cellMetadataService = cellMetadataService;
     }
 
-    @Cacheable(cacheNames = "jsonCellMetadata", key="{#experimentAccession, #cellId}")
     public String getCellMetadata(String experimentAccession, String cellId, String accessKey) {
         Experiment experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 

@@ -27,8 +27,6 @@ public class JsonExperimentMetadataController extends JsonExperimentController {
     }
 
     // TODO In time this should be part of a larger experiment API which we can query to get useful info about it
-    @Cacheable(
-            cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}", sync = true)
     @RequestMapping(value = "json/experiments/{experimentAccession}/metadata/tsneplot",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -40,16 +38,5 @@ public class JsonExperimentMetadataController extends JsonExperimentController {
                 ImmutableMap.of(
                         "perplexities", experimentPageContentService.getPerplexities(experiment.getAccession()),
                         "metadata", experimentPageContentService.getMetadata(experiment.getAccession())));
-    }
-
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "experimentByAccession", allEntries = true),
-            @CacheEvict(cacheNames = "experimentsByType", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}") })
-    @RequestMapping(value = "json/experiments/{experimentAccession}/metadata/tsneplot/clearcache",
-                    method = RequestMethod.GET,
-                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String foobar(@PathVariable String experimentAccession) {
-        return "";
     }
 }

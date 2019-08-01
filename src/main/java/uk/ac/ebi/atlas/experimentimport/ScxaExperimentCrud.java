@@ -25,8 +25,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Override
     @Caching(evict = {
             @CacheEvict(cacheNames = "experimentByAccession", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "experimentsByType", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}")})
+            @CacheEvict(cacheNames = "experimentsByType", allEntries = true) })
     public UUID importExperiment(String experimentAccession, boolean isPrivate) {
         checkNotNull(experimentAccession);
 
@@ -57,8 +56,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Override
     @Caching(evict = {
             @CacheEvict(cacheNames = "experimentByAccession", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "experimentsByType", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}")})
+            @CacheEvict(cacheNames = "experimentsByType", allEntries = true) })
     public void updateExperimentDesign(String experimentAccession) {
         CondensedSdrfParserOutput condensedSdrfParserOutput =
                 condensedSdrfParser.parse(experimentAccession, ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE);
@@ -71,8 +69,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Override
     @Caching(evict = {
             @CacheEvict(cacheNames = "experimentByAccession", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "experimentsByType", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}")})
+            @CacheEvict(cacheNames = "experimentsByType", allEntries = true) })
     public void deleteExperiment(String experimentAccession) {
         super.deleteExperiment(experimentAccession);
     }
@@ -80,8 +77,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Override
     @Caching(evict = {
             @CacheEvict(cacheNames = "experimentByAccession", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "experimentsByType", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}")})
+            @CacheEvict(cacheNames = "experimentsByType", allEntries = true) })
     public void makeExperimentPrivate(String experimentAccession) {
         super.makeExperimentPrivate(experimentAccession);
     }
@@ -89,8 +85,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Override
     @Caching(evict = {
             @CacheEvict(cacheNames = "experimentByAccession", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "experimentsByType", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}")})
+            @CacheEvict(cacheNames = "experimentsByType", allEntries = true) })
     public void makeExperimentPublic(String experimentAccession) {
         super.makeExperimentPublic(experimentAccession);
     }

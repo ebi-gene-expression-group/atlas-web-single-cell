@@ -154,7 +154,7 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
         }
     }
 
-    @RequestMapping(value = "experiments/check/zip",
+    @RequestMapping(value = "json/experiments/check/zip",
             method = RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
     @ResponseStatus(HttpStatus.OK)
@@ -197,7 +197,12 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                     }
                 }
 
-                inValidFilesList.put(experiment.getAccession(), invalidFiles);
+                if(!invalidFiles.isEmpty()) {
+                    inValidFilesList.put(experiment.getAccession(), invalidFiles);
+                }
+            }
+            if(!inValidFilesList.isEmpty()){
+                LOGGER.debug("Invalid experiment files: {}", inValidFilesList);
             }
         }
         return GSON.toJson(Collections.singletonMap("invalidFiles", inValidFilesList));

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
-import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +30,12 @@ import java.util.zip.ZipOutputStream;
 @Controller
 public class FileDownloadController extends HtmlExceptionHandlingController {
     private final ExperimentFileLocationService experimentFileLocationService;
-    private final ScxaExperimentTrader experimentTrader;
+    private final ExperimentTrader experimentTrader;
     private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
 
     @Inject
     public FileDownloadController(ExperimentFileLocationService experimentFileLocationService,
-                                  ScxaExperimentTrader experimentTrader) {
+                                  ExperimentTrader experimentTrader) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.experimentTrader = experimentTrader;
     }

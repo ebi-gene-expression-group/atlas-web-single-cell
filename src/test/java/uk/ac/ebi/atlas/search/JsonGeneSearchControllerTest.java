@@ -15,7 +15,7 @@ import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
-import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import javax.inject.Inject;
 
@@ -37,7 +37,7 @@ class JsonGeneSearchControllerTest {
     private GeneSearchService geneSearchService;
 
     @Inject
-    private ScxaExperimentTrader experimentTrader;
+    private ExperimentTrader experimentTrader;
 
     @Inject
     private ExperimentAttributesService experimentAttributesService;

@@ -9,19 +9,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentSerializer;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
-import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
-
-import javax.inject.Inject;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 @Controller
 public class ExperimentController extends HtmlExceptionHandlingController {
-    private final ScxaExperimentTrader experimentTrader;
+    private final ExperimentTrader experimentTrader;
     private final ExperimentPageContentSerializer experimentPageContentSerializer;
     private final ExperimentAttributesService experimentAttributesService;
     private final TSnePlotSettingsService tSnePlotSettingsService;
 
-    @Inject
-    public ExperimentController(ScxaExperimentTrader experimentTrader,
+    public ExperimentController(ExperimentTrader experimentTrader,
                                 ExperimentPageContentSerializer experimentPageContentSerializer,
                                 ExperimentAttributesService experimentAttributesService,
                                 TSnePlotSettingsService tSnePlotSettingsService) {

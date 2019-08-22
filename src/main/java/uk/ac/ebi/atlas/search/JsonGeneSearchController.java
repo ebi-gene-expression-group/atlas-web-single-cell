@@ -17,7 +17,7 @@ import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.solr.BioentityPropertyName;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
-import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -38,13 +38,13 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private final GeneIdSearchService geneIdSearchService;
     private final SpeciesFactory speciesFactory;
     private final GeneSearchService geneSearchService;
-    private final ScxaExperimentTrader experimentTrader;
+    private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
     public JsonGeneSearchController(GeneIdSearchService geneIdSearchService,
                                     SpeciesFactory speciesFactory,
                                     GeneSearchService geneSearchService,
-                                    ScxaExperimentTrader experimentTrader,
+                                    ExperimentTrader experimentTrader,
                                     ExperimentAttributesService experimentAttributesService) {
         this.geneIdSearchService = geneIdSearchService;
         this.speciesFactory = speciesFactory;

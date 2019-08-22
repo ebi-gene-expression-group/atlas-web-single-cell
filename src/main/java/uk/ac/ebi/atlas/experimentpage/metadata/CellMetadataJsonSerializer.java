@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
-import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 @Component
@@ -14,7 +13,7 @@ public class CellMetadataJsonSerializer {
     private final ExperimentTrader experimentTrader;
     private final CellMetadataService cellMetadataService;
 
-    public CellMetadataJsonSerializer(ScxaExperimentTrader experimentTrader, CellMetadataService cellMetadataService) {
+    public CellMetadataJsonSerializer(ExperimentTrader experimentTrader, CellMetadataService cellMetadataService) {
         this.experimentTrader = experimentTrader;
         this.cellMetadataService = cellMetadataService;
     }

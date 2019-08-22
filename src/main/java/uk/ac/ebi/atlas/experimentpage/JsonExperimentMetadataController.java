@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.experimentpage.json.JsonExperimentController;
 import uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentService;
-import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -20,7 +20,7 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 public class JsonExperimentMetadataController extends JsonExperimentController {
     private final ExperimentPageContentService experimentPageContentService;
 
-    public JsonExperimentMetadataController(ScxaExperimentTrader experimentTrader,
+    public JsonExperimentMetadataController(ExperimentTrader experimentTrader,
                                             ExperimentPageContentService experimentPageContentService) {
         super(experimentTrader);
         this.experimentPageContentService = experimentPageContentService;

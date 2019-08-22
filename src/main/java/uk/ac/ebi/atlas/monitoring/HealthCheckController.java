@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import uk.ac.ebi.atlas.experimentimport.ScxaExperimentDao;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -13,10 +12,9 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 public class HealthCheckController {
     private final HealthChecker healthChecker;
 
-    public HealthCheckController(HealthCheckService healthCheckService, ScxaExperimentDao experimentDao) {
+    public HealthCheckController(HealthCheckService healthCheckService) {
         healthChecker = new HealthChecker(
                 healthCheckService,
-                experimentDao,
                 ImmutableSet.of("bioentities"),
                 ImmutableSet.of("scxa-analytics", "scxa-gene2experiment"));
     }

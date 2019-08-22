@@ -138,18 +138,18 @@ class TSnePlotDaoIT {
     }
 
     private Stream<String> randomExperimentAccessionProvider() {
-        return Stream.of(jdbcTestUtils.fetchRandomSingleCellExperimentAccession());
+        return Stream.of(jdbcTestUtils.fetchRandomExperimentAccession());
     }
 
     private Stream<Arguments> randomExperimentAccessionAndPerplexityProvider() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         return Stream.of(Arguments.of(experimentAccession, perplexity));
     }
 
     private Stream<Arguments> randomExperimentAccessionKAndPerplexityProvider() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 

@@ -100,31 +100,31 @@ class ExperimentFileLocationServiceIT {
 
     @Test
     void existingExperimentDesignFile() {
-        existingFileOfType(jdbcTestUtils.fetchRandomSingleCellExperimentAccession(),
+        existingFileOfType(jdbcTestUtils.fetchRandomExperimentAccession(),
                 ExperimentFileType.EXPERIMENT_DESIGN, EXPERIMENT_DESIGN_FILE_NAME_TEMPLATE);
     }
 
     @Test
     void existingSdrfFile() {
-        existingFileOfType(jdbcTestUtils.fetchRandomSingleCellExperimentAccession(),
+        existingFileOfType(jdbcTestUtils.fetchRandomExperimentAccession(),
                 ExperimentFileType.SDRF, SDRF_FILE_NAME_TEMPLATE);
     }
 
     @Test
     void existingIdfFile() {
-        existingFileOfType(jdbcTestUtils.fetchRandomSingleCellExperimentAccession(),
+        existingFileOfType(jdbcTestUtils.fetchRandomExperimentAccession(),
                 ExperimentFileType.IDF, IDF_FILE_NAME_TEMPLATE);
     }
 
     @Test
     void existingClusteringFile() {
-        existingFileOfType(jdbcTestUtils.fetchRandomSingleCellExperimentAccession(),
+        existingFileOfType(jdbcTestUtils.fetchRandomExperimentAccession(),
                 ExperimentFileType.CLUSTERING, CLUSTERS_FILE_NAME_TEMPLATE);
     }
 
     @Test
     void existingFilteredQuantificationFiles() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         List<String> expectedFileNames =
                 Stream.of(
                         MATRIX_MARKET_FILTERED_QUANTIFICATION_FILE_NAME_TEMPLATE,
@@ -139,7 +139,7 @@ class ExperimentFileLocationServiceIT {
 
     @Test
     void existingNormalisedQuantificationFiles() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         List<String> expectedFileNames =
                 Stream.of(
                         SINGLE_CELL_MATRIX_MARKET_NORMALISED_AGGREGATED_COUNTS_FILE_PATH_TEMPLATE,
@@ -154,7 +154,7 @@ class ExperimentFileLocationServiceIT {
 
     @Test
     void existingRawFilteredQuantificationFiles() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         List<String> expectedFileNames =
                 Stream.of(
                         SINGLE_CELL_MATRIX_MARKET_FILTERED_AGGREGATED_COUNTS_FILE_PATH_TEMPLATE,
@@ -190,7 +190,7 @@ class ExperimentFileLocationServiceIT {
 
     @Test
     void invalidFileType() {
-        Path path = subject.getFilePath(jdbcTestUtils.fetchRandomSingleCellExperimentAccession(),
+        Path path = subject.getFilePath(jdbcTestUtils.fetchRandomExperimentAccession(),
                 ExperimentFileType.QUANTIFICATION_FILTERED);
 
         assertThat(path).isNull();
@@ -199,7 +199,7 @@ class ExperimentFileLocationServiceIT {
 
     @Test
     void invalidArchiveFileType() {
-        List<Path> paths = subject.getFilePathsForArchive(jdbcTestUtils.fetchRandomSingleCellExperimentAccession(),
+        List<Path> paths = subject.getFilePathsForArchive(jdbcTestUtils.fetchRandomExperimentAccession(),
                 ExperimentFileType.SDRF);
 
         assertThat(paths).isNull();
@@ -207,7 +207,7 @@ class ExperimentFileLocationServiceIT {
 
     @Test
     void uriForValidNonArchiveFileType() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
 
         ExperimentFileType fileType = ExperimentFileType.EXPERIMENT_DESIGN;
         URI uri = subject.getFileUri(experimentAccession, fileType, "");
@@ -220,7 +220,7 @@ class ExperimentFileLocationServiceIT {
 
     @Test
     void uriForValidArchiveFileType() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
 
         ExperimentFileType fileType = ExperimentFileType.QUANTIFICATION_FILTERED;
         URI uri = subject.getFileUri(experimentAccession, fileType, "");

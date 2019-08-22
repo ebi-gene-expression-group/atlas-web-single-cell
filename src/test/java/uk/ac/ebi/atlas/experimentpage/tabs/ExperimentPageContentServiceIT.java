@@ -83,7 +83,7 @@ class ExperimentPageContentServiceIT {
     @Test
     void getValidExperimentDesignJson() {
         // TODO replace empty experiment design table with mock table
-        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var result = this.subject.getExperimentDesign(experimentAccession, new JsonObject(), "");
         assertThat(result.has("table")).isTrue();
         assertThat(result.has("downloadUrl")).isTrue();
@@ -91,7 +91,7 @@ class ExperimentPageContentServiceIT {
 
     @Test
     void getValidAnalysisMethodsJson() {
-        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var result = this.subject.getAnalysisMethods(experimentAccession);
 
         // Should have header row and at least one other
@@ -109,7 +109,7 @@ class ExperimentPageContentServiceIT {
 
     @Test
     void getValidDownloadsJson() {
-        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var result = this.subject.getDownloads(experimentAccession, "");
 
         assertThat(result).hasSize(2);
@@ -143,7 +143,7 @@ class ExperimentPageContentServiceIT {
 
     @Test
     void getValidTsnePlotDataJson() {
-        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var result = this.subject.getTsnePlotData(experimentAccession);
 
         assertThat(result.has("suggesterEndpoint")).isTrue();

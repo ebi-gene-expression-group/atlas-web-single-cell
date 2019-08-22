@@ -78,7 +78,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForExpressedGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         String geneId = jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(experimentAccession);
         // If our fixtures contained full experiments we could use any random perplexity with
         // fetchRandomPerplexityFromExperimentTSne(experimentAccession), but since we have a subset of all the rows, we
@@ -101,7 +101,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForInvalidGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc
@@ -118,7 +118,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void noExpressionForEmptyGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc
@@ -134,7 +134,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForValidK() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
@@ -153,7 +153,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForInvalidK() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc

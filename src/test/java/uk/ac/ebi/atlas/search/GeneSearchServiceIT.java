@@ -65,8 +65,8 @@ class GeneSearchServiceIT {
 
     private Stream<String> experimentAccesionWithoutPreferredKProvider() {
         return jdbcTestUtils
-                .fetchAllSingleCellExperimentAccessions()
+                .fetchAllExperimentAccessions()
                 .stream()
-                .filter(accession -> !tsnePlotSettingsService.getExpectedClusters(accession).isPresent());
+                .filter(accession -> tsnePlotSettingsService.getExpectedClusters(accession).isEmpty());
     }
 }

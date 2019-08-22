@@ -87,7 +87,7 @@ class TSnePlotSettingsServiceIT {
 
     @Test
     void getClustersForValidAccession() {
-        List<Integer> result = subject.getAvailableKs(jdbcTestUtils.fetchRandomSingleCellExperimentAccession());
+        List<Integer> result = subject.getAvailableKs(jdbcTestUtils.fetchRandomExperimentAccession());
 
         assertThat(result)
                 .isNotEmpty()
@@ -102,7 +102,7 @@ class TSnePlotSettingsServiceIT {
     @Test
     void getPerplexitiesForValidAccession() {
         List<Integer> result =
-                subject.getAvailablePerplexities(jdbcTestUtils.fetchRandomSingleCellExperimentAccession());
+                subject.getAvailablePerplexities(jdbcTestUtils.fetchRandomExperimentAccession());
 
         assertThat(result)
                 .isNotEmpty()
@@ -139,6 +139,6 @@ class TSnePlotSettingsServiceIT {
     }
 
     private Stream<String> randomSingleCellExperimentAccessionProvider() {
-        return Stream.of(jdbcTestUtils.fetchRandomSingleCellExperimentAccession());
+        return Stream.of(jdbcTestUtils.fetchRandomExperimentAccession());
     }
 }

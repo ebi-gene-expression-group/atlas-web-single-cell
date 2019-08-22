@@ -85,6 +85,6 @@ class ExperimentControllerWIT {
     }
 
     private Iterable<String> publicExperimentsProvider() {
-        return jdbcTestUtils.fetchPublicSingleCellExperimentAccessions();
+        return jdbcTestUtils.fetchPublicExperimentAccessions();
     }
 }

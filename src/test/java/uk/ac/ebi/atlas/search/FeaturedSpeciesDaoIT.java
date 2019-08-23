@@ -47,7 +47,7 @@ class FeaturedSpeciesDaoIT {
 
     @Test
     void whenNoExperimentsAreLoadedResultsAreEmpty() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "scxa_experiment");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "experiment");
         assertThat(subject.fetchSpeciesSortedByExperimentCount()).isEmpty();
     }
 

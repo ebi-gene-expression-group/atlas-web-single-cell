@@ -8,10 +8,7 @@ import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 import uk.ac.ebi.atlas.experimentimport.ExperimentCrudDao;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
-import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
-import uk.ac.ebi.atlas.trader.factory.BaselineExperimentFactory;
-import uk.ac.ebi.atlas.trader.factory.MicroarrayExperimentFactory;
-import uk.ac.ebi.atlas.trader.factory.RnaSeqDifferentialExperimentFactory;
+import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
 
 @Repository
@@ -41,6 +38,12 @@ public class ScxaExperimentRepository implements ExperimentRepository {
         if (experimentDto == null) {
             throw new ResourceNotFoundException(
                     "Experiment with accession " + experimentAccession + " could not be found");
+        }
+
+        if (experimentDto.getExperimentType() != ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE) {
+            throw new IllegalArgumentException(
+                    "Unable to build experiment " + experimentDto.getExperimentAccession()
+                            + ": experiment type " + experimentDto.getExperimentType() + " is not supported");
         }
 
         LOGGER.info("Building experiment {}...", experimentAccession);

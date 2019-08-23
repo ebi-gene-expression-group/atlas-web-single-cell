@@ -57,7 +57,7 @@ class ExperimentPageContentServiceIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-fixture.sql"),
+                new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"));
         populator.execute(dataSource);
@@ -67,7 +67,7 @@ class ExperimentPageContentServiceIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"));
         populator.execute(dataSource);

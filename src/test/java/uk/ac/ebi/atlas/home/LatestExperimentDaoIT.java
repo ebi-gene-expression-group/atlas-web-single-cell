@@ -33,14 +33,14 @@ public class LatestExperimentDaoIT {
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/scxa_experiment-fixture.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment-fixture.sql"));
         populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/scxa_experiment-delete.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 

@@ -1,1 +1,1 @@
-DELETE FROM scxa_experiment;
+DELETE FROM experiment;

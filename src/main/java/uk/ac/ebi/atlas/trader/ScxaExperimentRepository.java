@@ -18,16 +18,16 @@ public class ScxaExperimentRepository implements ExperimentRepository {
     private final ExperimentCrudDao experimentCrudDao;
     private final ExperimentDesignParser experimentDesignParser;
     private final IdfParser idfParser;
-    private final SingleCellBaselineExperimentFactory experimentFactory;
+    private final SingleCellBaselineExperimentFactory singleCellBaselineExperimentFactory;
 
     public ScxaExperimentRepository(ExperimentCrudDao experimentCrudDao,
                                     ExperimentDesignParser experimentDesignParser,
                                     IdfParser idfParser,
-                                    SingleCellBaselineExperimentFactory experimentFactory) {
+                                    SingleCellBaselineExperimentFactory singleCellBaselineExperimentFactory) {
         this.experimentCrudDao = experimentCrudDao;
         this.experimentDesignParser = experimentDesignParser;
         this.idfParser = idfParser;
-        this.experimentFactory = experimentFactory;
+        this.singleCellBaselineExperimentFactory = singleCellBaselineExperimentFactory;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ScxaExperimentRepository implements ExperimentRepository {
 
         LOGGER.info("Building experiment {}...", experimentAccession);
 
-        return experimentFactory.create(
+        return singleCellBaselineExperimentFactory.create(
                 experimentDto,
                 experimentDesignParser.parse(experimentDto.getExperimentAccession()),
                 idfParser.parse(experimentDto.getExperimentAccession()));

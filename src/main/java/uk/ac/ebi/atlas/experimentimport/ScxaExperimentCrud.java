@@ -33,6 +33,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     // where data is always changing. I think it’s a good trade-off between code simplicity and performance.
     @Override
     @Caching(evict = {
+            @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
@@ -65,6 +67,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
 
     @Override
     @Caching(evict = {
+            @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
@@ -85,6 +89,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
 
     @Override
     @Caching(evict = {
+            @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
@@ -97,6 +103,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
 
     @Override
     @Caching(evict = {
+            @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),

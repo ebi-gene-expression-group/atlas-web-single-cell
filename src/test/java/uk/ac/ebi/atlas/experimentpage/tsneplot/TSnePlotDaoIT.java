@@ -52,7 +52,7 @@ class TSnePlotDaoIT {
     @BeforeAll
     void populateDatabaseTables() {
         populator.setScripts(
-                new ClassPathResource("fixtures/scxa_experiment-fixture.sql"),
+                new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
@@ -62,7 +62,7 @@ class TSnePlotDaoIT {
     @AfterAll
     void cleanDatabaseTables() {
         populator.setScripts(
-                new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
@@ -138,18 +138,18 @@ class TSnePlotDaoIT {
     }
 
     private Stream<String> randomExperimentAccessionProvider() {
-        return Stream.of(jdbcTestUtils.fetchRandomSingleCellExperimentAccession());
+        return Stream.of(jdbcTestUtils.fetchRandomExperimentAccession());
     }
 
     private Stream<Arguments> randomExperimentAccessionAndPerplexityProvider() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         return Stream.of(Arguments.of(experimentAccession, perplexity));
     }
 
     private Stream<Arguments> randomExperimentAccessionKAndPerplexityProvider() {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 

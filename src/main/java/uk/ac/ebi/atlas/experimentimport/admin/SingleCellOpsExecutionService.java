@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static uk.ac.ebi.atlas.experimentimport.admin.Op.LIST;
 
 @Component
 public class SingleCellOpsExecutionService implements ExperimentOpsExecutionService {
@@ -26,7 +27,7 @@ public class SingleCellOpsExecutionService implements ExperimentOpsExecutionServ
     }
 
     private Stream<ExperimentDto> allDtos() {
-        return scxaExperimentCrud.findAllExperiments().stream()
+        return scxaExperimentCrud.readExperiments().stream()
                 .filter(experimentDTO -> experimentDTO.getExperimentType().isSingleCell());
     }
 
@@ -37,12 +38,9 @@ public class SingleCellOpsExecutionService implements ExperimentOpsExecutionServ
 
     @Override
     public Optional<JsonElement> attemptExecuteOneStatelessOp(String accession, Op op) {
-        switch (op) {
-            case LIST:
-                return Optional.of(scxaExperimentCrud.findExperiment(accession).toJson());
-            default:
-                return Optional.empty();
-        }
+        return (op.equals(LIST))
+                ? scxaExperimentCrud.readExperiment(accession).map(ExperimentDto::toJson)
+                : Optional.empty();
     }
 
     @Override
@@ -76,10 +74,10 @@ public class SingleCellOpsExecutionService implements ExperimentOpsExecutionServ
         boolean isPrivate = true;
         switch (op) {
             case UPDATE_PRIVATE:
-                scxaExperimentCrud.makeExperimentPrivate(accession);
+                scxaExperimentCrud.updateExperimentPrivate(accession, true);
                 break;
             case UPDATE_PUBLIC:
-                scxaExperimentCrud.makeExperimentPublic(accession);
+                scxaExperimentCrud.updateExperimentPrivate(accession, false);
                 break;
             case UPDATE_DESIGN:
                 scxaExperimentCrud.updateExperimentDesign(accession);
@@ -87,7 +85,7 @@ public class SingleCellOpsExecutionService implements ExperimentOpsExecutionServ
             case IMPORT_PUBLIC:
                 isPrivate = false;
             case IMPORT:
-                UUID accessKeyUUID = scxaExperimentCrud.importExperiment(accession, isPrivate);
+                UUID accessKeyUUID = scxaExperimentCrud.createExperiment(accession, isPrivate);
                 resultOfTheOp = new JsonPrimitive("success, access key UUID: " + accessKeyUUID);
                 break;
             case DELETE:

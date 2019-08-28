@@ -14,15 +14,17 @@ public class CacheConfig {
         return new SpringCache2kCacheManager().addCaches(
                 builder -> builder.name("designElementsByGeneId"),
                 builder -> builder.name("arrayDesignByAccession"),
-                builder -> builder.name("experimentByAccession"),
-                builder -> builder.name("experimentsByType"),
-                builder -> builder.name("experimentAttributes"),
                 builder -> builder.name("bioentityProperties"),
-                builder -> builder.name("cellCounts"),
-                builder -> builder.name("jsonCellMetadata"),
+
+                builder -> builder.name("experiment"),
+                builder -> builder.name("experimentAttributes"),
+
+                builder -> builder.name("jsonExperimentMetadata"),
                 builder -> builder.name("jsonExperimentPageTabs"),
+                builder -> builder.name("cellCounts"),
+
+                builder -> builder.name("jsonCellMetadata"),
                 builder -> builder.name("jsonTSnePlotWithClusters"),
-                builder -> builder.name("jsonTSnePlotWithMetadata"),
-                builder -> builder.name("jsonExperimentMetadata"));
+                builder -> builder.name("jsonTSnePlotWithMetadata"));
     }
 }

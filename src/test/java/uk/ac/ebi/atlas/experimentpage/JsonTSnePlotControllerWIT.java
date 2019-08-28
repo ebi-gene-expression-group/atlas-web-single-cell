@@ -53,7 +53,7 @@ class JsonTSnePlotControllerWIT {
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-fixture.sql"),
+                new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
@@ -64,7 +64,7 @@ class JsonTSnePlotControllerWIT {
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
@@ -78,7 +78,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForExpressedGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         String geneId = jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(experimentAccession);
         // If our fixtures contained full experiments we could use any random perplexity with
         // fetchRandomPerplexityFromExperimentTSne(experimentAccession), but since we have a subset of all the rows, we
@@ -101,7 +101,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForInvalidGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc
@@ -118,7 +118,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void noExpressionForEmptyGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc
@@ -134,7 +134,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForValidK() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
@@ -153,7 +153,7 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForInvalidK() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc

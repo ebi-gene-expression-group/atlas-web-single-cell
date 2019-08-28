@@ -1,40 +1,23 @@
 package uk.ac.ebi.atlas.experiments;
 
-import com.google.common.collect.ImmutableList;
-import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import uk.ac.ebi.atlas.trader.ScxaExperimentTrader;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-
-import static uk.ac.ebi.atlas.model.experiment.ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
-@Controller
-@Scope("request")
+@RestController
 public class ExperimentsListController {
-    private ExperimentInfoListService experimentInfoListService;
+    private final ExperimentInfoListService experimentInfoListService;
 
-    @Inject
-    public ExperimentsListController(ScxaExperimentTrader scxaExperimentTrader) {
-        this.experimentInfoListService =
-                new ExperimentInfoListService(scxaExperimentTrader, ImmutableList.of(
-                        SINGLE_CELL_RNASEQ_MRNA_BASELINE));
+    public ExperimentsListController(ExperimentInfoListService experimentInfoListService) {
+        this.experimentInfoListService = experimentInfoListService;
     }
 
     //Used by experiments table page
-    @RequestMapping(value = "/json/experiments",
-            method = RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
+    @GetMapping(value = "/json/experiments",
+                produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getExperimentsList() {
         return GSON.toJson(experimentInfoListService.getExperimentsJson());
     }
-
 }

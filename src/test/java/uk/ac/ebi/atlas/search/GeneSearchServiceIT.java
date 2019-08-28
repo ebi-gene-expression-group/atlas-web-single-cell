@@ -42,7 +42,7 @@ class GeneSearchServiceIT {
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-fixture.sql"),
+                new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_marker_genes-fixture.sql"));
         populator.execute(dataSource);
     }
@@ -51,7 +51,7 @@ class GeneSearchServiceIT {
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"));
         populator.execute(dataSource);
     }
@@ -65,8 +65,8 @@ class GeneSearchServiceIT {
 
     private Stream<String> experimentAccesionWithoutPreferredKProvider() {
         return jdbcTestUtils
-                .fetchAllSingleCellExperimentAccessions()
+                .fetchAllExperimentAccessions()
                 .stream()
-                .filter(accession -> !tsnePlotSettingsService.getExpectedClusters(accession).isPresent());
+                .filter(accession -> tsnePlotSettingsService.getExpectedClusters(accession).isEmpty());
     }
 }

@@ -62,7 +62,7 @@ class TSnePlotSettingsServiceIT {
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-fixture.sql"),
+                new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
@@ -73,7 +73,7 @@ class TSnePlotSettingsServiceIT {
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
@@ -87,7 +87,7 @@ class TSnePlotSettingsServiceIT {
 
     @Test
     void getClustersForValidAccession() {
-        List<Integer> result = subject.getAvailableKs(jdbcTestUtils.fetchRandomSingleCellExperimentAccession());
+        List<Integer> result = subject.getAvailableKs(jdbcTestUtils.fetchRandomExperimentAccession());
 
         assertThat(result)
                 .isNotEmpty()
@@ -102,7 +102,7 @@ class TSnePlotSettingsServiceIT {
     @Test
     void getPerplexitiesForValidAccession() {
         List<Integer> result =
-                subject.getAvailablePerplexities(jdbcTestUtils.fetchRandomSingleCellExperimentAccession());
+                subject.getAvailablePerplexities(jdbcTestUtils.fetchRandomExperimentAccession());
 
         assertThat(result)
                 .isNotEmpty()
@@ -139,6 +139,6 @@ class TSnePlotSettingsServiceIT {
     }
 
     private Stream<String> randomSingleCellExperimentAccessionProvider() {
-        return Stream.of(jdbcTestUtils.fetchRandomSingleCellExperimentAccession());
+        return Stream.of(jdbcTestUtils.fetchRandomExperimentAccession());
     }
 }

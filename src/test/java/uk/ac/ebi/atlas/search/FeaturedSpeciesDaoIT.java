@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.search;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,7 +35,7 @@ class FeaturedSpeciesDaoIT {
     @AfterAll
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/scxa_experiment-delete.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -47,14 +46,14 @@ class FeaturedSpeciesDaoIT {
 
     @Test
     void whenNoExperimentsAreLoadedResultsAreEmpty() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "scxa_experiment");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "experiment");
         assertThat(subject.fetchSpeciesSortedByExperimentCount()).isEmpty();
     }
 
     @Test
     void sortsSpeciesNamesByNumberOfExperiments() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/scxa_experiment-fixture.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment-fixture.sql"));
         populator.execute(dataSource);
 
         assertThat(subject.fetchSpeciesSortedByExperimentCount())

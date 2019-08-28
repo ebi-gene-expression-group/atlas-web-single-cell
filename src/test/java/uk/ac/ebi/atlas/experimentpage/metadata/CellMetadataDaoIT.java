@@ -65,7 +65,7 @@ class CellMetadataDaoIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-fixture.sql"),
+                new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
         populator.execute(dataSource);
     }
@@ -74,7 +74,7 @@ class CellMetadataDaoIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
         populator.execute(dataSource);
     }
@@ -150,7 +150,7 @@ class CellMetadataDaoIT {
 
     @Test
     void validCellIdHasNoMetadataValuesForNoMetadataTypes() {
-        var experimentAccession = jdbcUtils.fetchRandomSingleCellExperimentAccession();
+        var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
         var cellId = jdbcUtils.fetchRandomCellFromExperiment(experimentAccession);
 
         assertThat(
@@ -196,7 +196,7 @@ class CellMetadataDaoIT {
 
     @Test
     void noMetadataIsRetrievedForEmptyCellIdList() {
-        var experimentAccession = jdbcUtils.fetchRandomSingleCellExperimentAccession();
+        var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
 
         assertThat(subject.getMetadataValueForCellIds(experimentAccession, "organism", emptyList()))
             .isEmpty();
@@ -215,19 +215,19 @@ class CellMetadataDaoIT {
 
     private Stream<String> experimentsWithFactorsProvider() {
         // E-GEOD-99058 does not have any factors
-        return jdbcUtils.fetchPublicSingleCellExperimentAccessions()
+        return jdbcUtils.fetchPublicExperimentAccessions()
                 .stream()
                 .filter(accession -> !accession.equalsIgnoreCase("E-GEOD-99058"));
     }
 
     private Stream<String> experimentsWithAdditionalAttributesProvider() {
-        return jdbcUtils.fetchPublicSingleCellExperimentAccessions()
+        return jdbcUtils.fetchPublicExperimentAccessions()
                 .stream()
                 .filter(this::hasAdditionalAttributesInIdf);
     }
 
     private Stream<String> experimentsWithoutAdditionalAttributesProvider() {
-        return jdbcUtils.fetchPublicSingleCellExperimentAccessions()
+        return jdbcUtils.fetchPublicExperimentAccessions()
                 .stream()
                 .filter(accession -> !hasAdditionalAttributesInIdf(accession));
     }

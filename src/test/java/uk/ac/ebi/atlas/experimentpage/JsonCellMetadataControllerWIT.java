@@ -53,7 +53,7 @@ class JsonCellMetadataControllerWIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-fixture.sql"),
+                new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
         populator.execute(dataSource);
     }
@@ -62,7 +62,7 @@ class JsonCellMetadataControllerWIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_experiment-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
         populator.execute(dataSource);
     }
@@ -87,7 +87,7 @@ class JsonCellMetadataControllerWIT {
 
     @Test
     void emptyJsonForInvalidCellId() throws Exception {
-        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccession();
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var cellId = "FOO";
 
         this.mockMvc
@@ -110,7 +110,7 @@ class JsonCellMetadataControllerWIT {
 
     private Iterable<String> experimentsWithMetadataProvider() {
         // E-GEOD-99058 does not have any metadata (factors or inferred cell types)
-        return jdbcTestUtils.fetchPublicSingleCellExperimentAccessions()
+        return jdbcTestUtils.fetchPublicExperimentAccessions()
                 .stream()
                 .filter(accession -> !accession.equalsIgnoreCase("E-GEOD-99058"))
                 .collect(Collectors.toSet());

@@ -45,7 +45,7 @@ public class GeneSearchDao {
 
     private static final String SELECT_CELL_IDS_FOR_GENE_STATEMENT =
             "SELECT experiment_accession, cell_id FROM scxa_analytics AS analytics " +
-                    "JOIN scxa_experiment AS experiments ON analytics.experiment_accession = experiments.accession " +
+                    "JOIN experiment AS experiments ON analytics.experiment_accession = experiments.accession " +
                     "WHERE gene_id=:gene_id AND private=FALSE";
     @Transactional(transactionManager = "txManager", readOnly = true)
     public Map<String, List<String>> fetchCellIds(String geneId) {
@@ -75,7 +75,7 @@ public class GeneSearchDao {
 
     private static final String SELECT_EXPERIMENT_ACCESSION_FOR_MARKER_GENE_ID =
             "SELECT experiment_accession FROM scxa_marker_genes AS markers " +
-            "JOIN scxa_experiment AS experiments ON markers.experiment_accession = experiments.accession " +
+            "JOIN experiment AS experiments ON markers.experiment_accession = experiments.accession " +
             "WHERE private=FALSE AND gene_id=:gene_id " +
             "GROUP BY experiment_accession";
     @Transactional(readOnly = true)

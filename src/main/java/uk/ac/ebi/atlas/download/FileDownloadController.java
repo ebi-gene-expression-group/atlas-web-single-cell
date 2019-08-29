@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,14 +27,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Controller
@@ -154,8 +156,7 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
         }
     }
 
-    @RequestMapping(value = "json/experiments/check/zip",
-            method = RequestMethod.GET,
+    @GetMapping(value = "json/experiments/download/zip/check",
             produces = "application/json;charset=UTF-8")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -170,10 +171,10 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 LOGGER.debug("Invalid experiment accession: {}", accession);
             }
         }
-        List<ExperimentFileType> fileTypeCheckList = new ArrayList<>(Arrays.asList(
+        ImmutableList<ExperimentFileType> fileTypeCheckList = ImmutableList.of(
                 ExperimentFileType.QUANTIFICATION_RAW,
                 ExperimentFileType.NORMALISED,
-                ExperimentFileType.EXPERIMENT_DESIGN));
+                ExperimentFileType.EXPERIMENT_DESIGN);
 
        Map<String, List<String>> inValidFilesList = new HashMap<>();
 
@@ -188,12 +189,12 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                     }
 
                     else if (fileType != ExperimentFileType.EXPERIMENT_DESIGN) {
-                        var paths = experimentFileLocationService.getFilePathsForArchive(experiment.getAccession(), fileType);
-                        for (var path : paths){
-                            if(path.toFile().exists() == false) {
-                                invalidFiles.add(path.getFileName().toString());
-                            }
-                        }
+
+                        invalidFiles.addAll(experimentFileLocationService.getFilePathsForArchive(experiment.getAccession(), fileType)
+                                .stream()
+                                .filter(path -> path.toFile().exists() == false)
+                                .map(path -> path.getFileName().toString())
+                                .collect(toImmutableList()));
                     }
                 }
 

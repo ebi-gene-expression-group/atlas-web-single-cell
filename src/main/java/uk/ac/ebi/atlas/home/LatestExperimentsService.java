@@ -40,6 +40,6 @@ public class LatestExperimentsService {
     }
 
     public ImmutableMap<String, Object> fetchLatestExperimentsAttributes() {
-        return latestExperimentsAttributes.get();
+            return latestExperimentsAttributes.get();
     }
 }

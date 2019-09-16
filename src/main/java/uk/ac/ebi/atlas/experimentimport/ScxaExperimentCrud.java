@@ -35,6 +35,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Caching(evict = {
             @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "speciesSummary", allEntries = true),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
@@ -73,7 +74,6 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
-            @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true) })
     public void updateExperimentDesign(String experimentAccession) {
         var experimentDto =
@@ -91,6 +91,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Caching(evict = {
             @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "speciesSummary", allEntries = true),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
@@ -105,6 +106,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Caching(evict = {
             @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "speciesSummary", allEntries = true),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),

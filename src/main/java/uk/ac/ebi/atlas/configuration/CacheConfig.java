@@ -18,6 +18,7 @@ public class CacheConfig {
 
                 builder -> builder.name("experiment"),
                 builder -> builder.name("experimentAttributes"),
+                builder -> builder.name("speciesSummary"),
 
                 builder -> builder.name("jsonExperimentMetadata"),
                 builder -> builder.name("jsonExperimentPageTabs"),

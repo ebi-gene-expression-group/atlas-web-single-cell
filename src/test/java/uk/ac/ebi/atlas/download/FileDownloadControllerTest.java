@@ -41,7 +41,7 @@ public class FileDownloadControllerTest {
     }
 
     @Test
-    public void testHelloWorld() {
+    public void testInvalidFilesForDownloading() {
 
         Experiment experiment = mock(Experiment.class);
         when(experiment.getAccession()).thenReturn(EXPERIMENT_ACCESSION_LIST.get(0));

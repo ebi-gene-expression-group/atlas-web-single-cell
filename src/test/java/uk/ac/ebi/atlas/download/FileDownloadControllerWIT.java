@@ -57,7 +57,6 @@ class FileDownloadControllerWIT {
     private static final String FILE_DOWNLOAD_URL = "/experiment/{experimentAccession}/download";
     private static final String ARCHIVE_DOWNLOAD_URL = "/experiment/{experimentAccession}/download/zip";
     private static final String ARCHIVE_DOWNLOAD_LIST_URL = "/experiments/download/zip";
-    private static final String ARCHIVE_CHECK_LIST_URL = "/json/experiments/download/zip/check";
 
     @Inject
     private DataSource dataSource;
@@ -242,15 +241,5 @@ class FileDownloadControllerWIT {
                 .collect(toImmutableList());
     }
 
-    @Test
-    void checkArchiveForValidExperimentAccession() throws Exception {
-        this.mockMvc.perform(get(ARCHIVE_CHECK_LIST_URL)
-                .param("accession", EXPERIMENT_ACCESSION_LIST.get(0))
-                .param("accession", EXPERIMENT_ACCESSION_LIST.get(1)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.invalidFiles", isA(Map.class)))
-                //should delete some local files from download lists for E-EHCA-2
-                .andExpect(jsonPath("$.invalidFiles", hasKey(EXPERIMENT_ACCESSION_LIST.get(1))));
-    }
+
 }

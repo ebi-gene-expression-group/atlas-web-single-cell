@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ebi.atlas.experimentimport.ExperimentCrudDao;
 import uk.ac.ebi.atlas.experimentimport.ExperimentDto;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
+import uk.ac.ebi.atlas.experimentimport.sdrf.SdrfParser;
 import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
 
@@ -40,6 +41,9 @@ class ScxaExperimentRepositoryTest {
     private IdfParser idfParserMock;
 
     @Mock
+    private SdrfParser sdrfParserMock;
+
+    @Mock
     private SingleCellBaselineExperimentFactory experimentFactoryMock;
 
     private ScxaExperimentRepository subject;
@@ -51,7 +55,8 @@ class ScxaExperimentRepositoryTest {
                         experimentCrudDaoMock,
                         experimentDesignParserMock,
                         idfParserMock,
-                        experimentFactoryMock);
+                        experimentFactoryMock,
+                        sdrfParserMock);
     }
 
     @ParameterizedTest

@@ -1,11 +1,18 @@
 package uk.ac.ebi.atlas.home;
 
+import com.google.gson.JsonParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.experiments.ExperimentInfoListService;
 import uk.ac.ebi.atlas.utils.ExperimentInfo;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.EFO;
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.EG;
@@ -14,6 +21,9 @@ import static uk.ac.ebi.atlas.home.AtlasInformationDataType.WBPS;
 
 @Controller
 public class HomeController extends HtmlExceptionHandlingController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
+    private static final String URL = "http://ftp.ebi.ac.uk/pub/databases/microarray/data/atlas/sc_experiments/cell_stats.json";
+
     private final LatestExperimentsService latestExperimentsService;
     private final ExperimentInfoListService experimentInfoListService;
     private final AtlasInformationDao atlasInformationDao;
@@ -39,11 +49,7 @@ public class HomeController extends HtmlExceptionHandlingController {
                         .count();
         model.addAttribute("numberOfSpecies", numberOfSpecies);
 
-        int numberOfAssays =
-                experimentInfoListService.listPublicExperiments().stream()
-                        .mapToInt(ExperimentInfo::getNumberOfAssays)
-                        .sum();
-        model.addAttribute("numberOfAssays", numberOfAssays);
+        model.addAttribute("numberOfAssays", getCellStats());
 
         model.addAttribute("info", atlasInformationDao.atlasInformation.get());
         model.addAttribute("ensembl", ENSEMBL.getId());
@@ -52,5 +58,20 @@ public class HomeController extends HtmlExceptionHandlingController {
         model.addAttribute("efo", EFO.getId());
 
         return "home";
+    }
+
+    private int getCellStats() {
+        var result= 0;
+        try {
+            var inputStream = new URL(URL).openStream();
+            var element = new JsonParser().parse(
+                    new InputStreamReader(inputStream)
+            );
+            var jsonObject = element.getAsJsonObject();
+            result = jsonObject.get("filtered_cells").getAsInt();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return result;
     }
 }

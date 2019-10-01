@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 import uk.ac.ebi.atlas.experimentimport.ExperimentCrudDao;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
+import uk.ac.ebi.atlas.experimentimport.sdrf.SdrfParser;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
@@ -18,16 +19,19 @@ public class ScxaExperimentRepository implements ExperimentRepository {
     private final ExperimentCrudDao experimentCrudDao;
     private final ExperimentDesignParser experimentDesignParser;
     private final IdfParser idfParser;
+    private final SdrfParser sdrfParser;
     private final SingleCellBaselineExperimentFactory singleCellBaselineExperimentFactory;
 
     public ScxaExperimentRepository(ExperimentCrudDao experimentCrudDao,
                                     ExperimentDesignParser experimentDesignParser,
                                     IdfParser idfParser,
-                                    SingleCellBaselineExperimentFactory singleCellBaselineExperimentFactory) {
+                                    SingleCellBaselineExperimentFactory singleCellBaselineExperimentFactory,
+                                    SdrfParser sdrfParser) {
         this.experimentCrudDao = experimentCrudDao;
         this.experimentDesignParser = experimentDesignParser;
         this.idfParser = idfParser;
         this.singleCellBaselineExperimentFactory = singleCellBaselineExperimentFactory;
+        this.sdrfParser = sdrfParser;
     }
 
     @Override
@@ -51,6 +55,7 @@ public class ScxaExperimentRepository implements ExperimentRepository {
         return singleCellBaselineExperimentFactory.create(
                 experimentDto,
                 experimentDesignParser.parse(experimentDto.getExperimentAccession()),
-                idfParser.parse(experimentDto.getExperimentAccession()));
+                idfParser.parse(experimentDto.getExperimentAccession()),
+                sdrfParser.parseSingleCellTechnologyType(experimentDto.getExperimentAccession()));
     }
 }

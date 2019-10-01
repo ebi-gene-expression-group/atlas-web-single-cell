@@ -1,7 +1,7 @@
 <%--@elvariable id="info" type="ImmutableMap<String, String>"--%>
 <%--@elvariable id="numberOfSpecies" type="Number"--%>
 <%--@elvariable id="numberOfStudies" type="Number"--%>
-<%--@elvariable id="numberOfAssays" type="Number"--%>
+<%--@elvariable id="numberOfCells" type="Number"--%>
 <%--@elvariable id="ensembl" type="String"--%>
 <%--@elvariable id="genomes" type="String"--%>
 <%--@elvariable id="paraSite" type="String"--%>
@@ -16,8 +16,8 @@
     <small>
       Search across <strong><fmt:formatNumber value="${numberOfSpecies}"/>&nbsp;species</strong>,
       <strong><fmt:formatNumber value="${numberOfStudies}"/>&nbsp;studies</strong>
-      <c:if test="${numberOfAssays != 0}">,
-      <strong><fmt:formatNumber value="${numberOfAssays}"/>&nbsp;assays</strong>
+      <c:if test="${numberOfCells != 0}">,
+      <strong><fmt:formatNumber value="${numberOfCells}"/>&nbsp;cells</strong>
       </c:if>
     </small>
   </h4>

@@ -27,13 +27,16 @@ public class HomeController extends HtmlExceptionHandlingController {
     private final LatestExperimentsService latestExperimentsService;
     private final ExperimentInfoListService experimentInfoListService;
     private final AtlasInformationDao atlasInformationDao;
+    private final CellStatsDao cellStatsDao;
 
     public HomeController(LatestExperimentsService latestExperimentsService,
                           ExperimentInfoListService experimentInfoListService,
-                          AtlasInformationDao atlasInformationDao) {
+                          AtlasInformationDao atlasInformationDao,
+                          CellStatsDao cellStatsDao) {
         this.latestExperimentsService = latestExperimentsService;
         this.experimentInfoListService = experimentInfoListService;
         this.atlasInformationDao = atlasInformationDao;
+        this.cellStatsDao = cellStatsDao;
     }
 
     @RequestMapping(value = "/home")
@@ -49,7 +52,10 @@ public class HomeController extends HtmlExceptionHandlingController {
                         .count();
         model.addAttribute("numberOfSpecies", numberOfSpecies);
 
-        model.addAttribute("numberOfAssays", getCellStats());
+        model.addAttribute("numberOfCells",
+                cellStatsDao.cellStatsInformation
+                        .get()
+                        .get("filtered_cells"));
 
         model.addAttribute("info", atlasInformationDao.atlasInformation.get());
         model.addAttribute("ensembl", ENSEMBL.getId());
@@ -58,20 +64,5 @@ public class HomeController extends HtmlExceptionHandlingController {
         model.addAttribute("efo", EFO.getId());
 
         return "home";
-    }
-
-    private int getCellStats() {
-        var result= 0;
-        try {
-            var inputStream = new URL(URL).openStream();
-            var element = new JsonParser().parse(
-                    new InputStreamReader(inputStream)
-            );
-            var jsonObject = element.getAsJsonObject();
-            result = jsonObject.get("filtered_cells").getAsInt();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return result;
     }
 }

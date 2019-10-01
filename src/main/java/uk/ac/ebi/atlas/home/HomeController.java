@@ -17,13 +17,16 @@ public class HomeController extends HtmlExceptionHandlingController {
     private final LatestExperimentsService latestExperimentsService;
     private final ExperimentInfoListService experimentInfoListService;
     private final AtlasInformationDao atlasInformationDao;
+    private final CellStatsDao cellStatsDao;
 
     public HomeController(LatestExperimentsService latestExperimentsService,
                           ExperimentInfoListService experimentInfoListService,
-                          AtlasInformationDao atlasInformationDao) {
+                          AtlasInformationDao atlasInformationDao,
+                          CellStatsDao cellStatsDao) {
         this.latestExperimentsService = latestExperimentsService;
         this.experimentInfoListService = experimentInfoListService;
         this.atlasInformationDao = atlasInformationDao;
+        this.cellStatsDao = cellStatsDao;
     }
 
     @RequestMapping(value = "/home")
@@ -39,11 +42,10 @@ public class HomeController extends HtmlExceptionHandlingController {
                         .count();
         model.addAttribute("numberOfSpecies", numberOfSpecies);
 
-        int numberOfAssays =
-                experimentInfoListService.listPublicExperiments().stream()
-                        .mapToInt(ExperimentInfo::getNumberOfAssays)
-                        .sum();
-        model.addAttribute("numberOfAssays", numberOfAssays);
+        model.addAttribute("numberOfCells",
+                cellStatsDao.cellStatsInformation
+                        .get()
+                        .get("filtered_cells"));
 
         model.addAttribute("info", atlasInformationDao.atlasInformation.get());
         model.addAttribute("ensembl", ENSEMBL.getId());

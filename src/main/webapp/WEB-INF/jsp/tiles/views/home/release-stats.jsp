@@ -1,7 +1,7 @@
 <%--@elvariable id="info" type="ImmutableMap<String, String>"--%>
 <%--@elvariable id="numberOfSpecies" type="Number"--%>
 <%--@elvariable id="numberOfStudies" type="Number"--%>
-<%--@elvariable id="numberOfAssays" type="Number"--%>
+<%--@elvariable id="numberOfCells" type="Number"--%>
 <%--@elvariable id="ensembl" type="String"--%>
 <%--@elvariable id="genomes" type="String"--%>
 <%--@elvariable id="paraSite" type="String"--%>
@@ -9,13 +9,16 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <div class="small-12 medium-6 columns text-left">
   <h4>
     <small>
       Search across <strong><fmt:formatNumber value="${numberOfSpecies}"/>&nbsp;species</strong>,
-      <strong><fmt:formatNumber value="${numberOfStudies}"/>&nbsp;studies</strong>,
-      <strong><fmt:formatNumber value="${numberOfAssays}"/>&nbsp;assays</strong>
+      <strong><fmt:formatNumber value="${numberOfStudies}"/>&nbsp;studies</strong>
+      <c:if test="${numberOfCells != 0}">,
+      <strong><fmt:formatNumber value="${numberOfCells}"/>&nbsp;cells</strong>
+      </c:if>
     </small>
   </h4>
 </div>

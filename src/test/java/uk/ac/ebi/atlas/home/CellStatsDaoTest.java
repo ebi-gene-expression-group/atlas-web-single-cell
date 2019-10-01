@@ -45,7 +45,7 @@ class CellStatsDaoTest {
     }
 
     @Test
-    void ifMetadataFileIsIncompleteReturnUnknownForRemainingFields() {
+    void ifCellStatsFileIsIncompleteReturnUnknownForRemainingFields() {
         var path = createTempFileWithContents(
                 "{\n" +
                         "  \"filtered_cells\": \"542312\"" +

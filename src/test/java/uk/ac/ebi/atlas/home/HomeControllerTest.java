@@ -41,8 +41,6 @@ class HomeControllerTest {
     @Test
     void homeModelHaveAssayInfo() throws Exception {
         this.mockMvc.perform(get("/home"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("home"))
-                .andExpect(model().attributeExists("numberOfAssays"));
+                .andExpect(model().attributeExists("numberOfCells"));
     }
 }

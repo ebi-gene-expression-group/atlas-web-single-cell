@@ -88,8 +88,8 @@ public class FileDownloadControllerTest {
                 .extracting("invalidFiles")
                 .extracting(EXPERIMENT_ACCESSION_LIST.get(0), EXPERIMENT_ACCESSION_LIST.get(1))
                 .contains(
-                        tuple(List.of("filename", "filename", "filename", "filename", "filename", "filename", "experiment-design"),
-                                List.of("filename", "filename", "filename", "filename", "filename", "filename", "experiment-design")));
+                        tuple(List.of("filename", "filename", "filename", "filename", "filename", "filename", "filename"),
+                                List.of("filename", "filename", "filename", "filename", "filename", "filename", "filename")));
 
     }
 

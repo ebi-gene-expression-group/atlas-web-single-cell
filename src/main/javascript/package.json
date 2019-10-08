@@ -20,7 +20,7 @@
     "atlas-homepage-cards": "^2.1.4",
     "atlas-react-fetch-loader": "^1.1.1",
     "expression-atlas-autocomplete": "^3.2.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-autocomplete": "^1.8.1",

@@ -12,7 +12,7 @@
   "dependencies": {
     "expression-atlas-experiment-page-tsne-plot": "^4.2.0",
     "linkifyjs": "^2.1.8",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",

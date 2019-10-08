@@ -23,7 +23,7 @@ task explodedWar(type: Copy) {
 war.dependsOn explodedWar
 
 group 'uk.ac.ebi.ge'
-version '7.0.0-SNAPSHOT'
+version '8.0.0-SNAPSHOT'
 sourceCompatibility = 11
 targetCompatibility = 11
 

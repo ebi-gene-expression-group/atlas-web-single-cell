@@ -17,12 +17,12 @@
       Search across <strong><fmt:formatNumber value="${numberOfSpecies}"/>&nbsp;species</strong>,
       <strong><fmt:formatNumber value="${numberOfStudies}"/>&nbsp;studies</strong>
       <c:if test="${numberOfCells != 0}">,
-      <strong><fmt:formatNumber value="${numberOfCells}"/>&nbsp;cells</strong>
+        <strong><fmt:formatNumber value="${numberOfCells}"/>&nbsp;cells</strong>
       </c:if>
     </small>
   </h4>
 </div>
-<div class="small-12 medium-6 columns hide-for-small-only text-right">
+<div class="small-12 medium-6 columns text-right">
   <h4>
     <small>
       Ensembl&nbsp;${info.get(ensembl)},

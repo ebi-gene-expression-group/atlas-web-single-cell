@@ -1,8 +1,7 @@
 package uk.ac.ebi.atlas.home;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.google.gson.stream.JsonReader;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.atlassian.util.concurrent.LazyReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,46 +10,62 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
-
-import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Component
 public class CellStatsDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(CellStatsDao.class);
-    private final static String FILTERED_CELLS = "filtered_cells";
-    private final static String RAW_CELLS = "raw_cells";
 
-    private Path cellStatsFilePath;
-    private HashMap<String, String> cellStats =
-            Maps.newHashMap();
+    public enum CellStatsKey {
+        RAW_CELLS("raw_cells"),
+        FILTERED_CELLS("filtered_cells");
 
-    public final LazyReference<ImmutableMap<String, String>> cellStatsInformation =
+        private final String keyName;
+
+        CellStatsKey(String keyName) {
+            this.keyName = keyName;
+        }
+    }
+
+    private static class CellStats {
+        private final HashMap<CellStatsKey, Long> keyValues = new HashMap<>();
+
+        @JsonAnySetter
+        public void add(String key, long value) {
+            LOGGER.debug("{}: {}", key, value);
+            Arrays.stream(CellStatsKey.values())
+                    .filter(cellStatsKey -> cellStatsKey.keyName.equals(key))
+                    .findFirst()
+                    .ifPresent(cellStatsKey -> keyValues.put(cellStatsKey, value));
+        }
+
+        private long get(CellStatsKey cellStatsKey) {
+            return keyValues.getOrDefault(cellStatsKey, 0L);
+        }
+    }
+
+    private final Path cellStatsFilePath;
+
+    private final LazyReference<CellStats> cellStatsInformation =
             new LazyReference<>() {
                 @Override
-                protected ImmutableMap<String, String> create() {
-                    try {
-                        //default value of map
-                        cellStats.put(FILTERED_CELLS, "unknown");
-                        cellStats.put(RAW_CELLS, "unknown");
-
-                        var jsonReader =
-                                new JsonReader(
-                                        Files.newBufferedReader(cellStatsFilePath, StandardCharsets.UTF_8));
+                protected CellStats create() {
+                    try (var reader = Files.newBufferedReader(cellStatsFilePath, StandardCharsets.UTF_8)) {
                         LOGGER.info("Cell stats file found {}:", cellStatsFilePath.toString());
-
-                        cellStats.putAll(GSON.<HashMap<String, String>>fromJson(jsonReader, HashMap.class));
-                        LOGGER.info("{}", cellStats.toString());
-
-                        jsonReader.close();
+                        return new ObjectMapper().readerFor(CellStats.class).readValue(reader);
                     } catch (Exception e) {
                         LOGGER.error("Error reading cell stats file: {}", e.getMessage());
                     }
-                    return ImmutableMap.copyOf(cellStats);
+                    return new CellStats();
                 }
             };
 
     public CellStatsDao(Path cellStatsFilePath) {
         this.cellStatsFilePath = cellStatsFilePath;
+    }
+
+    public long get(CellStatsKey cellStatsKey) {
+        return cellStatsInformation.get().get(cellStatsKey);
     }
 }

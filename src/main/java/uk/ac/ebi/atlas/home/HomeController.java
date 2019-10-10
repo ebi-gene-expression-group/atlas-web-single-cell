@@ -11,6 +11,7 @@ import static uk.ac.ebi.atlas.home.AtlasInformationDataType.EFO;
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.EG;
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.ENSEMBL;
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.WBPS;
+import static uk.ac.ebi.atlas.home.CellStatsDao.CellStatsKey.FILTERED_CELLS;
 
 @Controller
 public class HomeController extends HtmlExceptionHandlingController {
@@ -42,10 +43,7 @@ public class HomeController extends HtmlExceptionHandlingController {
                         .count();
         model.addAttribute("numberOfSpecies", numberOfSpecies);
 
-        model.addAttribute("numberOfCells",
-                cellStatsDao.cellStatsInformation
-                        .get()
-                        .get("filtered_cells"));
+        model.addAttribute("numberOfCells", cellStatsDao.get(FILTERED_CELLS));
 
         model.addAttribute("info", atlasInformationDao.atlasInformation.get());
         model.addAttribute("ensembl", ENSEMBL.getId());

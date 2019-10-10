@@ -16,7 +16,7 @@
     <small>
       Search across <strong><fmt:formatNumber value="${numberOfSpecies}"/>&nbsp;species</strong>,
       <strong><fmt:formatNumber value="${numberOfStudies}"/>&nbsp;studies</strong>
-      <c:if test="${numberOfCells != 0}">,
+      <c:if test="${numberOfCells > 0}">,
         <strong><fmt:formatNumber value="${numberOfCells}"/>&nbsp;cells</strong>
       </c:if>
     </small>

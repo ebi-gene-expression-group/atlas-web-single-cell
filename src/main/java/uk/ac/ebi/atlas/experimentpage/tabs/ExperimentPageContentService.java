@@ -12,28 +12,35 @@ import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Component
 public class ExperimentPageContentService {
+    private static final String SMART_TECHNOLOGY_TYPE = "smart";
+
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
     private final CellMetadataService cellMetadataService;
+    private final ExperimentTrader experimentTrader;
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
                                         TSnePlotSettingsService tsnePlotSettingsService,
-                                        CellMetadataService cellMetadataService) {
+                                        CellMetadataService cellMetadataService,
+                                        ExperimentTrader experimentTrader) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.dataFileHub = dataFileHub;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
         this.cellMetadataService = cellMetadataService;
+        this.experimentTrader = experimentTrader;
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
@@ -79,15 +86,23 @@ public class ExperimentPageContentService {
 
     public JsonArray getDownloads(String experimentAccession, String accessKey) {
         var result = new JsonArray();
+        var experiment = experimentTrader.getPublicExperiment(experimentAccession);
+        var technologyType = experiment.getTechnologyType();
 
         var metadataFiles =
                 ImmutableList.of(
                         ExperimentFileType.EXPERIMENT_METADATA,
                         ExperimentFileType.EXPERIMENT_DESIGN);
-        var resultFiles =
+
+        var resultFiles = isSmartExperiment(technologyType) ?
                 ImmutableList.of(
                         ExperimentFileType.CLUSTERING,
                         ExperimentFileType.QUANTIFICATION_FILTERED,
+                        ExperimentFileType.MARKER_GENES,
+                        ExperimentFileType.NORMALISED,
+                        ExperimentFileType.QUANTIFICATION_RAW) :
+                ImmutableList.of(
+                        ExperimentFileType.CLUSTERING,
                         ExperimentFileType.MARKER_GENES,
                         ExperimentFileType.NORMALISED,
                         ExperimentFileType.QUANTIFICATION_RAW);
@@ -184,5 +199,11 @@ public class ExperimentPageContentService {
         result.addProperty("name", name);
         result.add("props", props);
         return result;
+    }
+
+    private boolean isSmartExperiment(ImmutableList<String> technologyType) {
+        Stream<Boolean> isSmartExperiment = technologyType.stream()
+                .map(type -> type.toLowerCase().matches(SMART_TECHNOLOGY_TYPE + "-(?:.*)"));
+        return isSmartExperiment.anyMatch(x -> x);
     }
 }

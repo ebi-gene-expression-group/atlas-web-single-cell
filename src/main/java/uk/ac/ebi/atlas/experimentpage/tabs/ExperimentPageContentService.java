@@ -203,7 +203,9 @@ public class ExperimentPageContentService {
 
     private boolean isSmartExperiment(ImmutableList<String> technologyType) {
         Stream<Boolean> isSmartExperiment = technologyType.stream()
-                .map(type -> type.toLowerCase().matches(SMART_TECHNOLOGY_TYPE + "-(?:.*)"));
-        return isSmartExperiment.anyMatch(x -> x);
+                .map(type -> type
+                        .toLowerCase()
+                        .matches(SMART_TECHNOLOGY_TYPE + "-(?:.*)"));
+        return isSmartExperiment.anyMatch(technology -> technology);
     }
 }

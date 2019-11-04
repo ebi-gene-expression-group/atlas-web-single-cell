@@ -2,16 +2,13 @@ package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.mvel2.integration.impl.ImmutableDefaultFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
-import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -20,25 +17,21 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.stream.Collectors.toMap;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class TSnePlotJsonSerializer {
     private final ExperimentTrader experimentTrader;
     private final TSnePlotService tSnePlotService;
-    private CellMetadataDao cellMetadataDao;
     private MarkerGenesDao markerGenesDao;
     private final TSnePlotSettingsService tsnePlotSettingsService;
 
     public TSnePlotJsonSerializer(ExperimentTrader experimentTrader,
                                   TSnePlotService tSnePlotService,
-                                  CellMetadataDao cellMetadataDao,
                                   MarkerGenesDao markerGenesDao,
                                   TSnePlotSettingsService tsnePlotSettingsService) {
         this.experimentTrader = experimentTrader;
         this.tSnePlotService = tSnePlotService;
-        this.cellMetadataDao = cellMetadataDao;
         this.markerGenesDao = markerGenesDao;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
     }
@@ -124,8 +117,8 @@ public class TSnePlotJsonSerializer {
             var cellIdsByExperimentAccession = tSnePlotService.fetchCellTypeMetadata(characteristicName, characteristicValue);
 
             //experiment accessions
-            var experimentAccessionList = cellIdsByExperimentAccession.entrySet()
-                    .stream().map(x -> x.getKey()).collect(Collectors.toList());
+//            var experimentAccessionList = cellIdsByExperimentAccession.entrySet()
+//                    .stream().map(x -> x.getKey()).collect(Collectors.toList());
 
            // cell types
 //            var cellTypesByExperimentAccession = cellIdsByExperimentAccession
@@ -143,23 +136,23 @@ public class TSnePlotJsonSerializer {
 //                    );
 
 //cell id -> cell type hashmap
-            var cellIdToCellType = cellIdsByExperimentAccession
-                    .entrySet()
-                    .stream()
-                    .collect(
-                            toMap(
-                                    Map.Entry::getKey,
-                                    entry -> entry.getValue()
-                                            .stream()
-                                            .collect(
-                                                    toMap(cellId->cellId,
-                                                            cellId -> cellMetadataDao.getCellTypeForCellId(
-                                                                    entry.getKey(),
-                                                                    cellId.toString()).get(0))
-                                            )));
+//            var cellIdToCellType = cellIdsByExperimentAccession
+//                    .entrySet()
+//                    .stream()
+//                    .collect(
+//                            toMap(
+//                                    Map.Entry::getKey,
+//                                    entry -> entry.getValue()
+//                                            .stream()
+//                                            .collect(
+//                                                    toMap(cellId->cellId,
+//                                                            cellId -> cellMetadataDao.getCellTypeForCellId(
+//                                                                    entry.getKey(),
+//                                                                    cellId.toString()).get(0))
+//                                            )));
 
             //marker genes ids
-            var markerGenesByExperimentAccession = experimentAccessionList
+            var markerGenesByExperimentAccession = cellIdsByExperimentAccession.keySet()
                     .stream()
                     .collect(toMap(
                             experimentAccession -> experimentAccession,
@@ -217,18 +210,20 @@ public class TSnePlotJsonSerializer {
             var expressionByExpressionWithCellType = new HashMap<>();
 
             for(var experimentAccession : cellIdsByExperimentAccession.keySet()) {
-                var cellIdsFromCellTypeQuery = cellIdsByExperimentAccession.get(experimentAccession);
+                var cellIdsFromCellTypeQuery = cellIdsByExperimentAccession.get(experimentAccession).keySet();
                 var perpelexity = tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).get(0);
+
                 var expressionByMarkerGene = new HashMap<>();
+
                 for (var markerGene : markerGenesByExperimentAccession.get(experimentAccession)){
                     var expressionByCellType = new HashMap<>();
                     var pointsWithExpression =
                             tSnePlotService.fetchTSnePlotWithExpression(experimentAccession, perpelexity, markerGene);
+
                     for(var cellExpression:pointsWithExpression) {
                         var cellId = cellExpression.name();
                         if(cellIdsFromCellTypeQuery.contains(cellId)) {
-                           // var cellType = cellMetadataDao.getCellTypeForCellId(experimentAccession, cellId).get(0);
-                            var cellType = ((HashMap<String, String>)cellIdToCellType.get(experimentAccession)).get(cellId);
+                            var cellType = cellIdsByExperimentAccession.get(experimentAccession).get(cellId);
                             var expressionAddon = cellExpression.expressionLevel();
                             if (expressionByCellType.containsKey(cellType)) {
                                 var expressionBase = expressionByCellType.get(cellType);

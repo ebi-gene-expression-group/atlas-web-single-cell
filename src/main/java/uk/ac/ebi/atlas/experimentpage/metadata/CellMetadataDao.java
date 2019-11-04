@@ -100,9 +100,9 @@ public class CellMetadataDao {
     }
 
     public Map<String, String> getMetadataValuesForCellId(String experimentAccession,
-                                                   String cellId,
-                                                   Collection<String> factorFields,
-                                                   Collection<String> characteristicFields) {
+                                                          String cellId,
+                                                          Collection<String> factorFields,
+                                                          Collection<String> characteristicFields) {
         if (factorFields.isEmpty() && characteristicFields.isEmpty()) {
             return ImmutableMap.of();
         }
@@ -138,8 +138,8 @@ public class CellMetadataDao {
 
     // Given a type of metadata, this method retrieves the value of that metadata for list of cell IDs.
     public Map<String, String> getMetadataValueForCellIds(String experimentAccession,
-                                                             String metadataType,
-                                                             Collection<String> cellIds) {
+                                                          String metadataType,
+                                                          Collection<String> cellIds) {
         // We need to do this because we don't know if the metadata type is a factor or a characteristic
         var fields = ImmutableMap.<SingleCellAnalyticsSchemaField, Collection<String>>of(
                 CHARACTERISTIC_NAME, ImmutableSet.of(metadataType),
@@ -175,8 +175,8 @@ public class CellMetadataDao {
     }
 
     // Given a type of chara, this method retrieves the value of that metadata for list of cell IDs.
-    public Map<String, List> getCellTypeMetadata(String characteristicName,
-                                                 String characteristicValue) {
+    public Map<String, Map<String, String>> getCellTypeMetadata(String characteristicName,
+                                                              String characteristicValue) {
 
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
@@ -185,21 +185,6 @@ public class CellMetadataDao {
 
         var results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
 
-//        var cellIdToCellType = cellIdsByExperimentAccession
-//                .entrySet()
-//                .stream()
-//                .collect(
-//                        toMap(
-//                                Map.Entry::getKey,
-//                                entry -> entry.getValue()
-//                                        .stream()
-//                                        .collect(
-//                                                toMap(cellId->cellId,
-//                                                        cellId -> cellMetadataDao.getCellTypeForCellId(
-//                                                                entry.getKey(),
-//                                                                cellId.toString()).get(0))
-//                                        )));
-
         return results
                 .stream()
                 .collect(groupingBy(solrDocument -> (String) solrDocument.getFieldValue(EXPERIMENT_ACCESSION.name())))
@@ -207,14 +192,17 @@ public class CellMetadataDao {
                 .stream()
                 .collect(
                         toMap(
-                        Map.Entry::getKey,
-                        entry -> entry.getValue()
-                                .stream()
-                                .map(cell -> cell.get(CELL_ID.name()).toString())
-//                                .map(cellId -> getFactorTypes(entry.getKey(), cellId))
-//                                .flatMap(x -> x.stream())
-////                                .distinct()
-                                .collect(Collectors.toList()))
+                                Map.Entry::getKey,
+                                entry -> entry.getValue()
+                                        .stream()
+                                        .collect(
+                                                toMap(
+                                                        cell -> cell.get(CELL_ID.name()).toString(),
+                                                        cell -> getCellTypeForCellId(entry.getKey(),
+                                                                cell.get(CELL_ID.name()).toString()).get(0)
+                                                )
+                                        )
+                        )
                 );
 
     }

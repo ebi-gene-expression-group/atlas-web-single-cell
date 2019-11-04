@@ -93,7 +93,7 @@ public class TSnePlotService {
                                                                 MISSING_METADATA_VALUE_PLACEHOLDER))))
                         .collect(groupingBy(TSnePoint::metadata, mapping(identity(), toImmutableSet()))));
     }
-    public ImmutableMap<String, List>  fetchCellTypeMetadata(String characteristicName,
+    public ImmutableMap<String, Map<String, String>>  fetchCellTypeMetadata(String characteristicName,
                                                              String characteristicValue) {
         var metadataValuesForCells = cellMetadataDao.getCellTypeMetadata(
                         characteristicName,

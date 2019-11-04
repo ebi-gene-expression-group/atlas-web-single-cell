@@ -47,6 +47,15 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         return tSnePlotJsonSerializer.tSnePlotWithMetadata(experimentAccession, perplexity, metadata, accessKey);
     }
 
+    @RequestMapping(value = "/json/experiments/celltype/name/{characteristicName}/value/{characteristicValue}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String cellTypeMetadata(@PathVariable String characteristicName,
+                                       @PathVariable String characteristicValue,
+                                       @RequestParam(defaultValue = "") String accessKey) {
+        return tSnePlotJsonSerializer.cellTypeMetadata(characteristicName, characteristicValue, accessKey);
+    }
+
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression/{geneId}",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

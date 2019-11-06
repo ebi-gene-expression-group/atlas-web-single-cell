@@ -85,7 +85,7 @@ public class CellMetadataDao {
         return characteristics.build();
     }
 
-    public List<String> getCellTypeForCellId(String experimentAccession, String cellId) {
+    private List<String> getCellTypeForCellId(String experimentAccession, String cellId) {
         var characteristicFields = "inferred_cell_type";
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()

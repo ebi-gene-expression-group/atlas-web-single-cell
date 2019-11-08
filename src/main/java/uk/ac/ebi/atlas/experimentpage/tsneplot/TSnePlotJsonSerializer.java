@@ -157,13 +157,18 @@ public class TSnePlotJsonSerializer {
                     .collect(toMap(
                             experimentAccession -> experimentAccession,
                             experimentAccession ->  markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession,
-                                    tsnePlotSettingsService.getExpectedClusters(experimentAccession).get())
+                                    tsnePlotSettingsService.getExpectedClusters(experimentAccession).orElse(10))
                                     .stream()
                                     .map(makergene -> makergene.geneId())
                                     .distinct()
                                     .collect(Collectors.toList()))
 
                     );
+
+            var allMarkerGenes = markerGenesByExperimentAccession.values()
+                    .stream().flatMap(x -> x.stream())   //Stream<String>
+                    .distinct()
+                    .collect(Collectors.toList());
 
             //return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, perplexity, geneId, accessKey);
 
@@ -215,7 +220,7 @@ public class TSnePlotJsonSerializer {
 
                 var expressionByMarkerGene = new HashMap<>();
 
-                for (var markerGene : markerGenesByExperimentAccession.get(experimentAccession)){
+                for (var markerGene : allMarkerGenes){
                     var expressionByCellType = new HashMap<>();
                     var pointsWithExpression =
                             tSnePlotService.fetchTSnePlotWithExpression(experimentAccession, perpelexity, markerGene);

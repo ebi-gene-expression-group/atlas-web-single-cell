@@ -8,6 +8,7 @@ import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -115,7 +116,6 @@ public class TSnePlotJsonSerializer {
         {
             //cell ids
             var cellIdsByExperimentAccession = tSnePlotService.fetchCellTypeMetadata(characteristicName, characteristicValue);
-
             //experiment accessions
 //            var experimentAccessionList = cellIdsByExperimentAccession.entrySet()
 //                    .stream().map(x -> x.getKey()).collect(Collectors.toList());
@@ -169,7 +169,6 @@ public class TSnePlotJsonSerializer {
                     .stream().flatMap(x -> x.stream())   //Stream<String>
                     .distinct()
                     .collect(Collectors.toList());
-
             //return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, perplexity, geneId, accessKey);
 
 //            var geneExpression = cellIdsByExperimentAccession
@@ -221,24 +220,38 @@ public class TSnePlotJsonSerializer {
                 var expressionByMarkerGene = new HashMap<>();
 
                 for (var markerGene : allMarkerGenes){
-                    var expressionByCellType = new HashMap<>();
+                    var expressionByCellType = new HashMap<String, ArrayList<Double>>();
                     var pointsWithExpression =
                             tSnePlotService.fetchTSnePlotWithExpression(experimentAccession, perpelexity, markerGene);
 
-                    for(var cellExpression:pointsWithExpression) {
+                    for(var cellExpression : pointsWithExpression) {
                         var cellId = cellExpression.name();
                         if(cellIdsFromCellTypeQuery.contains(cellId)) {
                             var cellType = cellIdsByExperimentAccession.get(experimentAccession).get(cellId);
                             var expressionAddon = cellExpression.expressionLevel();
-                            if (expressionByCellType.containsKey(cellType)) {
-                                var expressionBase = expressionByCellType.get(cellType);
-                                expressionByCellType.put(cellType, ((double)expressionBase + expressionAddon.get())/2);
-                            } else {
-                                expressionByCellType.put(cellType, expressionAddon.get());
+                            var expressionList = expressionByCellType.get(cellType);
+                            if (expressionList == null) {
+                                var listOfExpressions = new ArrayList<Double>();
+                                listOfExpressions.add(expressionAddon.get());
+                                expressionByCellType.put(cellType, listOfExpressions);
+                            }
+                            else if (expressionAddon.get() > 0.0) {
+                                expressionList.add(expressionAddon.get());
                             }
                         }
                     }
-                    expressionByMarkerGene.put(markerGene, expressionByCellType);
+                    expressionByMarkerGene.put(markerGene,
+                            expressionByCellType
+                                    .entrySet()
+                                    .stream()
+                                    .collect(toMap(Map.Entry::getKey,
+                                            entry -> entry.getValue().stream()
+                                                    .mapToDouble(expression -> expression)
+                                                    .average()
+                                                    .orElse(0.0)
+                                                ))
+                                    );
+                    //expressionByMarkerGene.put(markerGene, expressionByCellType);
                 }
                 expressionByExpressionWithCellType.put(experimentAccession, expressionByMarkerGene);
 

@@ -1,41 +1,37 @@
 package uk.ac.ebi.atlas.download;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
+
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Controller
@@ -44,15 +40,13 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
 
-    @Inject
     public FileDownloadController(ExperimentFileLocationService experimentFileLocationService,
                                   ExperimentTrader experimentTrader) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.experimentTrader = experimentTrader;
     }
 
-    @RequestMapping(value = "experiment/{experimentAccession}/download",
-            method = RequestMethod.GET)
+    @GetMapping(value = "experiment/{experimentAccession}/download")
     public ResponseEntity<FileSystemResource>
     download(@PathVariable String experimentAccession,
              @RequestParam(value = "fileType") String fileTypeId,
@@ -72,9 +66,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 .body(resource);
     }
 
-    @RequestMapping(value = "experiment/{experimentAccession}/download/zip",
-            method = RequestMethod.GET,
-            produces = "application/zip")
+    @GetMapping(value = "experiment/{experimentAccession}/download/zip",
+                produces = "application/zip")
     public void
     downloadArchive(HttpServletResponse response,
                     @PathVariable String experimentAccession,
@@ -106,9 +99,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
         zipOutputStream.close();
     }
 
-    @RequestMapping(value = "experiments/download/zip",
-            method = RequestMethod.GET,
-            produces = "application/zip")
+    @GetMapping(value = "experiments/download/zip",
+                produces = "application/zip")
     public void
     downloadMultipleExperimentsArchive(HttpServletResponse response,
                                        @RequestParam(value = "accession", defaultValue = "") List<String> accessions)
@@ -157,58 +149,53 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
     }
 
     @GetMapping(value = "json/experiments/download/zip/check",
-            produces = "application/json;charset=UTF-8")
-    @ResponseStatus(HttpStatus.OK)
+                produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String
-    checkMultipleExperimentsFileValid(@RequestParam(value = "accession", defaultValue = "") List<String> accessions)
+    public String validateExperimentsFiles(@RequestParam(value = "accession", defaultValue = "") List<String> accessions)
     {
-        List<Experiment> experiments = new ArrayList<>();
+        var experiments = ImmutableSet.<Experiment>builder();
 
-        accessions.stream().forEach(accession -> {
-            try{
+        accessions.forEach(accession -> {
+            try {
                 experiments.add(experimentTrader.getPublicExperiment(accession));
             } catch (Exception e) {
                 LOGGER.debug("Invalid experiment accession: {}", accession);
             }
         });
 
-        ImmutableList<ExperimentFileType> fileTypeCheckList = ImmutableList.of(
+        var fileTypeCheckList = ImmutableList.of(
                 ExperimentFileType.QUANTIFICATION_RAW,
                 ExperimentFileType.NORMALISED,
                 ExperimentFileType.EXPERIMENT_DESIGN);
 
-        var filePaths = experiments.stream()
-                .map(experiment ->
-                        Map.entry(experiment.getAccession(),
-                                fileTypeCheckList.stream()
-                                        .map(fileType -> fileType == ExperimentFileType.EXPERIMENT_DESIGN ?
-                                                ImmutableList.of(experimentFileLocationService
-                                                        .getFilePath(experiment.getAccession(), fileType)) :
-                                                experimentFileLocationService
-                                                        .getFilePathsForArchive(experiment.getAccession(), fileType))
-                                        .collect(ImmutableList.toImmutableList())
+        var filePaths = experiments.build().stream()
+                .collect(toImmutableMap(
+                        Experiment::getAccession,
+                        experiment -> fileTypeCheckList.stream()
+                                .map(fileType -> fileType == ExperimentFileType.EXPERIMENT_DESIGN ?
+                                        ImmutableList.of(experimentFileLocationService
+                                                .getFilePath(experiment.getAccession(), fileType)) :
+                                        experimentFileLocationService
+                                                .getFilePathsForArchive(experiment.getAccession(), fileType))
+                                .flatMap(List::stream)
+                                .collect(ImmutableList.toImmutableList())
+                ));
 
-                        ))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        var invalidFilesList = filePaths.keySet().stream()
-                .map(experiment ->
-                        Map.entry(experiment, filePaths.get(experiment).stream()
-                                .map(fileType -> fileType.stream()
-                                        .filter(path -> path.toFile().exists() == false)
-                                        .map(path -> path.getFileName().toString())
-                                        .collect(toImmutableList())
-                                )
-                                .flatMap(Collection::stream)
+        var invalidFilesList = filePaths.entrySet()
+                .stream()
+                .collect(toImmutableMap(
+                        Map.Entry::getKey,
+                        experiment -> experiment.getValue()
+                                .stream()
+                                .filter(path -> path.toFile().exists() == false)
+                                .map(path -> path.getFileName().toString())
                                 .collect(toImmutableList())
-                        )
-                )
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                ));
 
         if(!invalidFilesList.isEmpty()){
             LOGGER.debug("Invalid experiment files: {}", invalidFilesList);
         }
+
         return GSON.toJson(Collections.singletonMap("invalidFiles", invalidFilesList));
     }
 }

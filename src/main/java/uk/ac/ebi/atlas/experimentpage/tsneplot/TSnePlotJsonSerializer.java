@@ -116,40 +116,6 @@ public class TSnePlotJsonSerializer {
         {
             //cell ids
             var cellIdsByExperimentAccession = tSnePlotService.fetchCellTypeMetadata(characteristicName, characteristicValue);
-            //experiment accessions
-//            var experimentAccessionList = cellIdsByExperimentAccession.entrySet()
-//                    .stream().map(x -> x.getKey()).collect(Collectors.toList());
-
-           // cell types
-//            var cellTypesByExperimentAccession = cellIdsByExperimentAccession
-//                    .entrySet()
-//                    .stream()
-//                    .collect(
-//                            toMap(
-//                                    Map.Entry::getKey,
-//                                    entry -> entry.getValue()
-//                                            .stream()
-//                                            .map(cellId -> cellMetadataDao.getCellTypeForCellId(entry.getKey(), cellId.toString()))
-//                                            .distinct()
-//                                            .flatMap(x -> ((List) x).stream())
-//                                            .collect(Collectors.toList()))
-//                    );
-
-//cell id -> cell type hashmap
-//            var cellIdToCellType = cellIdsByExperimentAccession
-//                    .entrySet()
-//                    .stream()
-//                    .collect(
-//                            toMap(
-//                                    Map.Entry::getKey,
-//                                    entry -> entry.getValue()
-//                                            .stream()
-//                                            .collect(
-//                                                    toMap(cellId->cellId,
-//                                                            cellId -> cellMetadataDao.getCellTypeForCellId(
-//                                                                    entry.getKey(),
-//                                                                    cellId.toString()).get(0))
-//                                            )));
 
             //marker genes ids
             var markerGenesByExperimentAccession = cellIdsByExperimentAccession.keySet()
@@ -166,51 +132,10 @@ public class TSnePlotJsonSerializer {
                     );
 
             var allMarkerGenes = markerGenesByExperimentAccession.values()
-                    .stream().flatMap(x -> x.stream())   //Stream<String>
+                    .stream().flatMap(x -> x.stream())
                     .distinct()
                     .collect(Collectors.toList());
-            //return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, perplexity, geneId, accessKey);
 
-//            var geneExpression = cellIdsByExperimentAccession
-//                    .entrySet()
-//                    .stream()
-//                    .collect(
-//                            toMap(
-//                                    Map.Entry::getKey,
-//                                    entry -> entry.getValue()
-//                                            .stream()
-//                                            .collect(
-//                                                    toMap(
-//                                                          cell -> cellMetadataDao.getCellTypeForCellId(entry.getKey(), cell.toString()),
-//                                                        cell-> markerGenesByExperimentAccession.get(0).stream().map(
-//                                                                markerGene ->tSnePlotWithExpression(entry.getKey(),
-//                                                                        tsnePlotSettingsService.getExpectedClusters(entry.getKey()).get(),
-//                                                                        markerGene, "")
-//                                                        )
-//                                                    ))
-//                    )
-//                    );
-
-//        for(var experimentAccession : cellIdsByExperimentAccession.keySet()) {
-//            var expressionByCellType = new HashMap<>();
-//            for (var cellId : cellIdsByExperimentAccession.get(experimentAccession)){
-//                var cellType = cellMetadataDao.getCellTypeForCellId(experimentAccession, cellId.toString()).get(0);
-//                for(var markerGene:markerGenesByExperimentAccession.get(0)) {
-//                    var newExpression = tSnePlotWithExpression(experimentAccession,
-//                            tsnePlotSettingsService.getExpectedClusters(experimentAccession).get(),
-//                            markerGene, "");
-//
-//                    if (expressionByCellType.containsKey(cellType)) {
-//                        var expression = expressionByCellType.get(cellType);
-//                        expressionByCellType.put(cellType, expression+newExpression);
-//                    } else {
-//                        expressionByCellType.put(cellType, newExpression);
-//                    }
-//
-//                }
-//            }
-//            expressionByExpressionWithCellType.put(experimentAccession, expressionByCellType);
-//        }
             var expressionByExpressionWithCellType = new HashMap<>();
 
             for(var experimentAccession : cellIdsByExperimentAccession.keySet()) {
@@ -251,7 +176,6 @@ public class TSnePlotJsonSerializer {
                                                     .orElse(0.0)
                                                 ))
                                     );
-                    //expressionByMarkerGene.put(markerGene, expressionByCellType);
                 }
                 expressionByExpressionWithCellType.put(experimentAccession, expressionByMarkerGene);
 

@@ -169,6 +169,7 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 ExperimentFileType.EXPERIMENT_DESIGN);
 
         var filePaths = experiments.build().stream()
+                .distinct()
                 .collect(toImmutableMap(
                         Experiment::getAccession,
                         experiment -> fileTypeCheckList.stream()

@@ -16,9 +16,13 @@
 <div class="row column margin-bottom-xlarge expanded">
   <tiles:insertAttribute name="experiments-summary-panel"/>
 </div>
-<div class="row expanded margin-top-large">
-  <div class="small-12 medium-12 large-12 columns">
+
+<div class="row expanded margin-top-large" data-equalizer>
+  <div class="small-12 medium-12 large-6 columns">
     <tiles:insertAttribute name="tools-box"/>
+  </div>
+  <div class="small-12 medium-12 large-6 columns">
+    <tiles:insertAttribute name="publications-box"/>
   </div>
 </div>
 

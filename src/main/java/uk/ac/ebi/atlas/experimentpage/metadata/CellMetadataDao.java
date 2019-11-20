@@ -85,20 +85,6 @@ public class CellMetadataDao {
         return characteristics.build();
     }
 
-    private List<String> getCellTypeForCellId(String experimentAccession, String cellId) {
-        var characteristicFields = "inferred_cell_type";
-        var queryBuilder =
-                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
-                        .addQueryFieldByTerm(CELL_ID, cellId)
-                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicFields);
-        var results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
-        return results
-                .stream()
-                .map(entry -> entry.get(CHARACTERISTIC_VALUE.name()).toString())
-                .collect(Collectors.toList());
-    }
-
     public Map<String, String> getMetadataValuesForCellId(String experimentAccession,
                                                           String cellId,
                                                           Collection<String> factorFields,
@@ -174,38 +160,6 @@ public class CellMetadataDao {
                                 }));
     }
 
-    // Given a type of chara, this method retrieves the value of that metadata for list of cell IDs.
-    public Map<String, Map<String, String>> getCellTypeMetadata(String characteristicName,
-                                                              String characteristicValue) {
-
-        var queryBuilder =
-                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
-                        .addQueryFieldByTerm(CHARACTERISTIC_VALUE, characteristicValue);
-
-        var results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
-
-        return results
-                .stream()
-                .collect(groupingBy(solrDocument -> (String) solrDocument.getFieldValue(EXPERIMENT_ACCESSION.name())))
-                .entrySet()
-                .stream()
-                .collect(
-                        toMap(
-                                Map.Entry::getKey,
-                                entry -> entry.getValue()
-                                        .stream()
-                                        .collect(
-                                                toMap(
-                                                        cell -> cell.get(CELL_ID.name()).toString(),
-                                                        cell -> getCellTypeForCellId(entry.getKey(),
-                                                                cell.get(CELL_ID.name()).toString()).get(0)
-                                                )
-                                        )
-                        )
-                );
-
-    }
 
     private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> buildFactorTypeQuery(String experimentAccession) {
         var facetBuilder =

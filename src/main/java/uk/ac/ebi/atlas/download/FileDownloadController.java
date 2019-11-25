@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.download;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,23 +10,30 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
+
+import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Controller
 public class FileDownloadController extends HtmlExceptionHandlingController {
@@ -33,15 +41,13 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
 
-    @Inject
     public FileDownloadController(ExperimentFileLocationService experimentFileLocationService,
                                   ExperimentTrader experimentTrader) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.experimentTrader = experimentTrader;
     }
 
-    @RequestMapping(value = "experiment/{experimentAccession}/download",
-                    method = RequestMethod.GET)
+    @GetMapping(value = "experiment/{experimentAccession}/download")
     public ResponseEntity<FileSystemResource>
     download(@PathVariable String experimentAccession,
              @RequestParam(value = "fileType") String fileTypeId,
@@ -61,9 +67,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 .body(resource);
     }
 
-    @RequestMapping(value = "experiment/{experimentAccession}/download/zip",
-                    method = RequestMethod.GET,
-                    produces = "application/zip")
+    @GetMapping(value = "experiment/{experimentAccession}/download/zip",
+                produces = "application/zip")
     public void
     downloadArchive(HttpServletResponse response,
                     @PathVariable String experimentAccession,
@@ -95,9 +100,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
         zipOutputStream.close();
     }
 
-    @RequestMapping(value = "experiments/download/zip",
-                    method = RequestMethod.GET,
-                    produces = "application/zip")
+    @GetMapping(value = "experiments/download/zip",
+                produces = "application/zip")
     public void
     downloadMultipleExperimentsArchive(HttpServletResponse response,
                                        @RequestParam(value = "accession", defaultValue = "") List<String> accessions)
@@ -132,7 +136,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 for (var path : paths) {
                     var file = path.toFile();
                     if (file.exists()) {
-                        zipOutputStream.putNextEntry(new ZipEntry(experiment.getAccession() + "/" + file.getName()));
+                        zipOutputStream.putNextEntry(new ZipEntry(
+                                experiment.getAccession() + "/" + file.getName()));
                         FileInputStream fileInputStream = new FileInputStream(file);
 
                         IOUtils.copy(fileInputStream, zipOutputStream);
@@ -143,5 +148,46 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
             }
             zipOutputStream.close();
         }
+    }
+
+    @GetMapping(value = "json/experiments/download/zip/check",
+                produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public String validateExperimentsFiles(
+            @RequestParam(value = "accession", defaultValue = "") List<String> accessions) {
+        var experiments = ImmutableSet.<Experiment>builder();
+
+        accessions.forEach(accession -> {
+            try {
+                experiments.add(experimentTrader.getPublicExperiment(accession));
+            } catch (Exception e) {
+                LOGGER.debug("Invalid experiment accession: {}", accession);
+            }
+        });
+
+        var fileTypeCheckList = ImmutableList.of(
+                ExperimentFileType.QUANTIFICATION_RAW,
+                ExperimentFileType.NORMALISED,
+                ExperimentFileType.EXPERIMENT_DESIGN);
+
+        var invalidFilesList = experiments.build().stream()
+                .collect(toImmutableMap(
+                        Experiment::getAccession,
+                        experiment -> fileTypeCheckList.stream()
+                                .flatMap(fileType -> fileType == ExperimentFileType.EXPERIMENT_DESIGN ?
+                                        Stream.of(experimentFileLocationService.getFilePath(
+                                                experiment.getAccession(), fileType)) :
+                                        experimentFileLocationService.getFilePathsForArchive(
+                                                experiment.getAccession(), fileType).stream())
+                                .filter(path -> !path.toFile().exists())
+                                .map(path -> path.getFileName().toString())
+                                .collect(ImmutableList.toImmutableList())
+                ));
+
+        if (!invalidFilesList.isEmpty()) {
+            LOGGER.debug("Invalid experiment files: {}", invalidFilesList);
+        }
+
+        return GSON.toJson(Collections.singletonMap("invalidFiles", invalidFilesList));
     }
 }

@@ -24,17 +24,12 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 public class TSnePlotJsonSerializer {
     private final ExperimentTrader experimentTrader;
     private final TSnePlotService tSnePlotService;
-    private MarkerGenesDao markerGenesDao;
-    private final TSnePlotSettingsService tsnePlotSettingsService;
 
     public TSnePlotJsonSerializer(ExperimentTrader experimentTrader,
-                                  TSnePlotService tSnePlotService,
-                                  MarkerGenesDao markerGenesDao,
-                                  TSnePlotSettingsService tsnePlotSettingsService) {
+                                  TSnePlotService tSnePlotService) {
         this.experimentTrader = experimentTrader;
         this.tSnePlotService = tSnePlotService;
-        this.markerGenesDao = markerGenesDao;
-        this.tsnePlotSettingsService = tsnePlotSettingsService;
+
     }
 
     @Cacheable(cacheNames = "jsonTSnePlotWithClusters", key = "{#experimentAccession, #perplexity, #k}")

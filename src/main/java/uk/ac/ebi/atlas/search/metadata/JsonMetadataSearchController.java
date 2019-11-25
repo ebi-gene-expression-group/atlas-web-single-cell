@@ -1,16 +1,12 @@
 package uk.ac.ebi.atlas.search.metadata;
 
 import org.springframework.http.MediaType;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotJsonSerializer;
-
-import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class JsonMetadataSearchController extends JsonExceptionHandlingController {
@@ -29,5 +25,4 @@ public class JsonMetadataSearchController extends JsonExceptionHandlingControlle
                                    @RequestParam(defaultValue = "") String accessKey) {
         return metadataJsonSerializer.cellTypeMetadata(characteristicName, characteristicValue, accessKey);
     }
-
 }

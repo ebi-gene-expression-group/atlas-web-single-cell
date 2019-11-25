@@ -34,83 +34,82 @@ public class MetadataJsonSerializer {
 
     @Cacheable(cacheNames = "jsonCellTypeMetadata", key = "{#characteristicName, #characteristicValue}")
     public String cellTypeMetadata(String characteristicName, String characteristicValue, String accessKey) {
-        {
-            //cell ids
-            var cellIdsByExperimentAccession = fetchCellTypeMetadata(characteristicName, characteristicValue);
 
-            //marker genes ids
-            var markerGenesByExperimentAccession = cellIdsByExperimentAccession.keySet()
-                    .stream()
-                    .collect(toMap(
-                            experimentAccession -> experimentAccession,
-                            experimentAccession ->  markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession,
-                                    tsnePlotSettingsService.getExpectedClusters(experimentAccession).orElse(10))
-                                    .stream()
-                                    .map(makergene -> makergene.geneId())
-                                    .distinct()
-                                    .collect(Collectors.toList()))
+        //cell ids
+        var cellIdsByExperimentAccession = fetchCellTypeMetadata(characteristicName, characteristicValue);
 
-                    );
+        //marker genes ids
+        var markerGenesByExperimentAccession = cellIdsByExperimentAccession.keySet()
+                .stream()
+                .collect(toMap(
+                        experimentAccession -> experimentAccession,
+                        experimentAccession ->  markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession,
+                                tsnePlotSettingsService.getExpectedClusters(experimentAccession).orElse(10))
+                                .stream()
+                                .map(makergene -> makergene.geneId())
+                                .distinct()
+                                .collect(Collectors.toList()))
 
-            var allMarkerGenes = markerGenesByExperimentAccession.values()
-                    .stream().flatMap(x -> x.stream())
-                    .distinct()
-                    .collect(Collectors.toList());
+                );
 
-            var expressionByExpressionWithCellType = new HashMap<>();
+        var allMarkerGenes = markerGenesByExperimentAccession.values()
+                .stream().flatMap(x -> x.stream())
+                .distinct()
+                .collect(Collectors.toList());
 
-            for(var experimentAccession : cellIdsByExperimentAccession.keySet()) {
-                var cellIdsFromCellTypeQuery = cellIdsByExperimentAccession.get(experimentAccession).keySet();
-                var perpelexity = tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).get(0);
+        var expressionByExpressionWithCellType = new HashMap<>();
 
-                var expressionByMarkerGene = new HashMap<>();
+        for (var experimentAccession : cellIdsByExperimentAccession.keySet()) {
+            var cellIdsFromCellTypeQuery = cellIdsByExperimentAccession.get(experimentAccession).keySet();
+            var perpelexity = tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).get(0);
 
-                for (var markerGene : allMarkerGenes){
-                    var expressionByCellType = new HashMap<String, ArrayList<Double>>();
-                    var pointsWithExpression =
-                            tSnePlotService.fetchTSnePlotWithExpression(experimentAccession, perpelexity, markerGene);
+            var expressionByMarkerGene = new HashMap<>();
 
-                    for(var cellExpression : pointsWithExpression) {
-                        var cellId = cellExpression.name();
-                        if(cellIdsFromCellTypeQuery.contains(cellId)) {
-                            var cellType = cellIdsByExperimentAccession.get(experimentAccession).get(cellId);
-                            var expressionAddon = cellExpression.expressionLevel();
-                            var expressionList = expressionByCellType.get(cellType);
-                            if (expressionList == null) {
-                                var listOfExpressions = new ArrayList<Double>();
-                                listOfExpressions.add(expressionAddon.get());
-                                expressionByCellType.put(cellType, listOfExpressions);
-                            }
-                            else if (expressionAddon.get() > 0.0) {
-                                expressionList.add(expressionAddon.get());
-                            }
+            for (var markerGene : allMarkerGenes) {
+                var expressionByCellType = new HashMap<String, ArrayList<Double>>();
+                var pointsWithExpression =
+                        tSnePlotService.fetchTSnePlotWithExpression(experimentAccession, perpelexity, markerGene);
+
+                for (var cellExpression : pointsWithExpression) {
+                    var cellId = cellExpression.name();
+                    if (cellIdsFromCellTypeQuery.contains(cellId)) {
+                        var cellType = cellIdsByExperimentAccession.get(experimentAccession).get(cellId);
+                        var expressionAddon = cellExpression.expressionLevel();
+                        var expressionList = expressionByCellType.get(cellType);
+                        if (expressionList == null) {
+                            var listOfExpressions = new ArrayList<Double>();
+                            listOfExpressions.add(expressionAddon.get());
+                            expressionByCellType.put(cellType, listOfExpressions);
+                        } else if (expressionAddon.get() > 0.0) {
+                            expressionList.add(expressionAddon.get());
                         }
                     }
-                    expressionByMarkerGene.put(markerGene,
-                            expressionByCellType
-                                    .entrySet()
-                                    .stream()
-                                    .collect(toMap(Map.Entry::getKey,
-                                            entry -> entry.getValue().stream()
-                                                    .mapToDouble(expression -> expression)
-                                                    .average()
-                                                    .orElse(0.0)
-                                    ))
-                    );
                 }
-                expressionByExpressionWithCellType.put(experimentAccession, expressionByMarkerGene);
-
+                expressionByMarkerGene.put(markerGene,
+                        expressionByCellType
+                                .entrySet()
+                                .stream()
+                                .collect(toMap(Map.Entry::getKey,
+                                        entry -> entry.getValue().stream()
+                                                .mapToDouble(expression -> expression)
+                                                .average()
+                                                .orElse(0.0)
+                                ))
+                );
             }
+            expressionByExpressionWithCellType.put(experimentAccession, expressionByMarkerGene);
 
-            return GSON.toJson(
-                    ImmutableMap.of(
-                            "markerGeneExpressionByCellType", expressionByExpressionWithCellType));
         }
+
+        return GSON.toJson(
+                ImmutableMap.of(
+                        "markerGeneExpressionByCellType", expressionByExpressionWithCellType));
+
 
     }
 
     private ImmutableMap<String, Map<String, String>>  fetchCellTypeMetadata(String characteristicName,
-                                                                            String characteristicValue) {
+                                                                             String characteristicValue) {
         var metadataValuesForCells = metadataSearchDao.getCellTypeMetadata(
                 characteristicName,
                 characteristicValue

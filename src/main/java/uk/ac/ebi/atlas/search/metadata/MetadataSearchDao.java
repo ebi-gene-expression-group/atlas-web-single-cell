@@ -1,11 +1,9 @@
 package uk.ac.ebi.atlas.search.metadata;
 
-
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
-
 
 import java.util.List;
 import java.util.Map;

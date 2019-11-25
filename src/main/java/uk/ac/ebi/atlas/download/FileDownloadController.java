@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -135,7 +136,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 for (var path : paths) {
                     var file = path.toFile();
                     if (file.exists()) {
-                        zipOutputStream.putNextEntry(new ZipEntry(experiment.getAccession() + "/" + file.getName()));
+                        zipOutputStream.putNextEntry(new ZipEntry(
+                                experiment.getAccession() + "/" + file.getName()));
                         FileInputStream fileInputStream = new FileInputStream(file);
 
                         IOUtils.copy(fileInputStream, zipOutputStream);
@@ -151,8 +153,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
     @GetMapping(value = "json/experiments/download/zip/check",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String validateExperimentsFiles(@RequestParam(value = "accession", defaultValue = "") List<String> accessions)
-    {
+    public String validateExperimentsFiles(
+            @RequestParam(value = "accession", defaultValue = "") List<String> accessions) {
         var experiments = ImmutableSet.<Experiment>builder();
 
         accessions.forEach(accession -> {
@@ -168,32 +170,21 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 ExperimentFileType.NORMALISED,
                 ExperimentFileType.EXPERIMENT_DESIGN);
 
-        var filePaths = experiments.build().stream()
-                .distinct()
+        var invalidFilesList = experiments.build().stream()
                 .collect(toImmutableMap(
                         Experiment::getAccession,
                         experiment -> fileTypeCheckList.stream()
-                                .map(fileType -> fileType == ExperimentFileType.EXPERIMENT_DESIGN ?
-                                        ImmutableList.of(experimentFileLocationService
-                                                .getFilePath(experiment.getAccession(), fileType)) :
-                                        experimentFileLocationService
-                                                .getFilePathsForArchive(experiment.getAccession(), fileType))
-                                .flatMap(List::stream)
+                                .flatMap(fileType -> fileType == ExperimentFileType.EXPERIMENT_DESIGN ?
+                                        Stream.of(experimentFileLocationService.getFilePath(
+                                                experiment.getAccession(), fileType)) :
+                                        experimentFileLocationService.getFilePathsForArchive(
+                                                experiment.getAccession(), fileType).stream())
+                                .filter(path -> !path.toFile().exists())
+                                .map(path -> path.getFileName().toString())
                                 .collect(ImmutableList.toImmutableList())
                 ));
 
-        var invalidFilesList = filePaths.entrySet()
-                .stream()
-                .collect(toImmutableMap(
-                        Map.Entry::getKey,
-                        experiment -> experiment.getValue()
-                                .stream()
-                                .filter(path -> path.toFile().exists() == false)
-                                .map(path -> path.getFileName().toString())
-                                .collect(toImmutableList())
-                ));
-
-        if(!invalidFilesList.isEmpty()){
+        if (!invalidFilesList.isEmpty()) {
             LOGGER.debug("Invalid experiment files: {}", invalidFilesList);
         }
 

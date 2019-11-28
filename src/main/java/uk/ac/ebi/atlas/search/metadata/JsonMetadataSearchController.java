@@ -17,7 +17,16 @@ public class JsonMetadataSearchController extends JsonExceptionHandlingControlle
         this.metadataJsonSerializer = metadataJsonSerializer;
     }
 
-    @RequestMapping(value = "/json/metadata-search/name/{characteristicName}/value/{characteristicValue}",
+    @RequestMapping(value = "/json/metadata-search/expression/name/{characteristicName}/value/{characteristicValue}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String cellTypeExpressions(@PathVariable String characteristicName,
+                                      @PathVariable String characteristicValue,
+                                      @RequestParam(defaultValue = "") String accessKey) {
+        return metadataJsonSerializer.cellTypeExpressions(characteristicName, characteristicValue, accessKey);
+    }
+
+    @RequestMapping(value = "/json/metadata-search/cell-type/name/{characteristicName}/value/{characteristicValue}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String cellTypeMetadata(@PathVariable String characteristicName,

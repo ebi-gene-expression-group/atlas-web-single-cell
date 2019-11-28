@@ -37,8 +37,39 @@ public class MetadataJsonSerializer {
         this.experimentTrader = experimentTrader;
     }
 
-    @Cacheable(cacheNames = "jsonCellTypeMetadata", key = "{#characteristicName, #characteristicValue}")
     public String cellTypeMetadata(String characteristicName, String characteristicValue, String accessKey) {
+        //cell ids
+        var cellIdsByExperimentAccession = fetchCellTypeMetadata(characteristicName, characteristicValue);
+
+        //experiment accessions by species
+        var experimentAccessionsBySpecies = cellIdsByExperimentAccession.keySet()
+                .stream()
+                .collect(groupingBy(experimentAccession ->
+                        experimentTrader.getExperiment(experimentAccession, accessKey).getSpecies().getName()));
+
+        var cellTypes = new HashMap<>();
+
+        for (var species : experimentAccessionsBySpecies.keySet()) {
+            var cellTypesBySpecies = new HashMap<>();
+            for (var experimentAccession : experimentAccessionsBySpecies.get(species)) {
+                var cellTypesByExperiment = new ArrayList<String>();
+
+                for (var cellId : cellIdsByExperimentAccession.get(experimentAccession).keySet()) {
+                    var cellType = cellIdsByExperimentAccession.get(experimentAccession).get(cellId);
+                    cellTypesByExperiment.add(cellType);
+                }
+                cellTypesBySpecies.put(experimentAccession, cellTypesByExperiment.stream().distinct().collect(Collectors.toList()));
+            }
+            cellTypes.put(species, cellTypesBySpecies);
+        }
+
+        return GSON.toJson(
+                ImmutableMap.of("cellTypes", cellTypes)
+        );
+    }
+
+    @Cacheable(cacheNames = "jsonCellTypeMetadata", key = "{#characteristicName, #characteristicValue}")
+    public String cellTypeExpressions(String characteristicName, String characteristicValue, String accessKey) {
 
         //cell ids
         var cellIdsByExperimentAccession = fetchCellTypeMetadata(characteristicName, characteristicValue);
@@ -71,7 +102,7 @@ public class MetadataJsonSerializer {
         for (var species : experimentAccessionsBySpecies.keySet()) {
             var expressionBySpecies = new HashMap<>();
 
-            for (var experimentAccession : cellIdsByExperimentAccession.keySet()) {
+            for (var experimentAccession : experimentAccessionsBySpecies.get(species)) {
                 var cellIdsFromCellTypeQuery = cellIdsByExperimentAccession.get(experimentAccession).keySet();
                 var perpelexity = tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).get(0);
 
@@ -118,8 +149,8 @@ public class MetadataJsonSerializer {
 
         return GSON.toJson(
                 ImmutableMap.of(
-                        "markerGeneExpressionByCellType", expressionByExpressionWithCellType));
-
+                        "markerGeneExpressionByCellType", expressionByExpressionWithCellType)
+                );
 
     }
 

@@ -104,7 +104,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 produces = "application/zip")
     public void
     downloadMultipleExperimentsArchive(HttpServletResponse response,
-                                       @RequestParam(value = "accession", defaultValue = "") List<String> accessions)
+                                       @RequestParam(value = "accession", defaultValue = "") List<String> accessions,
+                                       @RequestParam(value = "fileType", defaultValue = "") List<String> fileTypeIds)
             throws IOException {
 
         var experiments = new ArrayList<Experiment>();
@@ -116,6 +117,9 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
             }
         }
 
+        var fileTypeCheckList = ImmutableSet.<ExperimentFileType>builder();
+        fileTypeIds.stream().forEach(fileTypeId -> fileTypeCheckList.add(ExperimentFileType.fromId(fileTypeId)));
+
         if (!experiments.isEmpty()) {
             var archiveName = experiments.size() + "-experiment-files.zip";
             response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + archiveName);
@@ -124,16 +128,21 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
             var zipOutputStream = new ZipOutputStream(response.getOutputStream());
 
             for (var experiment : experiments) {
-                var paths = ImmutableList.<Path>builder()
-                        .addAll(experimentFileLocationService.getFilePathsForArchive(
-                                experiment.getAccession(), ExperimentFileType.QUANTIFICATION_RAW))
-                        .addAll(experimentFileLocationService.getFilePathsForArchive(
-                                experiment.getAccession(), ExperimentFileType.NORMALISED))
-                        .add(experimentFileLocationService.getFilePath(
-                                experiment.getAccession(), ExperimentFileType.EXPERIMENT_DESIGN))
-                        .build();
+                var paths = ImmutableList.<Path>builder();
+                if (fileTypeCheckList.build().contains(ExperimentFileType.QUANTIFICATION_RAW)) {
+                    paths.addAll(experimentFileLocationService.getFilePathsForArchive(
+                            experiment.getAccession(), ExperimentFileType.QUANTIFICATION_RAW));
+                }
+                if (fileTypeCheckList.build().contains(ExperimentFileType.NORMALISED)) {
+                    paths.addAll(experimentFileLocationService.getFilePathsForArchive(
+                            experiment.getAccession(), ExperimentFileType.NORMALISED));
+                }
+                if (fileTypeCheckList.build().contains(ExperimentFileType.EXPERIMENT_DESIGN)) {
+                    paths.add(experimentFileLocationService.getFilePath(
+                            experiment.getAccession(), ExperimentFileType.EXPERIMENT_DESIGN));
+                }
 
-                for (var path : paths) {
+                for (var path : paths.build()) {
                     var file = path.toFile();
                     if (file.exists()) {
                         zipOutputStream.putNextEntry(new ZipEntry(
@@ -154,7 +163,8 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     public String validateExperimentsFiles(
-            @RequestParam(value = "accession", defaultValue = "") List<String> accessions) {
+            @RequestParam(value = "accession", defaultValue = "") List<String> accessions,
+            @RequestParam(value = "fileType", defaultValue = "") List<String> fileTypeIds) {
         var experiments = ImmutableSet.<Experiment>builder();
 
         accessions.forEach(accession -> {
@@ -165,15 +175,17 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
             }
         });
 
-        var fileTypeCheckList = ImmutableList.of(
-                ExperimentFileType.QUANTIFICATION_RAW,
-                ExperimentFileType.NORMALISED,
-                ExperimentFileType.EXPERIMENT_DESIGN);
+        var fileTypeCheckList = ImmutableSet.<ExperimentFileType>builder();
+        fileTypeIds.stream().forEach(fileTypeId -> fileTypeCheckList.add(ExperimentFileType.fromId(fileTypeId)));
+//        var fileTypeCheckList = ImmutableList.of(
+//                ExperimentFileType.QUANTIFICATION_RAW,
+//                ExperimentFileType.NORMALISED,
+//                ExperimentFileType.EXPERIMENT_DESIGN);
 
         var invalidFilesList = experiments.build().stream()
                 .collect(toImmutableMap(
                         Experiment::getAccession,
-                        experiment -> fileTypeCheckList.stream()
+                        experiment -> fileTypeCheckList.build().stream()
                                 .flatMap(fileType -> fileType == ExperimentFileType.EXPERIMENT_DESIGN ?
                                         Stream.of(experimentFileLocationService.getFilePath(
                                                 experiment.getAccession(), fileType)) :

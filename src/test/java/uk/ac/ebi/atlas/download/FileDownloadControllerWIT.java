@@ -50,6 +50,7 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileDownloadControllerWIT {
     private static final String EXPERIMENT_ACCESSION = "E-MTAB-5061";
+    private static final List<String> FILE_TYPE_LIST = ImmutableList.of("quantification-raw", "normalised", "experiment-design");
     private static final List<String> EXPERIMENT_ACCESSION_LIST = ImmutableList.of("E-MTAB-5061", "E-EHCA-2");
     private static final List<String> INVALID_EXPERIMENT_ACCESSION_LIST = ImmutableList.of("E-MTAB", "E-EHCA");
     private static final String EXPERIMENT_DESIGN_FILE_NAME = "ExpDesign-{0}.tsv";
@@ -57,6 +58,7 @@ class FileDownloadControllerWIT {
     private static final String FILE_DOWNLOAD_URL = "/experiment/{experimentAccession}/download";
     private static final String ARCHIVE_DOWNLOAD_URL = "/experiment/{experimentAccession}/download/zip";
     private static final String ARCHIVE_DOWNLOAD_LIST_URL = "/experiments/download/zip";
+    private static final String ARCHIVE_DOWNLOAD_CHECK_URL = "json/experiments/download/zip/check";
 
     @Inject
     private DataSource dataSource;
@@ -159,10 +161,32 @@ class FileDownloadControllerWIT {
     }
 
     @Test
-    void downloadArchiveForValidExperimentAccessions() throws Exception {
+    void checkFileArchiveForInvalidExperimentFileType() throws Exception {
+        this.mockMvc.perform(get(ARCHIVE_DOWNLOAD_CHECK_URL)
+                .param("accession", INVALID_EXPERIMENT_ACCESSION_LIST.get(0))
+                .param("accession", INVALID_EXPERIMENT_ACCESSION_LIST.get(1))
+                .param("fileType", "foo"))
+                .andExpect(status().is(404));
+    }
+
+    @Test
+    void downloadFileArchiveForInvalidExperimentFileType() throws Exception {
+        this.mockMvc.perform(get(ARCHIVE_DOWNLOAD_LIST_URL)
+                .param("accession", INVALID_EXPERIMENT_ACCESSION_LIST.get(0))
+                .param("accession", INVALID_EXPERIMENT_ACCESSION_LIST.get(1))
+                .param("fileType", "foo"))
+                .andExpect(status().is(404))
+                .andExpect(view().name("error-page"));
+    }
+
+    @Test
+    void downloadArchiveForValidExperimentAccessionsAndAllFileTypes() throws Exception {
         var result = this.mockMvc.perform(get(ARCHIVE_DOWNLOAD_LIST_URL)
                 .param("accession", EXPERIMENT_ACCESSION_LIST.get(0))
-                .param("accession", EXPERIMENT_ACCESSION_LIST.get(1)));
+                .param("accession", EXPERIMENT_ACCESSION_LIST.get(1))
+                .param("fileType", FILE_TYPE_LIST.get(0))
+                .param("fileType", FILE_TYPE_LIST.get(1))
+                .param("fileType", FILE_TYPE_LIST.get(2)));
 
         var expectedArchiveName =
                 MessageFormat.format(
@@ -177,7 +201,32 @@ class FileDownloadControllerWIT {
             contentFileNames.add(Paths.get(entry.getName()).getFileName().toString());
         }
 
-        assertThat(getSourceValidFileNames().containsAll(contentFileNames.build())).isTrue();
+        assertThat(contentFileNames.build().containsAll(getSourceValidFileNames())).isTrue();
+        result.andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + expectedArchiveName));
+    }
+
+    @Test
+    void downloadArchiveForValidExperimentAccessionsAndSpecifiedFileTypes() throws Exception {
+        var result = this.mockMvc.perform(get(ARCHIVE_DOWNLOAD_LIST_URL)
+                .param("accession", EXPERIMENT_ACCESSION_LIST.get(0))
+                .param("accession", EXPERIMENT_ACCESSION_LIST.get(1))
+                .param("fileType", FILE_TYPE_LIST.get(0)));
+
+        var expectedArchiveName =
+                MessageFormat.format(
+                        ARCHIVE_NAME, EXPERIMENT_ACCESSION_LIST.size(), "experiment");
+
+        var contentBytes = result.andReturn().getResponse().getContentAsByteArray();
+        var zipInputStream = new ZipInputStream(new ByteArrayInputStream(contentBytes));
+
+        var contentFileNames = ImmutableList.<String>builder();
+        ZipEntry entry;
+        while ((entry = zipInputStream.getNextEntry()) != null) {
+            contentFileNames.add(Paths.get(entry.getName()).getFileName().toString());
+        }
+
+        assertThat(contentFileNames.build().containsAll(getSourceValidFileNames())).isFalse();
         result.andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + expectedArchiveName));
     }
@@ -198,7 +247,10 @@ class FileDownloadControllerWIT {
                 .param("accession", EXPERIMENT_ACCESSION_LIST.get(0))
                 .param("accession", EXPERIMENT_ACCESSION_LIST.get(1))
                 .param("accession", INVALID_EXPERIMENT_ACCESSION_LIST.get(0))
-                .param("accession", INVALID_EXPERIMENT_ACCESSION_LIST.get(1)));
+                .param("accession", INVALID_EXPERIMENT_ACCESSION_LIST.get(1))
+                .param("fileType", FILE_TYPE_LIST.get(0))
+                .param("fileType", FILE_TYPE_LIST.get(1))
+                .param("fileType", FILE_TYPE_LIST.get(2)));
 
         var expectedArchiveName =
                 MessageFormat.format(
@@ -213,7 +265,7 @@ class FileDownloadControllerWIT {
             contentFileNames.add(Paths.get(entry.getName()).getFileName().toString());
         }
 
-        assertThat(getSourceValidFileNames().containsAll(contentFileNames.build())).isTrue();
+        assertThat(contentFileNames.build().containsAll(getSourceValidFileNames())).isTrue();
         result.andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + expectedArchiveName))
                 .andExpect(content().contentType("application/zip"));

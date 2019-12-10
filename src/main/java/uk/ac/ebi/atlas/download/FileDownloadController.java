@@ -118,7 +118,9 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
         }
 
         var fileTypeCheckList = ImmutableSet.<ExperimentFileType>builder();
-        fileTypeIds.stream().forEach(fileTypeId -> fileTypeCheckList.add(ExperimentFileType.fromId(fileTypeId)));
+        fileTypeIds
+                .stream()
+                .forEach(fileTypeId -> fileTypeCheckList.add(ExperimentFileType.fromId(fileTypeId)));
 
         if (!experiments.isEmpty()) {
             var archiveName = experiments.size() + "-experiment-files.zip";
@@ -176,11 +178,9 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
         });
 
         var fileTypeCheckList = ImmutableSet.<ExperimentFileType>builder();
-        fileTypeIds.stream().forEach(fileTypeId -> fileTypeCheckList.add(ExperimentFileType.fromId(fileTypeId)));
-//        var fileTypeCheckList = ImmutableList.of(
-//                ExperimentFileType.QUANTIFICATION_RAW,
-//                ExperimentFileType.NORMALISED,
-//                ExperimentFileType.EXPERIMENT_DESIGN);
+        fileTypeIds
+                .stream()
+                .forEach(fileTypeId -> fileTypeCheckList.add(ExperimentFileType.fromId(fileTypeId)));
 
         var invalidFilesList = experiments.build().stream()
                 .collect(toImmutableMap(

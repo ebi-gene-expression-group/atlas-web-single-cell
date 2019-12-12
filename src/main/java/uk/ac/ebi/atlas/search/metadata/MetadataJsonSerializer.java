@@ -1,8 +1,11 @@
 package uk.ac.ebi.atlas.search.metadata;
 
 import com.google.common.collect.ImmutableMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ebi.atlas.download.FileDownloadController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
@@ -24,6 +27,7 @@ public class MetadataJsonSerializer {
     private final TSnePlotSettingsService tsnePlotSettingsService;
     private MetadataSearchDao metadataSearchDao;
     private ExperimentTrader experimentTrader;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
 
     public MetadataJsonSerializer(TSnePlotService tSnePlotService,
                                   MarkerGenesDao markerGenesDao,
@@ -53,7 +57,6 @@ public class MetadataJsonSerializer {
             var cellTypesBySpecies = new HashMap<>();
             for (var experimentAccession : experimentAccessionsBySpecies.get(species)) {
                 var cellTypesByExperiment = new ArrayList<String>();
-
                 for (var cellId : cellIdsByExperimentAccession.get(experimentAccession).keySet()) {
                     var cellType = cellIdsByExperimentAccession.get(experimentAccession).get(cellId);
                     cellTypesByExperiment.add(cellType);
@@ -105,10 +108,15 @@ public class MetadataJsonSerializer {
             for (var experimentAccession : experimentAccessionsBySpecies.get(species)) {
                 var cellIdsFromCellTypeQuery = cellIdsByExperimentAccession.get(experimentAccession).keySet();
                 var perpelexity = tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).get(0);
+                LOGGER.info("Cell type expression search experiment: {}", experimentAccession);
 
                 var expressionByMarkerGene = new HashMap<>();
 
-                for (var markerGene : markerGenesBySpecies.get(species)) {
+                for (var markerGene : markerGenesBySpecies.get(species)
+                        .stream()
+                        .distinct()
+                        .collect(Collectors.toList())
+                        .subList(0, 20)) {
                     var expressionByCellType = new HashMap<String, ArrayList<Double>>();
                     var pointsWithExpression =
                             tSnePlotService.fetchTSnePlotWithExpression(experimentAccession, perpelexity, markerGene);

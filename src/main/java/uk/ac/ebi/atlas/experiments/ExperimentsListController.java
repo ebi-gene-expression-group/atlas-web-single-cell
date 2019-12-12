@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experiments;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,9 @@ public class ExperimentsListController {
     @GetMapping(value = "/json/experiments",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getExperimentsList(@RequestParam(defaultValue = "") String organismPart) {
-        return GSON.toJson(experimentJsonService.getPublicExperimentsJson(CHARACTERISTIC_NAME, organismPart));
+        return GSON.toJson(
+                ImmutableMap.of(
+                        "experiments",
+                        experimentJsonService.getPublicExperimentsJson(CHARACTERISTIC_NAME, organismPart)));
     }
 }

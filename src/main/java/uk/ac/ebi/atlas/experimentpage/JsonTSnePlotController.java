@@ -48,12 +48,13 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression/{geneId}",
-                    method = RequestMethod.GET,
-                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
                                          @PathVariable int perplexity,
                                          @PathVariable String geneId,
                                          @RequestParam(defaultValue = "") String accessKey) {
         return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, perplexity, geneId, accessKey);
     }
+
 }

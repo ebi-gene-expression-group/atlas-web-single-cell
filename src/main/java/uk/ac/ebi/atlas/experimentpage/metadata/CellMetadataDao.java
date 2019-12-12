@@ -15,6 +15,7 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,9 +86,9 @@ public class CellMetadataDao {
     }
 
     public Map<String, String> getMetadataValuesForCellId(String experimentAccession,
-                                                   String cellId,
-                                                   Collection<String> factorFields,
-                                                   Collection<String> characteristicFields) {
+                                                          String cellId,
+                                                          Collection<String> factorFields,
+                                                          Collection<String> characteristicFields) {
         if (factorFields.isEmpty() && characteristicFields.isEmpty()) {
             return ImmutableMap.of();
         }
@@ -123,8 +124,8 @@ public class CellMetadataDao {
 
     // Given a type of metadata, this method retrieves the value of that metadata for list of cell IDs.
     public Map<String, String> getMetadataValueForCellIds(String experimentAccession,
-                                                             String metadataType,
-                                                             Collection<String> cellIds) {
+                                                          String metadataType,
+                                                          Collection<String> cellIds) {
         // We need to do this because we don't know if the metadata type is a factor or a characteristic
         var fields = ImmutableMap.<SingleCellAnalyticsSchemaField, Collection<String>>of(
                 CHARACTERISTIC_NAME, ImmutableSet.of(metadataType),
@@ -158,6 +159,7 @@ public class CellMetadataDao {
                                             result.get(CHARACTERISTIC_VALUE.name()))).get(0).toString();
                                 }));
     }
+
 
     private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> buildFactorTypeQuery(String experimentAccession) {
         var facetBuilder =

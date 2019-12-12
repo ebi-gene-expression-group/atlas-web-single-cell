@@ -21,6 +21,7 @@ import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -51,6 +52,9 @@ class ExperimentPageContentServiceIT {
     @Inject
     private CellMetadataService cellMetadataService;
 
+    @Inject
+    private ExperimentTrader experimentTrader;
+
     private ExperimentPageContentService subject;
 
     @BeforeAll
@@ -77,7 +81,11 @@ class ExperimentPageContentServiceIT {
     void setUp() {
         this.subject =
                 new ExperimentPageContentService(
-                        experimentFileLocationService, dataFileHub, tsnePlotSettingsService, cellMetadataService);
+                        experimentFileLocationService,
+                        dataFileHub,
+                        tsnePlotSettingsService,
+                        cellMetadataService,
+                        experimentTrader);
     }
 
     @Test

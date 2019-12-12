@@ -9,18 +9,15 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
-import uk.ac.ebi.atlas.utils.ExperimentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
-import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -51,7 +48,7 @@ class LatestExperimentsServiceTest {
     when(latestExperimentsDaoMock.fetchLatestExperimentAccessions())
             .thenReturn(latestExperimentsAccessionList);
 
-    Experiment experiment = mock(Experiment.class);
+    var experiment = mock(Experiment.class);
     when(experiment.getAccession()).thenReturn(latestExperimentsAccessionList.get(0));
     when(experimentTraderMock.getPublicExperiment(latestExperimentsAccessionList.get(0))).thenReturn(experiment);
 

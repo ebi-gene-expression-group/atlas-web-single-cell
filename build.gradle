@@ -123,9 +123,6 @@ test {
         testResultsDirName = "test-results/" + project.property('testResultsPath')
     }
   
-    logger.quiet(rootDir.toPath().relativize(project.reportsDir.toPath()).toString())
-        logger.quiet(rootDir.toPath().relativize(project.testResultsDir.toPath()).toString())
- 
     if (project.hasProperty('excludeTests')) {
         exclude project.property('excludeTests')
     }

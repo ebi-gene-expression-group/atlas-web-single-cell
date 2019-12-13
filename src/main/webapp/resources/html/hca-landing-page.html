@@ -1,0 +1,13 @@
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.2.1/iframeResizer.min.js"></script>
+
+<div class="row column">
+    <iframe id="hca-landing-page-iframe" class="row" src="https://ebi-gene-expression-group.github.io/hca-landing-page/html/hca-landing-page.html"
+            style="width: 1px; min-width: 100%; border: none; display: block; overflow: hidden;">
+    </iframe>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        iFrameResize({log:true}, '#hca-landing-page-iframe');
+    });
+</script>

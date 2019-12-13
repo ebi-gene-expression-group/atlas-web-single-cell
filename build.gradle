@@ -118,6 +118,10 @@ dependencies {
 }
 
 test {
+    if (project.hasProperty('excludeTests')) {
+       exclude project.property('excludeTests')
+    }
+
     testLogging {
         outputs.upToDateWhen {false}
         showStandardStreams = true

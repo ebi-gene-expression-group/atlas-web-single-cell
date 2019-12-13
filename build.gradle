@@ -119,11 +119,10 @@ dependencies {
 
 test {
     if (project.hasProperty('testResultsPath')) {
-        reporting.baseDir = "reports/" + project.property('testResultsPath')
+        reporting.baseDir = "$buildDir/reports/" + project.property('testResultsPath')
         testResultsDirName = "test-results/" + project.property('testResultsPath')
     }
-
-
+  
     if (project.hasProperty('excludeTests')) {
         exclude project.property('excludeTests')
     }

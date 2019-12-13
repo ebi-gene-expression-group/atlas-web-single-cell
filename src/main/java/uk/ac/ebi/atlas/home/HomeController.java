@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.experiments.ExperimentInfoListService;
-import uk.ac.ebi.atlas.utils.ExperimentInfo;
+import uk.ac.ebi.atlas.home.species.SpeciesSummaryService;
 
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.EFO;
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.EG;
@@ -17,17 +17,20 @@ import static uk.ac.ebi.atlas.home.CellStatsDao.CellStatsKey.FILTERED_CELLS;
 public class HomeController extends HtmlExceptionHandlingController {
     private final LatestExperimentsService latestExperimentsService;
     private final ExperimentInfoListService experimentInfoListService;
-    private final AtlasInformationDao atlasInformationDao;
+    private final SpeciesSummaryService speciesSummaryService;
     private final CellStatsDao cellStatsDao;
+    private final AtlasInformationDao atlasInformationDao;
 
     public HomeController(LatestExperimentsService latestExperimentsService,
                           ExperimentInfoListService experimentInfoListService,
-                          AtlasInformationDao atlasInformationDao,
-                          CellStatsDao cellStatsDao) {
+                          SpeciesSummaryService speciesSummaryService,
+                          CellStatsDao cellStatsDao,
+                          AtlasInformationDao atlasInformationDao) {
         this.latestExperimentsService = latestExperimentsService;
         this.experimentInfoListService = experimentInfoListService;
-        this.atlasInformationDao = atlasInformationDao;
+        this.speciesSummaryService = speciesSummaryService;
         this.cellStatsDao = cellStatsDao;
+        this.atlasInformationDao = atlasInformationDao;
     }
 
     @RequestMapping(value = "/home")
@@ -35,14 +38,7 @@ public class HomeController extends HtmlExceptionHandlingController {
         model.addAllAttributes(latestExperimentsService.fetchLatestExperimentsAttributes());
 
         model.addAttribute("numberOfStudies", experimentInfoListService.listPublicExperiments().size());
-
-        long numberOfSpecies =
-                experimentInfoListService.listPublicExperiments().stream()
-                        .map(ExperimentInfo::getSpecies)
-                        .distinct()
-                        .count();
-        model.addAttribute("numberOfSpecies", numberOfSpecies);
-
+        model.addAttribute("numberOfSpecies", speciesSummaryService.getReferenceSpecies().size());
         model.addAttribute("numberOfCells", cellStatsDao.get(FILTERED_CELLS));
 
         model.addAttribute("info", atlasInformationDao.atlasInformation.get());

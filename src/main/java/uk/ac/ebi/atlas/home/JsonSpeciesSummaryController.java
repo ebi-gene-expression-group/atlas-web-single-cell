@@ -31,7 +31,7 @@ public class JsonSpeciesSummaryController extends JsonExceptionHandlingControlle
     public String getSpeciesSummaryGroupedByKingdom() {
         return speciesSummarySerializer.serialize(
                 // Replace card models with baseline/differential experiments with only experiments
-                speciesSummaryService.getSpeciesSummariesGroupedByKingdom().entrySet().stream()
+                speciesSummaryService.getReferenceSpeciesSummariesGroupedByKingdom().entrySet().stream()
                         .collect(toImmutableMap(
                                 Map.Entry::getKey,
                                 entry ->

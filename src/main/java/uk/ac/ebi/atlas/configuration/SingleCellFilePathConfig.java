@@ -19,6 +19,6 @@ public class SingleCellFilePathConfig {
 
     @Bean
     public Path cellStatsFilePath() {
-        return Paths.get(dataFilesLocation).resolve("scxa").resolve("cell_stats.json");
+        return Paths.get(dataFilesLocation).resolve("scxa").resolve("magetab").resolve("cell_stats.json");
     }
 }

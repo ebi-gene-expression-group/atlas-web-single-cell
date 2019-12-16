@@ -214,10 +214,13 @@ class CellMetadataDaoIT {
     }
 
     private Stream<String> experimentsWithFactorsProvider() {
-        // E-GEOD-99058 does not have any factors
+        // E-GEOD-99058 and E-GEOD-81547 have only single cell identifier factor (no inferred cell types)
+        // E-CURD-4 Not all samples from the cond. SDRF have factors: they’re artifacts from sequencing, not cell IDs
         return jdbcUtils.fetchPublicExperimentAccessions()
                 .stream()
-                .filter(accession -> !accession.equalsIgnoreCase("E-GEOD-99058"));
+                .filter(accession -> !accession.equalsIgnoreCase("E-GEOD-99058") &&
+                                     !accession.equalsIgnoreCase("E-GEOD-81547") &&
+                                     !accession.equalsIgnoreCase("E-CURD-4"));
     }
 
     private Stream<String> experimentsWithAdditionalAttributesProvider() {

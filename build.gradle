@@ -118,6 +118,15 @@ dependencies {
 }
 
 test {
+    if (project.hasProperty('testResultsPath')) {
+        reporting.baseDir = "$buildDir/reports/" + project.property('testResultsPath')
+        testResultsDirName = "test-results/" + project.property('testResultsPath')
+    }
+  
+    if (project.hasProperty('excludeTests')) {
+        exclude project.property('excludeTests')
+    }
+
     testLogging {
         outputs.upToDateWhen {false}
         showStandardStreams = true

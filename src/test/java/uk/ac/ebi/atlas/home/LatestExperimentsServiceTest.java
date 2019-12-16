@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.home;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,57 +8,55 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.ac.ebi.atlas.experiments.ExperimentBuilder;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
+import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
-import uk.ac.ebi.atlas.utils.ExperimentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
-import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class LatestExperimentsServiceTest {
 
-  @Mock
-  private LatestExperimentsDao latestExperimentsDaoMock;
+    private static final ThreadLocalRandom RNG = ThreadLocalRandom.current();
+    @Mock
+    private LatestExperimentsDao latestExperimentsDaoMock;
+    @Mock
+    private ExperimentTrader experimentTraderMock;
+    private LatestExperimentsService subject;
 
-  @Mock
-  private ExperimentTrader experimentTraderMock;
+    @BeforeEach
+    void setUp() {
+        subject = new LatestExperimentsService(latestExperimentsDaoMock, experimentTraderMock);
+    }
 
-  private static final ThreadLocalRandom RNG = ThreadLocalRandom.current();
-  private LatestExperimentsService subject;
+    @Test
+    void expectedAttributesbyLatestExperimentsAccession() {
+        var experimentAcccession = generateRandomExperimentAccession();
+        var experimentCount = RNG.nextLong(1, 1000);
 
-  @BeforeEach
-  void setUp() {
-    subject = new LatestExperimentsService(latestExperimentsDaoMock, experimentTraderMock);
-  }
+        when(latestExperimentsDaoMock.fetchPublicExperimentsCount())
+                .thenReturn(experimentCount);
+        when(latestExperimentsDaoMock.fetchLatestExperimentAccessions())
+                .thenReturn(ImmutableList.of(experimentAcccession));
 
-  @Test
-  void expectedAttributesbyLatestExperimentsAccession() {
-    List<String> latestExperimentsAccessionList = new ArrayList<>();
-    latestExperimentsAccessionList.add(generateRandomExperimentAccession());
-    long experimentCount = RNG.nextInt(1, 1000);
+        var experiment =
+                new ExperimentBuilder.SingleCellBaselineExperimentBuilder()
+                        .withExperimentAccession(experimentAcccession)
+                        .build();
+        when(experimentTraderMock.getPublicExperiment(experimentAcccession)).thenReturn(experiment);
 
-    when(latestExperimentsDaoMock.fetchPublicExperimentsCount())
-            .thenReturn(experimentCount);
-    when(latestExperimentsDaoMock.fetchLatestExperimentAccessions())
-            .thenReturn(latestExperimentsAccessionList);
-
-    Experiment experiment = mock(Experiment.class);
-    when(experiment.getAccession()).thenReturn(latestExperimentsAccessionList.get(0));
-    when(experimentTraderMock.getPublicExperiment(latestExperimentsAccessionList.get(0))).thenReturn(experiment);
-
-    assertThat(subject.fetchLatestExperimentsAttributes())
-            .isNotEmpty()
-            .containsKeys("experimentCount", "formattedExperimentCount", "latestExperiments")
-            .containsValues(experimentCount);
-  }
+        assertThat(subject.fetchLatestExperimentsAttributes())
+                .isNotEmpty()
+                .containsKeys("experimentCount", "formattedExperimentCount", "latestExperiments")
+                .containsValues(experimentCount);
+    }
 }

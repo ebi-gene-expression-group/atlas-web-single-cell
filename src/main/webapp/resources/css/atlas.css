@@ -137,3 +137,8 @@ img.experiment-thumbnail {
 .anchored:hover a {
     visibility: visible;
 }
+
+/* Override icon colour in media objects in callouts */
+#publication-list .icon, #tools .icon {
+    color: #5688B3;
+}

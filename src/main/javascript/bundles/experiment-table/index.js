@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import ExperimentTable from 'atlas-experiment-table'
-import { withFetchLoader } from 'atlas-react-fetch-loader'
+import ExperimentTable from '@ebi-gene-expression-group/atlas-experiment-table'
+import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
 const FetchLoadExperimentTable = withFetchLoader(ExperimentTable)
 

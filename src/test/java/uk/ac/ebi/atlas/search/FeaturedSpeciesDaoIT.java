@@ -57,6 +57,6 @@ class FeaturedSpeciesDaoIT {
         populator.execute(dataSource);
 
         assertThat(subject.fetchSpeciesSortedByExperimentCount())
-                .containsExactly("Mus musculus", "Homo sapiens");
+                .containsExactly("Mus musculus", "Homo sapiens", "Arabidopsis thaliana");
     }
 }

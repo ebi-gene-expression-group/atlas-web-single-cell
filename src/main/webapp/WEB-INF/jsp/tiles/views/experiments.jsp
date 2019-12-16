@@ -24,6 +24,11 @@
           {type: 'sort', title: 'Number of assays', width: 260, dataParam: 'numberOfAssays',
               link: 'experimentAccession', resource: 'experiments', endpoint: 'experiment-design'}
         ],
+          tableFilters : [
+              {label: `Kingdom`, dataParam: `kingdom`},
+              {label: `Experiment Project`, dataParam: `experimentProjects`},
+              {label: `Technology Type`, dataParam: `technologyType`}
+          ],
         species: '${species}',
         enableDownload: true
       }, 'experiments');

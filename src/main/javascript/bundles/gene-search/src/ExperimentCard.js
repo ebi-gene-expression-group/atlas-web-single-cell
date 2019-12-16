@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import formatNumber from 'format-number'
-import EbiSpeciesIcon from 'react-ebi-species'
+import EbiSpeciesIcon from '@ebi-gene-expression-group/react-ebi-species'
 
 const _formatNumber = formatNumber()
 

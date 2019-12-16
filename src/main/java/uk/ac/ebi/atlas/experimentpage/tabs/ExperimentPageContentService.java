@@ -15,6 +15,7 @@ import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -201,7 +202,7 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    private boolean isSmartExperiment(ImmutableList<String> technologyType) {
+    private boolean isSmartExperiment(Collection<String> technologyType) {
         Stream<Boolean> isSmartExperiment = technologyType.stream()
                 .map(type -> type
                         .toLowerCase()

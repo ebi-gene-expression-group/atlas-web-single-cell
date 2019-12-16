@@ -3,13 +3,12 @@ package uk.ac.ebi.atlas.home;
 import com.google.common.collect.ImmutableMap;
 import io.atlassian.util.concurrent.LazyReference;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.atlas.model.experiment.Experiment;
+import uk.ac.ebi.atlas.experiments.ExperimentJsonSerializer;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
-import uk.ac.ebi.atlas.utils.ExperimentInfo;
 
 import java.text.NumberFormat;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 @Component
 public class LatestExperimentsService {
@@ -21,11 +20,11 @@ public class LatestExperimentsService {
             protected ImmutableMap<String, Object> create() {
                 long experimentCount = latestExperimentsDao.fetchPublicExperimentsCount();
 
-                List<ExperimentInfo> latestExperimentInfo =
+                var latestExperimentInfo =
                         latestExperimentsDao.fetchLatestExperimentAccessions().stream()
                                 .map(experimentTrader::getPublicExperiment)
-                                .map(Experiment::buildExperimentInfo)
-                                .collect(Collectors.toList());
+                                .map(ExperimentJsonSerializer::serialize)
+                                .collect(toImmutableSet());
                 return ImmutableMap.of(
                         "experimentCount", experimentCount,
                         "formattedExperimentCount", NumberFormat.getInstance().format(experimentCount),

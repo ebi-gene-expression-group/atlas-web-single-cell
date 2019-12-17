@@ -11,8 +11,7 @@ import uk.ac.ebi.atlas.model.card.CardModelAdapter;
 import uk.ac.ebi.atlas.utils.GsonProvider;
 
 import static uk.ac.ebi.atlas.model.card.CardIconType.IMAGE;
-import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentLink;
-import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentsSummaryImageUrl;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.*;
 
 @RestController
 public class JsonHcaLandingPageController extends JsonExceptionHandlingController {
@@ -28,7 +27,7 @@ public class JsonHcaLandingPageController extends JsonExceptionHandlingControlle
             return ImmutableList.of(
                     CardModel.create(
                             IMAGE,
-                            getExperimentsSummaryImageUrl("hca"),
+                            getCustomUrl("/resources/images/logos/hca_cell_logo.png"),
                             ImmutableList.of(
                                     getExperimentLink(
                                             "Mouse cells – Small intestinal epithelium",

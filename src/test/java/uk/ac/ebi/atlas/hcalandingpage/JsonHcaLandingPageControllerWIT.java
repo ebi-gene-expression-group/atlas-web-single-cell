@@ -68,8 +68,7 @@ public class JsonHcaLandingPageControllerWIT {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.cards", hasSize(2)))
-                .andExpect(jsonPath("$.cards[0].content", hasSize(greaterThan(0))))
-                .andExpect(jsonPath("$.cards[1].content", hasSize(greaterThan(0))));
+                .andExpect(jsonPath("$.cards", hasSize(1)))
+                .andExpect(jsonPath("$.cards[0].content", hasSize(greaterThan(0))));
     }
 }

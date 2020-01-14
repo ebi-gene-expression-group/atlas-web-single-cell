@@ -83,7 +83,7 @@
             <div id="dataProvider">Raw Data Provider:
                 <c:forEach var="dataProvider" items="${dataProviderURL}" varStatus="i">
                 <a class="thick-link" title="Experiment Data Provider"
-                   href="${dataProvider}">${dataProviderDescription.get(i.index)}</a>
+                   href="${dataProvider}">${dataProviderDescription.asList.get(i.index)}</a>
                 </c:forEach>
             </div>
             </c:if>

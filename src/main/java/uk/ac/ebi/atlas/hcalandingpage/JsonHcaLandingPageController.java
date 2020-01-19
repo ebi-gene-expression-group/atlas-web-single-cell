@@ -27,30 +27,38 @@ public class JsonHcaLandingPageController extends JsonExceptionHandlingControlle
             return ImmutableList.of(
                     CardModel.create(
                             IMAGE,
-                            getCustomUrl("/resources/images/logos/hca_cell_logo.png"),
+                            getCustomUrl("www.ebi.ac.uk", "/resources/images/logos/hca_cell_logo.png"),
                             ImmutableList.of(
                                     getExperimentLink(
+                                            "www.ebi.ac.uk",
                                             "Mouse cells – Small intestinal epithelium",
                                             "E-EHCA-2"),
                                     getExperimentLink(
+                                            "www.ebi.ac.uk",
                                             "Single cell transcriptome analysis of human pancreas",
                                             "E-GEOD-81547"),
                                     getExperimentLink(
+                                            "www.ebi.ac.uk",
                                             "Single-cell RNA-seq analysis of 1,732 cells throughout a 125-day differentiation protocol that converted H1 human embryonic stem cells to a variety of ventrally-derived cell types",
                                             "E-GEOD-93593"),
                                     getExperimentLink(
+                                            "www.ebi.ac.uk",
                                             "Single-cell RNA-seq analysis of human pancreas from healthy individuals and type 2 diabetes patients",
                                             "E-MTAB-5061"),
                                     getExperimentLink(
+                                            "www.ebi.ac.uk",
                                             "Single-cell transcriptome analysis of precursors of human CD4+ cytotoxic T lymphocytes",
                                             "E-GEOD-106540"),
                                     getExperimentLink(
+                                            "www.ebi.ac.uk",
                                             "Tabula Muris",
                                             "E-ENAD-15"),
                                     getExperimentLink(
+                                            "www.ebi.ac.uk",
                                             "Reconstructing the human first trimester fetal-maternal interface using single cell transcriptomics – 10x data",
                                             "E-MTAB-6701"),
                                     getExperimentLink(
+                                            "www.ebi.ac.uk",
                                             "Reconstructing the human first trimester fetal-maternal interface using single cell transcriptomics – Smartseq 2 data",
                                             "E-MTAB-6678"))));
     }

@@ -23,7 +23,7 @@ task explodedWar(type: Copy) {
 war.dependsOn explodedWar
 
 group 'uk.ac.ebi.ge'
-version '8.0.0'
+version '8.1.0'
 sourceCompatibility = 11
 targetCompatibility = 11
 
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'uk.ac.ebi.ge:atlas-web-core:3.0.0'
+    implementation 'uk.ac.ebi.ge:atlas-web-core:3.1.0'
 
     implementation 'org.springframework:spring-context:5.1.5.RELEASE'
     implementation 'org.springframework:spring-jdbc:5.1.5.RELEASE'

@@ -11,7 +11,8 @@ import uk.ac.ebi.atlas.model.card.CardModelAdapter;
 import uk.ac.ebi.atlas.utils.GsonProvider;
 
 import static uk.ac.ebi.atlas.model.card.CardIconType.IMAGE;
-import static uk.ac.ebi.atlas.utils.UrlHelpers.*;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.getCustomUrl;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentLink;
 
 @RestController
 public class JsonHcaLandingPageController extends JsonExceptionHandlingController {

@@ -18,14 +18,11 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Component
 public class ExperimentPageContentService {
-    private static final String SMART_TECHNOLOGY_TYPE = "smart";
-
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
@@ -202,11 +199,9 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    private boolean isSmartExperiment(Collection<String> technologyType) {
-        Stream<Boolean> isSmartExperiment = technologyType.stream()
-                .map(type -> type
-                        .toLowerCase()
-                        .matches(SMART_TECHNOLOGY_TYPE + "-(?:.*)"));
-        return isSmartExperiment.anyMatch(technology -> technology);
+    // Smart-Seq-like experiments will contain the substring “smart” in their technology types
+    private static boolean isSmartExperiment(Collection<String> technologyType) {
+        return technologyType.stream()
+                .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
     }
 }

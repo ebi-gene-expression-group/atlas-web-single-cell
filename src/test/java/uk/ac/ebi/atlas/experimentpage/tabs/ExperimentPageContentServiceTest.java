@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.tabs;
 
-
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
+import uk.ac.ebi.atlas.download.IconType;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experiments.ExperimentBuilder;
@@ -53,7 +53,7 @@ class ExperimentPageContentServiceTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(experimentFileLocationServiceMock.getFileUri(
                 EXPERIMENT_ACCESSION,
                 ExperimentFileType.EXPERIMENT_METADATA,
@@ -101,8 +101,7 @@ class ExperimentPageContentServiceTest {
                 dataFileHubMock,
                 tsnePlotSettingsServiceMock,
                 cellMetadataServiceMock,
-                experimentTraderMock
-        );
+                experimentTraderMock);
     }
 
     @Test
@@ -112,29 +111,26 @@ class ExperimentPageContentServiceTest {
                 .withTechnologyType(ImmutableList.of("Smart-Seq", "10xV1"))
                 .build();
 
-        when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION)
-        ).thenReturn(experiment);
+        when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION)).thenReturn(experiment);
 
         var fileObject = new JsonObject();
-        fileObject.addProperty("url", "experiment/abc/download/zip?fileType=xyx&accessKey=efg");
-        fileObject.addProperty("type", "icon-tsv");
+        fileObject.addProperty("url", EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE);
+        fileObject.addProperty("type", IconType.TSV.getName());
         fileObject.addProperty("description", "Filtered TPMs files (MatrixMarket archive)");
         fileObject.addProperty("isDownload", true);
 
         var result = subject.getDownloads(EXPERIMENT_ACCESSION, "");
-
-        assertThat(result).hasSize(2);
-
-        for (var download : result) {
-            var downloadObject = download.getAsJsonObject();
-            if (downloadObject.get("title").getAsString().equalsIgnoreCase("Result Files")) {
-                var downloadFiles = downloadObject.get("files").getAsJsonArray();
-
-                assertThat(downloadFiles).isNotEmpty();
-                assertThat(downloadFiles).size().isEqualTo(5);
-                assertThat(downloadFiles).contains(fileObject);
-            }
-        }
+        assertThat(result)
+                .hasSize(2)
+                .filteredOn(jsonElement -> jsonElement.getAsJsonObject().get("title").getAsString().equalsIgnoreCase("Result Files"))
+                .hasSize(1)
+                .extracting(jsonElement -> jsonElement.getAsJsonObject().get("files").getAsJsonArray())
+                .hasSize(1)
+                .first()
+                .satisfies(jsonArray -> {
+                    assertThat(jsonArray).hasSize(5);
+                    assertThat(jsonArray).contains(fileObject);
+                });
     }
 
     @Test
@@ -144,28 +140,25 @@ class ExperimentPageContentServiceTest {
                 .withTechnologyType(ImmutableList.of("10xV1"))
                 .build();
 
-        when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION)
-        ).thenReturn(experiment);
+        when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION)).thenReturn(experiment);
 
         var fileObject = new JsonObject();
-        fileObject.addProperty("url", "experiment/abc/download/zip?fileType=xyx&accessKey=efg");
-        fileObject.addProperty("type", "icon-tsv");
+        fileObject.addProperty("url", EXPERIMENT_FILES_URI_TEMPLATE);
+        fileObject.addProperty("type", IconType.TSV.getName());
         fileObject.addProperty("description", "Filtered TPMs files (MatrixMarket archive)");
         fileObject.addProperty("isDownload", true);
 
         var result = subject.getDownloads(EXPERIMENT_ACCESSION, "");
-
-        assertThat(result).hasSize(2);
-
-        for (var download : result) {
-            var downloadObject = download.getAsJsonObject();
-            if (downloadObject.get("title").getAsString().equalsIgnoreCase("Result Files")) {
-                var downloadFiles = downloadObject.get("files").getAsJsonArray();
-
-                assertThat(downloadFiles).isNotEmpty();
-                assertThat(downloadFiles).size().isEqualTo(4);
-                assertThat(downloadFiles).doesNotContain(fileObject);
-            }
-        }
+        assertThat(result)
+                .hasSize(2)
+                .filteredOn(jsonElement -> jsonElement.getAsJsonObject().get("title").getAsString().equalsIgnoreCase("Result Files"))
+                .hasSize(1)
+                .extracting(jsonElement -> jsonElement.getAsJsonObject().get("files").getAsJsonArray())
+                .hasSize(1)
+                .first()
+                .satisfies(jsonArray -> {
+                    assertThat(jsonArray).hasSize(4);
+                    assertThat(jsonArray).doesNotContain(fileObject);
+                });
     }
 }

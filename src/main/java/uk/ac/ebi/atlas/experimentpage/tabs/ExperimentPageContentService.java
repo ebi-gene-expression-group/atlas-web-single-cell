@@ -12,8 +12,10 @@ import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,15 +27,18 @@ public class ExperimentPageContentService {
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
     private final CellMetadataService cellMetadataService;
+    private final ExperimentTrader experimentTrader;
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
                                         TSnePlotSettingsService tsnePlotSettingsService,
-                                        CellMetadataService cellMetadataService) {
+                                        CellMetadataService cellMetadataService,
+                                        ExperimentTrader experimentTrader) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.dataFileHub = dataFileHub;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
         this.cellMetadataService = cellMetadataService;
+        this.experimentTrader = experimentTrader;
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
@@ -79,15 +84,23 @@ public class ExperimentPageContentService {
 
     public JsonArray getDownloads(String experimentAccession, String accessKey) {
         var result = new JsonArray();
+        var experiment = experimentTrader.getPublicExperiment(experimentAccession);
+        var technologyType = experiment.getTechnologyType();
 
         var metadataFiles =
                 ImmutableList.of(
                         ExperimentFileType.EXPERIMENT_METADATA,
                         ExperimentFileType.EXPERIMENT_DESIGN);
-        var resultFiles =
+
+        var resultFiles = isSmartExperiment(technologyType) ?
                 ImmutableList.of(
                         ExperimentFileType.CLUSTERING,
                         ExperimentFileType.QUANTIFICATION_FILTERED,
+                        ExperimentFileType.MARKER_GENES,
+                        ExperimentFileType.NORMALISED,
+                        ExperimentFileType.QUANTIFICATION_RAW) :
+                ImmutableList.of(
+                        ExperimentFileType.CLUSTERING,
                         ExperimentFileType.MARKER_GENES,
                         ExperimentFileType.NORMALISED,
                         ExperimentFileType.QUANTIFICATION_RAW);
@@ -184,5 +197,11 @@ public class ExperimentPageContentService {
         result.addProperty("name", name);
         result.add("props", props);
         return result;
+    }
+
+    // Smart-Seq-like experiments will contain the substring “smart” in their technology types
+    private static boolean isSmartExperiment(Collection<String> technologyType) {
+        return technologyType.stream()
+                .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
     }
 }

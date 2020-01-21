@@ -15,9 +15,9 @@ public enum ExperimentFileType {
     CLUSTERING(
             "cluster", "Clustering file (TSV format)", IconType.TSV, false),
     QUANTIFICATION_RAW(
-            "quantification-raw", "Raw quantification files (MatrixMarket archive)", IconType.TSV, true),
+            "quantification-raw", "Raw counts files (MatrixMarket archive)", IconType.TSV, true),
     QUANTIFICATION_FILTERED(
-            "quantification-filtered", "Filtered quantification files (MatrixMarket archive)", IconType.TSV, true),
+            "quantification-filtered", "Filtered TPMs files (MatrixMarket archive)", IconType.TSV, true),
     NORMALISED(
             "normalised", "Normalised counts files (MatrixMarket archive)", IconType.TSV, true),
     MARKER_GENES(

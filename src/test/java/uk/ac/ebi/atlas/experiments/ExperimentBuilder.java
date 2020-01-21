@@ -111,6 +111,11 @@ public abstract class ExperimentBuilder<R extends ReportsGeneExpression, E exten
         return this;
     }
 
+    public ExperimentBuilder<R, E> withTechnologyType(List<String> technologyTypes) {
+        this.technologyType = ImmutableList.copyOf(technologyTypes);
+        return this;
+    }
+
     public ExperimentBuilder<R, E> withExperimentDescription(String experimentDescription) {
         this.experimentDescription = experimentDescription;
         return this;

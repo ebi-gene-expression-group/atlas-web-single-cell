@@ -53,7 +53,7 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
              @RequestParam(value = "fileType") String fileTypeId,
              @RequestParam(value = "accessKey", defaultValue = "") String accessKey) {
 
-        Experiment experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
+        var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         var file =
                 experimentFileLocationService.getFilePath(

@@ -49,8 +49,9 @@ class ExperimentPageContentServiceTest {
     @Mock
     private ExperimentTrader experimentTraderMock;
 
-    private ExperimentPageContentService subject;
+    private JsonObject tpmsDownloadJsonObject = new JsonObject();
 
+    private ExperimentPageContentService subject;
 
     @BeforeEach
     void setUp() {
@@ -102,6 +103,11 @@ class ExperimentPageContentServiceTest {
                 tsnePlotSettingsServiceMock,
                 cellMetadataServiceMock,
                 experimentTraderMock);
+
+        tpmsDownloadJsonObject.addProperty("url", EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE);
+        tpmsDownloadJsonObject.addProperty("type", IconType.TSV.getName());
+        tpmsDownloadJsonObject.addProperty("description", "Filtered TPMs files (MatrixMarket archive)");
+        tpmsDownloadJsonObject.addProperty("isDownload", true);
     }
 
     @Test
@@ -113,12 +119,6 @@ class ExperimentPageContentServiceTest {
 
         when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION)).thenReturn(experiment);
 
-        var fileObject = new JsonObject();
-        fileObject.addProperty("url", EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE);
-        fileObject.addProperty("type", IconType.TSV.getName());
-        fileObject.addProperty("description", "Filtered TPMs files (MatrixMarket archive)");
-        fileObject.addProperty("isDownload", true);
-
         var result = subject.getDownloads(EXPERIMENT_ACCESSION, "");
         assertThat(result)
                 .hasSize(2)
@@ -129,7 +129,7 @@ class ExperimentPageContentServiceTest {
                 .first()
                 .satisfies(jsonArray -> {
                     assertThat(jsonArray).hasSize(5);
-                    assertThat(jsonArray).contains(fileObject);
+                    assertThat(jsonArray).contains(tpmsDownloadJsonObject);
                 });
     }
 
@@ -142,12 +142,6 @@ class ExperimentPageContentServiceTest {
 
         when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION)).thenReturn(experiment);
 
-        var fileObject = new JsonObject();
-        fileObject.addProperty("url", EXPERIMENT_FILES_URI_TEMPLATE);
-        fileObject.addProperty("type", IconType.TSV.getName());
-        fileObject.addProperty("description", "Filtered TPMs files (MatrixMarket archive)");
-        fileObject.addProperty("isDownload", true);
-
         var result = subject.getDownloads(EXPERIMENT_ACCESSION, "");
         assertThat(result)
                 .hasSize(2)
@@ -158,7 +152,7 @@ class ExperimentPageContentServiceTest {
                 .first()
                 .satisfies(jsonArray -> {
                     assertThat(jsonArray).hasSize(4);
-                    assertThat(jsonArray).doesNotContain(fileObject);
+                    assertThat(jsonArray).doesNotContain(tpmsDownloadJsonObject);
                 });
     }
 }

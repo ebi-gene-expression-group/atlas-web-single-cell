@@ -106,8 +106,11 @@ public class MetadataJsonSerializer {
             var expressionBySpecies = new HashMap<>();
 
             for (var experimentAccession : experimentAccessionsBySpecies.get(species)) {
+                var experimentInfo = new HashMap<>();
                 var cellIdsFromCellTypeQuery = cellIdsByExperimentAccession.get(experimentAccession).keySet();
                 var perpelexity = tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).get(0);
+                var technologyType = experimentTrader.getExperiment(experimentAccession, "").getTechnologyType();
+
                 LOGGER.info("Cell type expression search experiment: {}", experimentAccession);
 
                 var expressionByMarkerGene = new HashMap<>();
@@ -148,8 +151,9 @@ public class MetadataJsonSerializer {
                                     ))
                     );
                 }
-                expressionBySpecies.put(experimentAccession, expressionByMarkerGene);
-
+                experimentInfo.put("technologyType", technologyType);
+                experimentInfo.put("markerGeneExpression", expressionByMarkerGene);
+                expressionBySpecies.put(experimentAccession, experimentInfo);
             }
             expressionByExpressionWithCellType.put(species, expressionBySpecies);
         }

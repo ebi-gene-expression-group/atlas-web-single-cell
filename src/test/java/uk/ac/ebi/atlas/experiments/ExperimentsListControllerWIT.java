@@ -40,6 +40,7 @@ public class ExperimentsListControllerWIT {
     private MockMvc mockMvc;
 
     private static final String ENDPOINT_URL = "/json/experiments";
+    private static final String ORGANISM_PART_ENDPOINT_URL = "/json/organism_part/experiments";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -71,7 +72,7 @@ public class ExperimentsListControllerWIT {
 
     @Test
     void hasEmptyExperimentsListWithInvalidCharacteristicValueParameter() throws Exception {
-        mockMvc.perform(get(ENDPOINT_URL + "?organismPart=foo"))
+        mockMvc.perform(get(ORGANISM_PART_ENDPOINT_URL + "?organismPart=foo"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.experiments").isArray())
@@ -80,7 +81,7 @@ public class ExperimentsListControllerWIT {
 
     @Test
     void hasExperimentsListWithInvalidParameters() throws Exception {
-        mockMvc.perform(get(ENDPOINT_URL+ "?foo=bar"))
+        mockMvc.perform(get(ORGANISM_PART_ENDPOINT_URL+ "?foo=bar"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.experiments").isArray())

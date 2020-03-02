@@ -36,6 +36,7 @@ public class ScExperimentTraderDao {
         if(isNotBlank(characteristicValue)) {
                queryBuilder
                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
+                       .setNormalize(false)
                        .addQueryFieldByTerm(ImmutableMap.of(
                                 CHARACTERISTIC_VALUE, ImmutableList.of("*".concat(characteristicValue)),
                                 ONTOLOGY_ANNOTATION, ImmutableList.of("*".concat(characteristicValue)),
@@ -43,7 +44,8 @@ public class ScExperimentTraderDao {
                                 ONTOLOGY_ANNOTATION_ANCESTORS_URIS, ImmutableList.of("*".concat(characteristicValue)),
                                 ONTOLOGY_ANNOTATION_LABEL, ImmutableList.of("*".concat(characteristicValue))
                         ))
-                       .setFieldList(EXPERIMENT_ACCESSION); } else {
+                       .setFieldList(EXPERIMENT_ACCESSION);
+        } else {
             queryBuilder
                     .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
                     .setFieldList(EXPERIMENT_ACCESSION);

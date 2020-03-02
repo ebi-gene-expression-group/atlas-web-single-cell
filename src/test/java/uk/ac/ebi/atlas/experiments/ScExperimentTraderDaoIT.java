@@ -45,6 +45,13 @@ class ScExperimentTraderDaoIT {
     }
 
     @Test
+    void notEmptyForWhenValidOnotologyIdIsPassed() {
+        assertThat(subject.fetchPublicExperimentAccessions("organism_part", "UBERON_0000014"))
+                .isNotEmpty()
+                .containsExactlyInAnyOrder("E-EHCA-2");
+    }
+
+    @Test
     void returnAllExperimentsForEmptyCharacteristicValue() {
         assertThat(subject.fetchPublicExperimentAccessions("organism_part", ""))
                 .isNotEmpty();

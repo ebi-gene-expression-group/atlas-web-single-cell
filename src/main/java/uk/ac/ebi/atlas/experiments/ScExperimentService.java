@@ -36,9 +36,9 @@ public class ScExperimentService {
         this.scExperimentTrader = scExperimentTrader;
     }
 
-    public ImmutableSet<JsonObject> getPublicExperimentsJson(String characteristicName, String characteristicValue) {
+    public ImmutableSet<JsonObject> getPublicHumanExperimentsJson(String characteristicName, String characteristicValue) {
         // Sort by experiment type according to the above precedence list and then by display name
-        return scExperimentTrader.getPublicExperiments(characteristicName, characteristicValue)
+        return scExperimentTrader.getPublicHumanExperiments(characteristicName, characteristicValue)
                 .stream()
                 .sorted(Comparator
                         .<Experiment>comparingInt(experiment ->

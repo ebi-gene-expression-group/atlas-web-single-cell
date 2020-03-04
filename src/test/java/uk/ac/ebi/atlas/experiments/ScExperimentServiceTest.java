@@ -24,9 +24,9 @@ public class ScExperimentServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        when(scExperimentTraderMock.getPublicExperiments("organism_part", ""))
+        when(scExperimentTraderMock.getPublicHumanExperiments("organism_part", ""))
                 .thenReturn(ImmutableSet.of(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION)));
-        when(scExperimentTraderMock.getPublicExperiments("organism_part", "skin"))
+        when(scExperimentTraderMock.getPublicHumanExperiments("organism_part", "skin"))
                 .thenReturn(ImmutableSet.of(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION)));
 
         subject = new ScExperimentService(scExperimentTraderMock);
@@ -34,17 +34,17 @@ public class ScExperimentServiceTest {
 
     @Test
     public void sizeIsRightForWithDefaultValueOfParameter() {
-        assertThat(subject.getPublicExperimentsJson("organism_part", "")).hasSize(1);
+        assertThat(subject.getPublicHumanExperimentsJson("organism_part", "")).hasSize(1);
     }
 
     @Test
     public void sizeIsRightForCorrectCharacteristicNameAndCharacteristicValue() {
-        assertThat(subject.getPublicExperimentsJson("organism_part","skin")).hasSize(1);
+        assertThat(subject.getPublicHumanExperimentsJson("organism_part","skin")).hasSize(1);
     }
 
     @Test
     public void formatIsInSyncWithWhatWeExpectAndTheDataOfMockBaselineExperiment() {
-        var result = subject.getPublicExperimentsJson("organism_part", "").iterator().next();
+        var result = subject.getPublicHumanExperimentsJson("organism_part", "").iterator().next();
 
         assertThat(result.get("experimentType").getAsString()).isEqualTo("Baseline");
         assertThat(result.get("experimentAccession").getAsString()).isEqualToIgnoringCase(EXPERIMENT_ACCESSION);
@@ -61,7 +61,7 @@ public class ScExperimentServiceTest {
 
     @Test
     public void formatIsAsExpectedForCorrectCharacteristicNameAndValue() {
-        var result = subject.getPublicExperimentsJson("organism_part","skin").iterator().next();
+        var result = subject.getPublicHumanExperimentsJson("organism_part","skin").iterator().next();
 
         assertThat(result.get("experimentType").getAsString()).isEqualTo("Baseline");
         assertThat(result.get("experimentAccession").getAsString()).isEqualToIgnoringCase(EXPERIMENT_ACCESSION);

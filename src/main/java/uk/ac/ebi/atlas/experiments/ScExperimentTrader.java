@@ -18,10 +18,11 @@ public class ScExperimentTrader {
         this.scExperimentTraderDao = scExperimentTraderDao;
     }
 
-    public ImmutableSet<Experiment> getPublicExperiments(String characteristicName, String characteristicValue) {
+    public ImmutableSet<Experiment> getPublicHumanExperiments(String characteristicName, String characteristicValue) {
         return scExperimentTraderDao.fetchPublicExperimentAccessions(characteristicName, characteristicValue)
                 .stream()
                 .map(experimentTrader::getPublicExperiment)
+                .filter(experiment -> experiment.getSpecies().isUs())
                 .collect(toImmutableSet());
     }
 }

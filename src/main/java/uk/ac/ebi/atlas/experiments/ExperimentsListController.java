@@ -37,6 +37,6 @@ public class ExperimentsListController {
         return GSON.toJson(
                 ImmutableMap.of(
                         "experiments",
-                        scExperimentService.getPublicExperimentsJson(CHARACTERISTIC_NAME, organismPart)));
+                        scExperimentService.getPublicHumanExperimentsJson(CHARACTERISTIC_NAME, organismPart)));
     }
 }

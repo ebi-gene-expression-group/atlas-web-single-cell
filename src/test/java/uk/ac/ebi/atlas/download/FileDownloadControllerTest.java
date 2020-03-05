@@ -122,7 +122,6 @@ public class FileDownloadControllerTest {
 
     @Test
     public void testEmptyAccessions() {
-
         String jsonResponse = subject.validateExperimentsFiles(ImmutableList.of(""), FILE_TYPE_LIST);
         ReadContext ctx = JsonPath.parse(jsonResponse);
 

@@ -25,12 +25,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
@@ -52,7 +50,6 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
     download(@PathVariable String experimentAccession,
              @RequestParam(value = "fileType") String fileTypeId,
              @RequestParam(value = "accessKey", defaultValue = "") String accessKey) {
-
         Experiment experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         var file =
@@ -73,7 +70,6 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
     downloadArchive(HttpServletResponse response,
                     @PathVariable String experimentAccession,
                     @RequestParam(value = "fileType") String fileTypeId) throws IOException {
-
         var experiment = experimentTrader.getPublicExperiment(experimentAccession);
         var paths =
                 experimentFileLocationService
@@ -107,7 +103,6 @@ public class FileDownloadController extends HtmlExceptionHandlingController {
                                        @RequestParam(value = "accession", defaultValue = "") List<String> accessions,
                                        @RequestParam(value = "fileType", defaultValue = "") List<String> fileTypeIds)
             throws IOException {
-
         var experiments = new ArrayList<Experiment>();
         for (var accession : accessions) {
             try {

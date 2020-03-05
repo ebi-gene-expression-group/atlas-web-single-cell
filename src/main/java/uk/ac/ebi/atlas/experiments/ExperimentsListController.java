@@ -12,12 +12,9 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 public class ExperimentsListController {
     private final static String CHARACTERISTIC_NAME = "organism_part";
     private final ExperimentJsonService experimentJsonService;
-    private final ScExperimentService scExperimentService;
 
-    public ExperimentsListController(ExperimentJsonService experimentJsonService,
-                                     ScExperimentService scExperimentService) {
+    public ExperimentsListController(ExperimentJsonService experimentJsonService) {
         this.experimentJsonService = experimentJsonService;
-        this.scExperimentService = scExperimentService;
     }
 
     //Used by experiments table page
@@ -28,11 +25,5 @@ public class ExperimentsListController {
                 ImmutableMap.of(
                         "experiments",
                         experimentJsonService.getPublicExperimentsJson(CHARACTERISTIC_NAME, organismPart)));
-    }
-
-    @GetMapping(value = "/json/metadata/hca",
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getHCAMetadata() {
-        return GSON.toJson(scExperimentService.getHCAMetadataJson());
     }
 }

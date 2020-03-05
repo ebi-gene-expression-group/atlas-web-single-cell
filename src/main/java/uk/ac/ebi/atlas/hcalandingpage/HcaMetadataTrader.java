@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -13,20 +13,21 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 @Component
-public class ScExperimentTrader {
+public class HcaMetadataTrader {
     private final ExperimentTrader experimentTrader;
-    private final ScExperimentTraderDao scExperimentTraderDao;
+    private final HcaMetadataTraderDao hcaMetadataTraderDao;
 
-    public ScExperimentTrader(ExperimentTrader experimentTrader,
-                              ScExperimentTraderDao scExperimentTraderDao) {
+    public HcaMetadataTrader(ExperimentTrader experimentTrader,
+                             HcaMetadataTraderDao hcaMetadataTraderDao) {
         this.experimentTrader = experimentTrader;
-        this.scExperimentTraderDao = scExperimentTraderDao;
+        this.hcaMetadataTraderDao = hcaMetadataTraderDao;
     }
 
     public ImmutableMap<String, List<String>> getMetadata() {
-        var result = scExperimentTraderDao.fetchHumanExperimentAccessionsAndAssociatedOrganismParts();
+        var listOfMapsOfExperimentAccessionsAndOntologyIds =
+                hcaMetadataTraderDao.fetchHumanExperimentAccessionsAndAssociatedOrganismParts();
 
-        var ontology_ids = result.stream()
+        var ontologyIds = listOfMapsOfExperimentAccessionsAndOntologyIds.stream()
                 .map(metadata -> {
                     var dataMap = (HashMap) metadata.iterator().next();
                     var url = dataMap.get("ontology_annotation").toString();
@@ -34,7 +35,7 @@ public class ScExperimentTrader {
                 })
                 .collect(Collectors.toList());
 
-        var experiment_accessions = result.stream()
+        var experimentAccessions = listOfMapsOfExperimentAccessionsAndOntologyIds.stream()
                 .map(metadata -> {
                     var dataMap = (HashMap) metadata.iterator().next();
                     return dataMap.get("experiment_accession").toString();
@@ -42,16 +43,15 @@ public class ScExperimentTrader {
                 .collect(Collectors.toList());
 
         return ImmutableMap.of(
-                "ontology_ids", ontology_ids,
-                "experiment_accessions", experiment_accessions
+                "ontology_ids", ontologyIds,
+                "experiment_accessions", experimentAccessions
         );
     }
 
-    public ImmutableSet<Experiment> getPublicExperiments(List<String> experimentAccessions) {
+    public ImmutableSet<Experiment> getHcaExperiments(List<String> experimentAccessions) {
         return experimentAccessions
                 .stream()
                 .map(experimentTrader::getPublicExperiment)
-                .filter(experiment -> experiment.getSpecies().isUs())
                 .collect(toImmutableSet());
     }
 }

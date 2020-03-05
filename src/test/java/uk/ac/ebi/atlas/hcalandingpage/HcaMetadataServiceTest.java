@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -19,7 +19,7 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomOntologyId;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ScExperimentServiceTest {
+public class HcaMetadataServiceTest {
     private static final String EXPERIMENT_ACCESSION = generateRandomExperimentAccession();
     private static final List<String> ONTOLOGY_IDS = ImmutableList.of(
             generateRandomOntologyId(),
@@ -28,45 +28,41 @@ public class ScExperimentServiceTest {
     private static final List<String> EXPERIMENT_ACCESSIONS = ImmutableList.of(
             EXPERIMENT_ACCESSION
     );
-    private static final String SPECIES = "Homo sapiens";
-
     @Mock
-    private ScExperimentTrader scExperimentTraderMock;
+    private HcaMetadataTrader hcaMetadataTraderMock;
 
-    private ScExperimentService subject;
+    private HcaMetadataService subject;
 
     @Before
     public void setUp() throws Exception {
-        when(scExperimentTraderMock.getMetadata())
+        when(hcaMetadataTraderMock.getMetadata())
                 .thenReturn(ImmutableMap.of(
                         "ontology_ids", ONTOLOGY_IDS,
                         "experiment_accessions", EXPERIMENT_ACCESSIONS
                 ));
-        when(scExperimentTraderMock.getPublicExperiments(EXPERIMENT_ACCESSIONS))
+        when(hcaMetadataTraderMock.getHcaExperiments(EXPERIMENT_ACCESSIONS))
                 .thenReturn(ImmutableSet.of(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION)));
 
-        subject = new ScExperimentService(scExperimentTraderMock);
+        subject = new HcaMetadataService(hcaMetadataTraderMock);
     }
 
     @Test
-    public void sizeIsRight() {
-        var result = subject.getHCAMetadataJson();
-
-        assertThat(result.get("experiments").getAsJsonArray()).hasSize(1);
-        assertThat(result.get("ontology_ids").getAsJsonArray()).hasSize(3);
-        assertThat(result.get("species").getAsString()).isNotBlank();
+    public void sizeIsRightForHcaExperiments() {
+        var result = subject.getHcaExperiments();
+        assertThat(result).hasSize(1);
     }
 
     @Test
-    public void formatIsInSyncWithWhatWeExpect() {
-        var result = JsonPath.parse(subject.getHCAMetadataJson().toString());
+    public void sizeIsRightForOntologyIds() {
+        var result = subject.getHcaOntologyIds();
+        assertThat(result).hasSize(3);
+    }
 
-        assertThat(result.<String>read("$.experiments[0].experimentAccession"))
+    @Test
+    public void experimentsAreInFormatWeExpect() {
+        var result = JsonPath.parse(subject.getHcaExperiments().toString());
+
+        assertThat(result.<String>read("$.[0].experimentAccession"))
                 .isEqualTo(EXPERIMENT_ACCESSION);
-        assertThat(result.<String>read("$.ontology_ids[0]")).isNotBlank();
-        assertThat(result.<String>read("$.species"))
-                .isEqualTo(SPECIES);
-        assertThat(subject.getHCAMetadataJson()).hasNoNullFieldsOrProperties();
     }
-
 }

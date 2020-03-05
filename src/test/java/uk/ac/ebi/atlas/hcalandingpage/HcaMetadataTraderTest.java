@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -21,20 +21,20 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomOntologyId;
 
 @ExtendWith(MockitoExtension.class)
-class ScExperimentTraderTest {
+class HcaMetadataTraderTest {
     private final static String EXPERIMENT_ACCESSION = generateRandomExperimentAccession();
 
     @Mock
     private ExperimentTrader experimentTraderMock;
 
     @Mock
-    private ScExperimentTraderDao scExperimentTraderDaoMock;
+    private HcaMetadataTraderDao hcaMetadataTraderDaoMock;
 
-    private ScExperimentTrader subject;
+    private HcaMetadataTrader subject;
 
     @BeforeEach
     void setUp() {
-        subject = new ScExperimentTrader(experimentTraderMock, scExperimentTraderDaoMock);
+        subject = new HcaMetadataTrader(experimentTraderMock, hcaMetadataTraderDaoMock);
     }
 
     @Test
@@ -47,7 +47,7 @@ class ScExperimentTraderTest {
             put("facet_characteristic_value", generateBlankString());
         }});
 
-        when(scExperimentTraderDaoMock.fetchHumanExperimentAccessionsAndAssociatedOrganismParts())
+        when(hcaMetadataTraderDaoMock.fetchHumanExperimentAccessionsAndAssociatedOrganismParts())
                 .thenReturn(ImmutableSet.of(result));
 
         assertThat(subject.getMetadata())
@@ -62,7 +62,7 @@ class ScExperimentTraderTest {
         when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION))
                 .thenReturn(experiment);
 
-        assertThat(subject.getPublicExperiments(ImmutableList.of(EXPERIMENT_ACCESSION)))
+        assertThat(subject.getHcaExperiments(ImmutableList.of(EXPERIMENT_ACCESSION)))
                 .contains(experiment);
     }
 

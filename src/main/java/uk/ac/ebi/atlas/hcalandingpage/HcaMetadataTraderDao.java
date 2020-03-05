@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -26,14 +26,14 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION;
 
 @Component
-public class ScExperimentTraderDao {
+public class HcaMetadataTraderDao {
     private final static String ORGANISM = "organism";
     private final static String ORGANISM_PART = "organism_part";
     private final static String HOMO_SAPIENS = "Homo sapiens";
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
-    public ScExperimentTraderDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
+    public HcaMetadataTraderDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
         this.singleCellAnalyticsCollectionProxy = solrCloudCollectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
     /*

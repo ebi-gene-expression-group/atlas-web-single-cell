@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,17 +21,17 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @Transactional
-class ScExperimentTraderDaoIT {
+class HcaMetadataTraderDaoIT {
 
     @Inject
     private SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory;
 
     @Inject
-    private ScExperimentTraderDao subject;
+    private HcaMetadataTraderDao subject;
 
     @BeforeEach
     void setUp() {
-        subject = new ScExperimentTraderDao(solrCloudCollectionProxyFactory);
+        subject = new HcaMetadataTraderDao(solrCloudCollectionProxyFactory);
     }
 
     @Test

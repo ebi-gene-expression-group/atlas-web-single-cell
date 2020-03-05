@@ -85,12 +85,12 @@ class GeneSearchDaoIT {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"ENSMUSG00000063415"})
+    @ValueSource(strings = {"AT1G02640"})
     void validGeneIdReturnsExperimentAccessions(String geneId) {
         List<String> result = subject.fetchExperimentAccessionsWhereGeneIsMarker(geneId);
 
         assertThat(result)
-                .containsOnly("E-GEOD-99058");
+                .containsOnly("E-CURD-4");
     }
 
     @ParameterizedTest
@@ -101,7 +101,7 @@ class GeneSearchDaoIT {
     }
 
     @ParameterizedTest
-    @CsvSource({"'ENSMUSG00000063415', 'E-GEOD-99058', 7"})
+    @CsvSource({"'ENSMUSG00000005360', 'E-GEOD-99058', 6"})
     void validExperimentAccessionReturnsClusterIDsWithPreferredKAndMinP(String geneId,
                                                                         String experimentAccession,
                                                                         Integer preferredK){
@@ -113,12 +113,12 @@ class GeneSearchDaoIT {
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                7, ImmutableList.of(1),
-                                11, ImmutableList.of(1)));
+                                6, ImmutableList.of(3),
+                                4, ImmutableList.of(2)));
     }
 
     @ParameterizedTest
-    @CsvSource({"'ENSMUSG00000063415', 'E-GEOD-99058', 7"})
+    @CsvSource({"'ENSMUSG00000005360', 'E-GEOD-99058', 6"})
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
                                                                                   Integer preferredK){
@@ -130,7 +130,7 @@ class GeneSearchDaoIT {
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                11, ImmutableList.of(1)));
+                                6, ImmutableList.of(3)));
     }
 
     @ParameterizedTest

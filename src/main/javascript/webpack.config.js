@@ -10,7 +10,7 @@ module.exports = {
     experimentPage: `./bundles/experiment-page`,
     geneSearch: `./bundles/gene-search`,
     geneSearchForm: `./bundles/gene-search-form`,
-    feedbackForm: `atlas-feedback-form`,
+    feedbackForm: `@ebi-gene-expression-group/atlas-feedback-form`,
     homepageSpeciesSummaryPanel: `./bundles/homepage-species-summary-panel`,
     homepageExperimentsSummaryPanel: `./bundles/homepage-experiments-summary-panel`,
     homepageCards: `./bundles/homepage-cards`,

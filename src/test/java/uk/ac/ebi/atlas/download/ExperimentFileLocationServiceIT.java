@@ -124,8 +124,8 @@ class ExperimentFileLocationServiceIT {
 
     @Test
     void existingFilteredQuantificationFiles() {
-        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        List<String> expectedFileNames =
+        var experimentAccession = "E-MTAB-5061";    // Or any other SmartSeq2 experiment...
+        var expectedFileNames =
                 Stream.of(
                         MATRIX_MARKET_FILTERED_QUANTIFICATION_FILE_NAME_TEMPLATE,
                         MATRIX_MARKET_FILTERED_QUANTIFICATION_ROWS_FILE_NAME_TEMPLATE,

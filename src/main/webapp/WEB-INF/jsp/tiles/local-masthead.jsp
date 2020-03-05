@@ -3,24 +3,32 @@
 <div data-sticky-container>
     <header id="masthead" class="masthead" data-sticky data-sticky-on="large" data-top-anchor="content:top" data-btm-anchor="content:bottom">
         <div class="masthead-inner row expanded">
-            <div class="medium-12 large-8 columns">
+            <div class="small-12 large-8 columns">
                 <!-- local-title -->
                 <a href="${pageContext.request.contextPath}/home" title="Back to Single Cell Expression Atlas homepage">
-                <div class="media-object" id="local-title">
-                    <div class="media-object-section hide-for-small-only">
-                        <img src="${pageContext.request.contextPath}/resources/images/logos/sc_atlas_logo.png" alt="Single Cell Expression Atlas logo" style="height:7em">
+                    <div class="media-object" id="local-title">
+                        <div class="media-object-section hide-for-small-only">
+                            <img src="${pageContext.request.contextPath}/resources/images/logos/sc_atlas_logo.png" alt="Single Cell Expression Atlas logo" style="height:7em">
+                        </div>
+                        <div class="media-object-section">
+                            <h1>Single&nbsp;Cell Expression&nbsp;Atlas</h1>
+                            <h4 class="show-for-large">Single cell gene expression across species</h4>
+                        </div>
                     </div>
-                    <div class="media-object-section">
-                        <h1>Single&nbsp;Cell Expression&nbsp;Atlas</h1>
-                        <h4 class="show-for-large">Single cell gene expression across species</h4>
-                    </div>
-                </div>
                 </a>
             </div>
-
-            <div class="medium-12 large-4 columns text-right">
-                <h4 class="show-for-large">Query bulk expression</h4>
-                <a href="/gxa" title="To Expression Atlas" class="button" style="box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.5)"><i class="icon icon-functional" data-icon="<"></i> Back to Expression Atlas</a>
+            <div class="small-12 large-4 columns">
+                <div class="media-object" style="display: flex; justify-content: flex-end; align-items: center;">
+                    <div class="media-object-section">
+                        <h4 class="show-for-large">Query bulk expression</h4>
+                        <a href="/gxa" title="To Expression Atlas" class="button" style="box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.5)"><i class="icon icon-functional" data-icon="<"></i> Back to Expression Atlas</a>
+                    </div>
+                    <div class="media-object-section show-for-large">
+                        <a href="https://wellcome.ac.uk/">
+                            <img src="${pageContext.request.contextPath}/resources/images/logos/wellcome_trust_logo_black.png" alt="Wellcome Trust logo" style="max-height: 5.5em; background: white">
+                        </a>
+                    </div>
+                </div>
             </div>
 
             <nav>
@@ -39,4 +47,3 @@
         </div>
     </header>
 </div>
-

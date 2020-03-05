@@ -5,7 +5,7 @@ import {BrowserRouter, Route, NavLink, Switch, Redirect, withRouter} from 'react
 
 import HeatmapView from 'scxa-marker-gene-heatmap'
 import TSnePlotView from 'expression-atlas-experiment-page-tsne-plot'
-import BioentityInformation from 'sc-atlas-bioentity-information'
+import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 
 const RedirectWithSearchAndHash = (props) =>
   <Redirect to={{ pathname: props.pathname, search: props.location.search, hash: props.location.hash}} />

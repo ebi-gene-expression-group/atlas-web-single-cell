@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "atlas-react-fetch-loader": "^1.1.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "experiments-summary-panel": "file:../../modules/experiments-summary-panel"
+    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.0.0",
+    "experiments-summary-panel": "file:../../modules/experiments-summary-panel",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
   }
 }

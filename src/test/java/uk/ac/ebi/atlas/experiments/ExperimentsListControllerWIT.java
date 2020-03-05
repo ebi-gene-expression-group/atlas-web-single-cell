@@ -65,8 +65,8 @@ public class ExperimentsListControllerWIT {
         mockMvc.perform(get(ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.aaData").isArray())
-                .andExpect(jsonPath("$.aaData").isNotEmpty());
+                .andExpect(jsonPath("$.experiments").isArray())
+                .andExpect(jsonPath("$.experiments").isNotEmpty());
     }
 
     @Test
@@ -74,8 +74,8 @@ public class ExperimentsListControllerWIT {
         mockMvc.perform(get(ENDPOINT_URL + "?organismPart=foo"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.aaData").isArray())
-                .andExpect(jsonPath("$.aaData").isEmpty());
+                .andExpect(jsonPath("$.experiments").isArray())
+                .andExpect(jsonPath("$.experiments").isEmpty());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ExperimentsListControllerWIT {
         mockMvc.perform(get(ENDPOINT_URL+ "?foo=bar"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.aaData").isArray())
-                .andExpect(jsonPath("$.aaData").isNotEmpty());
+                .andExpect(jsonPath("$.experiments").isArray())
+                .andExpect(jsonPath("$.experiments").isNotEmpty());
     }
 }

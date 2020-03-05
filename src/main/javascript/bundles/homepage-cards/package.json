@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "atlas-homepage-cards": "^2.1.4",
-    "atlas-react-fetch-loader": "^1.1.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "@ebi-gene-expression-group/atlas-homepage-cards": "^2.2.0",
+    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.0.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
   }
 }

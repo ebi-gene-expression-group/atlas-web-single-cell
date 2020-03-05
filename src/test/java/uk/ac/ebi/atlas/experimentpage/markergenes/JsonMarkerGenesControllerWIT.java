@@ -93,16 +93,4 @@ class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].value", isA(Number.class)))
                 .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
     }
-
-    @Test
-    void experimentWithoutMarkerGenesReturnsEmptyJson() throws Exception {
-        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithoutMarkerGenes();
-        var k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
-
-        this.mockMvc
-                .perform(get(urlTemplate, experimentAccession, k))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$").isEmpty());
-    }
 }

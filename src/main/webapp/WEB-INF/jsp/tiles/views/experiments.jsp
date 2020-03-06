@@ -68,6 +68,7 @@
             '</ul>',
           width: 0.5
         },
+        sortColumnIndex: 0,
         ascendingOrder: false,
         host: '${pageContext.request.contextPath}/',
         basename: '${pageContext.request.contextPath}'

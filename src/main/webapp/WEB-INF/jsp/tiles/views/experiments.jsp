@@ -9,67 +9,69 @@
   document.addEventListener('DOMContentLoaded', function (event) {
     experimentTable.render(
       {
-        host: '${pageContext.request.contextPath}/',
-        resource: 'json/experiments',
-        downloadTooltip: '<ul>' +
-          '<li>Raw filtered count matrix after quantification</li>' +
-          '<li>Normalised filtered count matrix after quantification</li>' +
-          '<li>Experiment design file with experimental metadata</li>' +
-          '</ul>',
-        tableHeader: [
+        tableHeaders: [
           {
-            type: 'sort',
-            title: 'Loaded date',
-            width: 240,
-            dataParam: 'lastUpdate'
+            label: 'Load date',
+            dataKey: 'loadDate',
+            sortable: true,
+            width: 0.5
           },
           {
-            type: 'search',
-            title: 'species',
-            width: 260,
-            dataParam: 'species'
+            label: 'Species',
+            dataKey: 'species',
+            searchable: true,
+            sortable: true
           },
           {
-            type: 'search',
-            title: 'experiment description',
-            width: 460,
-            dataParam: 'experimentDescription',
-            link: 'experimentAccession',
-            resource: 'experiments',
-            endpoint: 'results'
+            label: 'Title',
+            dataKey: 'experimentDescription',
+            searchable: true,
+            sortable: true,
+            linkTo: function(dataRow) { return 'experiments/' + dataRow.experimentAccession + '/results'; },
+            width: 2
           },
           {
-            type: 'search',
-            title: 'experiment factors',
-            width: 260,
-            dataParam: 'experimentalFactors'
+            label: 'Experimental factors',
+            dataKey: 'experimentalFactors',
+            searchable: true
           },
           {
-            type: 'sort',
-            title: 'Number of assays',
-            width: 260,
-            dataParam: 'numberOfAssays',
-            link: 'experimentAccession',
-            resource: 'experiments',
-            endpoint: 'experiment-design'
+            label: 'Number of cells',
+            dataKey: 'numberOfAssays',
+            sortable: true,
+            linkTo: function(dataRow) { return 'experiments/' + dataRow.experimentAccession + '/experiment-design'; },
+            width: 0.5
           }
         ],
-        tableFilters: [
+        dropdownFilters: [
           {
             label: 'Kingdom',
-            dataParam: 'kingdom'
+            dataKey: 'kingdom'
           },
           {
             label: 'Experiment Project',
-            dataParam: 'experimentProjects'
+            dataKey: 'experimentProjects'
           },
           {
             label: 'Technology Type',
-            dataParam: 'technologyType'
+            dataKey: 'technologyType'
           }
         ],
-        species: '${species}',
-        enableDownload: true
+        rowSelectionColumn: {
+          label: 'Download',
+          dataKey: 'experimentAccession',
+          tooltipContent:
+            '<ul>' +
+            '<li>Raw filtered count matrix after quantification</li>' +
+            '<li>Normalised filtered count matrix after quantification</li>' +
+            '<li>Experiment design file with experimental metadata</li>' +
+            '</ul>',
+          width: 0.5
+        },
+        sortColumnIndex: 0,
+        ascendingOrder: false,
+        host: '${pageContext.request.contextPath}/',
+        basename: '${pageContext.request.contextPath}'
       },
       'experiments');
   });

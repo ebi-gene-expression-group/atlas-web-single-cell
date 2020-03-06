@@ -15,7 +15,9 @@ import java.util.Optional;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static uk.ac.ebi.atlas.model.card.CardIconType.IMAGE;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
-import static uk.ac.ebi.atlas.utils.UrlHelpers.*;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.getCustomUrl;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentLink;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentsSummaryImageUrl;
 
 @RestController
 public class JsonExperimentsSummaryController extends JsonExceptionHandlingController {

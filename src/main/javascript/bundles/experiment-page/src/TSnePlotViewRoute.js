@@ -4,7 +4,7 @@ import URI from 'urijs'
 import {BrowserRouter, Route, NavLink, Switch, Redirect, withRouter} from 'react-router-dom'
 
 import HeatmapView from 'scxa-marker-gene-heatmap'
-import TSnePlotView from 'expression-atlas-experiment-page-tsne-plot'
+import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 
 const RedirectWithSearchAndHash = (props) =>

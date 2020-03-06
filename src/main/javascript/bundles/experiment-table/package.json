@@ -13,7 +13,7 @@
   "dependencies": {
     "@ebi-gene-expression-group/atlas-experiment-table": "^2.2.0-rc1",
     "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.3.2",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
   }
 }

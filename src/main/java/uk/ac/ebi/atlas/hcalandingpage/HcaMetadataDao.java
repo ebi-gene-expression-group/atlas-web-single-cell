@@ -26,14 +26,14 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION;
 
 @Component
-public class HcaMetadataTraderDao {
+public class HcaMetadataDao {
     private final static String ORGANISM = "organism";
     private final static String ORGANISM_PART = "organism_part";
     private final static String HOMO_SAPIENS = "Homo sapiens";
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
-    public HcaMetadataTraderDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
+    public HcaMetadataDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
         this.singleCellAnalyticsCollectionProxy = solrCloudCollectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
     /*

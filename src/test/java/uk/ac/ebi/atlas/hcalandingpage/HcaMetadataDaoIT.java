@@ -21,17 +21,17 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @Transactional
-class HcaMetadataTraderDaoIT {
+class HcaMetadataDaoIT {
 
     @Inject
     private SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory;
 
     @Inject
-    private HcaMetadataTraderDao subject;
+    private HcaMetadataDao subject;
 
     @BeforeEach
     void setUp() {
-        subject = new HcaMetadataTraderDao(solrCloudCollectionProxyFactory);
+        subject = new HcaMetadataDao(solrCloudCollectionProxyFactory);
     }
 
     @Test

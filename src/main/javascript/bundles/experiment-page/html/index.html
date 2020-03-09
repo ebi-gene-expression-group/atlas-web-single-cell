@@ -85,9 +85,6 @@
     <!-- Use this CSS file for any custom styling -->
     <!--<link rel="stylesheet" href="https://www.ebi.ac.uk/gxa/resources/css/foundation/atlas.css" type="text/css" media="all">-->
 
-    <script src="../../../../dist/vendors.bundle.js"></script>
-    <script src="../../../../dist/experimentPage.bundle.js"></script>
-    <script src="../../../../dist/experimentPageDemo.bundle.js"></script>
 </head>
 
 <body>
@@ -105,6 +102,8 @@
     <script type="text/JavaScript">$(document).foundationExtendEBI();</script>
 </body>
 
+<script src="/dist/vendors.bundle.js"></script>
+<script src="/dist/experimentPageDemo.bundle.js"></script>
 <script>
     var tabs = [
       {
@@ -315,10 +314,10 @@
           ]
         }
       }
-    ]
+    ];
 
     experimentPageDemo.render({
-        atlasUrl: 'http://localhost:8080/gxa/sc/',
+        atlasUrl: 'http://ves-hx-76:8080/gxa/sc/',
         content: {
           experimentAccession: 'E-MTAB-5061',
           experimentType: 'SINGLE_CELL_RNASEQ_MRNA_BASELINE',

@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.hcalandingpage;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
@@ -20,18 +19,10 @@ public class HcaMetadataService {
     }
 
     public ImmutableSet<String> getHcaOntologyIds() {
-        return getMetadata().get("ontology_ids");
-    }
-
-    public ImmutableSet<Experiment> getHcaExperiments() {
-        return getHcaExperiments(getMetadata().get("experiment_accessions"));
-    }
-
-    private ImmutableMap<String, ImmutableSet<String>> getMetadata() {
         var humanExperimentAccessionsAndAssociatedOntologyIds =
                 hcaMetadataDao.fetchHumanExperimentAccessionsAndAssociatedOntologyIds();
 
-        var ontologyIds = humanExperimentAccessionsAndAssociatedOntologyIds
+        return humanExperimentAccessionsAndAssociatedOntologyIds
                 .stream()
                 .flatMap(metadataList -> metadataList
                         .stream()
@@ -40,6 +31,11 @@ public class HcaMetadataService {
                             return url.substring(url.lastIndexOf('/') + 1);
                         }))
                 .collect(toImmutableSet());
+    }
+
+    public ImmutableSet<Experiment> getHcaExperiments() {
+        var humanExperimentAccessionsAndAssociatedOntologyIds =
+                hcaMetadataDao.fetchHumanExperimentAccessionsAndAssociatedOntologyIds();
 
         var experimentAccessions = humanExperimentAccessionsAndAssociatedOntologyIds
                 .stream()
@@ -48,12 +44,6 @@ public class HcaMetadataService {
                         .map(metadataMap -> metadataMap.get("experiment_accession").toString()))
                 .collect(toImmutableSet());
 
-        return ImmutableMap.of(
-                "ontology_ids", ontologyIds,
-                "experiment_accessions", experimentAccessions);
-    }
-
-    private ImmutableSet<Experiment> getHcaExperiments(ImmutableSet<String> experimentAccessions) {
         return experimentAccessions
                 .stream()
                 .map(experimentTrader::getPublicExperiment)

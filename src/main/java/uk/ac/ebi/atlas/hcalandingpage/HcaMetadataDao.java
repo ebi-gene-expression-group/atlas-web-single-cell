@@ -17,7 +17,6 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStrea
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
@@ -96,7 +95,7 @@ function below is mimicking the behavior of the above query
 
         var selectStream = new SelectStreamBuilder(
                 organismPartFacetStream,
-                List.of(
+                ImmutableList.of(
                         EXPERIMENT_ACCESSION.name(),
                         FACET_CHARACTERISTIC_VALUE.name(),
                         ONTOLOGY_ANNOTATION.name()));
@@ -109,7 +108,7 @@ function below is mimicking the behavior of the above query
 
         var organismPartSelectStream = new SelectStreamBuilder(
                 organismPartReduceStream,
-                List.of(
+                ImmutableList.of(
                         EXPERIMENT_ACCESSION.name(),
                         "group"));
 

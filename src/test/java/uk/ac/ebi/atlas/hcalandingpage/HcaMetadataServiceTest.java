@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableSet;
-import com.jayway.jsonpath.JsonPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +48,7 @@ public class HcaMetadataServiceTest {
         when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION))
                 .thenReturn(createBaselineExperiment(EXPERIMENT_ACCESSION)
                 );
-        when(hcaMetadataDaoMock.fetchHumanExperimentAccessionsAndAssociatedOrganismParts())
+        when(hcaMetadataDaoMock.fetchHumanExperimentAccessionsAndAssociatedOntologyIds())
                 .thenReturn(ImmutableSet.of(result));
 
         subject = new HcaMetadataService(experimentTraderMock, hcaMetadataDaoMock);
@@ -65,13 +64,5 @@ public class HcaMetadataServiceTest {
     public void sizeIsRightForOntologyIds() {
         var result = subject.getHcaOntologyIds();
         assertThat(result).hasSize(2);
-    }
-
-    @Test
-    public void experimentsAreInFormatWeExpect() {
-        var result = JsonPath.parse(subject.getHcaExperiments().toString());
-
-        assertThat(result.<String>read("$.[0].experimentAccession"))
-                .isEqualTo(EXPERIMENT_ACCESSION);
     }
 }

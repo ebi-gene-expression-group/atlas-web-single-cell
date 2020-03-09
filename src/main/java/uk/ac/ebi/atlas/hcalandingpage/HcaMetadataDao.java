@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.stereotype.Component;
@@ -17,6 +16,8 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.FacetStream
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
@@ -70,7 +71,7 @@ innerJoin(
 function below is mimicking the behavior of the above query
 
 */
-    public ImmutableSet<ArrayList> fetchHumanExperimentAccessionsAndAssociatedOrganismParts() {
+    public ImmutableSet<ArrayList<HashMap>> fetchHumanExperimentAccessionsAndAssociatedOntologyIds() {
         var humanExperiments =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(CHARACTERISTIC_NAME, ORGANISM)
@@ -93,12 +94,12 @@ function below is mimicking the behavior of the above query
                 .sortByAscending(EXPERIMENT_ACCESSION)
                 .withCounts();
 
-        var selectStream = new SelectStreamBuilder(organismPartFacetStream)
-                .addFieldMapping(
-                        ImmutableMap.of(
-                                EXPERIMENT_ACCESSION.name(), EXPERIMENT_ACCESSION.name(),
-                                FACET_CHARACTERISTIC_VALUE.name(), FACET_CHARACTERISTIC_VALUE.name(),
-                                ONTOLOGY_ANNOTATION.name(), ONTOLOGY_ANNOTATION.name()));
+        var selectStream = new SelectStreamBuilder(
+                organismPartFacetStream,
+                List.of(
+                        EXPERIMENT_ACCESSION.name(),
+                        FACET_CHARACTERISTIC_VALUE.name(),
+                        ONTOLOGY_ANNOTATION.name()));
 
         var organismPartReduceStream = new ReducerStreamBuilder(
                 selectStream,
@@ -106,13 +107,11 @@ function below is mimicking the behavior of the above query
                 FACET_CHARACTERISTIC_VALUE.name(),
                 10);
 
-        var organismPartSelectStream = new SelectStreamBuilder(organismPartReduceStream)
-                .addFieldMapping(
-                        ImmutableMap.of(
-                                EXPERIMENT_ACCESSION.name(),
-                                EXPERIMENT_ACCESSION.name(),
-                                "group", "group")
-                );
+        var organismPartSelectStream = new SelectStreamBuilder(
+                organismPartReduceStream,
+                List.of(
+                        EXPERIMENT_ACCESSION.name(),
+                        "group"));
 
         var result = new InnerJoinStreamBuilder(
                 uniqueHumanExperimentsStream,
@@ -121,7 +120,7 @@ function below is mimicking the behavior of the above query
 
         try (TupleStreamer tupleStreamer = TupleStreamer.of(result.build())) {
             return tupleStreamer.get()
-                    .map(tuple -> (ArrayList) tuple.get("group"))
+                    .map(tuple -> (ArrayList<HashMap>) tuple.get("group"))
                     .collect(toImmutableSet());
         }
     }

@@ -36,7 +36,7 @@ class HcaMetadataDaoIT {
 
     @Test
     void returnsCorrectExperiments(){
-        var result = subject.fetchHumanExperimentAccessionsAndAssociatedOrganismParts();
+        var result = subject.fetchHumanExperimentAccessionsAndAssociatedOntologyIds();
         var experiment_accessions = result.stream()
                 .map(metadata -> {
                     var dataMap = (HashMap) metadata.iterator().next();

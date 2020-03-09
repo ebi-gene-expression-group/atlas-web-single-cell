@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import URI from 'urijs'
 import {BrowserRouter, Route, NavLink, Switch, Redirect, withRouter} from 'react-router-dom'
 
-import HeatmapView from 'scxa-marker-gene-heatmap'
-import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
+//import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
+import HeatmapView from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 
 const RedirectWithSearchAndHash = (props) =>
@@ -114,7 +114,10 @@ class TSnePlotViewRoute extends React.Component {
       {
         path: `/gene-info`,
         title: `Gene information`,
-        main: () => <BioentityInformation atlasUrl={atlasUrl} geneId={search.geneId}/>
+        main: () =>
+          <BioentityInformationWithFetchLoader
+            host={atlasUrl}
+            resource={`json/bioentity-information/${search.geneId}`}/>
       }
     ]
 

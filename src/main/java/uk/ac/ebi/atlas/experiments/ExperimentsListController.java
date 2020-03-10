@@ -19,7 +19,7 @@ public class ExperimentsListController {
 
     //Used by experiments table page
     @GetMapping(value = "/json/experiments",
-                produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getExperimentsList(@RequestParam(defaultValue = "") String organismPart) {
         return GSON.toJson(
                 ImmutableMap.of(

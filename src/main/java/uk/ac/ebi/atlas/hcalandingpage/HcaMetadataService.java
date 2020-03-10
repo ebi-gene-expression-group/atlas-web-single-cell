@@ -19,33 +19,25 @@ public class HcaMetadataService {
     }
 
     public ImmutableSet<String> getHcaOntologyIds() {
-        var humanExperimentAccessionsAndAssociatedOntologyIds =
-                hcaMetadataDao.fetchHumanExperimentAccessionsAndAssociatedOntologyIds();
-
-        return humanExperimentAccessionsAndAssociatedOntologyIds
+        return hcaMetadataDao
+                .fetchHumanExperimentAccessionsAndAssociatedOntologyIds()
                 .stream()
                 .flatMap(metadataList -> metadataList
                         .stream()
                         .map(metadataMap -> {
-                            var url = metadataMap.get("ontology_annotation").toString();
+                            var url = metadataMap.get("ontology_annotation");
                             return url.substring(url.lastIndexOf('/') + 1);
                         }))
                 .collect(toImmutableSet());
     }
 
     public ImmutableSet<Experiment> getHcaExperiments() {
-        var humanExperimentAccessionsAndAssociatedOntologyIds =
-                hcaMetadataDao.fetchHumanExperimentAccessionsAndAssociatedOntologyIds();
-
-        var experimentAccessions = humanExperimentAccessionsAndAssociatedOntologyIds
+        return hcaMetadataDao
+                .fetchHumanExperimentAccessionsAndAssociatedOntologyIds()
                 .stream()
                 .flatMap(metadataList -> metadataList
                         .stream()
-                        .map(metadataMap -> metadataMap.get("experiment_accession").toString()))
-                .collect(toImmutableSet());
-
-        return experimentAccessions
-                .stream()
+                        .map(metadataMap -> metadataMap.get("experiment_accession")))
                 .map(experimentTrader::getPublicExperiment)
                 .collect(toImmutableSet());
     }

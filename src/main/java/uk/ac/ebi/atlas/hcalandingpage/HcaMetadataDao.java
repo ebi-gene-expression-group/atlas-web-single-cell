@@ -70,7 +70,7 @@ innerJoin(
 function below is mimicking the behavior of the above query
 
 */
-    public ImmutableSet<ArrayList<HashMap>> fetchHumanExperimentAccessionsAndAssociatedOntologyIds() {
+    public ImmutableSet<ArrayList<HashMap<String, String>>> fetchHumanExperimentAccessionsAndAssociatedOntologyIds() {
         var humanExperiments =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(CHARACTERISTIC_NAME, ORGANISM)
@@ -119,7 +119,7 @@ function below is mimicking the behavior of the above query
 
         try (TupleStreamer tupleStreamer = TupleStreamer.of(result.build())) {
             return tupleStreamer.get()
-                    .map(tuple -> (ArrayList<HashMap>) tuple.get("group"))
+                    .map(tuple -> (ArrayList<HashMap<String, String>>) tuple.get("group"))
                     .collect(toImmutableSet());
         }
     }

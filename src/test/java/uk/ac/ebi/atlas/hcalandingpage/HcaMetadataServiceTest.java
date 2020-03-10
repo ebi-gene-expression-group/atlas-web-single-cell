@@ -32,14 +32,14 @@ public class HcaMetadataServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        var result = new ArrayList<HashMap>();
-        result.add(new HashMap<String, String>()
+        var result = new ArrayList<HashMap<String, String>>();
+        result.add(new HashMap<>()
         {{
             put("ontology_annotation", generateRandomOntologyId());
             put("experiment_accession", EXPERIMENT_ACCESSION);
             put("facet_characteristic_value", generateBlankString());
         }});
-        result.add(new HashMap<String, String>()
+        result.add(new HashMap<>()
         {{
             put("ontology_annotation", generateRandomOntologyId());
             put("experiment_accession", EXPERIMENT_ACCESSION);
@@ -56,13 +56,11 @@ public class HcaMetadataServiceTest {
 
     @Test
     public void sizeIsRightForHcaExperiments() {
-        var result = subject.getHcaExperiments();
-        assertThat(result).hasSize(1);
+        assertThat(subject.getHcaExperiments()).hasSize(1);
     }
 
     @Test
     public void sizeIsRightForOntologyIds() {
-        var result = subject.getHcaOntologyIds();
-        assertThat(result).hasSize(2);
+        assertThat(subject.getHcaOntologyIds()).hasSize(2);
     }
 }

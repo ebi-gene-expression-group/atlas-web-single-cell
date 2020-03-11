@@ -26,25 +26,25 @@ public class ScExperimentTraderDao {
         this.singleCellAnalyticsCollectionProxy = solrCloudCollectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-    public ImmutableSet<String> fetchPublicExperimentAccessions(String characteristicName, String characteristicValue) {
+    public ImmutableSet<String> fetchExperimentAccessions(String characteristicName, String characteristicValue) {
         var queryBuilder = new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>();
         /* Reason for checking blank here is in case characteristicValue is empty our solrQueryBuilder
-        * builds query like characteristic_value:("\*") which is different from characteristic_value:*
-        * which we need. So to handle that situation if characteristicValue is empty we build query
-        * characteristic_name:("organism_part") as we need all the experiments in case of empty characteristicValue
-        * */
+         * builds query like characteristic_value:("\*") which is different from characteristic_value:*
+         * which we need. So to handle that situation if characteristicValue is empty we build query
+         * characteristic_name:("organism_part") as we need all the experiments in case of empty characteristicValue
+         * */
         if(isNotBlank(characteristicValue)) {
-               queryBuilder
-                       .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
-                       .setNormalize(false)
-                       .addQueryFieldByTerm(ImmutableMap.of(
-                                CHARACTERISTIC_VALUE, ImmutableList.of("*".concat(characteristicValue)),
-                                ONTOLOGY_ANNOTATION, ImmutableList.of("*".concat(characteristicValue)),
-                                ONTOLOGY_ANNOTATION_ANCESTORS_LABELS, ImmutableList.of("*".concat(characteristicValue)),
-                                ONTOLOGY_ANNOTATION_ANCESTORS_URIS, ImmutableList.of("*".concat(characteristicValue)),
-                                ONTOLOGY_ANNOTATION_LABEL, ImmutableList.of("*".concat(characteristicValue))
-                        ))
-                       .setFieldList(EXPERIMENT_ACCESSION);
+            queryBuilder
+                    .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
+                    .setNormalize(false)
+                    .addQueryFieldByTerm(ImmutableMap.of(
+                            CHARACTERISTIC_VALUE, ImmutableList.of("*".concat(characteristicValue)),
+                            ONTOLOGY_ANNOTATION, ImmutableList.of("*".concat(characteristicValue)),
+                            ONTOLOGY_ANNOTATION_ANCESTORS_LABELS, ImmutableList.of("*".concat(characteristicValue)),
+                            ONTOLOGY_ANNOTATION_ANCESTORS_URIS, ImmutableList.of("*".concat(characteristicValue)),
+                            ONTOLOGY_ANNOTATION_LABEL, ImmutableList.of("*".concat(characteristicValue))
+                    ))
+                    .setFieldList(EXPERIMENT_ACCESSION);
         } else {
             queryBuilder
                     .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)

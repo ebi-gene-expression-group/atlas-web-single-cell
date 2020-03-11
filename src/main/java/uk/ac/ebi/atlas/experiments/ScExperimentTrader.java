@@ -19,7 +19,7 @@ public class ScExperimentTrader {
     }
 
     public ImmutableSet<Experiment> getPublicHumanExperiments(String characteristicName, String characteristicValue) {
-        return scExperimentTraderDao.fetchPublicExperimentAccessions(characteristicName, characteristicValue)
+        return scExperimentTraderDao.fetchExperimentAccessions(characteristicName, characteristicValue)
                 .stream()
                 .map(experimentTrader::getPublicExperiment)
                 .filter(experiment -> experiment.getSpecies().isUs())

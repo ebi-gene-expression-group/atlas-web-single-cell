@@ -33,27 +33,27 @@ class ScExperimentTraderDaoIT {
 
     @Test
     void emptyIfNoExperimentsCanBeFound() {
-        assertThat(subject.fetchPublicExperimentAccessions("organism_part", "foobar"))
+        assertThat(subject.fetchExperimentAccessions("organism_part", "foobar"))
                 .isEmpty();
     }
 
     @Test
     void notEmptyForCorrectCharacteristicType() {
-        assertThat(subject.fetchPublicExperimentAccessions("organism_part", "skin"))
+        assertThat(subject.fetchExperimentAccessions("organism_part", "skin"))
                 .isNotEmpty()
                 .containsExactlyInAnyOrder("E-EHCA-2");
     }
 
     @Test
     void notEmptyForWhenValidOnotologyIdIsPassed() {
-        assertThat(subject.fetchPublicExperimentAccessions("organism_part", "UBERON_0000014"))
+        assertThat(subject.fetchExperimentAccessions("organism_part", "UBERON_0000014"))
                 .isNotEmpty()
                 .containsExactlyInAnyOrder("E-EHCA-2");
     }
 
     @Test
     void returnAllExperimentsForEmptyCharacteristicValue() {
-        assertThat(subject.fetchPublicExperimentAccessions("organism_part", ""))
+        assertThat(subject.fetchExperimentAccessions("organism_part", ""))
                 .isNotEmpty();
     }
 

@@ -18,17 +18,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ScExperimentTraderDaoIT {
+class ScExperimentDaoIT {
 
     @Inject
     private SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory;
 
     @Inject
-    private ScExperimentTraderDao subject;
+    private ScExperimentDao subject;
 
     @BeforeEach
     void setUp() {
-        subject = new ScExperimentTraderDao(solrCloudCollectionProxyFactory);
+        subject = new ScExperimentDao(solrCloudCollectionProxyFactory);
     }
 
     @Test
@@ -56,5 +56,4 @@ class ScExperimentTraderDaoIT {
         assertThat(subject.fetchExperimentAccessions("organism_part", ""))
                 .isNotEmpty();
     }
-
 }

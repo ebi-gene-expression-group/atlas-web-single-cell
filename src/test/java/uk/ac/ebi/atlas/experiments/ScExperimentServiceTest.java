@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.ac.ebi.atlas.testutils.MockExperiment;
+import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -18,20 +19,25 @@ public class ScExperimentServiceTest {
     private static final String EXPERIMENT_ACCESSION = generateRandomExperimentAccession();
 
     @Mock
-    private ScExperimentTrader scExperimentTraderMock;
+    private ExperimentTrader experimentTraderMock;
+
+    @Mock
+    private ScExperimentDao scExperimentDaoMock;
 
     private ScExperimentService subject;
 
     @Before
     public void setUp() throws Exception {
-        when(scExperimentTraderMock.getPublicHumanExperiments("organism_part", ""))
-                .thenReturn(ImmutableSet.of(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION)));
-        when(scExperimentTraderMock.getPublicHumanExperiments("organism_part", "skin"))
-                .thenReturn(ImmutableSet.of(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION)));
-        when(scExperimentTraderMock.getPublicHumanExperiments("organism_part", "foo"))
+        when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION))
+                .thenReturn(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION));
+        when(scExperimentDaoMock.fetchExperimentAccessions("organism_part", ""))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
+        when(scExperimentDaoMock.fetchExperimentAccessions("organism_part", "skin"))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
+        when(scExperimentDaoMock.fetchExperimentAccessions("organism_part", "foo"))
                 .thenReturn(ImmutableSet.of());
 
-        subject = new ScExperimentService(scExperimentTraderMock);
+        subject = new ScExperimentService(experimentTraderMock, scExperimentDaoMock);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,17 +18,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ScExperimentDaoIT {
+class HcaHumanExperimentDaoIT {
 
     @Inject
     private SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory;
 
     @Inject
-    private ScExperimentDao subject;
+    private HcaHumanExperimentDao subject;
 
     @BeforeEach
     void setUp() {
-        subject = new ScExperimentDao(solrCloudCollectionProxyFactory);
+        subject = new HcaHumanExperimentDao(solrCloudCollectionProxyFactory);
     }
 
     @Test

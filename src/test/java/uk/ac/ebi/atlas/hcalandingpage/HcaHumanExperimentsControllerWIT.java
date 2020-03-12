@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class HumanExperimentsControllerWIT {
+class HcaHumanExperimentsControllerWIT {
     @Inject
     private DataSource dataSource;
 
@@ -39,7 +39,7 @@ class HumanExperimentsControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String ENDPOINT_URL = "/json/experiments/human";
+    private static final String ENDPOINT_URL = "/json/experiments/hca/human";
 
     @BeforeAll
     void populateDatabaseTables() {

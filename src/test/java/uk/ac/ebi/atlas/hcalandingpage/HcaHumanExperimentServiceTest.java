@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ScExperimentServiceTest {
+public class HcaHumanExperimentServiceTest {
 
     private static final String EXPERIMENT_ACCESSION = generateRandomExperimentAccession();
 
@@ -22,22 +22,22 @@ public class ScExperimentServiceTest {
     private ExperimentTrader experimentTraderMock;
 
     @Mock
-    private ScExperimentDao scExperimentDaoMock;
+    private HcaHumanExperimentDao hcaHumanExperimentDaoMock;
 
-    private ScExperimentService subject;
+    private HcaHumanExperimentService subject;
 
     @Before
     public void setUp() throws Exception {
         when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION))
                 .thenReturn(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION));
-        when(scExperimentDaoMock.fetchExperimentAccessions("organism_part", ""))
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ""))
                 .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
-        when(scExperimentDaoMock.fetchExperimentAccessions("organism_part", "skin"))
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", "skin"))
                 .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
-        when(scExperimentDaoMock.fetchExperimentAccessions("organism_part", "foo"))
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", "foo"))
                 .thenReturn(ImmutableSet.of());
 
-        subject = new ScExperimentService(experimentTraderMock, scExperimentDaoMock);
+        subject = new HcaHumanExperimentService(experimentTraderMock, hcaHumanExperimentDaoMock);
     }
 
     @Test

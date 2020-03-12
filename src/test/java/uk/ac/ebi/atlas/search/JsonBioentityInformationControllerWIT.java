@@ -51,7 +51,7 @@ class JsonBioentityInformationControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String urlTemplate = "/json/bioentity_information/{geneId}";
+    private static final String urlTemplate = "/json/bioentity-information/{geneId}";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -80,12 +80,12 @@ class JsonBioentityInformationControllerWIT {
                 .perform(get(urlTemplate, geneId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$[0].type", isA(String.class)))
-                .andExpect(jsonPath("$[0].name", isA(String.class)))
-                .andExpect(jsonPath("$[0].values", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$[0].values[0].text", isA(String.class)))
-                .andExpect(jsonPath("$[0].values[0].url", isA(String.class)))
-                .andExpect(jsonPath("$[0].values[0].relevance", isA(Number.class)));
+                .andExpect(jsonPath("$.bioentityProperties[0].type", isA(String.class)))
+                .andExpect(jsonPath("$.bioentityProperties[0].name", isA(String.class)))
+                .andExpect(jsonPath("$.bioentityProperties[0].values", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.bioentityProperties[0].values[0].text", isA(String.class)))
+                .andExpect(jsonPath("$.bioentityProperties[0].values[0].url", isA(String.class)))
+                .andExpect(jsonPath("$.bioentityProperties[0].values[0].relevance", isA(Number.class)));
     }
 
     @Test
@@ -115,11 +115,11 @@ class JsonBioentityInformationControllerWIT {
                 .perform(get(urlTemplate, geneId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$[-1:].type", contains("expression_atlas")))
-                .andExpect(jsonPath("$[-1:].name", contains("Expression Atlas")))
-                .andExpect(jsonPath("$[-1:].values", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$[-1:].values[0].text", contains(geneId)))
-                .andExpect(jsonPath("$[-1:].values[0].url", contains("https://www.ebi.ac.uk/gxa/genes/" + geneId)))
-                .andExpect(jsonPath("$[-1:].values[0].relevance", contains(0)));
+                .andExpect(jsonPath("$.bioentityProperties[-1:].type", contains("expression_atlas")))
+                .andExpect(jsonPath("$.bioentityProperties[-1:].name", contains("Expression Atlas")))
+                .andExpect(jsonPath("$.bioentityProperties[-1:].values", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.bioentityProperties[-1:].values[0].text", contains(geneId)))
+                .andExpect(jsonPath("$.bioentityProperties[-1:].values[0].url", contains("https://www.ebi.ac.uk/gxa/genes/" + geneId)))
+                .andExpect(jsonPath("$.bioentityProperties[-1:].values[0].relevance", contains(0)));
     }
 }

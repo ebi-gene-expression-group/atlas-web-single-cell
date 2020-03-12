@@ -20,7 +20,7 @@
     "react-dom": "^16.13.0",
     "react-faceted-search": "^2.8.0",
     "react-router-dom": "^5.1.2",
-    "react-tooltip": "^4.1.0",
+    "react-tooltip": "^4.1.1",
     "scxa-gene-search-form": "^1.4.1",
     "styled-components": "^5.0.1",
     "urijs": "^1.19.2"

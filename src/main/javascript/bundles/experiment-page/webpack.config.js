@@ -16,7 +16,8 @@ module.exports = {
   output: {
     library: `[name]`,
     filename: `[name].bundle.js`,
-    publicPath: commonPublicPath
+    publicPath: commonPublicPath,
+    devtoolNamespace: `firefox`
   },
 
   resolve: {
@@ -91,8 +92,8 @@ module.exports = {
   devServer: {
     port: 9000,
     contentBase: path.resolve(__dirname, 'html'),
-    publicPath: commonPublicPath,
+    publicPath: commonPublicPath
     // Go to http://localhost:9000/gxa/sc/experiments/E-MTAB-5061 to avoid basename warning in the console
-    historyApiFallback: true
+    //historyApiFallback: true
   }
 }

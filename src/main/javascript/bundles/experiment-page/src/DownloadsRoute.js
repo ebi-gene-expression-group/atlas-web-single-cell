@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import LinksToResources from './supplementary-information/LinksToResources'
 
 const DownloadsRoute = ({atlasUrl, data}) => {
-  const downloadLinks = data.map((download) =>
-    <div key={`download`} className={`small-12 columns margin-bottom-xlarge`}>
+  const downloadLinks = data.map((download, index) =>
+    <div key={index} className={`small-12 columns margin-bottom-xlarge`}>
       <h3 key={`title`}>{download.title}</h3>
       <LinksToResources key={`links`} data={download.files} atlasUrl={atlasUrl}/>
     </div>

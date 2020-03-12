@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 public class FileDownloadControllerTest {
 
     private static final List<String> EXPERIMENT_ACCESSION_LIST = ImmutableList.of("E-MTAB-5061", "E-EHCA-2");
+    private static final List<String> FILE_TYPE_LIST = ImmutableList.of("quantification-raw", "normalised", "experiment-design");
 
     @Mock
     private ExperimentFileLocationService experimentFileLocationServiceMock;
@@ -81,7 +82,7 @@ public class FileDownloadControllerTest {
 
     @Test
     public void testInvalidFilesForDownloading() {
-        var jsonResponse = subject.validateExperimentsFiles(EXPERIMENT_ACCESSION_LIST);
+        var jsonResponse = subject.validateExperimentsFiles(EXPERIMENT_ACCESSION_LIST, FILE_TYPE_LIST);
         var ctx = JsonPath.parse(jsonResponse);
 
         assertThat(ctx.<Map<String, Object>>read("$"))
@@ -95,7 +96,7 @@ public class FileDownloadControllerTest {
 
     @Test
     public void testDuplicatedAccessions() {
-        var jsonResponse = subject.validateExperimentsFiles(ImmutableList.of("E-MTAB-5061", "E-EHCA-2", "E-EHCA-2"));
+        var jsonResponse = subject.validateExperimentsFiles(ImmutableList.of("E-MTAB-5061", "E-EHCA-2", "E-EHCA-2"), FILE_TYPE_LIST);
         var ctx = JsonPath.parse(jsonResponse);
 
         assertThat(ctx.<Map<String, Object>>read("$"))
@@ -108,7 +109,7 @@ public class FileDownloadControllerTest {
 
     @Test
     public void testBadAccessions() {
-        var jsonResponse = subject.validateExperimentsFiles(ImmutableList.of("E-MTAB-5061", "E-EHCA-2", "foo"));
+        var jsonResponse = subject.validateExperimentsFiles(ImmutableList.of("E-MTAB-5061", "E-EHCA-2", "foo"), FILE_TYPE_LIST);
         var ctx = JsonPath.parse(jsonResponse);
 
         assertThat(ctx.<Map<String, Object>>read("$"))
@@ -121,13 +122,27 @@ public class FileDownloadControllerTest {
 
     @Test
     public void testEmptyAccessions() {
-
-        String jsonResponse = subject.validateExperimentsFiles(ImmutableList.of(""));
+        String jsonResponse = subject.validateExperimentsFiles(ImmutableList.of(""), FILE_TYPE_LIST);
         ReadContext ctx = JsonPath.parse(jsonResponse);
 
         assertThat(ctx.<Map<String, Object>>read("$"))
                 .extracting("invalidFiles")
                 .contains(ImmutableMap.of());
+    }
+
+    @Test
+    public void testSpecifiedFileTypes() {
+
+        String jsonResponse = subject.validateExperimentsFiles(EXPERIMENT_ACCESSION_LIST, FILE_TYPE_LIST.subList(0, 1));
+        ReadContext ctx = JsonPath.parse(jsonResponse);
+
+        assertThat(ctx.<Map<String, Object>>read("$"))
+                .extracting("invalidFiles")
+                .extracting(EXPERIMENT_ACCESSION_LIST.get(0), EXPERIMENT_ACCESSION_LIST.get(1))
+                .contains(
+                        tuple(List.of("filename", "filename", "filename"),
+                                List.of("filename", "filename", "filename")));
+
     }
 
 }

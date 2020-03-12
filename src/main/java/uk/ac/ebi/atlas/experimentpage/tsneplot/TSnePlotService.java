@@ -54,7 +54,12 @@ public class TSnePlotService {
                 .collect(toImmutableMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().stream()
-                                .map(pointDto -> TSnePoint.create(pointDto.x(), pointDto.y(), pointDto.name()))
+                                .map(pointDto ->
+                                        TSnePoint.create(
+                                                MathUtils.round(pointDto.x(), 2),
+                                                MathUtils.round(pointDto.y(), 2),
+                                                pointDto.name())
+                                )
                                 .collect(toImmutableSet())));
     }
 

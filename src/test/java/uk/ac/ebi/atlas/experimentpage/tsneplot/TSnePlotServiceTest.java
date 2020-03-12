@@ -23,7 +23,6 @@ import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -48,7 +47,7 @@ class TSnePlotServiceTest {
     @DisplayName("Points retrieved by the DAO class are assigned the right cluster")
     void testFetchPlotWithClusters() {
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
-        var perplexities = new int[] {1, 5, 10, 15, 20};
+        var perplexities = new int[]{1, 5, 10, 15, 20};
         var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
         var k = ThreadLocalRandom.current().nextInt(5, 20);
 
@@ -57,9 +56,11 @@ class TSnePlotServiceTest {
                 .thenReturn(ImmutableList.copyOf(randomPointDtos));
 
         var results = subject.fetchTSnePlotWithClusters(experimentAccession, perplexity, k);
-        for (TSnePoint.Dto tSnePointDto : randomPointDtos) {
+        for(TSnePoint.Dto tSnePointDto : randomPointDtos) {
             assertThat(results.get(tSnePointDto.clusterId()))
-                    .contains(TSnePoint.create(tSnePointDto.x(), tSnePointDto.y(), tSnePointDto.name()));
+                    .contains(TSnePoint.create(MathUtils.round(tSnePointDto.x(), 2),
+                            MathUtils.round(tSnePointDto.y(), 2),
+                            tSnePointDto.name()));
         }
 
         assertThat(results)
@@ -72,8 +73,10 @@ class TSnePlotServiceTest {
         assertThat(results.values().stream().flatMap(Set::stream).collect(toSet()))
                 .containsExactlyInAnyOrder(
                         randomPointDtos.stream()
-                                .map(dto -> TSnePoint.create(dto.x(), dto.y(), dto.name()))
-                                .toArray(TSnePoint[]::new))
+                                .map(dto -> TSnePoint.create(MathUtils.round(dto.x(), 2), MathUtils.round(dto.y(), 2),
+                                        dto.name()))
+                                .toArray(TSnePoint[]::new)
+                )
                 .extracting("expressionLevel")
                 .allMatch(expressionLevel -> expressionLevel == Optional.empty());
 
@@ -84,7 +87,7 @@ class TSnePlotServiceTest {
     @DisplayName("Points retrieved by the DAO class are correctly grouped according to metadata values")
     void testFetchPlotWithMetadata() {
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
-        var perplexities = new int[] {1, 5, 10, 15, 20};
+        var perplexities = new int[]{1, 5, 10, 15, 20};
         var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
         var metadataCategory = "characteristic_inferred_cell_type";
         var metadataValues = ImmutableList.of("neuron", "stem cell", "B cell");
@@ -122,7 +125,7 @@ class TSnePlotServiceTest {
     @DisplayName("Points DTOs retrieved by the DAO class are correctly transformed to their non-DTO counterparts")
     void testFetchPlotWithExpressionLevels() {
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
-        var perplexities = new int[] {1, 5, 10, 15, 20};
+        var perplexities = new int[]{1, 5, 10, 15, 20};
         var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
         var geneId = RandomDataTestUtils.generateRandomEnsemblGeneId();
 
@@ -141,4 +144,5 @@ class TSnePlotServiceTest {
                                         dto.name()))
                                 .toArray(TSnePoint[]::new));
     }
+
 }

@@ -1,7 +1,4 @@
 {
-  "name": "experiment-page",
-  "version": "2.1.0-beta1",
-  "description": "",
   "main": "index.js",
   "author": "Expression Atlas developers <atlas-developers@ebi.ac.uk>",
   "collaborators": [
@@ -10,8 +7,9 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "@ebi-gene-expression-group/atlas-bioentity-information": "^1.9.0",
-    "@ebi-gene-expression-group/scxa-tsne-plot": "^4.5.1",
+    "@ebi-gene-expression-group/atlas-bioentity-information": "^2.0.1",
+    "@ebi-gene-expression-group/scxa-marker-gene-heatmap": "^1.6.1",
+    "@ebi-gene-expression-group/scxa-tsne-plot": "^5.0.1",
     "linkifyjs": "^2.1.9",
     "lodash": "^4.17.15",
     "pluralize": "^8.0.0",
@@ -21,7 +19,6 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-table": "^6.11.5",
-    "scxa-marker-gene-heatmap": "^1.5.0",
     "styled-components": "^5.0.1",
     "urijs": "^1.19.2"
   },

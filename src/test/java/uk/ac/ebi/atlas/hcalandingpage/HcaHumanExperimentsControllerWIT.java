@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,16 +30,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ExperimentsListControllerWIT {
-
+class HcaHumanExperimentsControllerWIT {
     @Inject
     private DataSource dataSource;
 
     @Autowired
     private WebApplicationContext wac;
+
     private MockMvc mockMvc;
 
-    private static final String ENDPOINT_URL = "/json/experiments";
+    private static final String ENDPOINT_URL = "/json/experiments/hca/human";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -61,11 +61,39 @@ public class ExperimentsListControllerWIT {
     }
 
     @Test
-    void hasExperimentsListWithoutAnyParameter() throws Exception {
+    void hasEmptyExperimentsListWithInvalidCharacteristicValueParameter() throws Exception {
+        mockMvc.perform(get(ENDPOINT_URL + "?organismPart=foo"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void hasExperimentsListWithInvalidParameters() throws Exception {
+        mockMvc.perform(get(ENDPOINT_URL+ "?foo=bar"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    void hasExperimentsListWithEmptyParameters() throws Exception {
         mockMvc.perform(get(ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.experiments").isArray())
-                .andExpect(jsonPath("$.experiments").isNotEmpty());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    void hasExperimentsListWithValidParameters() throws Exception {
+        mockMvc.perform(get(ENDPOINT_URL + "?organismPart=pancreas"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.[0].experimentAccession").value("E-MTAB-5061"));
     }
 }

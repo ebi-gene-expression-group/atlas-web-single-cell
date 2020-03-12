@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.experiments;
+package uk.ac.ebi.atlas.hcalandingpage;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,16 +30,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ExperimentsListControllerWIT {
+class HcaMetadataControllerWIT {
 
     @Inject
     private DataSource dataSource;
 
     @Autowired
     private WebApplicationContext wac;
+
     private MockMvc mockMvc;
 
-    private static final String ENDPOINT_URL = "/json/experiments";
+    private static final String ENDPOINT_URL = "/json/metadata/hca";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -61,11 +62,14 @@ public class ExperimentsListControllerWIT {
     }
 
     @Test
-    void hasExperimentsListWithoutAnyParameter() throws Exception {
+    void hasAllRequiredMetadata() throws Exception {
         mockMvc.perform(get(ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.experiments").isArray())
-                .andExpect(jsonPath("$.experiments").isNotEmpty());
+                .andExpect(jsonPath("$.experiments").isNotEmpty())
+                .andExpect(jsonPath("$.ontology_ids").isArray())
+                .andExpect(jsonPath("$.ontology_ids").isNotEmpty())
+                .andExpect(jsonPath("$.species").value("Homo sapiens"));
     }
 }

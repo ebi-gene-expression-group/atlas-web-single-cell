@@ -7,7 +7,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function (event) {
-    experimentTable.render(
+    experimentTable.renderRouter(
       {
         tableHeaders: [
           {

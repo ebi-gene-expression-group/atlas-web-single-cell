@@ -1,7 +1,4 @@
 {
-  "name": "experiment-page",
-  "version": "2.1.0-beta1",
-  "description": "",
   "main": "index.js",
   "author": "Expression Atlas developers <atlas-developers@ebi.ac.uk>",
   "collaborators": [

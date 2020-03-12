@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import URI from 'urijs'
 import {BrowserRouter, Route, NavLink, Switch, Redirect, withRouter} from 'react-router-dom'
 
-//import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
-import HeatmapView from 'scxa-marker-gene-heatmap'
+import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
+import HeatmapView from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
@@ -38,7 +38,56 @@ class TSnePlotViewRoute extends React.Component {
       {
         path: `/tsne`,
         title: `t-SNE plots`,
-        main: () => null
+        main: () => <TSnePlotView
+          atlasUrl={atlasUrl}
+          suggesterEndpoint={suggesterEndpoint}
+          wrapperClassName={`row expanded`}
+          clusterPlotClassName={`small-12 large-6 columns`}
+          expressionPlotClassName={`small-12 large-6 columns`}
+          speciesName={species}
+          experimentAccession={experimentAccession}
+          ks={ks}
+          metadata={metadata}
+          selectedColourBy={search.k || search.metadata || preferredK}
+          selectedColourByCategory={search.colourBy || `clusters`} // Is the plot coloured by clusters or metadata
+          highlightClusters={search.clusterId ? JSON.parse(search.clusterId) : []}
+          perplexities={perplexitiesOrdered}
+          selectedPerplexity={Number(search.perplexity) || perplexitiesOrdered[Math.round((perplexitiesOrdered.length - 1) / 2)]}
+          geneId={search.geneId || ``}
+          height={800}
+          onSelectGeneId={
+            (geneId) => {
+              const query = new URLSearchParams(history.location.search)
+              query.set(`geneId`, geneId)
+              resetHighlightClusters(query)
+              updateUrlWithParams(query)
+            }
+          }
+          onChangePerplexity={
+            (perplexity) => {
+              const query = new URLSearchParams(history.location.search)
+              query.set(`perplexity`, perplexity)
+              updateUrlWithParams(query)
+            }
+          }
+          onChangeColourBy={
+            (colourByCategory, colourByValue) => {
+              const query = new URLSearchParams(history.location.search)
+              query.set(`colourBy`, colourByCategory)
+              if(colourByCategory === `clusters`) {
+                query.set(`k`, colourByValue)
+                query.set(`markerGeneK`, colourByValue)
+                query.delete(`metadata`)
+              }
+              else if(colourByCategory === `metadata`) {
+                query.set(`metadata`, colourByValue)
+                query.delete(`k`)
+              }
+              resetHighlightClusters(query)
+              updateUrlWithParams(query)
+            }
+          }
+        />
       },
       {
         path: `/marker-genes`,

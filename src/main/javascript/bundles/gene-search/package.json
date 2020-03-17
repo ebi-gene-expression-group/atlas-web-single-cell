@@ -13,14 +13,14 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "@ebi-gene-expression-group/react-ebi-species": "^2.5.3",
+    "@ebi-gene-expression-group/react-ebi-species": "^2.5.4",
     "format-number": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-faceted-search": "^2.8.0",
     "react-router-dom": "^5.1.2",
-    "react-tooltip": "^4.1.1",
+    "react-tooltip": "^4.1.2",
     "scxa-gene-search-form": "^1.4.1",
     "styled-components": "^5.0.1",
     "urijs": "^1.19.2"

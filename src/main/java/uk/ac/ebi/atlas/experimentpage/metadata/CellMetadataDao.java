@@ -111,20 +111,20 @@ public class CellMetadataDao {
                 .stream()
                 .collect(
                         toMap(
-                                entry -> ((ArrayList) entry.getOrDefault(FACTOR_NAME.name(),
+                                entry -> ((ArrayList<?>) entry.getOrDefault(FACTOR_NAME.name(),
                                         entry.get(CHARACTERISTIC_NAME.name()))).get(0).toString(),
                                 // The factor fields in Solr are all multi-value fields, even though they technically
                                 // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
                                 // value. This was confirmed by curators in this Slack conversation:
                                 // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
-                                entry -> ((ArrayList) entry.getOrDefault(FACTOR_VALUE.name(),
+                                entry -> ((ArrayList<?>) entry.getOrDefault(FACTOR_VALUE.name(),
                                         entry.get(CHARACTERISTIC_VALUE.name()))).get(0).toString()));
     }
 
-    // Given a type of metadata, this method retrieves the value of that metadata for list of cell IDs.
+    // Given a type of metadata and an experiment accession, this method retrieves the value of that metadata for the
+    // cells in an experiment
     public Map<String, String> getMetadataValueForCellIds(String experimentAccession,
-                                                          String metadataType,
-                                                          Collection<String> cellIds) {
+                                                          String metadataType) {
         // We need to do this because we don't know if the metadata type is a factor or a characteristic
         var fields = ImmutableMap.<SingleCellAnalyticsSchemaField, Collection<String>>of(
                 CHARACTERISTIC_NAME, ImmutableSet.of(metadataType),
@@ -132,8 +132,7 @@ public class CellMetadataDao {
 
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
-                        //.addQueryFieldByTerm(CELL_ID, cellIds)
+                        .addFilterFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(fields)
                         .setFieldList(ImmutableSet.of(CELL_ID, CHARACTERISTIC_VALUE, FACTOR_VALUE));
 
@@ -154,7 +153,7 @@ public class CellMetadataDao {
                                 entry -> {
                                     SolrDocument result = entry.getValue().get(0);
 
-                                    return ((ArrayList) result.getOrDefault(FACTOR_VALUE.name(),
+                                    return ((ArrayList<?>) result.getOrDefault(FACTOR_VALUE.name(),
                                             result.get(CHARACTERISTIC_VALUE.name()))).get(0).toString();
                                 }));
     }

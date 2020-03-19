@@ -67,24 +67,10 @@ public class TSnePlotService {
     public ImmutableMap<String, ImmutableSet<TSnePoint>> fetchTSnePlotWithMetadata(String experimentAccession,
                                                                                    int perplexity,
                                                                                    String metadataCategory) {
-        var pointDtos = tSnePlotDao.fetchTSnePlotForPerplexity(experimentAccession, perplexity);
-
-        // An alternative implementation would be to get the metadata for each cell in the tSnePlotServiceDao method
-        // and create TSnePoint.Dto objects with metadata values. This would require separate requests to Solr for
-        // each cell ID.
-        var cellIds = pointDtos
-                .stream()
-                .map(TSnePoint.Dto::name)
-                .collect(Collectors.toList());
-
-        var metadataValuesForCells =
-                cellMetadataDao.getMetadataValueForCellIds(
-                        experimentAccession,
-                        metadataCategory,
-                        cellIds);
+        var metadataValuesForCells = cellMetadataDao.getMetadataValueForCellIds(experimentAccession, metadataCategory);
 
         return ImmutableMap.copyOf(
-                pointDtos.stream()
+                tSnePlotDao.fetchTSnePlotForPerplexity(experimentAccession, perplexity).stream()
                         .map(
                                 pointDto ->
                                         TSnePoint.create(

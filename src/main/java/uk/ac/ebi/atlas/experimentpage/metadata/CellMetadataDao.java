@@ -96,7 +96,7 @@ public class CellMetadataDao {
 
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .addFilterFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(CELL_ID, cellId)
                         .addQueryFieldByTerm(fields)
                         .setFieldList(Arrays.asList(CHARACTERISTIC_NAME, CHARACTERISTIC_VALUE, FACTOR_NAME, FACTOR_VALUE));
@@ -165,7 +165,7 @@ public class CellMetadataDao {
 
         return
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .addFilterFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .setFacets(facetBuilder)
                         .setRows(0);
     }
@@ -189,7 +189,7 @@ public class CellMetadataDao {
     private boolean hasInferredCellType(String experimentAccession) {
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .addFilterFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(CHARACTERISTIC_NAME, INFERRED_CELL_TYPE_SOLR_VALUE);
 
         return !singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults().isEmpty();

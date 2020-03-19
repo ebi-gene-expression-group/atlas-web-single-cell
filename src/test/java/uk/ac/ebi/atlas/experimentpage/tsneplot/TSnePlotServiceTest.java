@@ -122,7 +122,7 @@ class TSnePlotServiceTest {
                         value -> metadataValues.get(ThreadLocalRandom.current().nextInt(0, metadataValues.size()))));
 
         when(
-                cellMetadataDaoMock.getMetadataValueForCellIds(eq(experimentAccession), anyString()))
+                cellMetadataDaoMock.getMetadataValues(eq(experimentAccession), anyString()))
                 .thenReturn(cellMetadata);
 
         var results = subject.fetchTSnePlotWithMetadata(experimentAccession, perplexity, metadataCategory);

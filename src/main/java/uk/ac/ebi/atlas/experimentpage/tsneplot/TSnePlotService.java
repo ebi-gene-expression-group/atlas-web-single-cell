@@ -9,7 +9,6 @@ import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
@@ -67,7 +66,7 @@ public class TSnePlotService {
     public ImmutableMap<String, ImmutableSet<TSnePoint>> fetchTSnePlotWithMetadata(String experimentAccession,
                                                                                    int perplexity,
                                                                                    String metadataCategory) {
-        var metadataValuesForCells = cellMetadataDao.getMetadataValueForCellIds(experimentAccession, metadataCategory);
+        var metadataValuesForCells = cellMetadataDao.getMetadataValues(experimentAccession, metadataCategory);
 
         return ImmutableMap.copyOf(
                 tSnePlotDao.fetchTSnePlotForPerplexity(experimentAccession, perplexity).stream()

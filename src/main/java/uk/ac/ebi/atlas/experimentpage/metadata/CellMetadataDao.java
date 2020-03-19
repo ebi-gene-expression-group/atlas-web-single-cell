@@ -123,8 +123,8 @@ public class CellMetadataDao {
 
     // Given a type of metadata and an experiment accession, this method retrieves the value of that metadata for the
     // cells in an experiment
-    public Map<String, String> getMetadataValueForCellIds(String experimentAccession,
-                                                          String metadataType) {
+    public Map<String, String> getMetadataValues(String experimentAccession,
+                                                 String metadataType) {
         // We need to do this because we don't know if the metadata type is a factor or a characteristic
         var fields = ImmutableMap.<SingleCellAnalyticsSchemaField, Collection<String>>of(
                 CHARACTERISTIC_NAME, ImmutableSet.of(metadataType),

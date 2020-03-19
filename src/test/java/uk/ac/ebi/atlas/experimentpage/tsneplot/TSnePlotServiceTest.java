@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -92,9 +93,18 @@ class TSnePlotServiceTest {
         var metadataCategory = "characteristic_inferred_cell_type";
         var metadataValues = ImmutableList.of("neuron", "stem cell", "B cell");
 
-        var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtos(NUMBER_OF_CELLS);
-        when(tSnePlotDaoMock.fetchTSnePlotForPerplexity(experimentAccession, perplexity))
-                .thenReturn(ImmutableList.copyOf(randomPointDtos));
+        var randomPointDtos =
+                RandomDataTestUtils.generateRandomTSnePointDtos(NUMBER_OF_CELLS)
+                    .stream()
+                    .map(pointDto ->
+                            TSnePoint.Dto.create(
+                                    MathUtils.round(pointDto.x(), 2),
+                                    MathUtils.round(pointDto.y(), 2),
+                                    pointDto.name()))
+                    .collect(toImmutableSet());
+
+        when(tSnePlotDaoMock.fetchTSnePlotForPerplexity(eq(experimentAccession), eq(perplexity)))
+                .thenReturn(randomPointDtos.asList());
 
         // Extract list of cell IDs from t-SNE points
         var cellIds = randomPointDtos
@@ -112,8 +122,7 @@ class TSnePlotServiceTest {
                         value -> metadataValues.get(ThreadLocalRandom.current().nextInt(0, metadataValues.size()))));
 
         when(
-                cellMetadataDaoMock.getMetadataValueForCellIds(
-                        eq(experimentAccession), anyString(), eq(cellIds)))
+                cellMetadataDaoMock.getMetadataValueForCellIds(eq(experimentAccession), anyString()))
                 .thenReturn(cellMetadata);
 
         var results = subject.fetchTSnePlotWithMetadata(experimentAccession, perplexity, metadataCategory);

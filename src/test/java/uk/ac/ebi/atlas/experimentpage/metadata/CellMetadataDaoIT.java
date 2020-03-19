@@ -118,7 +118,10 @@ class CellMetadataDaoIT {
         var experimentAccession = "E-GEOD-71585";
         var result = subject.getMetadataValueForCellIds(experimentAccession, "inferred_cell_type");
 
-        assertThat(result).isEmpty();
+        // Another way to test this would be to check that the result has fewer cells than the experiment, and that the
+        // missing cell IDs don’t have a value for the specified metadata value
+        assertThat(result)
+                .doesNotContainKeys("SRR2138737", "SRR2140225", "SRR2139550", "SRR2139566");
     }
 
     @ParameterizedTest

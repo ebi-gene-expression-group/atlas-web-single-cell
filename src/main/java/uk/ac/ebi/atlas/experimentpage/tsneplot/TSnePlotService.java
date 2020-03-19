@@ -88,8 +88,8 @@ public class TSnePlotService {
                         .map(
                                 pointDto ->
                                         TSnePoint.create(
-                                                pointDto.x(),
-                                                pointDto.y(),
+                                                MathUtils.round(pointDto.x(), 2),
+                                                MathUtils.round(pointDto.y(), 2),
                                                 pointDto.name(),
                                                 StringUtils.capitalize(
                                                         metadataValuesForCells.getOrDefault(

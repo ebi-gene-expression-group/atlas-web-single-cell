@@ -123,8 +123,8 @@ public class CellMetadataDao {
 
     // Given a type of metadata, this method retrieves the value of that metadata for list of cell IDs.
     public Map<String, String> getMetadataValueForCellIds(String experimentAccession,
-                                                             String metadataType,
-                                                             Collection<String> cellIds) {
+                                                          String metadataType,
+                                                          Collection<String> cellIds) {
         // We need to do this because we don't know if the metadata type is a factor or a characteristic
         var fields = ImmutableMap.<SingleCellAnalyticsSchemaField, Collection<String>>of(
                 CHARACTERISTIC_NAME, ImmutableSet.of(metadataType),
@@ -133,7 +133,7 @@ public class CellMetadataDao {
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
-                        .addQueryFieldByTerm(CELL_ID, cellIds)
+                        //.addQueryFieldByTerm(CELL_ID, cellIds)
                         .addQueryFieldByTerm(fields)
                         .setFieldList(ImmutableSet.of(CELL_ID, CHARACTERISTIC_VALUE, FACTOR_VALUE));
 

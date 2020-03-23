@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.metadata;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -117,19 +116,12 @@ class CellMetadataDaoIT {
     @Test
     void experimentWithMissingValuesReturnsNotAvailable() {
         var experimentAccession = "E-GEOD-71585";
+        var result = subject.getMetadataValues(experimentAccession, "inferred_cell_type");
 
-        // TODO Retrieve randomly sampled cell IDs from Solr
-        var cellIdsWithMissingValues = ImmutableList.of(
-                "SRR2138737",
-                "SRR2140225",
-                "SRR2139550",
-                "SRR2139566");
-
-        var result =
-                subject.getMetadataValueForCellIds(
-                        experimentAccession, "inferred_cell_type", cellIdsWithMissingValues);
-
-        assertThat(result).isEmpty();
+        // Another way to test this would be to check that the result has fewer cells than the experiment, and that the
+        // missing cell IDs don’t have a value for the specified metadata value
+        assertThat(result)
+                .doesNotContainKeys("SRR2138737", "SRR2140225", "SRR2139550", "SRR2139566");
     }
 
     @ParameterizedTest
@@ -160,7 +152,7 @@ class CellMetadataDaoIT {
 
     @ParameterizedTest
     @MethodSource("experimentsWithFactorsProvider")
-    void validCellIdsHaveMetadataValues(String experimentAccession) {
+    void validExperimentAccessionHasMetadataValues(String experimentAccession) {
         var cellIds =
                 jdbcUtils.fetchRandomListOfCellsFromExperiment(
                         experimentAccession, ThreadLocalRandom.current().nextInt(1, 2000));
@@ -176,7 +168,7 @@ class CellMetadataDaoIT {
                             "Retrieving values for {} metadata for {} random cell IDs from experiment {}",
                             factor, cellIds.size(), experimentAccession);
 
-                    assertThat(subject.getMetadataValueForCellIds(experimentAccession, factor, cellIds))
+                    assertThat(subject.getMetadataValues(experimentAccession, factor))
                             .isNotEmpty()
                             .containsKeys(cellIds.toArray(new String[0]));
                 });
@@ -192,14 +184,6 @@ class CellMetadataDaoIT {
     @MethodSource("experimentsWithoutAdditionalAttributesProvider")
     void invalidExperimentAccessionHasNoAdditionalAttributes(String experimentAccession) {
         assertThat(subject.getCharacteristicTypes(experimentAccession)).isEmpty();
-    }
-
-    @Test
-    void noMetadataIsRetrievedForEmptyCellIdList() {
-        var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
-
-        assertThat(subject.getMetadataValueForCellIds(experimentAccession, "organism", emptyList()))
-            .isEmpty();
     }
 
     @Test

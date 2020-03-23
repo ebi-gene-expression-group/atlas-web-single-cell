@@ -152,7 +152,7 @@ class CellMetadataDaoIT {
 
     @ParameterizedTest
     @MethodSource("experimentsWithFactorsProvider")
-    void validCellIdsHaveMetadataValues(String experimentAccession) {
+    void validExperimentAccessionHasMetadataValues(String experimentAccession) {
         var cellIds =
                 jdbcUtils.fetchRandomListOfCellsFromExperiment(
                         experimentAccession, ThreadLocalRandom.current().nextInt(1, 2000));

@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.hcalandingpage;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.TupleStreamer;
@@ -70,13 +71,15 @@ innerJoin(
 function below is mimicking the behavior of the above query
 
 */
+    @Cacheable("hcaMetadata")
     public ImmutableSet<ArrayList<HashMap<String, String>>> fetchHumanExperimentAccessionsAndAssociatedOntologyIds() {
         var humanExperiments =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(CHARACTERISTIC_NAME, ORGANISM)
                         .addQueryFieldByTerm(CHARACTERISTIC_VALUE, HOMO_SAPIENS)
                         .setFieldList(EXPERIMENT_ACCESSION)
-                        .sortBy(EXPERIMENT_ACCESSION, SolrQuery.ORDER.asc);
+                        .sortBy(EXPERIMENT_ACCESSION, SolrQuery.ORDER.asc)
+                        .setRows(10000000);
 
         var humanExperimentsSearchStream = new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, humanExperiments);
         var uniqueHumanExperimentsStream = new UniqueStreamBuilder(humanExperimentsSearchStream, EXPERIMENT_ACCESSION.name());

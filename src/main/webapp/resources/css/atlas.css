@@ -38,12 +38,11 @@ hr {
     margin: 0;
 }
 
-/* Fix for Highcharts tooltip being cut off */
-#experiment-page .highcharts-container {
-    overflow: visible !important;
-}
-#experiment-page svg {
-    overflow: visible !important;
+/* Fix for Highcharts tooltip being cut off:
+https://github.com/highcharts/highcharts/issues/6824#issuecomment-602801851
+https://jsfiddle.net/amunoz/pgho7jL0/59/ */
+.highcharts-tooltip-container svg {
+    overflow: visible;
 }
 
 /* Match margin set by React-Select components */

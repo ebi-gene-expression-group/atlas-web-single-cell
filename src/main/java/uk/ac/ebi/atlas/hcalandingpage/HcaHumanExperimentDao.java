@@ -36,7 +36,8 @@ public class HcaHumanExperimentDao {
         queryBuilder
                 .setNormalize(false)
                 .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
-                .setFieldList(EXPERIMENT_ACCESSION);
+                .setFieldList(EXPERIMENT_ACCESSION)
+                .setRows(10000000);
         if (isNotBlank(characteristicValue)) {
             queryBuilder
                     .addQueryFieldByTerm(ImmutableMap.of(

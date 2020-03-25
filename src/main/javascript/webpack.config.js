@@ -9,7 +9,7 @@ module.exports = {
     atlasAutocomplete: `./bundles/autocomplete`,
     experimentPage: `./bundles/experiment-page`,
     geneSearch: `./bundles/gene-search`,
-    geneSearchForm: `./bundles/gene-search-form`,
+    geneSearchForm: `@ebi-gene-expression-group/scxa-gene-search-form`,
     feedbackForm: `@ebi-gene-expression-group/atlas-feedback-form`,
     homepageSpeciesSummaryPanel: `./bundles/homepage-species-summary-panel`,
     homepageExperimentsSummaryPanel: `./bundles/homepage-experiments-summary-panel`,

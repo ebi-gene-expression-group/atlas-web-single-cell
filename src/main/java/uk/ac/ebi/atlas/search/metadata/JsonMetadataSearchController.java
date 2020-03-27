@@ -2,8 +2,7 @@ package uk.ac.ebi.atlas.search.metadata;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
@@ -17,8 +16,7 @@ public class JsonMetadataSearchController extends JsonExceptionHandlingControlle
         this.metadataJsonSerializer = metadataJsonSerializer;
     }
 
-    @RequestMapping(value = "/json/metadata-search/expression/name/{characteristicName}/value/{characteristicValue}",
-            method = RequestMethod.GET,
+    @GetMapping(value = "/json/metadata-search/expression/name/{characteristicName}/value/{characteristicValue}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String cellTypeExpressions(@PathVariable String characteristicName,
                                       @PathVariable String characteristicValue,
@@ -26,8 +24,7 @@ public class JsonMetadataSearchController extends JsonExceptionHandlingControlle
         return metadataJsonSerializer.cellTypeExpressions(characteristicName, characteristicValue, accessKey);
     }
 
-    @RequestMapping(value = "/json/metadata-search/cell-type/name/{characteristicName}/value/{characteristicValue}",
-            method = RequestMethod.GET,
+    @GetMapping(value = "/json/metadata-search/cell-type/name/{characteristicName}/value/{characteristicValue}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String cellTypeMetadata(@PathVariable String characteristicName,
                                    @PathVariable String characteristicValue,

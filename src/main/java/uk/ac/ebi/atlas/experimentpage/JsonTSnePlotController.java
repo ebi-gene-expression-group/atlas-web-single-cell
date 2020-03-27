@@ -1,9 +1,8 @@
 package uk.ac.ebi.atlas.experimentpage;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
@@ -18,8 +17,7 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         this.tSnePlotJsonSerializer = tSnePlotJsonSerializer;
     }
 
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/clusters/k/{k}",
-                    method = RequestMethod.GET,
+    @GetMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/clusters/k/{k}",
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithClusters(@PathVariable String experimentAccession,
                                        @PathVariable int perplexity,
@@ -28,8 +26,7 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, perplexity, k, accessKey);
     }
 
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression",
-                    method = RequestMethod.GET,
+    @GetMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression",
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
                                          @PathVariable int perplexity,
@@ -37,8 +34,7 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, perplexity, accessKey);
     }
 
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/metadata/{metadata}",
-                    method = RequestMethod.GET,
+    @GetMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/metadata/{metadata}",
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithMetadata(@PathVariable String experimentAccession,
                                        @PathVariable int perplexity,
@@ -47,9 +43,8 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         return tSnePlotJsonSerializer.tSnePlotWithMetadata(experimentAccession, perplexity, metadata, accessKey);
     }
 
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression/{geneId}",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression/{geneId}",
+                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
                                          @PathVariable int perplexity,
                                          @PathVariable String geneId,

@@ -52,7 +52,7 @@ public class MetadataSearchDao {
         return inferredCellType;
     }
 
-    // Given a type of chara, this method retrieves the value of that metadata for list of cell IDs.
+    // Given a set of characteristic name and characteristic value, this method retrieves the value of that metadata for list of cell IDs.
     @Cacheable(cacheNames = "cellIdsMetadata", key = "{#characteristicName, #characteristicValue}")
     public Map<String, Map<String, String>> getCellTypeMetadata(String characteristicName,
                                                                 String characteristicValue) {

@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
-public class MetadataJsonSerializer {
+public class MetadataJsonService {
     private final TSnePlotService tSnePlotService;
     private MarkerGenesDao markerGenesDao;
     private final TSnePlotSettingsService tsnePlotSettingsService;
@@ -29,11 +29,11 @@ public class MetadataJsonSerializer {
     private ExperimentTrader experimentTrader;
     private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
 
-    public MetadataJsonSerializer(TSnePlotService tSnePlotService,
-                                  MarkerGenesDao markerGenesDao,
-                                  MetadataSearchDao metadataSearchDao,
-                                  TSnePlotSettingsService tsnePlotSettingsService,
-                                  ExperimentTrader experimentTrader) {
+    public MetadataJsonService(TSnePlotService tSnePlotService,
+                               MarkerGenesDao markerGenesDao,
+                               MetadataSearchDao metadataSearchDao,
+                               TSnePlotSettingsService tsnePlotSettingsService,
+                               ExperimentTrader experimentTrader) {
         this.tSnePlotService = tSnePlotService;
         this.markerGenesDao = markerGenesDao;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
@@ -51,20 +51,23 @@ public class MetadataJsonSerializer {
                 .collect(groupingBy(experimentAccession ->
                         experimentTrader.getExperiment(experimentAccession, accessKey).getSpecies().getName()));
 
-        var cellTypes = new HashMap<>();
 
-        for (var species : experimentAccessionsBySpecies.keySet()) {
-            var cellTypesBySpecies = new HashMap<>();
-            for (var experimentAccession : experimentAccessionsBySpecies.get(species)) {
-                var cellTypesByExperiment = new ArrayList<String>();
-                for (var cellId : cellIdsByExperimentAccession.get(experimentAccession).keySet()) {
-                    var cellType = cellIdsByExperimentAccession.get(experimentAccession).get(cellId);
-                    cellTypesByExperiment.add(cellType);
-                }
-                cellTypesBySpecies.put(experimentAccession, cellTypesByExperiment.stream().distinct().collect(Collectors.toList()));
-            }
-            cellTypes.put(species, cellTypesBySpecies);
-        }
+        var cellTypes = experimentAccessionsBySpecies.entrySet()
+                .stream()
+                .collect(toMap(
+                        Map.Entry::getKey, //species
+                        entry -> experimentAccessionsBySpecies.get(entry.getKey())
+                                .stream()
+                                .collect(toMap(
+                                        accession -> accession,
+                                        accession -> cellIdsByExperimentAccession.get(accession).keySet()
+                                                .stream()
+                                                .map(cellId -> cellIdsByExperimentAccession.get(accession).get(cellId))
+                                                .distinct()
+                                                .collect(Collectors.toList()))
+                                        )
+                                )
+                );
 
         return GSON.toJson(
                 ImmutableMap.of("cellTypes", cellTypes)
@@ -139,6 +142,7 @@ public class MetadataJsonSerializer {
                             }
                         }
                     }
+
                     expressionByMarkerGene.put(markerGene,
                             expressionByCellType
                                     .entrySet()
@@ -151,6 +155,7 @@ public class MetadataJsonSerializer {
                                     ))
                     );
                 }
+
                 experimentInfo.put("technologyType", technologyType);
                 experimentInfo.put("markerGeneExpression", expressionByMarkerGene);
                 expressionBySpecies.put(experimentAccession, experimentInfo);

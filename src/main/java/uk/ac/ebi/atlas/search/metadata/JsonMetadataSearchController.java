@@ -10,10 +10,10 @@ import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 @RestController
 public class JsonMetadataSearchController extends JsonExceptionHandlingController {
 
-    private final MetadataJsonSerializer metadataJsonSerializer;
+    private final MetadataJsonService metadataJsonService;
 
-    public JsonMetadataSearchController(MetadataJsonSerializer metadataJsonSerializer) {
-        this.metadataJsonSerializer = metadataJsonSerializer;
+    public JsonMetadataSearchController(MetadataJsonService metadataJsonSerializer) {
+        this.metadataJsonService = metadataJsonSerializer;
     }
 
     @GetMapping(value = "/json/metadata-search/expression/name/{characteristicName}/value/{characteristicValue}",
@@ -21,7 +21,7 @@ public class JsonMetadataSearchController extends JsonExceptionHandlingControlle
     public String cellTypeExpressions(@PathVariable String characteristicName,
                                       @PathVariable String characteristicValue,
                                       @RequestParam(defaultValue = "") String accessKey) {
-        return metadataJsonSerializer.cellTypeExpressions(characteristicName, characteristicValue, accessKey);
+        return metadataJsonService.cellTypeExpressions(characteristicName, characteristicValue, accessKey);
     }
 
     @GetMapping(value = "/json/metadata-search/cell-type/name/{characteristicName}/value/{characteristicValue}",
@@ -29,6 +29,6 @@ public class JsonMetadataSearchController extends JsonExceptionHandlingControlle
     public String cellTypeMetadata(@PathVariable String characteristicName,
                                    @PathVariable String characteristicValue,
                                    @RequestParam(defaultValue = "") String accessKey) {
-        return metadataJsonSerializer.cellTypeMetadata(characteristicName, characteristicValue, accessKey);
+        return metadataJsonService.cellTypeMetadata(characteristicName, characteristicValue, accessKey);
     }
 }

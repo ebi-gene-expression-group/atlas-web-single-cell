@@ -44,6 +44,8 @@ class JsonMetadataSearchControllerWIT {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_marker_genes-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-fixture.sql"));
         populator.execute(dataSource);
     }
@@ -53,6 +55,8 @@ class JsonMetadataSearchControllerWIT {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
+                new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"),
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-delete.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-delete.sql"));
         populator.execute(dataSource);
     }
@@ -63,19 +67,35 @@ class JsonMetadataSearchControllerWIT {
     }
 
     @Test
-    void invalidMetadataSearch() throws Exception {
-        this.mockMvc.perform(get("/json/metadata-search/name/" + "sex" + "/value/" + "female"))
+    void validMetadataExpressionSearch() throws Exception {
+        this.mockMvc.perform(get("/json/metadata-search/expression/name/" + "sex" + "/value/" + "female"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.markerGeneExpressionByCellType").isNotEmpty());
     }
 
     @Test
-    void validMetadataSearch() throws Exception {
-        this.mockMvc.perform(get("/json/metadata-search/name/" + "foo" + "/value/" + "bar"))
+    void validMetadataCellTypeSearch() throws Exception {
+        this.mockMvc.perform(get("/json/metadata-search/cell-type/name/" + "sex" + "/value/" + "female"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.cellTypes").isNotEmpty());
+    }
+
+    @Test
+    void invalidMetadataExpressionSearch() throws Exception {
+        this.mockMvc.perform(get("/json/metadata-search/expression/name/" + "foo" + "/value/" + "bar"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.markerGeneExpressionByCellType").isEmpty());
+    }
+
+    @Test
+    void invalidMetadataCellTypeSearch() throws Exception {
+        this.mockMvc.perform(get("/json/metadata-search/cell-type/name/" + "foo" + "/value/" + "bar"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.cellTypes").isEmpty());
     }
 
 }

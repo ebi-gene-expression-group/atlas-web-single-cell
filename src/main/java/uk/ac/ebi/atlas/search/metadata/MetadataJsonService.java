@@ -118,11 +118,12 @@ public class MetadataJsonService {
 
                 var expressionByMarkerGene = new HashMap<>();
 
-                for (var markerGene : markerGenesBySpecies.get(species)
+                var distinctMarkerGenesList = markerGenesBySpecies.get(species)
                         .stream()
                         .distinct()
-                        .collect(Collectors.toList())
-                        .subList(0, 20)) {
+                        .collect(Collectors.toList());
+
+                for (var markerGene : distinctMarkerGenesList.subList(0, distinctMarkerGenesList.size())) {
                     var expressionByCellType = new HashMap<String, ArrayList<Double>>();
                     var pointsWithExpression =
                             tSnePlotService.fetchTSnePlotWithExpression(experimentAccession, perpelexity, markerGene);

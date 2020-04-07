@@ -11,7 +11,6 @@ const render = (options, target) => {
   ReactDOM.render(
     <TableManagerWithFetchLoader
       {...options}
-      resource={`json/experiments`}
       renameDataKeys={{experiments: `dataRows`}}/>,
     document.getElementById(target))
 }
@@ -20,7 +19,6 @@ const renderRouter = (options, target) => {
   ReactDOM.render(
     <TableManagerRouterWithFetchLoader
       {...options}
-      resource={`json/experiments`}
       renameDataKeys={{experiments: `dataRows`}}/>,
     document.getElementById(target))
 }

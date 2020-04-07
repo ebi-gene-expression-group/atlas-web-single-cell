@@ -71,6 +71,7 @@
         sortColumnIndex: 0,
         ascendingOrder: false,
         host: '${pageContext.request.contextPath}/',
+        resource: 'json/experiments',
         basename: '${pageContext.request.contextPath}'
       },
       'experiments');

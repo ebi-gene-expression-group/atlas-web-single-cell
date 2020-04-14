@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
 import uk.ac.ebi.atlas.download.FileDownloadController;
+import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGene;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
@@ -28,17 +30,20 @@ public class MetadataJsonService {
     private MetadataSearchDao metadataSearchDao;
     private ExperimentTrader experimentTrader;
     private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
+    private final BioEntityPropertyDao bioEntityPropertyDao;
 
     public MetadataJsonService(TSnePlotService tSnePlotService,
                                MarkerGenesDao markerGenesDao,
                                MetadataSearchDao metadataSearchDao,
                                TSnePlotSettingsService tsnePlotSettingsService,
-                               ExperimentTrader experimentTrader) {
+                               ExperimentTrader experimentTrader,
+                               BioEntityPropertyDao bioEntityPropertyDao) {
         this.tSnePlotService = tSnePlotService;
         this.markerGenesDao = markerGenesDao;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
         this.metadataSearchDao = metadataSearchDao;
         this.experimentTrader = experimentTrader;
+        this.bioEntityPropertyDao = bioEntityPropertyDao;
     }
 
     public String cellTypeMetadata(String characteristicName, String characteristicValue, String accessKey) {
@@ -97,9 +102,10 @@ public class MetadataJsonService {
                                         accession -> markerGenesDao.getMarkerGenesWithAveragesPerCluster(accession,
                                                 tsnePlotSettingsService.getExpectedClusters(accession).orElse(10))
                                                 .stream()
-                                                .map(makergene -> makergene.geneId())
+                                                .map(MarkerGene::geneId)
 
-                                ).collect(Collectors.toList())
+                                )
+                                .collect(Collectors.toList())
                         )
                 );
 
@@ -144,7 +150,8 @@ public class MetadataJsonService {
                         }
                     }
 
-                    expressionByMarkerGene.put(markerGene,
+                    expressionByMarkerGene.put(
+                            bioEntityPropertyDao.getSymbolForGeneId(markerGene).getOrDefault(markerGene, markerGene),
                             expressionByCellType
                                     .entrySet()
                                     .stream()

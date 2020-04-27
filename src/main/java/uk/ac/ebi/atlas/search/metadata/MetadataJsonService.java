@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.search.metadata;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -151,7 +152,7 @@ public class MetadataJsonService {
                     }
 
                     expressionByMarkerGene.put(
-                            bioEntityPropertyDao.getSymbolForGeneId(markerGene).getOrDefault(markerGene, markerGene),
+                            bioEntityPropertyDao.getSymbolsForGeneIds(ImmutableSet.of(markerGene)).getOrDefault(markerGene, markerGene),
                             expressionByCellType
                                     .entrySet()
                                     .stream()

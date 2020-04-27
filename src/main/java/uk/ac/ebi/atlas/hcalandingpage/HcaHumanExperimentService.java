@@ -1,13 +1,15 @@
 package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableSet;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
+import java.util.Set;
+
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
-@Component
+@Service
 public class HcaHumanExperimentService {
     private final ExperimentTrader experimentTrader;
     private final HcaHumanExperimentDao hcaHumanExperimentDao;
@@ -18,11 +20,16 @@ public class HcaHumanExperimentService {
         this.hcaHumanExperimentDao = hcaHumanExperimentDao;
     }
 
-    public ImmutableSet<Experiment> getPublicHumanExperiments(String characteristicName, String characteristicValue) {
-        return hcaHumanExperimentDao.fetchExperimentAccessions(characteristicName, characteristicValue)
+    public ImmutableSet<Experiment> getPublicHumanExperiments(String characteristicName,
+                                                              Set<String> characteristicValues) {
+
+        Set<String> experimentAccessions = hcaHumanExperimentDao.fetchExperimentAccessions(characteristicName,
+                                                                                            characteristicValues);
+        return experimentAccessions
                 .stream()
                 .map(experimentTrader::getPublicExperiment)
                 .filter(experiment -> experiment.getSpecies().isUs())
                 .collect(toImmutableSet());
     }
+
 }

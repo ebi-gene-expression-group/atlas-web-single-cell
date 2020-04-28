@@ -30,41 +30,37 @@ public class HcaHumanExperimentServiceTest {
     public void setUp() {
         when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION))
                 .thenReturn(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION));
-        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of()))
-                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
-        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin")))
-                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
-        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("foo")))
-                .thenReturn(ImmutableSet.of());
-        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin", "lymph node")))
-                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
-
         subject = new HcaHumanExperimentService(experimentTraderMock, hcaHumanExperimentDaoMock);
     }
 
     @Test
     public void ShouldGetAllHumanExperimentsWithEmptyCharacteristicValue() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of()))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of()))
-                .isNotEmpty();
-        //I have a feeling of that this test would fail in the production if we have more human experiments in the
-        // Postgres database if we compare with size as we are relying on the actual database instead of test
-        // database. I'm might be wrong.
+                .isNotEmpty().hasSize(1);
     }
 
     @Test
-    public void ShouldGetHumanExperimentsOnlyForTheProvidedCharacteristicValue() {
+    public void ShouldGetHumanExperimentsOnlyForTheGivenCharacteristicValue() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin")))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin")))
                 .isNotEmpty().hasSize(1);
     }
 
     @Test
-    public void shouldGetEmptyExperimentsIfTheProvidedCharacteristicValueIsInvalid() {
+    public void shouldGetEmptyExperimentsIfTheGivenCharacteristicValueIsInvalid() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("foo")))
+                .thenReturn(ImmutableSet.of());
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("foo")))
                 .isEmpty();
     }
 
     @Test
-    public void shouldGetHumanExperimentsForTheMultipleCharacteristicValues() {
+    public void shouldGetHumanExperimentsForMultipleCharacteristicValues() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin", "lymph node")))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin", "lymph node")))
                 .isNotEmpty().hasSize(1);
     }

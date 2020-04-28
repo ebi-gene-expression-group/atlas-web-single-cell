@@ -58,4 +58,27 @@ class HcaHumanExperimentDaoIT {
         assertThat(subject.fetchExperimentAccessions("organism_part", ImmutableSet.of()))
                 .isNotEmpty();
     }
+
+    @Test
+    void notEmptyWhenValidOntologyAnnotationAncestorsOneOfTheUrlIsPassed() {
+        assertThat(subject.fetchExperimentAccessions("organism_part",
+                ImmutableSet.of("http://www.ebi.ac.uk/efo/EFO_0000001")))
+                .isNotEmpty()
+                .contains("E-EHCA-2");
+    }
+
+    @Test
+    void notEmptyWhenValidOntologyAnnotationLabelIsPassed() {
+        assertThat(subject.fetchExperimentAccessions("organism_part", ImmutableSet.of("zone of skin")))
+                .isNotEmpty()
+                .contains("E-EHCA-2");
+    }
+
+    @Test
+    void notEmptyWhenValidOntologyAnnotationAncestorsOneOfTheLabelIsPassed() {
+        assertThat(subject.fetchExperimentAccessions("organism_part", ImmutableSet.of("anatomical structure")))
+                .isNotEmpty()
+                .contains("E-EHCA-2");
+    }
+
 }

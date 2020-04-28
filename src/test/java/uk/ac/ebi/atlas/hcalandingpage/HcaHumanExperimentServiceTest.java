@@ -68,5 +68,4 @@ public class HcaHumanExperimentServiceTest {
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin", "lymph node")))
                 .isNotEmpty().hasSize(1);
     }
-
 }

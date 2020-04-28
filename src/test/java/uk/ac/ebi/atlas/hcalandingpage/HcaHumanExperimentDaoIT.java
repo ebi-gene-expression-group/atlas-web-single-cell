@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.hcalandingpage;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -33,27 +34,28 @@ class HcaHumanExperimentDaoIT {
 
     @Test
     void emptyIfNoExperimentsCanBeFound() {
-        assertThat(subject.fetchExperimentAccessions("organism_part", "foobar"))
+        assertThat(subject.fetchExperimentAccessions("organism_part", ImmutableSet.of("foobar")))
                 .isEmpty();
     }
 
     @Test
     void notEmptyForCorrectCharacteristicType() {
-        assertThat(subject.fetchExperimentAccessions("organism_part", "skin"))
+        assertThat(subject.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin")))
                 .isNotEmpty()
                 .containsExactlyInAnyOrder("E-EHCA-2");
     }
 
     @Test
     void notEmptyForWhenValidOnotologyIdIsPassed() {
-        assertThat(subject.fetchExperimentAccessions("organism_part", "UBERON_0000014"))
+        assertThat(subject.fetchExperimentAccessions("organism_part",
+                ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000029")))
                 .isNotEmpty()
                 .containsExactlyInAnyOrder("E-EHCA-2");
     }
 
     @Test
     void returnAllExperimentsForEmptyCharacteristicValue() {
-        assertThat(subject.fetchExperimentAccessions("organism_part", ""))
+        assertThat(subject.fetchExperimentAccessions("organism_part", ImmutableSet.of()))
                 .isNotEmpty();
     }
 }

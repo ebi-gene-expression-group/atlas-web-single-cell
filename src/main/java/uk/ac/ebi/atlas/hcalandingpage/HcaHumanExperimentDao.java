@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.hcalandingpage;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,10 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION_ANCESTORS_LABELS;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION_ANCESTORS_URIS;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION_LABEL;
 
 @Repository
 public class HcaHumanExperimentDao {
@@ -40,7 +45,13 @@ public class HcaHumanExperimentDao {
                 .setRows(SolrQueryBuilder.DEFAULT_ROWS);
 
         if(!characteristicValues.isEmpty()) {
-            queryBuilder.addQueryFieldByTerm(CHARACTERISTIC_VALUE, characteristicValues);
+            queryBuilder.addQueryFieldByTerm(ImmutableMap.of(
+                    CHARACTERISTIC_VALUE, characteristicValues,
+                    ONTOLOGY_ANNOTATION, characteristicValues,
+                    ONTOLOGY_ANNOTATION_ANCESTORS_LABELS, characteristicValues,
+                    ONTOLOGY_ANNOTATION_ANCESTORS_URIS, characteristicValues,
+                    ONTOLOGY_ANNOTATION_LABEL, characteristicValues
+            ));
         }
 
         var humanExperimentsSearchStream = new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, queryBuilder);
@@ -53,4 +64,5 @@ public class HcaHumanExperimentDao {
                     .collect(toImmutableSet()));
         }
     }
+
 }

@@ -64,4 +64,13 @@ public class HcaHumanExperimentServiceTest {
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin", "lymph node")))
                 .isNotEmpty().hasSize(1);
     }
+
+    @Test
+    public void ShouldGetAllHumanExperimentsWithEmptyCharacteristicNameAndValue() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("", ImmutableSet.of()))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
+        assertThat(subject.getPublicHumanExperiments("", ImmutableSet.of()))
+                .isNotEmpty().hasSize(1);
+    }
+
 }

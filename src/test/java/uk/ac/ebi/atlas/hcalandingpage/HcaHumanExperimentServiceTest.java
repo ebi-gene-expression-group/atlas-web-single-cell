@@ -37,7 +37,7 @@ public class HcaHumanExperimentServiceTest {
                 .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
         when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("foo")))
                 .thenReturn(ImmutableSet.of());
-        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin","lymph node")))
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin", "lymph node")))
                 .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
 
         subject = new HcaHumanExperimentService(experimentTraderMock, hcaHumanExperimentDaoMock);
@@ -45,29 +45,29 @@ public class HcaHumanExperimentServiceTest {
 
     @Test
     public void ShouldGetAllHumanExperimentsWithEmptyCharacteristicValue() {
-        assertThat(
-                subject.getPublicHumanExperiments("organism_part", ImmutableSet.of()))
-                .hasSize(1);
+        assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of()))
+               .isNotEmpty();
+        //I have a feeling of that this test would fail in the production if we have more human experiments in the
+        // Postgres database if we compare with size as we are relying on the actual database instead of test
+        // database. I'm might be wrong.
     }
 
     @Test
     public void ShouldGetHumanExperimentsOnlyForTheProvidedCharacteristicValue() {
-      ImmutableSet<Experiment> result =  subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin"));
-        assertThat(result).hasSize(1);
+        assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin")))
+                   .isNotEmpty().hasSize(1);
     }
 
     @Test
     public void shouldGetEmptyExperimentsIfTheProvidedCharacteristicValueIsInvalid() {
-        assertThat(
-                subject.getPublicHumanExperiments("organism_part",ImmutableSet.of("foo")))
-                .hasSize(0);
+        assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("foo")))
+                .isEmpty();
     }
 
     @Test
     public void shouldGetHumanExperimentsForTheMultipleCharacteristicValues() {
-        assertThat(
-                subject.getPublicHumanExperiments("organism_part",ImmutableSet.of("skin","lymph node")))
-                .hasSize(1);
+        assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin", "lymph node")))
+                .isNotEmpty().hasSize(1);
     }
 
 }

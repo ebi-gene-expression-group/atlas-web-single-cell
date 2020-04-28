@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.testutils.MockExperiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -46,7 +45,7 @@ public class HcaHumanExperimentServiceTest {
     @Test
     public void ShouldGetAllHumanExperimentsWithEmptyCharacteristicValue() {
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of()))
-               .isNotEmpty();
+                .isNotEmpty();
         //I have a feeling of that this test would fail in the production if we have more human experiments in the
         // Postgres database if we compare with size as we are relying on the actual database instead of test
         // database. I'm might be wrong.
@@ -55,7 +54,7 @@ public class HcaHumanExperimentServiceTest {
     @Test
     public void ShouldGetHumanExperimentsOnlyForTheProvidedCharacteristicValue() {
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin")))
-                   .isNotEmpty().hasSize(1);
+                .isNotEmpty().hasSize(1);
     }
 
     @Test

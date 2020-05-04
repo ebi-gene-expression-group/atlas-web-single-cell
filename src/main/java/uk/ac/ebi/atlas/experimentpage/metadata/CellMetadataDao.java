@@ -132,6 +132,7 @@ public class CellMetadataDao {
 
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .setRows(1500000)
                         .addFilterFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(fields)
                         .setFieldList(ImmutableSet.of(CELL_ID, CHARACTERISTIC_VALUE, FACTOR_VALUE));

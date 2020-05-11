@@ -40,6 +40,7 @@ public class HcaHumanExperimentDao {
          * */
 
         queryBuilder.addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
+                .setNormalize(false)
                 .setFieldList(EXPERIMENT_ACCESSION)
                 .sortBy(EXPERIMENT_ACCESSION, SolrQuery.ORDER.asc)
                 .setRows(SolrQueryBuilder.DEFAULT_ROWS);

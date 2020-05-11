@@ -27,8 +27,6 @@ public class HcaHumanExperimentsController {
     @GetMapping(value = "/json/experiments/hca/human",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getOrganismPartExperimentsList(@RequestParam(defaultValue = "") Set<String> organismPart) {
-        LOGGER.info("Number of organism parts: {}",organismPart.size());
-
         return GSON.toJson(
                 hcaHumanExperimentService
                         .getPublicHumanExperiments(CHARACTERISTIC_NAME, organismPart)

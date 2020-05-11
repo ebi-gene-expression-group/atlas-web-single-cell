@@ -22,10 +22,8 @@ public class HcaHumanExperimentService {
 
     public ImmutableSet<Experiment> getPublicHumanExperiments(String characteristicName,
                                                               Set<String> characteristicValues) {
-
-        Set<String> experimentAccessions = hcaHumanExperimentDao.fetchExperimentAccessions(characteristicName,
-                                                                                            characteristicValues);
-        return experimentAccessions
+        return hcaHumanExperimentDao.fetchExperimentAccessions(characteristicName,
+                characteristicValues)
                 .stream()
                 .map(experimentTrader::getPublicExperiment)
                 .filter(experiment -> experiment.getSpecies().isUs())

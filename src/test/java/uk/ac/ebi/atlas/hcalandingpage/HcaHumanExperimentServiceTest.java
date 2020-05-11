@@ -34,7 +34,7 @@ public class HcaHumanExperimentServiceTest {
     }
 
     @Test
-    public void ShouldGetAllHumanExperimentsWithEmptyCharacteristicValue() {
+    public void shouldGetAllHumanExperimentsWithEmptyCharacteristicValue() {
         when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of()))
@@ -42,7 +42,7 @@ public class HcaHumanExperimentServiceTest {
     }
 
     @Test
-    public void ShouldGetHumanExperimentsOnlyForTheGivenCharacteristicValue() {
+    public void shouldGetHumanExperimentsOnlyForTheGivenCharacteristicValue() {
         when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin")))
                 .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
         assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin")))
@@ -66,7 +66,7 @@ public class HcaHumanExperimentServiceTest {
     }
 
     @Test
-    public void ShouldGetAllHumanExperimentsWithEmptyCharacteristicNameAndValue() {
+    public void shouldGetAllHumanExperimentsWithEmptyCharacteristicNameAndValue() {
         when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("", ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
         assertThat(subject.getPublicHumanExperiments("", ImmutableSet.of()))

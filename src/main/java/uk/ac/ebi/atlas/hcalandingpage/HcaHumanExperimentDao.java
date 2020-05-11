@@ -43,7 +43,7 @@ public class HcaHumanExperimentDao {
                 .setNormalize(false)
                 .setFieldList(EXPERIMENT_ACCESSION)
                 .sortBy(EXPERIMENT_ACCESSION, SolrQuery.ORDER.asc)
-                .setRows(SolrQueryBuilder.DEFAULT_ROWS);
+                .setRows(10000000);
 
         if(!characteristicValues.isEmpty()) {
             queryBuilder.addQueryFieldByTerm(ImmutableMap.of(

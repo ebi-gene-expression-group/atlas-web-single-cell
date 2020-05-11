@@ -48,7 +48,7 @@ class HcaHumanExperimentDaoIT {
     @Test
     void notEmptyForWhenValidOnotologyIdIsPassed() {
         assertThat(subject.fetchExperimentAccessions("organism_part",
-                ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000029")))
+                ImmutableSet.of("UBERON_0000029")))
                 .isNotEmpty()
                 .containsExactlyInAnyOrder("E-EHCA-2");
     }
@@ -62,7 +62,7 @@ class HcaHumanExperimentDaoIT {
     @Test
     void notEmptyWhenValidOntologyAnnotationAncestorsOneOfTheUrlIsPassed() {
         assertThat(subject.fetchExperimentAccessions("organism_part",
-                ImmutableSet.of("http://www.ebi.ac.uk/efo/EFO_0000001")))
+                ImmutableSet.of("EFO_0000001")))
                 .isNotEmpty()
                 .contains("E-EHCA-2");
     }

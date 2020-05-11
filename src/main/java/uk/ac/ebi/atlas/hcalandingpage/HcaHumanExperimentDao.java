@@ -65,4 +65,11 @@ public class HcaHumanExperimentDao {
                     .collect(toImmutableSet()));
         }
     }
+
+    private ImmutableSet<String> concatStar(Set<String> characteristicValues) {
+        return characteristicValues.stream()
+                .map("*"::concat)
+                .collect(toImmutableSet());
+    }
+
 }

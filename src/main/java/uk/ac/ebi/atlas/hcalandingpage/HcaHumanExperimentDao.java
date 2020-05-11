@@ -47,11 +47,11 @@ public class HcaHumanExperimentDao {
 
         if(!characteristicValues.isEmpty()) {
             queryBuilder.addQueryFieldByTerm(ImmutableMap.of(
-                    CHARACTERISTIC_VALUE, characteristicValues,
-                    ONTOLOGY_ANNOTATION, characteristicValues,
-                    ONTOLOGY_ANNOTATION_ANCESTORS_LABELS, characteristicValues,
-                    ONTOLOGY_ANNOTATION_ANCESTORS_URIS, characteristicValues,
-                    ONTOLOGY_ANNOTATION_LABEL, characteristicValues
+                    CHARACTERISTIC_VALUE, concatStar(characteristicValues),
+                    ONTOLOGY_ANNOTATION, concatStar(characteristicValues),
+                    ONTOLOGY_ANNOTATION_ANCESTORS_LABELS, concatStar(characteristicValues),
+                    ONTOLOGY_ANNOTATION_ANCESTORS_URIS, concatStar(characteristicValues),
+                    ONTOLOGY_ANNOTATION_LABEL, concatStar(characteristicValues)
             ));
         }
 

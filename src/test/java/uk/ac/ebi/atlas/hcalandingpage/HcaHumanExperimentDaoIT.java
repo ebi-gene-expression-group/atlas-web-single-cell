@@ -81,4 +81,11 @@ class HcaHumanExperimentDaoIT {
                 .contains("E-EHCA-2");
     }
 
+    @Test
+    void returnMatchingExperimentsForMultipleCharacteristicValues() {
+        assertThat(subject.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin", "lymph node")))
+                .isNotEmpty()
+                .contains("E-EHCA-2");
+    }
+
 }

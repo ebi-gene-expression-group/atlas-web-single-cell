@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.search;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class GeneSearchDao {
     private static final double MARKER_GENE_P_VALUE_THRESHOLD = 0.05;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
+    private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
     public GeneSearchDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate,
                          SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
@@ -143,27 +142,23 @@ public class GeneSearchDao {
 
     // Returns all the metadata values for each experiment accession, given a subset of metadata types
     public ImmutableMap<String, Map<String, List<String>>> getFacets(List<String> cellIds, String... metadataTypes) {
-        var characteristicValueFacet =
-                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .setFacetField(CHARACTERISTIC_VALUE)
-                        .setNestedFacet(true);
-
-        var characteristicNameFacet =
-                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .setFacetField(CHARACTERISTIC_NAME)
-                        .addSubFacets(ImmutableList.of(characteristicValueFacet))
-                        .setNestedFacet(true);
-
-        var facets =
+        var facetBuilder =
                 new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                         .setFacetField(EXPERIMENT_ACCESSION)
-                        .addSubFacets(ImmutableList.of(characteristicNameFacet));
+                        .addNestedFacet(
+                                CHARACTERISTIC_NAME.name(),
+                                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                                        .setFacetField(CHARACTERISTIC_NAME)
+                                        .addNestedFacet(
+                                                CHARACTERISTIC_VALUE.name(),
+                                                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                                                        .setFacetField(CHARACTERISTIC_VALUE)));
 
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(CHARACTERISTIC_NAME, Arrays.asList(metadataTypes))
                         .addQueryFieldByTerm(CELL_ID, cellIds)
-                        .setFacets(facets)
+                        .addFacet(EXPERIMENT_ACCESSION.name(), facetBuilder)
                         .setRows(0);
 
         var resultsByExperiment =

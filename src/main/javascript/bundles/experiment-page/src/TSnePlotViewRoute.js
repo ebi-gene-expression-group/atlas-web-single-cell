@@ -97,6 +97,7 @@ class TSnePlotViewRoute extends React.Component {
           resource={`json/experiments/${experimentAccession}/marker-genes/${search.markerGeneK || preferredK}`}
           wrapperClassName={`row expanded`}
           ks={ks}
+          species={species}
           selectedK={search.markerGeneK || preferredK}
           onSelectK={
             (k) => {

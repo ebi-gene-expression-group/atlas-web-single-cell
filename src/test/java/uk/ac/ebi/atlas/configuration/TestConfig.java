@@ -6,6 +6,7 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ebi.atlas.experiments.ExperimentJsonSerializer;
 
 @Configuration
 // Enabling component scanning will also load BasePathsConfig, JdbcConfig and SolrConfig, so just using this class as
@@ -22,4 +23,7 @@ public class TestConfig {
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
+   @Bean
+    public ExperimentJsonSerializer experimentJsonSerializer() { return null; }
 }

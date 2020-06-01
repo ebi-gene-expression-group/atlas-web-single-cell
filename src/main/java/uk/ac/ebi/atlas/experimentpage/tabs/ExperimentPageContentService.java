@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
@@ -14,6 +15,8 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
+import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
+import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
 
 import java.util.Collection;
 import java.util.List;
@@ -120,8 +123,19 @@ public class ExperimentPageContentService {
                             "Analysis Methods",
                             "data",
                             getAnalysisMethods(experimentAccession)));
-        }
 
+            supplementaryInformationTabs.add(
+                    customContentTab(
+                            "resources",
+                            "Resources",
+                            "url",
+                            new JsonPrimitive(
+                                    ExternallyAvailableContentService.listResourcesUrl(
+                                            experimentAccession,
+                                            "",
+                                            ExternallyAvailableContent.ContentType.SUPPLEMENTARY_INFORMATION)))
+            );
+        }
         return supplementaryInformationTabs;
     }
 

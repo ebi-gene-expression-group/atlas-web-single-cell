@@ -16,6 +16,7 @@ import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import com.google.common.collect.ImmutableSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -79,7 +80,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                ImmutableSet.of(),
                                 "Description",
                                 Collections.emptyList(),
                                 Integer.parseInt(IDF_PREFERRED_K),
@@ -99,7 +100,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                ImmutableSet.of(),
                                 "Description",
                                 Collections.emptyList(),
                                 Integer.parseInt(IDF_PREFERRED_K),
@@ -120,7 +121,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                ImmutableSet.of(),
                                 "Description",
                                 Collections.emptyList(),
                                 Integer.parseInt(IDF_PREFERRED_K),
@@ -138,7 +139,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                ImmutableSet.of(),
                                 "Description",
                                 Collections.emptyList(),
                                 Integer.parseInt(IDF_PREFERRED_K),
@@ -159,7 +160,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                ImmutableSet.of(),
                                 "Description",
                                 Collections.emptyList(),
                                 0,
@@ -180,7 +181,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                ImmutableSet.of(),
                                 "Description",
                                 Collections.emptyList(),
                                 0,

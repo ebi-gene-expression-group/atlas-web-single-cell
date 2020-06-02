@@ -1,7 +1,10 @@
 package uk.ac.ebi.atlas.experiments;
 
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
+@Repository
 public class ScxaExperimentCollections implements ExperimentCollectionsRepository {
     private final ExperimentCollectionDao experimentCollectionDao;
 

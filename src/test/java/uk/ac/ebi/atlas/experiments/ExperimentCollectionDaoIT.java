@@ -37,13 +37,13 @@ class ExperimentCollectionDaoIT {
 
     @Test
     void ifNoExperimentCollectionReturnNothing() {
-        assertThat(subject.getExperimentCollection("E-FOO-0000"))
+        assertThat(subject.getExperimentCollections("E-FOO-0000"))
                 .isEmpty();
     }
 
     @Test
     void ifExperimentCollectionExistsReturnCollectionName() {
-        assertThat(subject.getExperimentCollection("E-EHCA-2"))
+        assertThat(subject.getExperimentCollections("E-EHCA-2"))
                 .isNotEmpty()
                 .containsExactly("Human Cell Atlas");
     }

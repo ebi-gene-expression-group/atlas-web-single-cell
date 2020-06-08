@@ -6,14 +6,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class ExperimentCollectionDao {
+public class ExperimentCollectionDao implements ExperimentCollectionsRepository {
     private JdbcTemplate jdbcTemplate;
 
     public ExperimentCollectionDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    List<String> getExperimentCollection(String experimentAccession) {
+    @Override
+    public List<String> getExperimentCollections(String experimentAccession) {
         return jdbcTemplate.queryForList(
                 "SELECT c.name " +
                 "FROM collections AS c " +

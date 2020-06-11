@@ -49,11 +49,11 @@
             dataKey: 'kingdom'
           },
           {
-            label: 'Experiment Project',
+            label: 'Experiment collection',
             dataKey: 'experimentProjects'
           },
           {
-            label: 'Technology Type',
+            label: 'Technology type',
             dataKey: 'technologyType'
           }
         ],

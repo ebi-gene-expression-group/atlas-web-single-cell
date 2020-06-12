@@ -42,6 +42,7 @@ public class CellMetadataDao {
 
     private final static String INFERRED_CELL_TYPE_SOLR_VALUE = "inferred_cell_type";
     private final static String SINGLE_CELL_IDENTIFIER_SOLR_VALUE = "single_cell_identifier";
+    private final static String METADATA_VALUE_TARGET_FIELD_NAME = "metadata_value";
 
     public CellMetadataDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory,
                            IdfParser idfParser) {
@@ -129,9 +130,7 @@ public class CellMetadataDao {
     // Given a type of metadata and an experiment accession, this method retrieves the value of that metadata for the
     // cells in an experiment
     public ImmutableMap<String, String> getMetadataValues(String experimentAccession,
-                                                            String metadataType) {
-        var METADATA_VALUE_TARGET_FIELD_NAME = "metadata_value";
-
+                                                          String metadataType) {
         // Find matching characteristic name and factor name docs...
         var solrQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()

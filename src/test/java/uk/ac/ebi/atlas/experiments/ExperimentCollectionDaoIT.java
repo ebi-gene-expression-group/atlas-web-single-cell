@@ -14,6 +14,7 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -37,7 +38,7 @@ class ExperimentCollectionDaoIT {
 
     @Test
     void ifNoExperimentCollectionReturnNothing() {
-        assertThat(subject.getExperimentCollections("E-FOO-0000"))
+        assertThat(subject.getExperimentCollections(generateRandomExperimentAccession()))
                 .isEmpty();
     }
 

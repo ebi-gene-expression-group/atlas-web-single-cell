@@ -4,15 +4,13 @@ import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 @Component
 public class CellMetadataService {
-    private CellMetadataDao cellMetadataDao;
+    private final CellMetadataDao cellMetadataDao;
 
     public CellMetadataService(CellMetadataDao cellMetadataDao) {
         this.cellMetadataDao = cellMetadataDao;

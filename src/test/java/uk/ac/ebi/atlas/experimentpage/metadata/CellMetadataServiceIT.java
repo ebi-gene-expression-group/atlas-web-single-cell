@@ -34,6 +34,7 @@ class CellMetadataServiceIT {
     // Ideally we would retrieve a random experiment accession, but not all experiments have metadata of interest
     // (i.e factors, inferred cell types and additional attributes in the IDF)
     private static final String EXPERIMENT_WITHOUT_METADATA_ACCESSION = "E-GEOD-99058";
+    private static final String INFERRED_CELL_TYPE = "inferred_cell_type";
 
     @Inject
     private DataSource dataSource;
@@ -83,7 +84,15 @@ class CellMetadataServiceIT {
     void experimentWithMetadataReturnsMetadataTypes(String experimentAccession) {
         assertThat(subject.getMetadataTypes(experimentAccession))
                 .isNotEmpty()
-                .contains("inferred_cell_type");
+                .contains(INFERRED_CELL_TYPE);
+    }
+
+    @ParameterizedTest
+    @MethodSource("experimentsWithMetadataProvider")
+    void returnsMetadataValueForGivenMetadataType(String experimentAccession) {
+        //assuming all experiments have inferred_cell_types as there metadata
+        assertThat(subject.getMetadataValuesForGivenType(experimentAccession, INFERRED_CELL_TYPE))
+                .isNotEmpty();
     }
 
     @Test

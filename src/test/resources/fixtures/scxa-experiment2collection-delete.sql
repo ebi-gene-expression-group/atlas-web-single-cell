@@ -1,0 +1,1 @@
+DELETE FROM experiment2collection

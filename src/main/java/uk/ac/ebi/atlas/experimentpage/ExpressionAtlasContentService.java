@@ -49,15 +49,15 @@ public class ExpressionAtlasContentService {
                 new ExternallyAvailableContentService<>(ImmutableList.of(singleCellLinkToEga));
     }
 
-    public List<ExternallyAvailableContent> list(String experimentAccession,
+    public List<ExternallyAvailableContent> getExternalResourceLinks(String experimentAccession,
                                                  String accessKey,
                                                  ExternallyAvailableContent.ContentType contentType) {
         Experiment<?> experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
-        String externalResourceType = externalResourceLinksPriority(experiment);
+        var externalResourceType = getExternalResouceType(experiment);
 
-        List list = singleCellBaselineExperimentExternallyAvailableContentService.list(
+        var arrayExpressResourceLinks = singleCellBaselineExperimentExternallyAvailableContentService.list(
                 (SingleCellBaselineExperiment) experiment, contentType);
-        List list2 =  externalResourceType.equals("geo") ?
+        var otherExternalResourceLinks =  externalResourceType.equals("geo") ?
                 singleCellBaselineExperimentExternallyAvailableContentServiceGeo.list(
                 (SingleCellBaselineExperiment) experiment, contentType) :
                 externalResourceType.equals("ega") ?
@@ -65,11 +65,11 @@ public class ExpressionAtlasContentService {
                         (SingleCellBaselineExperiment) experiment, contentType) :
                         singleCellBaselineExperimentExternallyAvailableContentServiceEna.list(
                         (SingleCellBaselineExperiment) experiment, contentType);
-        list2.addAll(list);
-        return list2;
+        otherExternalResourceLinks.addAll(arrayExpressResourceLinks);
+        return otherExternalResourceLinks;
     }
 
-    private String externalResourceLinksPriority(Experiment<?> experiment) {
+    private String getExternalResouceType(Experiment<?> experiment) {
         var geoAccessions = experiment.getSecondaryAccessions().stream()
                 .filter(accession -> accession.matches("GSE.*"))
                 .collect(toImmutableList());

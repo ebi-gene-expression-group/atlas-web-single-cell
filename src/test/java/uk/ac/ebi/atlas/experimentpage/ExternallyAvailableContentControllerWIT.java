@@ -54,7 +54,7 @@ class ExternallyAvailableContentControllerWIT {
     private void testAllResourcesAreNonemptyAndContainValidLinks(String accession,
                                                                  ExternallyAvailableContent.ContentType contentType,
                                                                  boolean expectNonEmpty) throws Exception {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         this.mockMvc.perform(get(endPointForExperiment(accession, contentType)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -65,7 +65,7 @@ class ExternallyAvailableContentControllerWIT {
             assertThat(urls).isNotEmpty();
         }
 
-        for (String url : urls) {
+        for (var url : urls) {
              if (!url.contains("www.ebi.ac.uk")) {
                 LOGGER.info(url);
                 this.mockMvc.perform(get("/" + url)).andExpect(status().isOk());
@@ -75,14 +75,14 @@ class ExternallyAvailableContentControllerWIT {
 
     @Test
     void shouldReturnSomeResourcesForEachExperiment() throws Exception {
-        for (Experiment experiment : experimentTrader.getPublicExperiments()) {
+        for (var experiment : experimentTrader.getPublicExperiments()) {
             testAllResourcesAreNonemptyAndContainValidLinks(
                     experiment.getAccession(), ExternallyAvailableContent.ContentType.DATA, true);
             testAllResourcesAreNonemptyAndContainValidLinks(
                     experiment.getAccession(), ExternallyAvailableContent.ContentType.SUPPLEMENTARY_INFORMATION, true);
         }
 
-        for (Experiment experiment :
+        for (var experiment :
                 experimentTrader.getPublicExperiments(SINGLE_CELL_RNASEQ_MRNA_BASELINE)) {
             testAllResourcesAreNonemptyAndContainValidLinks(
                     experiment.getAccession(), ExternallyAvailableContent.ContentType.PLOTS, false);

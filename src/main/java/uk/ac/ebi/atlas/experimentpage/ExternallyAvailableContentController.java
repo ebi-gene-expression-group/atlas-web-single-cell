@@ -4,9 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
@@ -28,6 +27,21 @@ public class ExternallyAvailableContentController {
         this.expressionAtlasContentService = expressionAtlasContentService;
     }
 
+    @ResponseBody
+    @GetMapping(value = "json/experiments/{experimentAccession}/resources/{contentType}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String list(@PathVariable String experimentAccession,
+                       @PathVariable String contentType,
+                       @RequestParam(value = "accessKey", defaultValue = "") String accessKey) {
+        return GSON.toJson(
+                contentAsJson(
+                        expressionAtlasContentService.getExternalResourceLinks(
+                                experimentAccession,
+                                accessKey,
+                                ExternallyAvailableContent.ContentType.valueOf(contentType)),
+                        experimentAccession,
+                        accessKey));
+    }
     /*
     I could be nicer and maybe even have tests:
     - the "View in Array Express" needs an independent URL
@@ -35,7 +49,7 @@ public class ExternallyAvailableContentController {
     - the typical resource needs to circle back to this page
     */
     private JsonObject contentAsJson(ExternallyAvailableContent content, String accession, String accessKey) {
-        JsonObject result = content.description.asJson();
+        var result = content.description.asJson();
         if ("redirect".equals(content.uri.getScheme())) {
             try {
                 result.addProperty("url", new URL(content.uri.getSchemeSpecificPart()).toExternalForm());
@@ -59,28 +73,10 @@ public class ExternallyAvailableContentController {
     }
 
     private JsonArray contentAsJson(List<ExternallyAvailableContent> contents, String accession, String accessKey) {
-        JsonArray result = new JsonArray();
+        var result = new JsonArray();
         for (ExternallyAvailableContent content: contents) {
             result.add(contentAsJson(content, accession, accessKey));
         }
         return result;
     }
-
-    @ResponseBody
-    @RequestMapping(value = "json/experiments/{experimentAccession}/resources/{contentType}",
-                    method = RequestMethod.GET,
-                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String list(@PathVariable String experimentAccession,
-                       @PathVariable String contentType,
-                       @RequestParam(value = "accessKey", defaultValue = "") String accessKey) {
-        return GSON.toJson(
-                contentAsJson(
-                        expressionAtlasContentService.list(
-                                experimentAccession,
-                                accessKey,
-                                ExternallyAvailableContent.ContentType.valueOf(contentType)),
-                        experimentAccession,
-                        accessKey));
-    }
-
 }

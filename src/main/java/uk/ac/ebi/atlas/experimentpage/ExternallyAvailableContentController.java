@@ -7,9 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
-
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,7 +25,6 @@ public class ExternallyAvailableContentController {
         this.expressionAtlasContentService = expressionAtlasContentService;
     }
 
-    @ResponseBody
     @GetMapping(value = "json/experiments/{experimentAccession}/resources/{contentType}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String list(@PathVariable String experimentAccession,

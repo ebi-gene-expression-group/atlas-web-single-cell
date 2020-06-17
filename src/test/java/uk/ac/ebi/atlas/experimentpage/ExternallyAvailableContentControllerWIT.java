@@ -47,10 +47,6 @@ class ExternallyAvailableContentControllerWIT {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    private String endPointForExperiment(String accession, ExternallyAvailableContent.ContentType contentType) {
-        return MessageFormat.format("/json/experiments/{0}/resources/{1}", accession, contentType);
-    }
-
     private void testAllResourcesAreNonemptyAndContainValidLinks(String accession,
                                                                  ExternallyAvailableContent.ContentType contentType,
                                                                  boolean expectNonEmpty) throws Exception {
@@ -87,5 +83,9 @@ class ExternallyAvailableContentControllerWIT {
             testAllResourcesAreNonemptyAndContainValidLinks(
                     experiment.getAccession(), ExternallyAvailableContent.ContentType.PLOTS, false);
         }
+    }
+
+    private String endPointForExperiment(String accession, ExternallyAvailableContent.ContentType contentType) {
+        return MessageFormat.format("/json/experiments/{0}/resources/{1}", accession, contentType);
     }
 }

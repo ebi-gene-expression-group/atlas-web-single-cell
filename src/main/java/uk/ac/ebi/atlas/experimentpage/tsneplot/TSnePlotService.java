@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
@@ -82,4 +83,5 @@ public class TSnePlotService {
                                                                 MISSING_METADATA_VALUE_PLACEHOLDER))))
                         .collect(groupingBy(TSnePoint::metadata, mapping(identity(), toImmutableSet()))));
     }
+
 }

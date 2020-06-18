@@ -17,6 +17,7 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,6 +89,20 @@ public class CellMetadataDao {
         characteristics.addAll(characteristicsFromIdf);
 
         return characteristics.build();
+    }
+
+    private List<String> getCellTypeForCellId(String experimentAccession, String cellId) {
+        var characteristicFields = "inferred_cell_type";
+        var queryBuilder =
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
+                        .addQueryFieldByTerm(CELL_ID, cellId)
+                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicFields);
+        var results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
+        return results
+                .stream()
+                .map(entry -> entry.get(CHARACTERISTIC_VALUE.name()).toString())
+                .collect(Collectors.toList());
     }
 
     public Map<String, String> getMetadataValuesForCellId(String experimentAccession,
@@ -164,6 +179,51 @@ public class CellMetadataDao {
                             // value. This was confirmed by curators in this Slack conversation:
                             // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
                             tuple -> tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME).get(0)));        }
+    }
+
+    // Given a type of chara, this method retrieves the value of that metadata for list of cell IDs.
+    public Map<String, List> getCellTypeMetadata(String characteristicName,
+                                                 String characteristicValue) {
+
+        var queryBuilder =
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
+                        .addQueryFieldByTerm(CHARACTERISTIC_VALUE, characteristicValue);
+
+        var results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
+
+//        var cellIdToCellType = cellIdsByExperimentAccession
+//                .entrySet()
+//                .stream()
+//                .collect(
+//                        toMap(
+//                                Map.Entry::getKey,
+//                                entry -> entry.getValue()
+//                                        .stream()
+//                                        .collect(
+//                                                toMap(cellId->cellId,
+//                                                        cellId -> cellMetadataDao.getCellTypeForCellId(
+//                                                                entry.getKey(),
+//                                                                cellId.toString()).get(0))
+//                                        )));
+
+        return results
+                .stream()
+                .collect(groupingBy(solrDocument -> (String) solrDocument.getFieldValue(EXPERIMENT_ACCESSION.name())))
+                .entrySet()
+                .stream()
+                .collect(
+                        toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue()
+                                .stream()
+                                .map(cell -> cell.get(CELL_ID.name()).toString())
+//                                .map(cellId -> getFactorTypes(entry.getKey(), cellId))
+//                                .flatMap(x -> x.stream())
+////                                .distinct()
+                                .collect(Collectors.toList()))
+                );
+
     }
 
     private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> buildFactorTypeQuery(String experimentAccession) {

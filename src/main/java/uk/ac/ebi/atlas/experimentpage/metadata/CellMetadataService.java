@@ -28,8 +28,8 @@ public class CellMetadataService {
                 characteristicTypes);
     }
 
-    public Map<String, String> getMetadataValuesForGivenType(String experimentAccession, String metedataType) {
-        return cellMetadataDao.getMetadataValues(experimentAccession, metedataType);
+    public Map<String, String> getMetadataValuesForGivenType(String experimentAccession, String metadataType) {
+        return cellMetadataDao.getMetadataValues(experimentAccession, metadataType);
     }
 
     /*

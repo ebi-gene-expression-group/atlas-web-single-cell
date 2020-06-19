@@ -145,7 +145,7 @@ public class ExperimentPageContentService {
 
     public JsonArray getMetadata(String experimentAccession) {
         var metadataArray = new JsonArray();
-        var metadataTypes = cellMetadataService
+        cellMetadataService
                 .getMetadataTypes(experimentAccession)
                 .stream()
                 .filter(type -> cellMetadataService
@@ -154,13 +154,10 @@ public class ExperimentPageContentService {
                         .stream()
                         .distinct()
                         .count() >= 2)//we only need to show those metadata type which have more than 2 unique values
-                .collect(ImmutableSet.toImmutableSet());
-
-        metadataTypes
-                .stream()
                 .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
                 .collect(Collectors.toSet())
-                .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
+                .forEach(metadata -> metadataArray.add(GSON.toJsonTree(metadata)));
+
         return metadataArray;
     }
 

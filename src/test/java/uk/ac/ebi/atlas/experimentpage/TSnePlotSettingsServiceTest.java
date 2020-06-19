@@ -79,7 +79,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                Collections.emptyList(),
                                 "Description",
                                 Collections.emptyList(),
                                 Integer.parseInt(IDF_PREFERRED_K),
@@ -99,7 +99,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                Collections.emptyList(),
                                 "Description",
                                 Collections.emptyList(),
                                 Integer.parseInt(IDF_PREFERRED_K),
@@ -120,7 +120,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                Collections.emptyList(),
                                 "Description",
                                 Collections.emptyList(),
                                 Integer.parseInt(IDF_PREFERRED_K),
@@ -138,7 +138,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                Collections.emptyList(),
                                 "Description",
                                 Collections.emptyList(),
                                 Integer.parseInt(IDF_PREFERRED_K),
@@ -159,7 +159,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                Collections.emptyList(),
                                 "Description",
                                 Collections.emptyList(),
                                 0,
@@ -180,7 +180,7 @@ class TSnePlotSettingsServiceTest {
                 .thenReturn(
                         new IdfParserOutput(
                                 "Title",
-                                "",
+                                Collections.emptyList(),
                                 "Description",
                                 Collections.emptyList(),
                                 0,

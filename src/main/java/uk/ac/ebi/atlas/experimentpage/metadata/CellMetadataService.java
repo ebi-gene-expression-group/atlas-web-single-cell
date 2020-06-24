@@ -28,6 +28,10 @@ public class CellMetadataService {
                 characteristicTypes);
     }
 
+    public Map<String, String> getMetadataValuesForGivenType(String experimentAccession, String metadataType) {
+        return cellMetadataDao.getMetadataValues(experimentAccession, metadataType);
+    }
+
     /*
      * Retrieves a list of metadata types of interest for the experiment. This includes all factors (excluding the
      * single cell identifier), curated attributes found in the IDF file, as well as the inferred cell type

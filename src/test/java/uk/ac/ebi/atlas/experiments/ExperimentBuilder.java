@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.experiments;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableSet;
 import uk.ac.ebi.atlas.model.arraydesign.ArrayDesign;

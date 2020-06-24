@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.tabs;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -158,11 +159,19 @@ public class ExperimentPageContentService {
 
     public JsonArray getMetadata(String experimentAccession) {
         var metadataArray = new JsonArray();
-        cellMetadataService.getMetadataTypes(experimentAccession)
+        cellMetadataService
+                .getMetadataTypes(experimentAccession)
                 .stream()
+                .filter(type -> cellMetadataService
+                        .getMetadataValuesForGivenType(experimentAccession, type)
+                        .values()
+                        .stream()
+                        .distinct()
+                        .count() >= 2)//we only need to show those metadata type which have more than 2 unique values
                 .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
                 .collect(Collectors.toSet())
-                .forEach(x -> metadataArray.add(GSON.toJsonTree(x)));
+                .forEach(metadata -> metadataArray.add(GSON.toJsonTree(metadata)));
+
         return metadataArray;
     }
 
@@ -178,7 +187,7 @@ public class ExperimentPageContentService {
 
         result.addProperty("url", url);
         result.addProperty("type", experimentFileType.getIconType().getName());
-        result.addProperty("description",  experimentFileType.getDescription());
+        result.addProperty("description", experimentFileType.getDescription());
         result.addProperty("isDownload", true);
 
         return result;
@@ -200,7 +209,7 @@ public class ExperimentPageContentService {
     }
 
     private JsonObject customContentTab(String tabType, String name, String onlyPropName, JsonElement value) {
-        var props =  new JsonObject();
+        var props = new JsonObject();
         props.add(onlyPropName, value);
         return customContentTab(tabType, name, props);
     }

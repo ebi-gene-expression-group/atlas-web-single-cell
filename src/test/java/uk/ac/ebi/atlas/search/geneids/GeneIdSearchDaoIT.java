@@ -148,9 +148,9 @@ class GeneIdSearchDaoIT {
                 .hasValueSatisfying(results ->
                         assertThat(results).allMatch(geneId -> geneId.matches("ENSG\\d+")));
 
-        assertThat(subject.searchGeneIds(multiSpeciesPropertyValue, propertyName, "Arabidopsis_thaliana"))
+        assertThat(subject.searchGeneIds(multiSpeciesPropertyValue, propertyName, "Mus_musculus"))
                 .hasValueSatisfying(results ->
-                            assertThat(results).allMatch(geneId -> geneId.matches("AT.{7}")));
+                            assertThat(results).allMatch(geneId -> geneId.matches("ENSMUSG\\d+")));
     }
 
     private Stream<String> randomGeneIdProvider() {

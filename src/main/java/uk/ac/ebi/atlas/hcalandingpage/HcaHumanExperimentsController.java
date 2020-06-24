@@ -13,12 +13,9 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 public class HcaHumanExperimentsController {
     private final static String CHARACTERISTIC_NAME = "organism_part";
     private final HcaHumanExperimentService hcaHumanExperimentService;
-    private final ExperimentJsonSerializer experimentJsonSerializer;
 
-    public HcaHumanExperimentsController(HcaHumanExperimentService hcaHumanExperimentService,
-                                         ExperimentJsonSerializer experimentJsonSerializer) {
+    public HcaHumanExperimentsController(HcaHumanExperimentService hcaHumanExperimentService) {
         this.hcaHumanExperimentService = hcaHumanExperimentService;
-        this.experimentJsonSerializer = experimentJsonSerializer;
     }
 
     //Used by anatomogram experiments table in HCA Landing page
@@ -29,7 +26,7 @@ public class HcaHumanExperimentsController {
                 hcaHumanExperimentService
                         .getPublicHumanExperiments(CHARACTERISTIC_NAME, organismPart)
                         .stream()
-                        .map(experimentJsonSerializer::serialize)
+                        .map(ExperimentJsonSerializer::serialize)
                         .collect(toImmutableSet()));
     }
 }

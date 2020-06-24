@@ -12,12 +12,9 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 @RestController
 public class HcaMetadataController {
     private final HcaMetadataService hcaMetadataService;
-    private final ExperimentJsonSerializer experimentJsonSerializer;
 
-    public HcaMetadataController(HcaMetadataService hcaMetadataService,
-                                 ExperimentJsonSerializer experimentJsonSerializer) {
+    public HcaMetadataController(HcaMetadataService hcaMetadataService) {
         this.hcaMetadataService = hcaMetadataService;
-        this.experimentJsonSerializer = experimentJsonSerializer;
     }
 
     @GetMapping(value = "/json/metadata/hca",
@@ -25,7 +22,7 @@ public class HcaMetadataController {
     public String getHcaMetadata() {
         var experiments = hcaMetadataService.getHcaExperiments()
                 .stream()
-                .map(experimentJsonSerializer::serialize)
+                .map(ExperimentJsonSerializer::serialize)
                 .collect(toImmutableSet());
         return GSON.toJson(
                 ImmutableMap.of(

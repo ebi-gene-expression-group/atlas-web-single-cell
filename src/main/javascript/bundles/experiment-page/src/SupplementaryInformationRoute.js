@@ -1,24 +1,24 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import AnalysisMethodsTable from './supplementary-information/AnalysisMethodsTable'
-import LinksToResources from './supplementary-information/LinksToResources'
+import Resources from './supplementary-information/resources/ExternalResourceSection'
 
 const sectionTypeComponent = {
   'static-table' : AnalysisMethodsTable,
-  'resources' : LinksToResources
+  'resources' : Resources
 }
 
-const SectionContent = ({type, props}) => {
+const SectionContent = ({type, props, atlasUrl}) => {
   const Section = sectionTypeComponent[type]
 
-  return (Section && <Section {...props} />)
+  return (Section && <Section {...{...props, atlasUrl}} />)
 }
 
 const SupplementaryInformationRoute = (props) => {
   const sections = props.sections.map((section) =>
     <div key={section.name}>
       <h3>{section.name}</h3>
-      <SectionContent type={section.type} props={section.props}/>
+      <SectionContent type={section.type} props={section.props} atlasUrl={props.atlasUrl} />
     </div>
   )
 

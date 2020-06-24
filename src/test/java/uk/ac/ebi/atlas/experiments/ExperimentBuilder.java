@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.experiments;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableSet;
 import uk.ac.ebi.atlas.model.arraydesign.ArrayDesign;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.model.experiment.ExperimentDesign;
@@ -39,8 +40,8 @@ public abstract class ExperimentBuilder<R extends ReportsGeneExpression, E exten
     List<String> technologyType = Arrays.asList(randomAlphabetic(6));
     ExperimentType experimentType = getRandomExperimentType();
     String experimentAccession = generateRandomExperimentAccession();
-    ImmutableSet<String> secondaryExperimentAccession = RNG.nextBoolean() ?
-            ImmutableSet.of(generateRandomPrideExperimentAccession()) : ImmutableSet.of("");
+    Collection<String> secondaryExperimentAccessions = RNG.nextBoolean() ?
+            ImmutableSet.of(generateRandomPrideExperimentAccession()) : ImmutableSet.of();
     String experimentDescription = randomAlphabetic(60);
     Date loadDate = new Date();
     Date lastUpdate = new Date();
@@ -274,7 +275,7 @@ public abstract class ExperimentBuilder<R extends ReportsGeneExpression, E exten
             return new SingleCellBaselineExperiment(
                     experimentType,
                     experimentAccession,
-                    secondaryExperimentAccession,
+                    secondaryExperimentAccessions,
                     experimentDescription,
                     loadDate,
                     lastUpdate,

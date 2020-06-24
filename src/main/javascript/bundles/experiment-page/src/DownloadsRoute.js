@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import LinksToResources from './supplementary-information/LinksToResources'
+import LinksToResources from './supplementary-information/resources/LinksToResources'
 
 const DownloadsRoute = ({atlasUrl, data}) => {
   const downloadLinks = data.map((download, index) =>

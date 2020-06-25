@@ -4,9 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
 
 import java.net.MalformedURLException;
@@ -25,7 +27,9 @@ public class ExternallyAvailableContentController {
         this.expressionAtlasContentService = expressionAtlasContentService;
     }
 
-    @GetMapping(value = "json/experiments/{experimentAccession}/resources/{contentType}",
+    @ResponseBody
+    @RequestMapping(value = "json/experiments/{experimentAccession}/resources/{contentType}",
+            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String list(@PathVariable String experimentAccession,
                        @PathVariable String contentType,

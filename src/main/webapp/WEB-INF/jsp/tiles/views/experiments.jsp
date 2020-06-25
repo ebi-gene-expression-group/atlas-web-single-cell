@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <div id="experiments"></div>
+<div id="popup-placeholder"></div>
+
 <link rel="stylesheet" href="https://ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css" type="text/css" media="all"/>
 
 <script defer src="${pageContext.request.contextPath}/resources/js-bundles/experimentTable.bundle.js"></script>
@@ -60,6 +62,24 @@
         rowSelectionColumn: {
           label: 'Download',
           dataKey: 'experimentAccession',
+          tableHeaderCellOnClick:
+            experimentTable.loadExperimentDownloadModule(
+              'https://www.ebi.ac.uk/gxa/sc/',
+              [
+                {
+                  description: 'Raw quantification files',
+                  id: 'quantification-raw'
+                },
+                {
+                  description: 'Normalised counts files',
+                  id: 'normalised'
+                },
+                {
+                  description: 'Experiment design file',
+                  id: 'experiment-design'
+                }
+              ],
+              'popup-placeholder'),
           tooltipContent:
             '<ul>' +
             '<li>Raw filtered count matrix after quantification</li>' +

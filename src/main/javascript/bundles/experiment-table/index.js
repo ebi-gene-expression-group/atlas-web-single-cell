@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import { TableManager, TableManagerRouter } from '@ebi-gene-expression-group/atlas-experiment-table'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
+import { loadExperimentDownloadModule } from '@ebi-gene-expression-group/atlas-experiment-table'
 
 const TableManagerWithFetchLoader = withFetchLoader(TableManager)
 const TableManagerRouterWithFetchLoader = withFetchLoader(TableManagerRouter)
@@ -23,4 +24,4 @@ const renderRouter = (options, target) => {
     document.getElementById(target))
 }
 
-export { render, renderRouter }
+export { render, renderRouter, loadExperimentDownloadModule }

@@ -111,6 +111,7 @@ class TSnePlotViewRoute extends React.Component {
               updateUrlWithParams(query)
             }
           }
+          species={species}
           ksWithMarkers={ksWithMarkerGenes}
         />
       },

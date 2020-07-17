@@ -14,8 +14,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 
-import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
-
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
@@ -32,9 +30,7 @@ class MetadataSearchDaoIT {
     @Inject
     private SolrCloudCollectionProxyFactory collectionProxyFactory;
 
-    private SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
-
-    private MetadataSearchDao subject;
+    private CellMetadataSearchDao subject;
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -56,8 +52,7 @@ class MetadataSearchDaoIT {
 
     @BeforeEach
     void setUp() {
-        subject = new MetadataSearchDao(collectionProxyFactory);
-        singleCellAnalyticsCollectionProxy = collectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
+        subject = new CellMetadataSearchDao(collectionProxyFactory);
     }
 
     @Test

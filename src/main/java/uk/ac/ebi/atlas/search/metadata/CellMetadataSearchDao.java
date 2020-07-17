@@ -3,8 +3,7 @@ package uk.ac.ebi.atlas.search.metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
-import uk.ac.ebi.atlas.download.FileDownloadController;
+import org.springframework.stereotype.Repository;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
@@ -19,24 +18,23 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
 
-@Component
-public class MetadataSearchDao {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
+@Repository
+public class CellMetadataSearchDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CellMetadataSearchDao.class);
     private SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
-    public MetadataSearchDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
+    public CellMetadataSearchDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
         this.singleCellAnalyticsCollectionProxy =
                 solrCloudCollectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-
     private String getInferredCellTypeForCellId(String experimentAccession, String cellId) {
-        var characteristicFields = "inferred_cell_type";
+        var characteristicField = "inferred_cell_type";
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(CELL_ID, cellId)
-                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicFields);
+                        .addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicField);
         var results = this.singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults();
 
         var inferredCellType = "";
@@ -46,7 +44,7 @@ public class MetadataSearchDao {
                     .map(entry -> entry.get(CHARACTERISTIC_VALUE.name()).toString())
                     .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
-            LOGGER.debug("Invalid cell id: {}", cellId);
+            LOGGER.error("Invalid cell id: {}", cellId);
         }
         return inferredCellType;
     }

@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
+import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 
 import javax.inject.Inject;
@@ -26,6 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MetadataSearchDaoIT {
     @Inject
     private DataSource dataSource;
+
+    @Inject
+    private CellMetadataDao cellMetadataDao;
 
     @Inject
     private SolrCloudCollectionProxyFactory collectionProxyFactory;
@@ -52,7 +56,7 @@ class MetadataSearchDaoIT {
 
     @BeforeEach
     void setUp() {
-        subject = new CellMetadataSearchDao(collectionProxyFactory);
+        subject = new CellMetadataSearchDao(collectionProxyFactory, cellMetadataDao);
     }
 
     @Test

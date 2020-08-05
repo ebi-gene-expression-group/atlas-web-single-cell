@@ -50,4 +50,52 @@ public class MarkerGenesDao {
                 namedParameters,
                 Integer.class);
     }
+
+    private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_TYPE =
+            "SELECT " +
+                    "g.experiment_accession, " +
+                    "m.gene_id, " +
+                    "g.variable as k_where_marker, " +
+                    "h.value as cluster_id_where_marker, " +
+                    "g.value as cluster_id, " +
+                    "m.marker_probability as marker_p_value, " +
+                    "s.mean_expression, s.median_expression " +
+                    "FROM " +
+                    "scxa_cell_group_marker_gene_stats s, " +
+                    "scxa_cell_group_marker_genes m, " +
+                    "scxa_cell_group g, " +
+                    "scxa_cell_group h " +
+                    "WHERE " +
+                    "s.cell_group_id=g.id and " +
+                    "s.marker_id=m.id and " +
+                    "m.cell_group_id = h.id and g.experiment_accession= :experiment_accession and " +
+                    "m.marker_probability < 0.05 and " +
+                    "g.variable = :variable and " +
+                    "g.value = :value and " +
+                    "expression_type=0 order by m.marker_probability ";
+
+    public List<CellTypeMarkerGene> getMarkerGenes(String experiment_accession, String value) {
+        String variable = "inferred cell type";
+        //These celltypes(values) we will get from Another DAO by contacting
+//        ImmutableSet<String> values = ImmutableSet.of("T cell");
+        value = "T cell";
+        experiment_accession = "E-HCAD-8";
+        var namedParameters =
+                ImmutableMap.of(
+                        "experiment_accession", experiment_accession,
+                        "variable", variable,
+                        "value", value);
+
+        return namedParameterJdbcTemplate.query(
+                SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_TYPE,
+                namedParameters,
+                (resultSet, rowNumber) -> CellTypeMarkerGene.create(
+                        resultSet.getString("gene_id"),
+                        resultSet.getString("k_where_marker"),
+                        resultSet.getString("cluster_id_where_marker"),
+                        resultSet.getDouble("marker_p_value"),
+                        resultSet.getString("cluster_id"),
+                        resultSet.getDouble("median_expression"),
+                        resultSet.getDouble("mean_expression")));
+    }
 }

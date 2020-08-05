@@ -1,0 +1,10 @@
+INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 24047);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 23855);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 23857);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 23860);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 23913);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 23919);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 24004);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 24024);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACCGGTCTGCCAG', 24033);
+-- INSERT INTO scxa_cell_group_membership (experiment_accession, cell_id, cell_group_id) VALUES ('E-HCAD-8', 'PP001-AAAACTCGTCCGAGTC', 23843);

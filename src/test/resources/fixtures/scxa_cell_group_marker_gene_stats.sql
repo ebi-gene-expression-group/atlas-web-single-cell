@@ -1,0 +1,1 @@
+INSERT INTO scxa_cell_group_marker_gene_stats (gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000051523', 24047, 1405245, 0, 431.113537539535, 273.9726);

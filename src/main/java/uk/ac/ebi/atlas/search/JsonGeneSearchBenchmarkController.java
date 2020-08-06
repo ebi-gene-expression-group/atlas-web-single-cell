@@ -4,8 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +39,9 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
-public class JsonGeneSearchController extends JsonExceptionHandlingController {
+public class JsonGeneSearchBenchmarkController extends JsonExceptionHandlingController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonGeneSearchBenchmarkController.class);
+
     private final static ImmutableSet<String> VALID_QUERY_FIELDS =
             ImmutableSet.<String>builder()
                     .add("q")
@@ -52,11 +57,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
-    public JsonGeneSearchController(GeneIdSearchService geneIdSearchService,
-                                    SpeciesFactory speciesFactory,
-                                    GeneSearchService geneSearchService,
-                                    ExperimentTrader experimentTrader,
-                                    ExperimentAttributesService experimentAttributesService) {
+    public JsonGeneSearchBenchmarkController(GeneIdSearchService geneIdSearchService,
+                                             SpeciesFactory speciesFactory,
+                                             GeneSearchService geneSearchService,
+                                             ExperimentTrader experimentTrader,
+                                             ExperimentAttributesService experimentAttributesService) {
         this.geneIdSearchService = geneIdSearchService;
         this.speciesFactory = speciesFactory;
         this.geneSearchService = geneSearchService;
@@ -64,18 +69,23 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         this.experimentAttributesService = experimentAttributesService;
     }
 
-    @RequestMapping(value = "/json/search",
+    @RequestMapping(value = "/json/debug/search",
                     method = RequestMethod.GET,
-                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    produces = MediaType.TEXT_PLAIN_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
+        var stopWatch = new StopWatch("/json/debug/search");
+
+        stopWatch.start("Infer species from species req. parameter");
         var species = Stream.ofNullable(requestParams.getFirst("species"))
                 .filter(org.apache.commons.lang3.StringUtils::isNotEmpty)
                 .map(speciesFactory::create)
                 .findFirst();
+        stopWatch.stop();
 
         // We support currently only one query term; in the unlikely case that somebody fabricates a URL with more than
         // one we’ll build the query with the first match. Remember that in order to support multiple terms we’ll
         // likely need to change GeneQuery and use internally a SemanticQuery
+        stopWatch.start("Parse first matching gene query req. parameter");
         var category =
                 requestParams.keySet().stream()
                         // We rely on "q" and BioentityPropertyName::name’s being lower case
@@ -83,7 +93,9 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Error parsing query"));
         var queryTerm = requestParams.getFirst(category);
+        stopWatch.stop();
 
+        stopWatch.start("Build GeneQuery object");
         var geneQuery = category.equals("q") ?
                 species
                         .map(_species -> GeneQuery.create(queryTerm, _species))
@@ -91,8 +103,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                 species
                         .map(_species -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category), _species))
                         .orElseGet(() -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category)));
+        stopWatch.stop();
 
+        stopWatch.start("Find gene IDs that satisfy gene query");
         var geneIds = geneIdSearchService.search(geneQuery);
+        stopWatch.stop();
 
         if (geneIds.isEmpty()) {
             return GSON.toJson(
@@ -109,22 +124,29 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         }
 
         // We found expressed gene IDs, let’s get to it now...
+        stopWatch.start("Find experiment and cell IDs for each gene ID");
         var geneIds2ExperimentAndCellIds =
                 geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
+        stopWatch.stop();
 
+        stopWatch.start("Filter entries where gene is expressed");
         var expressedGeneIdEntries =
                 geneIds2ExperimentAndCellIds.entrySet().stream()
                         .filter(entry -> !entry.getValue().isEmpty())
                         .collect(toList());
+        stopWatch.stop();
 
+        stopWatch.start("Create marker gene profile of found gene IDs");
         var markerGeneFacets =
                 geneSearchService.getMarkerGeneProfile(
                         expressedGeneIdEntries.stream()
                                 .map(Map.Entry::getKey)
                                 .toArray(String[]::new));
+        stopWatch.stop();
 
         // geneSearchServiceDao guarantees that values in the inner maps can’t be empty. The map itself may be empty
         // but if there’s an entry the list will have at least on element
+        stopWatch.start("Create results");
         var results =
                 expressedGeneIdEntries.stream()
                         // TODO Measure in production if parallelising the stream results in any speedup
@@ -166,17 +188,22 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                             return ImmutableMap.of("element", experimentAttributes.build(), "facets", facets.build());
 
                         })).collect(toImmutableList());
+        stopWatch.stop();
 
         var matchingGeneIds = "";
         if (geneIds.get().size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) {
             matchingGeneIds = "(" + String.join(", ", geneIds.get()) + ")";
         }
 
-        return GSON.toJson(
+        stopWatch.start("Serialise results");
+        var serialisedResults = GSON.toJson(
                 ImmutableMap.of(
                         "matchingGeneId", matchingGeneIds,
                         "results", results,
                         "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
+        stopWatch.stop();
+
+        return stopWatch.prettyPrint();
     }
 
     private <K, V> ImmutableList<SimpleEntry<K, V>> unfoldListMultimap(Map<K, List<V>> multimap) {

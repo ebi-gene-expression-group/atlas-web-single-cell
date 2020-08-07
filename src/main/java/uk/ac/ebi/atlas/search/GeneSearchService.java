@@ -2,7 +2,10 @@ package uk.ac.ebi.atlas.search;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 
 import java.util.List;
@@ -16,8 +19,10 @@ import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
 @Component
 public class GeneSearchService {
-    private GeneSearchDao geneSearchDao;
-    private TSnePlotSettingsService tsnePlotSettingsService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeneSearchService.class);
+
+    private final GeneSearchDao geneSearchDao;
+    private final TSnePlotSettingsService tsnePlotSettingsService;
 
     public GeneSearchService(GeneSearchDao geneSearchDao, TSnePlotSettingsService tsnePlotSettingsService) {
         this.geneSearchDao = geneSearchDao;
@@ -29,7 +34,7 @@ public class GeneSearchService {
     public Map<String, Map<String, List<String>>> getCellIdsInExperiments(String... geneIds) {
         return fetchInParallel(
                 ImmutableSet.copyOf(geneIds),
-                geneId -> geneSearchDao.fetchCellIds(geneId));
+                geneSearchDao::fetchCellIds);
     }
 
     // Returns inferred cell types and organism parts for each experiment accession
@@ -74,18 +79,30 @@ public class GeneSearchService {
             List<String> experimentAccessions, String geneId) {
         var result = ImmutableMap.<String, Map<Integer, List<Integer>>>builder();
 
+        var prefKStopWatch = new StopWatch("Preferred K");
+        var clusterIdStopWatch = new StopWatch("Cluster ID with pref. K and min P");
+
         for (var experimentAccession : experimentAccessions) {
+            prefKStopWatch.start(experimentAccession);
             var preferredK = tsnePlotSettingsService.getExpectedClusters(experimentAccession);
+            prefKStopWatch.stop();
+
+            clusterIdStopWatch.start(experimentAccession);
             var clusterIDWithPreferredKAndMinP =
                     geneSearchDao.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
                             geneId,
                             experimentAccession,
                             // If there’s no preferred k we use 0, which won’t match any row
                             preferredK.orElse(0));
+            clusterIdStopWatch.stop();
             if (!clusterIDWithPreferredKAndMinP.isEmpty()) {
                 result.put(experimentAccession, clusterIDWithPreferredKAndMinP);
             }
         }
+
+        LOGGER.debug(prefKStopWatch.prettyPrint());
+        LOGGER.debug(clusterIdStopWatch.prettyPrint());
+
         return result.build();
     }
 }

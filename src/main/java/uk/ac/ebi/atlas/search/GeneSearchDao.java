@@ -101,7 +101,6 @@ public class GeneSearchDao {
     private static final String SELECT_MIN_MARKER_P_STATEMENT_2 =
             "SELECT gene_id, MIN(marker_probability) FROM scxa_marker_genes " +
                     "WHERE experiment_accession = :experiment_accession " +
-                    "AND gene_id=:gene_id " +
                     "GROUP BY gene_id";
     @Cacheable("minimumMarkerProbability")
     @Transactional(readOnly = true)

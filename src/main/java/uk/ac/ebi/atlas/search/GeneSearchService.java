@@ -81,12 +81,12 @@ public class GeneSearchService {
 
         var prefKStopWatch = new StopWatch("Preferred K");
         var clusterIdStopWatch = new StopWatch("Cluster ID with pref. K and min P");
-        var minMarkerProbStopWath = new StopWatch("Fetch minimum marker probability");
+        var minMarkerProbStopWatch = new StopWatch("Fetch minimum marker probability");
 
         for (var experimentAccession : experimentAccessions) {
-            minMarkerProbStopWath.start(experimentAccession);
+            minMarkerProbStopWatch.start(experimentAccession);
             var fooMin = geneSearchDao.fetchMinimumMarkerProbability(experimentAccession);
-            minMarkerProbStopWath.stop();
+            minMarkerProbStopWatch.stop();
 
             prefKStopWatch.start(experimentAccession);
             var preferredK = tsnePlotSettingsService.getExpectedClusters(experimentAccession);
@@ -106,6 +106,7 @@ public class GeneSearchService {
             }
         }
 
+        LOGGER.debug(minMarkerProbStopWatch.prettyPrint());
         LOGGER.debug(prefKStopWatch.prettyPrint());
         LOGGER.debug(clusterIdStopWatch.prettyPrint());
 

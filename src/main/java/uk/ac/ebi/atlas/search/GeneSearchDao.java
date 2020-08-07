@@ -114,7 +114,7 @@ public class GeneSearchDao {
                     var resultsBuilder = ImmutableMap.<String, Double>builder();
 
                     while (resultSet.next()) {
-                        resultsBuilder.put(resultSet.getString(""), resultSet.getDouble(""));
+                        resultsBuilder.put(resultSet.getString("gene_id"), resultSet.getDouble("min"));
                     }
 
                     return resultsBuilder.build();

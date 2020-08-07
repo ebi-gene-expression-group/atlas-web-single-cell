@@ -99,31 +99,40 @@ public class GeneSearchDao {
 
     // Retrieves cluster IDs the preferred K value (if present), as well as for the minimum p-value. If the minimum
     // p-value is equal for multiple Ks (and a preferred K is not passed in), all K values will be returned.
+    private static final String SELECT_MIN_MARKER_P_STATEMENT =
+            "SELECT MIN(marker_probability) FROM scxa_marker_genes " +
+                    "WHERE experiment_accession = :experiment_accession " +
+                        "AND gene_id=:gene_id";
     private static final String SELECT_PREFERREDK_AND_MINP_CLUSTER_ID_FOR_GENE_STATEMENT =
-    "SELECT k, cluster_id FROM scxa_marker_genes AS markers " +
-            "WHERE experiment_accession=:experiment_accession " +
-                "AND gene_id=:gene_id " +
-                "AND marker_probability<:threshold " +
-                "AND (k=:preferred_K " +
-                    "OR marker_probability IN ( " +
-                        "SELECT MIN(marker_probability) " +
-                            "FROM scxa_marker_genes " +
-                            "WHERE markers.experiment_accession = :experiment_accession " +
-                            "AND gene_id=:gene_id))";
+            "SELECT k, cluster_id FROM scxa_marker_genes AS markers " +
+                    "WHERE experiment_accession=:experiment_accession " +
+                        "AND gene_id=:gene_id " +
+                        "AND marker_probability<:threshold " +
+                        "AND (k=:preferred_K OR marker_probability=:min_marker_probability)";
     @Transactional(readOnly = true)
     public Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
             String geneId, String experimentAccession, int preferredK) {
 
         var namedParameters =
                 ImmutableMap.of(
+                        "experiment_accession", experimentAccession,
+                        "gene_id", geneId);
+
+        var minMarkerP =
+                namedParameterJdbcTemplate.queryForObject(
+                        SELECT_MIN_MARKER_P_STATEMENT, namedParameters, Double.class);
+
+        var namedParametersFoo =
+                ImmutableMap.of(
                         "gene_id", geneId,
                         "threshold", MARKER_GENE_P_VALUE_THRESHOLD,
                         "preferred_K", preferredK,
-                        "experiment_accession", experimentAccession);
+                        "experiment_accession", experimentAccession,
+                        "min_marker_probability", minMarkerP != null ? minMarkerP : 0);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_PREFERREDK_AND_MINP_CLUSTER_ID_FOR_GENE_STATEMENT,
-                namedParameters,
+                namedParametersFoo,
                 (ResultSet resultSet) -> {
                     Map<Integer, List<Integer>> result = new HashMap<>();
 

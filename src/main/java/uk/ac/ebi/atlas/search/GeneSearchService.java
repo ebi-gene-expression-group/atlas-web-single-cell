@@ -24,10 +24,10 @@ public class GeneSearchService {
     private final GeneSearchDao geneSearchDao;
     private final TSnePlotSettingsService tsnePlotSettingsService;
 
-    public GeneSearchService(GeneSearchDao geneSearchDao, TSnePlotSettingsService tsnePlotSettingsService) {
+    public GeneSearchService(GeneSearchDao geneSearchDao,
+                             TSnePlotSettingsService tsnePlotSettingsService) {
         this.geneSearchDao = geneSearchDao;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
-
     }
 
     // Map<Gene ID, Map<Experiment accession, List<Cell IDs>>>
@@ -81,8 +81,13 @@ public class GeneSearchService {
 
         var prefKStopWatch = new StopWatch("Preferred K");
         var clusterIdStopWatch = new StopWatch("Cluster ID with pref. K and min P");
+        var minMarkerProbStopWath = new StopWatch("Fetch minimum marker probability");
 
         for (var experimentAccession : experimentAccessions) {
+            minMarkerProbStopWath.start(experimentAccession);
+            var fooMin = geneSearchDao.fetchMinimumMarkerProbability(experimentAccession);
+            minMarkerProbStopWath.stop();
+
             prefKStopWatch.start(experimentAccession);
             var preferredK = tsnePlotSettingsService.getExpectedClusters(experimentAccession);
             prefKStopWatch.stop();
@@ -93,7 +98,8 @@ public class GeneSearchService {
                             geneId,
                             experimentAccession,
                             // If there’s no preferred k we use 0, which won’t match any row
-                            preferredK.orElse(0));
+                            preferredK.orElse(0),
+                            fooMin.getOrDefault(geneId, 0.0));
             clusterIdStopWatch.stop();
             if (!clusterIDWithPreferredKAndMinP.isEmpty()) {
                 result.put(experimentAccession, clusterIDWithPreferredKAndMinP);

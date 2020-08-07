@@ -23,6 +23,8 @@ public class CacheConfig {
                 builder -> builder.name("jsonExperimentMetadata"),
                 builder -> builder.name("jsonExperimentPageTabs"),
                 builder -> builder.name("cellCounts"),
+                builder -> builder.name("expectedClusters"),
+                builder -> builder.name("minimumMarkerProbability"),
 
                 builder -> builder.name("jsonCellMetadata"),
                 builder -> builder.name("jsonTSnePlotWithClusters"),

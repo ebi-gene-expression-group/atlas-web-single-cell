@@ -107,7 +107,7 @@ class GeneSearchDaoIT {
                                                                         Integer preferredK){
         Map<Integer, List<Integer>> result =
                 subject.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
-                        geneId, experimentAccession, preferredK);
+                        geneId, experimentAccession, preferredK, 0);
 
         assertThat(result)
                 .isNotEmpty()
@@ -124,7 +124,7 @@ class GeneSearchDaoIT {
                                                                                   Integer preferredK){
         Map<Integer, List<Integer>> result =
                 subject.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
-                        geneId, experimentAccession, preferredK);
+                        geneId, experimentAccession, preferredK, 0);
 
         assertThat(result)
                 .isNotEmpty()

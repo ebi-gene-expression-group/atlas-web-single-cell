@@ -98,7 +98,8 @@ public class GeneSearchDao {
         );
     }
 
-    private static final String SELECT_MIN_MARKER_P_STATEMENT_2 =
+    // A helper method for the query below, see GeneSearchService::fetchClusterIDWithPreferredKAndMinPForGeneID
+    private static final String SELECT_MIN_MARKER_PROBABILITY_STATEMENT =
             "SELECT gene_id, MIN(marker_probability) FROM scxa_marker_genes " +
                     "WHERE experiment_accession = :experiment_accession " +
                     "GROUP BY gene_id";
@@ -108,7 +109,7 @@ public class GeneSearchDao {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_MIN_MARKER_P_STATEMENT_2,
+                SELECT_MIN_MARKER_PROBABILITY_STATEMENT,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     var resultsBuilder = ImmutableMap.<String, Double>builder();
@@ -122,9 +123,16 @@ public class GeneSearchDao {
         );
     }
 
-    // Retrieves cluster IDs the preferred K value (if present), as well as for the minimum p-value. If the minimum
-    // p-value is equal for multiple Ks (and a preferred K is not passed in), all K values will be returned.
-    private static final String SELECT_PREFERREDK_AND_MINP_CLUSTER_ID_FOR_GENE_STATEMENT =
+    // Retrieves cluster IDs for the preferred K value (if present), as well as for the minimum p-value. If the minimum
+    // p-value is equal for multiple Ks (and a preferred K is not passed in), all K values will be returned. Originally
+    // the statement contained a subquery:
+    // AND (k=... OR marker_probability IN (SELECT MIN(...) )
+    // While more elegant in the sense that all the heavy-lifting is made at the DB in a single statement, this
+    // approach became very time-consuming, each query taking 0.5-3 seconds. “Popular” genes like human CTSB which
+    // appears in 40+ experiments meant that many successive requests in the order of 0.5-3 seconds each, on aggregate
+    // taking about 50 seconds. See https://www.pivotaltracker.com/story/show/173033902 for a full report and detailed
+    // benchmarks.
+    private static final String SELECT_PREFERRED_K_AND_MIN_P_CLUSTER_ID_FOR_GENE_STATEMENT =
             "SELECT k, cluster_id FROM scxa_marker_genes AS markers " +
                     "WHERE experiment_accession=:experiment_accession " +
                         "AND gene_id=:gene_id " +
@@ -143,7 +151,7 @@ public class GeneSearchDao {
                         "min_marker_probability", minMarkerProbability);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_PREFERREDK_AND_MINP_CLUSTER_ID_FOR_GENE_STATEMENT,
+                SELECT_PREFERRED_K_AND_MIN_P_CLUSTER_ID_FOR_GENE_STATEMENT,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     Map<Integer, List<Integer>> result = new HashMap<>();

@@ -79,36 +79,21 @@ public class GeneSearchService {
             List<String> experimentAccessions, String geneId) {
         var result = ImmutableMap.<String, Map<Integer, List<Integer>>>builder();
 
-        var prefKStopWatch = new StopWatch("Preferred K");
-        var clusterIdStopWatch = new StopWatch("Cluster ID with pref. K and min P");
-        var minMarkerProbStopWatch = new StopWatch("Fetch minimum marker probability");
-
         for (var experimentAccession : experimentAccessions) {
-            minMarkerProbStopWatch.start(experimentAccession);
-            var fooMin = geneSearchDao.fetchMinimumMarkerProbability(experimentAccession);
-            minMarkerProbStopWatch.stop();
-
-            prefKStopWatch.start(experimentAccession);
+            var geneIds2MinimumProbability = geneSearchDao.fetchMinimumMarkerProbability(experimentAccession);
             var preferredK = tsnePlotSettingsService.getExpectedClusters(experimentAccession);
-            prefKStopWatch.stop();
 
-            clusterIdStopWatch.start(experimentAccession);
             var clusterIDWithPreferredKAndMinP =
                     geneSearchDao.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
                             geneId,
                             experimentAccession,
                             // If there’s no preferred k we use 0, which won’t match any row
                             preferredK.orElse(0),
-                            fooMin.getOrDefault(geneId, 0.0));
-            clusterIdStopWatch.stop();
+                            geneIds2MinimumProbability.getOrDefault(geneId, 0.0));
             if (!clusterIDWithPreferredKAndMinP.isEmpty()) {
                 result.put(experimentAccession, clusterIDWithPreferredKAndMinP);
             }
         }
-
-        LOGGER.debug(minMarkerProbStopWatch.prettyPrint());
-        LOGGER.debug(prefKStopWatch.prettyPrint());
-        LOGGER.debug(clusterIdStopWatch.prettyPrint());
 
         return result.build();
     }

@@ -47,7 +47,6 @@ public class TSnePlotSettingsService {
         return tSnePlotDao.fetchPerplexities(experimentAccession);
     }
 
-    @Cacheable("expectedClusters")
     public Optional<Integer> getExpectedClusters(String experimentAccession) {
         IdfParserOutput idfParserOutput = idfParser.parse(experimentAccession);
 

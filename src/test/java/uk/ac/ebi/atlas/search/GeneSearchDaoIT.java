@@ -26,7 +26,7 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
@@ -38,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class GeneSearchDaoIT {
+    private final static Random RNG = ThreadLocalRandom.current();
+
     @Inject
     private DataSource dataSource;
 
@@ -147,8 +149,28 @@ class GeneSearchDaoIT {
         assertThat(result).isEmpty();
     }
 
+    @ParameterizedTest
+    @MethodSource("randomExperimentAccessionProvider")
+    void fetchMinimumMarkerProbabilityReturnsTheMinimum(String experimentAccession) {
+        var minimumMarkerProbabilities = subject.fetchMinimumMarkerProbability(experimentAccession);
+        var randomGeneId =
+                minimumMarkerProbabilities.keySet().asList().get(RNG.nextInt(minimumMarkerProbabilities.size()));
+
+        var markerProbabilitiies = namedParameterJdbcTemplate.queryForList(
+                "SELECT marker_probability FROM scxa_marker_genes WHERE gene_id=:gene_id",
+                ImmutableMap.of("gene_id", randomGeneId),
+                Double.class);
+
+        assertThat(markerProbabilitiies.stream().mapToDouble(Double::valueOf).min())
+                .hasValue(minimumMarkerProbabilities.get(randomGeneId));
+    }
+
     private Stream<String> randomGeneIdProvider() {
         return Stream.of(jdbcTestUtils.fetchRandomGene());
+    }
+
+    private Stream<String> randomExperimentAccessionProvider() {
+        return Stream.of(jdbcTestUtils.fetchRandomExperimentAccession());
     }
 
     private Stream<List<String>> randomCellIdsProvider() {

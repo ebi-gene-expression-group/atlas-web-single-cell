@@ -99,6 +99,8 @@ public class GeneSearchDao {
     }
 
     // A helper method for the query below, see GeneSearchService::fetchClusterIDWithPreferredKAndMinPForGeneID
+    // In terms of design it would’ve been more consistent a cached method in GeneSearchService, but because of Spring
+    // limitations, caching isn’t possible between methods within a class.
     private static final String SELECT_MIN_MARKER_PROBABILITY_STATEMENT =
             "SELECT gene_id, MIN(marker_probability) AS min FROM scxa_marker_genes " +
                     "WHERE experiment_accession = :experiment_accession " +
@@ -119,8 +121,7 @@ public class GeneSearchDao {
                     }
 
                     return resultsBuilder.build();
-                }
-        );
+                });
     }
 
     // Retrieves cluster IDs for the preferred K value (if present), as well as for the minimum p-value. If the minimum

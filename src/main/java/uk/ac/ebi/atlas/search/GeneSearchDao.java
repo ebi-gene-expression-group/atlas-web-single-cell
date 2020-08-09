@@ -100,7 +100,7 @@ public class GeneSearchDao {
 
     // A helper method for the query below, see GeneSearchService::fetchClusterIDWithPreferredKAndMinPForGeneID
     private static final String SELECT_MIN_MARKER_PROBABILITY_STATEMENT =
-            "SELECT gene_id, MIN(marker_probability) FROM scxa_marker_genes " +
+            "SELECT gene_id, MIN(marker_probability) AS min FROM scxa_marker_genes " +
                     "WHERE experiment_accession = :experiment_accession " +
                     "GROUP BY gene_id";
     @Cacheable("minimumMarkerProbability")

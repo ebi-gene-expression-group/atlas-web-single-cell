@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'uk.ac.ebi.ge:atlas-web-core:5.0.0'
+    implementation 'uk.ac.ebi.ge:atlas-web-core:5.0.1'
 
     implementation 'org.springframework:spring-context:5.1.5.RELEASE'
     implementation 'org.springframework:spring-jdbc:5.1.5.RELEASE'

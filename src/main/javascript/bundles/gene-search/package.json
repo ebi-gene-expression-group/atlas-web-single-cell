@@ -14,6 +14,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@ebi-gene-expression-group/react-ebi-species": "^2.5.4",
+    "@ebi-gene-expression-group/scxa-gene-search-form": "^1.6.1",
     "format-number": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",

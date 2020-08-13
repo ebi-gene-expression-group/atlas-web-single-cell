@@ -27,37 +27,50 @@ public class HcaHumanExperimentServiceTest {
     private HcaHumanExperimentService subject;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION))
                 .thenReturn(MockExperiment.createBaselineExperiment(EXPERIMENT_ACCESSION));
-        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ""))
-                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
-        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", "skin"))
-                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
-        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", "foo"))
-                .thenReturn(ImmutableSet.of());
-
         subject = new HcaHumanExperimentService(experimentTraderMock, hcaHumanExperimentDaoMock);
     }
 
     @Test
-    public void sizeIsRightForWithDefaultValueOfParameter() {
-        assertThat(
-                subject.getPublicHumanExperiments("organism_part", ""))
-                .hasSize(1);
+    public void shouldGetAllHumanExperimentsWithEmptyCharacteristicValue() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of()))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
+        assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of()))
+                .isNotEmpty().hasSize(1);
     }
 
     @Test
-    public void sizeIsRightForCorrectCharacteristicNameAndCharacteristicValue() {
-        assertThat(
-                subject.getPublicHumanExperiments("organism_part","skin"))
-                .hasSize(1);
+    public void shouldGetHumanExperimentsOnlyForTheGivenCharacteristicValue() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin")))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
+        assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin")))
+                .isNotEmpty().hasSize(1);
     }
 
     @Test
-    public void noExperimentReturnedForInvalidCharacteristicValue() {
-        assertThat(
-                subject.getPublicHumanExperiments("organism_part","foo"))
-                .hasSize(0);
+    public void shouldGetEmptyExperimentsIfTheGivenCharacteristicValueIsInvalid() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("foo")))
+                .thenReturn(ImmutableSet.of());
+        assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("foo")))
+                .isEmpty();
     }
+
+    @Test
+    public void shouldGetHumanExperimentsForMultipleCharacteristicValues() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin", "lymph node")))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
+        assertThat(subject.getPublicHumanExperiments("organism_part", ImmutableSet.of("skin", "lymph node")))
+                .isNotEmpty().hasSize(1);
+    }
+
+    @Test
+    public void shouldGetAllHumanExperimentsWithEmptyCharacteristicNameAndValue() {
+        when(hcaHumanExperimentDaoMock.fetchExperimentAccessions("", ImmutableSet.of()))
+                .thenReturn(ImmutableSet.of(EXPERIMENT_ACCESSION));
+        assertThat(subject.getPublicHumanExperiments("", ImmutableSet.of()))
+                .isNotEmpty().hasSize(1);
+    }
+
 }

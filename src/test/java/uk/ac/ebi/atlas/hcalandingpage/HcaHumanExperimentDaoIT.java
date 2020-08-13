@@ -42,7 +42,7 @@ class HcaHumanExperimentDaoIT {
     void notEmptyForCorrectCharacteristicType() {
         assertThat(subject.fetchExperimentAccessions("organism_part", ImmutableSet.of("skin")))
                 .isNotEmpty()
-                .containsExactlyInAnyOrder("E-EHCA-2");
+                .contains("E-EHCA-2");
     }
 
     @Test
@@ -50,7 +50,7 @@ class HcaHumanExperimentDaoIT {
         assertThat(subject.fetchExperimentAccessions("organism_part",
                 ImmutableSet.of("UBERON_0000029")))
                 .isNotEmpty()
-                .containsExactlyInAnyOrder("E-EHCA-2");
+                .contains("E-EHCA-2");
     }
 
     @Test

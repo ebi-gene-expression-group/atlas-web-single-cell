@@ -78,18 +78,18 @@ public class MarkerGenesDao {
                     "expression_type=0 order by m.marker_probability ";
 
     public List<CellTypeMarkerGene> getMarkerGenes(String experiment_accession, String organismPart) {
-        String variable = "inferred cell type";
+        String cellType = "inferred cell type";
 
         //These temporary hardcoded celltypes(values) we will get from CellMetaDataDao class which is implemented by @Lingyun
         // We will call this DAO class by passing two inputs: experiment_accession(Param1) and organismPart(Param2)
         //We would get return type as ImmutableSet<String> celltypes(@return ImmutableSet<String> celltypes)
-        ImmutableSet<String> values = ImmutableSet.of("T cell", "lymph node T cell", "not available", "tumor T cell");
+        ImmutableSet<String> cellTypeValues = ImmutableSet.of("T cell", "lymph node T cell", "not available", "tumor T cell");
 
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,
-                        "variable", variable,
-                        "values", values);
+                        "variable", cellType,   //k_where_marker
+                        "values", cellTypeValues); //cluster_id_where_marker
 
         return namedParameterJdbcTemplate.query(
                 SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_TYPE,

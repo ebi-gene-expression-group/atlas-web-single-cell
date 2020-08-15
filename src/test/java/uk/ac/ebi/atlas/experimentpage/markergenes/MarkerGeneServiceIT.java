@@ -60,6 +60,6 @@ class MarkerGeneServiceIT {
 
     @Test
     void getMarkerGenes() {
-        subject.getMarkerGenes("xyz", "lung");
+        subject.getMarkerGenes("E-HCAD-8", "skin");
     }
 }

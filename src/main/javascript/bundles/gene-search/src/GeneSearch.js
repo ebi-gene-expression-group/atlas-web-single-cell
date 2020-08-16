@@ -3,9 +3,12 @@ import PropTypes from 'prop-types'
 import URI from 'urijs'
 
 import GeneSearchForm from '@ebi-gene-expression-group/scxa-gene-search-form'
+import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 import FacetedSearchResults from 'react-faceted-search'
 import ExperimentsHeader from './ExperimentsHeader'
 import ExperimentCard from './ExperimentCard'
+
+const GeneSearchFormWithFetchLoader = withFetchLoader(GeneSearchForm)
 
 const GeneSearch = ({atlasUrl, history}) => {
   const updateUrl = (event, query, species) => {
@@ -33,7 +36,7 @@ const GeneSearch = ({atlasUrl, history}) => {
 
   return (
     <div>
-      <GeneSearchForm
+      <GeneSearchFormWithFetchLoader
         host={atlasUrl}
         resource={`json/suggestions/species`}
         wrapperClassName={`row expanded`}

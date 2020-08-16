@@ -16,7 +16,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static uk.ac.ebi.atlas.model.card.CardIconType.IMAGE;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 import static uk.ac.ebi.atlas.utils.UrlHelpers.getCustomUrl;
-import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentLink;
+import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentCollectionLink;
 import static uk.ac.ebi.atlas.utils.UrlHelpers.getExperimentsSummaryImageUrl;
 
 @RestController
@@ -40,7 +40,7 @@ public class JsonExperimentsSummaryController extends JsonExceptionHandlingContr
                                 .collect(toImmutableList())));
     }
 
-    private static ImmutableList<CardModel> featuredExperimentsCards() {
+    private ImmutableList<CardModel> featuredExperimentsCards() {
         return ImmutableList.of(
                 CardModel.create(
                         IMAGE,
@@ -50,14 +50,17 @@ public class JsonExperimentsSummaryController extends JsonExceptionHandlingContr
                 CardModel.create(
                         IMAGE,
                         getExperimentsSummaryImageUrl("cz-biohub"),
-                        getExperimentLink("E-ENAD-15"),
-                        ImmutableList.of(
-                                getExperimentLink("Tabula Muris", "E-ENAD-15"))),
+                        getExperimentCollectionLink("Chan Zuckerberg Biohub", "Chan Zuckerberg Biohub"),
+                        ImmutableList.of()),
                 CardModel.create(
                         IMAGE,
                         getExperimentsSummaryImageUrl("malaria-cell-atlas"),
-                        getExperimentLink("E-CURD-2"),
-                        ImmutableList.of(
-                                getExperimentLink("Malaria Cell Atlas – Malaria parasites", "E-CURD-2"))));
+                        getExperimentCollectionLink("Malaria Cell Atlas", "Malaria Cell Atlas"),
+                        ImmutableList.of()),
+                CardModel.create(
+                        IMAGE,
+                        getExperimentsSummaryImageUrl("covid19-dp"),
+                        getExperimentCollectionLink("COVID-19 Data Portal", "COVID-19"),
+                        ImmutableList.of()));
     }
 }

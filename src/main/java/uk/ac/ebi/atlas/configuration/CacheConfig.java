@@ -23,6 +23,9 @@ public class CacheConfig {
                 builder -> builder.name("jsonExperimentMetadata"),
                 builder -> builder.name("jsonExperimentPageTabs"),
                 builder -> builder.name("cellCounts"),
+                // We need null values for Optional; see https://github.com/cache2k/cache2k/issues/141
+                builder -> builder.name("expectedClusters").permitNullValues(true),
+                builder -> builder.name("minimumMarkerProbability"),
 
                 builder -> builder.name("jsonCellMetadata"),
                 builder -> builder.name("jsonTSnePlotWithClusters"),

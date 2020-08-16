@@ -2,10 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import URI from 'urijs'
 
-import GeneSearchForm from 'scxa-gene-search-form'
+import GeneSearchForm from '@ebi-gene-expression-group/scxa-gene-search-form'
+import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 import FacetedSearchResults from 'react-faceted-search'
 import ExperimentsHeader from './ExperimentsHeader'
 import ExperimentCard from './ExperimentCard'
+
+const GeneSearchFormWithFetchLoader = withFetchLoader(GeneSearchForm)
 
 const GeneSearch = ({atlasUrl, history}) => {
   const updateUrl = (event, query, species) => {
@@ -33,8 +36,9 @@ const GeneSearch = ({atlasUrl, history}) => {
 
   return (
     <div>
-      <GeneSearchForm
-        atlasUrl={atlasUrl}
+      <GeneSearchFormWithFetchLoader
+        host={atlasUrl}
+        resource={`json/suggestions/species`}
         wrapperClassName={`row expanded`}
         actionEndpoint={`search`}
         onSubmit={updateUrl}
@@ -42,7 +46,6 @@ const GeneSearch = ({atlasUrl, history}) => {
         suggesterEndpoint={`json/suggestions/gene_ids`}
         defaultValue={geneQuery}
         enableSpeciesSelect={true}
-        speciesEndpoint={`json/suggestions/species`}
         speciesSelectClassName={`small-4 columns`}
         defaultSpecies={requestParams.species} />
 

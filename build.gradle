@@ -36,6 +36,7 @@ repositories {
     }
 }
 
+def cache2kVersion = '1.2.4.Final'
 dependencies {
     implementation 'uk.ac.ebi.ge:atlas-web-core:5.0.0-SNAPSHOT'
 
@@ -69,9 +70,9 @@ dependencies {
     implementation 'javax.servlet:javax.servlet-api:3.1.0'
     implementation 'javax.validation:validation-api:2.0.1.Final'
 
-    implementation 'org.cache2k:cache2k-api:1.2.0.Final'
-    implementation 'org.cache2k:cache2k-core:1.2.0.Final'
-    implementation 'org.cache2k:cache2k-spring:1.2.0.Final'
+    implementation "org.cache2k:cache2k-api:${cache2kVersion}"
+    runtimeOnly "org.cache2k:cache2k-core:${cache2kVersion}"
+    implementation "org.cache2k:cache2k-spring:${cache2kVersion}"
 
     implementation 'org.apache.commons:commons-lang3:3.8.1'
     implementation 'org.apache.commons:commons-text:1.6'

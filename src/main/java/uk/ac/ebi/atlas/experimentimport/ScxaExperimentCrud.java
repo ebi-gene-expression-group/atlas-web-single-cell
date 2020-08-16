@@ -39,6 +39,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "expectedClusters", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "minimumMarkerProbability", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true) })
@@ -73,6 +75,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "expectedClusters", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "minimumMarkerProbability", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true) })
     public void updateExperimentDesign(String experimentAccession) {
@@ -95,6 +99,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "expectedClusters", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "minimumMarkerProbability", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true) })
@@ -110,6 +116,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "expectedClusters", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "minimumMarkerProbability", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true) })

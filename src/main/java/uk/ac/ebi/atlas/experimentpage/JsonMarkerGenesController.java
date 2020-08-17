@@ -48,6 +48,8 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
         }
         System.out.println("Marker Genes Profile: " + markerGenesProfile.toString());
         System.out.println("Marker Genes Profile size: " + markerGenesProfile.size());
-        return "";
+        return GsonProvider.GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
+                markerGeneService.getMarkerGenes(experimentAccession, organismPart)
+        ));
     }
 }

@@ -83,7 +83,7 @@ public class MarkerGenesDao {
         //These temporary hardcoded celltypes(values) we will get from CellMetaDataDao class which is implemented by @Lingyun
         // We will call this DAO class by passing two inputs: experiment_accession(Param1) and organismPart(Param2)
         //We would get return type as ImmutableSet<String> celltypes(@return ImmutableSet<String> celltypes)
-        ImmutableSet<String> cellTypeValues = ImmutableSet.of("T cell", "lymph node T cell", "not available", "tumor T cell");
+        ImmutableSet<String> cellTypeValues = ImmutableSet.of("T cell","Not available");
 
         var namedParameters =
                 ImmutableMap.of(

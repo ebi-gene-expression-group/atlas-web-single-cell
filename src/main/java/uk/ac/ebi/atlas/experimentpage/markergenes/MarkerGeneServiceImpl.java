@@ -14,10 +14,10 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
     }
 
     /**
-     * Get List of marker genes objects for an experiment of that organism part.
+     * Get ImmutableList of marker genes objects for an experiment of that organism part.
      * @param organismPart
      * @param experimentAccession
-     * @return List of CellTypeMarkerGene Objects
+     * @return ImmutableList of CellTypeMarkerGene Objects
      */
     @Override
     public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {

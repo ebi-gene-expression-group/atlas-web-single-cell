@@ -21,7 +21,6 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
     @Override
     public List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experimentAccession, String organismPart) {
         List<CellTypeMarkerGene> cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, organismPart);
-        System.out.println("output: " + cellTypeMarkerGenes.toString());
         return cellTypeMarkerGenes;
     }
 }

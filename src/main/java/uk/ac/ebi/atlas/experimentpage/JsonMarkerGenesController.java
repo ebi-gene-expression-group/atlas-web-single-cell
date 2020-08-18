@@ -1,19 +1,15 @@
 package uk.ac.ebi.atlas.experimentpage;
 
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
-import uk.ac.ebi.atlas.experimentpage.markergenes.CellTypeMarkerGene;
 import uk.ac.ebi.atlas.experimentpage.markergenes.HighchartsHeatmapAdapter;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGeneService;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.utils.GsonProvider;
-
-import java.util.List;
 
 @RestController
 public class JsonMarkerGenesController extends JsonExceptionHandlingController {
@@ -43,7 +39,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     public String getMarkerGeneExpressionProfile(@PathVariable String experimentAccession,
                                                   @RequestParam String organismPart) {
         return GsonProvider.GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
-                markerGeneService.getCellTypeMarkerGenes(experimentAccession, organismPart)
+                markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, organismPart)
         ));
     }
 }

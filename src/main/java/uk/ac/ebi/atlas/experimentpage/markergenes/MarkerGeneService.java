@@ -12,5 +12,5 @@ public interface MarkerGeneService {
      * @param organismPart
      * @return List of CellTypeMarkerGene Objects
      */
-    ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGenes(String experimentAccession, String organismPart);
+    ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart);
 }

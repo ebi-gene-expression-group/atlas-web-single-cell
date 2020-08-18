@@ -4,6 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.CellTypeMarkerGene;
@@ -37,10 +38,10 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
                         markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k)));
     }
 
-    @GetMapping(value = "/json/experiments/{experimentAccession}/cell-type/marker-genes/{organismPart}",
+    @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/profile",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getMarkerGenesExpressionProfile(@PathVariable String experimentAccession,
-                                        @PathVariable String organismPart) {
+                                                  @RequestParam String organismPart) {
         return GsonProvider.GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
                 markerGeneService.getCellTypeMarkerGenes(experimentAccession, organismPart)
         ));

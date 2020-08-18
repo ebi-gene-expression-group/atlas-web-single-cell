@@ -41,13 +41,6 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getMarkerGenesProfile(@PathVariable String experimentAccession,
                                         @PathVariable String organismPart) {
-        System.out.println("I am in......");
-        List<CellTypeMarkerGene> markerGenesProfile = markerGeneService.getMarkerGenes(experimentAccession, organismPart);
-        for (CellTypeMarkerGene markerGene : markerGenesProfile) {
-            System.out.println("custerId: " + markerGene.clusterId());
-        }
-        System.out.println("Marker Genes Profile: " + markerGenesProfile.toString());
-        System.out.println("Marker Genes Profile size: " + markerGenesProfile.size());
         return GsonProvider.GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
                 markerGeneService.getMarkerGenes(experimentAccession, organismPart)
         ));

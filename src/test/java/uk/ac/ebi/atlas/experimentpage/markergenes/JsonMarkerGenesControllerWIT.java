@@ -22,9 +22,11 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-import static org.hamcrest.Matchers.isA;
+
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,6 +49,7 @@ class JsonMarkerGenesControllerWIT {
     private MockMvc mockMvc;
 
     private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/{k}";
+    private static final String markerGeneProfileURL = "/json/experiments/{experimentAccession}/marker-genes/profile";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -100,5 +103,31 @@ class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].geneName", isA(String.class)))
                 .andExpect(jsonPath("$[0].value", isA(Number.class)))
                 .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
+    }
+
+    @Test
+    void isMarkerGeneProfilePayloadIsValidJson() throws Exception {
+        this.mockMvc
+                .perform(get(markerGeneProfileURL, "E-HCAD-8")
+                        .param("organismPart", "skin"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$[0].cellTypeWhereMarker", isA(String.class)))
+                .andExpect(jsonPath("$[0].cellType", isA(String.class)))
+                .andExpect(jsonPath("$[0].x", isA(Number.class)))
+                .andExpect(jsonPath("$[0].y", isA(Number.class)))
+                .andExpect(jsonPath("$[0].geneName", isA(String.class)))
+                .andExpect(jsonPath("$[0].value", isA(Number.class)))
+                .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
+    }
+
+    @Test
+    void invalidExperimentAccessionReturnsEmptyPayload() throws Exception {
+        this.mockMvc
+                .perform(get(markerGeneProfileURL, "FOO")
+                        .param("organismPart", "skin"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(0))));
     }
 }

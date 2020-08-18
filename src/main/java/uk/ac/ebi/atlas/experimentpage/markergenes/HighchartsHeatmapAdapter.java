@@ -21,7 +21,7 @@ public class HighchartsHeatmapAdapter {
             markerGene -> Pair.of(markerGene.geneId(), markerGene.clusterIdWhereMarker());
 
     private static final Function<CellTypeMarkerGene, Pair<String, String>> MARKER_GENE_ID_TO_CELL_TYPE_WHERE_MARKER =
-            markerGene -> Pair.of(markerGene.geneId(), markerGene.clusterIdWhereMarker());
+            markerGene -> Pair.of(markerGene.geneId(), markerGene.cellTypeWhereMarker());
 
     private final BioEntityPropertyDao bioEntityPropertyDao;
 
@@ -84,7 +84,7 @@ public class HighchartsHeatmapAdapter {
         // reversing the comparator
         var sortedMarkerGenes = markerGenes.stream()
                 .parallel()
-                .sorted(comparing(CellTypeMarkerGene::clusterIdWhereMarker).thenComparing(CellTypeMarkerGene::pValue))
+                .sorted(comparing(CellTypeMarkerGene::cellTypeWhereMarker).thenComparing(CellTypeMarkerGene::pValue))
                 .collect(toImmutableList());
 
         var rows =
@@ -94,7 +94,7 @@ public class HighchartsHeatmapAdapter {
                         .collect(toImmutableList());
         var columns =
                 sortedMarkerGenes.stream()
-                        .map(CellTypeMarkerGene::clusterId)
+                        .map(CellTypeMarkerGene::cellType)
                         .distinct()
                         .collect(toImmutableList());
 
@@ -106,12 +106,12 @@ public class HighchartsHeatmapAdapter {
                 .map(markerGene ->
                         ImmutableMap.<String, Object>builder()
                                 // To get x co ordinates- extract all distinct cell types as a List(columns in our case) and get index of each cell type
-                                .put("x", columns.indexOf(markerGene.clusterId()))
+                                .put("x", columns.indexOf(markerGene.cellType()))
                                 .put("y", rows.indexOf(MARKER_GENE_ID_TO_CELL_TYPE_WHERE_MARKER.apply(markerGene)))
                                 .put("geneName", symbolsForGeneIds.getOrDefault(markerGene.geneId(), markerGene.geneId()))
                                 .put("value", markerGene.medianExpression())
-                                .put("cellType", markerGene.clusterId())
-                                .put("cellTypeWhereMarker", markerGene.clusterIdWhereMarker())
+                                .put("cellType", markerGene.cellType())
+                                .put("cellTypeWhereMarker", markerGene.cellTypeWhereMarker())
                                 .put("pValue", markerGene.pValue())
                                 .build())
                 .collect(toImmutableList());

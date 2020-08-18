@@ -72,7 +72,11 @@ class JsonMarkerGenesControllerWIT {
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_marker_gene_stats-delete.sql"));
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats_delete.sql"));
         populator.execute(dataSource);
     }
 

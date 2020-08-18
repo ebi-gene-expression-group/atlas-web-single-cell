@@ -39,7 +39,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
 
     @GetMapping(value = "/json/experiments/{experimentAccession}/cell-type/marker-genes/{organismPart}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getMarkerGenesProfile(@PathVariable String experimentAccession,
+    public String getMarkerGenesExpressionProfile(@PathVariable String experimentAccession,
                                         @PathVariable String organismPart) {
         return GsonProvider.GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
                 markerGeneService.getMarkerGenes(experimentAccession, organismPart)

@@ -78,7 +78,7 @@ public class MarkerGenesDao {
                     "g.value IN (:values) and " +
                     "expression_type=0 order by m.marker_probability ";
 
-    public List<CellTypeMarkerGene> getMarkerGenes(String experiment_accession, String organismPart) {
+    public List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experiment_accession, String organismPart) {
         String inferredCellType = "inferred cell type";
 
         //These temporary hardcoded celltypes(values) we will get from CellMetaDataDao class which is implemented by @Lingyun

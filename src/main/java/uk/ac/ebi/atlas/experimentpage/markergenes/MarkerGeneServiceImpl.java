@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
      * @return List of CellTypeMarkerGene Objects
      */
     @Override
-    public List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experimentAccession, String organismPart) {
+    public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGenes(String experimentAccession, String organismPart) {
         List<CellTypeMarkerGene> cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, organismPart);
-        return cellTypeMarkerGenes;
+        return ImmutableList.copyOf(cellTypeMarkerGenes);
     }
 }

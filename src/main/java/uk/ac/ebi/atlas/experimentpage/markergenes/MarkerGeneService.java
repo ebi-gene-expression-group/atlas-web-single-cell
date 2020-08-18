@@ -1,5 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 
 public interface MarkerGeneService {
@@ -10,5 +12,5 @@ public interface MarkerGeneService {
      * @param organismPart
      * @return List of CellTypeMarkerGene Objects
      */
-    List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experimentAccession, String organismPart);
+    ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGenes(String experimentAccession, String organismPart);
 }

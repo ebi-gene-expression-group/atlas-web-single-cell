@@ -42,7 +42,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     public String getMarkerGenesExpressionProfile(@PathVariable String experimentAccession,
                                         @PathVariable String organismPart) {
         return GsonProvider.GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
-                markerGeneService.getMarkerGenes(experimentAccession, organismPart)
+                markerGeneService.getCellTypeMarkerGenes(experimentAccession, organismPart)
         ));
     }
 }

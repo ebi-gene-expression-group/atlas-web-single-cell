@@ -10,5 +10,5 @@ public interface MarkerGeneService {
      * @param organismPart
      * @return List of CellTypeMarkerGene Objects
      */
-    List<CellTypeMarkerGene> getMarkerGenes(String experimentAccession, String organismPart);
+    List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experimentAccession, String organismPart);
 }

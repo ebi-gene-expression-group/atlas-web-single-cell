@@ -12,8 +12,7 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -59,7 +58,14 @@ class MarkerGeneServiceIT {
     }
 
     @Test
-    void getMarkerGenes() {
-        subject.getCellTypeMarkerGenes("E-HCAD-8", "skin");
+    void getMarkerGeneProfileForTheValidExperimentAccession() {
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-HCAD-8", "skin"))
+                .isNotEmpty();
+    }
+
+    @Test
+    void getEmptyMarkerGeneProfileForTheInvalidExperimentAccession(){
+        assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "skin"))
+                .isEmpty();
     }
 }

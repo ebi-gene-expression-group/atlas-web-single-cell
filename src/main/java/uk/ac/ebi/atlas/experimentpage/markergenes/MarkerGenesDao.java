@@ -59,9 +59,9 @@ public class MarkerGenesDao {
             "SELECT " +
                     "g.experiment_accession, " +
                     "m.gene_id, " +
-                    "g.variable as k_where_marker, " +
-                    "h.value as cluster_id_where_marker, " +
-                    "g.value as cluster_id, " +
+                    "g.variable as inferred_cell_type, " + //k_where_marker
+                    "h.value as cell_type_where_marker, " + //cluster_id_where_marker
+                    "g.value as cell_type, " +             //cluster_id
                     "m.marker_probability as marker_p_value, " +
                     "s.mean_expression, s.median_expression " +
                     "FROM " +
@@ -79,28 +79,28 @@ public class MarkerGenesDao {
                     "expression_type=0 order by m.marker_probability ";
 
     public List<CellTypeMarkerGene> getMarkerGenes(String experiment_accession, String organismPart) {
-        String cellType = "inferred cell type";
+        String inferredCellType = "inferred cell type";
 
         //These temporary hardcoded celltypes(values) we will get from CellMetaDataDao class which is implemented by @Lingyun
         // We will call this DAO class by passing two inputs: experiment_accession(Param1) and organismPart(Param2)
         //We would get return type as ImmutableSet<String> celltypes(@return ImmutableSet<String> celltypes)
-        ImmutableSet<String> cellTypeValues = ImmutableSet.of("T cell","Not available");
+        ImmutableSet<String> cellTypes = ImmutableSet.of("T cell", "Not available");
 
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,
-                        "variable", cellType,   //k_where_marker
-                        "values", cellTypeValues); //cluster_id_where_marker
+                        "variable", inferredCellType,
+                        "values", cellTypes);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_TYPE,
                 namedParameters,
                 (resultSet, rowNumber) -> CellTypeMarkerGene.create(
                         resultSet.getString("gene_id"),
-                        resultSet.getString("k_where_marker"),
-                        resultSet.getString("cluster_id_where_marker"),
+                        resultSet.getString("inferred_cell_type"), //k_where_marker
+                        resultSet.getString("cell_type_where_marker"), //cluster_id_where_marker
                         resultSet.getDouble("marker_p_value"),
-                        resultSet.getString("cluster_id"),
+                        resultSet.getString("cell_type"),  //cluster_id
                         resultSet.getDouble("median_expression"),
                         resultSet.getDouble("mean_expression")));
     }

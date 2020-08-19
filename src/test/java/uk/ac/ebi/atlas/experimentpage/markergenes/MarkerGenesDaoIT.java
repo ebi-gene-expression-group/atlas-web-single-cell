@@ -79,6 +79,11 @@ class MarkerGenesDaoIT {
         populator.execute(dataSource);
     }
 
+    @BeforeEach
+    void setUp() {
+        subject = new MarkerGenesDao(namedParameterJdbcTemplate);
+    }
+
     @ParameterizedTest
     @MethodSource("ksForExperimentWithMarkerGenes")
     void testExperimentsWithMarkerGenesAboveThreshold(int k) {
@@ -98,9 +103,16 @@ class MarkerGenesDaoIT {
         assertThat(subject.getKsWithMarkerGenes(experimentAccession)).isNotEmpty();
     }
 
-    @BeforeEach
-    void setUp() {
-        subject = new MarkerGenesDao(namedParameterJdbcTemplate);
+    @Test
+    void shouldFetchAllMarkerGenesBelowThreshold() {
+        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-HCAD-8", "skin");
+        assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.pValue() < 0.05);
+    }
+
+    @Test
+    void shouldFetchOnlyInferredCellTypeMarkerGenes() {
+        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-HCAD-8", "skin");
+        assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.inferredCellType().equals("inferred cell type"));
     }
 
     private Stream<Integer> ksForExperimentWithMarkerGenes() {

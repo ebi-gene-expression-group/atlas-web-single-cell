@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public class MarkerGenesDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private static final String INFERRED_CELL_TYPE = "inferred cell type";
 
     public MarkerGenesDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -87,7 +88,7 @@ public class MarkerGenesDao {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,
-                        "variable", inferredCellType,
+                        "variable", INFERRED_CELL_TYPE,
                         "values", cellTypes);
 
         return namedParameterJdbcTemplate.query(

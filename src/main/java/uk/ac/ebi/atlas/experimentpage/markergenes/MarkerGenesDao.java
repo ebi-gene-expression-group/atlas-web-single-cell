@@ -97,10 +97,10 @@ public class MarkerGenesDao {
                 namedParameters,
                 (resultSet, rowNumber) -> CellTypeMarkerGene.create(
                         resultSet.getString("gene_id"),
-                        resultSet.getString("inferred_cell_type"), //k_where_marker
-                        resultSet.getString("cell_type_where_marker"), //cluster_id_where_marker
+                        resultSet.getString("inferred_cell_type"),
+                        resultSet.getString("cell_type_where_marker"),
                         resultSet.getDouble("marker_p_value"),
-                        resultSet.getString("cell_type"),  //cluster_id
+                        resultSet.getString("cell_type"),
                         resultSet.getDouble("median_expression"),
                         resultSet.getDouble("mean_expression")));
     }

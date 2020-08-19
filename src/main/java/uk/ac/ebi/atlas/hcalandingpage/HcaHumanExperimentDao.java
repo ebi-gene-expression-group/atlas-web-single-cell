@@ -42,8 +42,7 @@ public class HcaHumanExperimentDao {
         queryBuilder.addQueryFieldByTerm(CHARACTERISTIC_NAME, characteristicName)
                 .setNormalize(false)
                 .setFieldList(EXPERIMENT_ACCESSION)
-                .sortBy(EXPERIMENT_ACCESSION, SolrQuery.ORDER.asc)
-                .setRows(10000000);
+                .sortBy(EXPERIMENT_ACCESSION, SolrQuery.ORDER.asc);
 
         if(!characteristicValues.isEmpty()) {
             queryBuilder.addQueryFieldByTerm(ImmutableMap.of(
@@ -55,7 +54,8 @@ public class HcaHumanExperimentDao {
             ));
         }
 
-        var humanExperimentsSearchStream = new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, queryBuilder);
+        var humanExperimentsSearchStream =
+                new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, queryBuilder).returnAllDocs();
 
         var uniqueHumanExperimentsStream = new UniqueStreamBuilder(humanExperimentsSearchStream, EXPERIMENT_ACCESSION.name());
 

@@ -55,7 +55,7 @@ public class MarkerGenesDao {
                 Integer.class);
     }
 
-    private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_TYPE =
+    private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP =
             "SELECT " +
                     "g.experiment_accession, " +
                     "m.gene_id, " +
@@ -93,7 +93,7 @@ public class MarkerGenesDao {
                         "values", cellTypes);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_TYPE,
+                SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,
                 namedParameters,
                 (resultSet, rowNumber) -> CellTypeMarkerGene.create(
                         resultSet.getString("gene_id"),

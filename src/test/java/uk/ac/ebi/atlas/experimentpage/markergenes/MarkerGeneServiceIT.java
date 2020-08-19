@@ -12,6 +12,7 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -64,7 +65,7 @@ class MarkerGeneServiceIT {
     }
 
     @Test
-    void getEmptyMarkerGeneProfileForTheInvalidExperimentAccession(){
+    void getEmptyMarkerGeneProfileForTheInvalidExperimentAccession() {
         assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "skin"))
                 .isEmpty();
     }

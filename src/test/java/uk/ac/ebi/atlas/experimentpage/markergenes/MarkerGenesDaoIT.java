@@ -47,9 +47,16 @@ class MarkerGenesDaoIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
+                //Start - These marker gene tables test data would be removed soon after
+                // we replaces functionality with new cell group tables
                 new ClassPathResource("fixtures/scxa_marker_genes-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_marker_gene_stats-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-fixture.sql"),
+                //end
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 

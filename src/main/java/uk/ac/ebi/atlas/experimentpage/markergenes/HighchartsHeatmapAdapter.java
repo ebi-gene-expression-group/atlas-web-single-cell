@@ -105,7 +105,8 @@ public class HighchartsHeatmapAdapter {
         return sortedMarkerGenes.stream()
                 .map(markerGene ->
                         ImmutableMap.<String, Object>builder()
-                                // To get x co ordinates- extract all distinct cell types as a List(columns in our case) and get index of each cell type
+                                // To get x co ordinates- extract all distinct cell types as a List(columns in our case)
+                                // and get index of each cell type
                                 .put("x", columns.indexOf(markerGene.cellType()))
                                 .put("y", rows.indexOf(MARKER_GENE_ID_TO_CELL_TYPE_WHERE_MARKER.apply(markerGene)))
                                 .put("geneName", symbolsForGeneIds.getOrDefault(markerGene.geneId(), markerGene.geneId()))

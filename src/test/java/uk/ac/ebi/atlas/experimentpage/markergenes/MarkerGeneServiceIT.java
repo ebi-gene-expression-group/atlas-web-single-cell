@@ -24,9 +24,6 @@ class MarkerGeneServiceIT {
     private DataSource dataSource;
     @Inject
     MarkerGenesDao markerGenesDao;
-    @Inject
-    private JdbcUtils jdbcUtils;
-
     MarkerGeneService subject;
 
     @BeforeAll

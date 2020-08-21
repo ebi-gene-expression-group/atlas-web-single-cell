@@ -57,7 +57,7 @@ class MarkerGeneServiceIT {
 
     @Test
     void getMarkerGeneProfileForTheValidExperimentAccession() {
-        assertThat(subject.getCellTypeMarkerGeneProfile("E-HCAD-8", "skin"))
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
                 .isNotEmpty();
     }
 

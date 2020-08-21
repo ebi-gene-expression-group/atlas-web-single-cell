@@ -105,13 +105,13 @@ class MarkerGenesDaoIT {
 
     @Test
     void shouldFetchAllMarkerGenesBelowThreshold() {
-        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-HCAD-8", "skin");
+        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", "skin");
         assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.pValue() < 0.05);
     }
 
     @Test
     void shouldFetchOnlyInferredCellTypeMarkerGenes() {
-        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-HCAD-8", "skin");
+        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", "skin");
         assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.inferredCellType().equals("inferred cell type"));
     }
 

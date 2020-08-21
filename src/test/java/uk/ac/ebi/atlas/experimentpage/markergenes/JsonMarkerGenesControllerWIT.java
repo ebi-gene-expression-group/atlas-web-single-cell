@@ -114,7 +114,7 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void isMarkerGeneProfilePayloadIsValidJson() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneProfileURL, "E-HCAD-8")
+                .perform(get(markerGeneProfileURL, "E-EHCA-2")
                         .param("organismPart", "skin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

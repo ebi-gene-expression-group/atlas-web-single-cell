@@ -35,6 +35,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Caching(evict = {
             @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "experiment2Collections", key="#experimentAccession"),
             @CacheEvict(cacheNames = "speciesSummary", allEntries = true),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
@@ -72,6 +73,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Caching(evict = {
             @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "experiment2Collections", key="#experimentAccession"),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
@@ -95,6 +97,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Caching(evict = {
             @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "experiment2Collections", key="#experimentAccession"),
             @CacheEvict(cacheNames = "speciesSummary", allEntries = true),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
@@ -112,6 +115,7 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     @Caching(evict = {
             @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
+            @CacheEvict(cacheNames = "experiment2Collections", key="#experimentAccession"),
             @CacheEvict(cacheNames = "speciesSummary", allEntries = true),
             @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
             @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),

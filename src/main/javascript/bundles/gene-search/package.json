@@ -13,31 +13,30 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.5.0",
+    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.7.0",
     "@ebi-gene-expression-group/react-ebi-species": "^2.6.0",
-    "@ebi-gene-expression-group/scxa-gene-search-form": "^1.7.0",
+    "@ebi-gene-expression-group/scxa-faceted-search-results": "^4.0.4",
+    "@ebi-gene-expression-group/scxa-gene-search-form": "^1.7.2",
     "format-number": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-faceted-search": "^2.8.0",
     "react-router-dom": "^5.2.0",
-    "react-tooltip": "^4.2.8",
-    "scxa-gene-search-form": "^1.4.1",
-    "styled-components": "^5.1.1",
+    "react-tooltip": "^4.2.9",
+    "styled-components": "^5.2.0",
     "urijs": "^1.19.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.1",
-    "@babel/polyfill": "^7.10.4",
-    "@babel/preset-env": "^7.11.0",
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/polyfill": "^7.11.5",
+    "@babel/preset-env": "^7.11.5",
     "@babel/preset-react": "^7.10.4",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0",
-    "whatwg-fetch": "^3.4.0"
+    "whatwg-fetch": "^3.4.1"
   }
 }

@@ -2,13 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import URI from 'urijs'
 
-import GeneSearchForm from '@ebi-gene-expression-group/scxa-gene-search-form'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
-import FacetedSearchResults from 'react-faceted-search'
+import GeneSearchForm from '@ebi-gene-expression-group/scxa-gene-search-form'
+import FacetedSearchResults from '@ebi-gene-expression-group/scxa-faceted-search-results'
+
 import ExperimentsHeader from './ExperimentsHeader'
 import ExperimentCard from './ExperimentCard'
 
 const GeneSearchFormWithFetchLoader = withFetchLoader(GeneSearchForm)
+const FacetedSearchResultsWithFetchLoader = withFetchLoader(FacetedSearchResults)
 
 const GeneSearch = ({atlasUrl, history}) => {
   const updateUrl = (event, query, species) => {
@@ -51,7 +53,7 @@ const GeneSearch = ({atlasUrl, history}) => {
 
       {
         firstMatchingRequestParam &&
-        <FacetedSearchResults
+        <FacetedSearchResultsWithFetchLoader
           host={atlasUrl}
           resource={
             `json/search?` +
@@ -60,11 +62,18 @@ const GeneSearch = ({atlasUrl, history}) => {
               species: requestParams.species
             })
           }
+          fulfilledPayloadProvider={data => ({
+            resultsMessage: data ?
+              (data.results && data.results.length > 0) ?
+                `${geneQuery.term} ${data.matchingGeneId}  is expressed in:` :
+                `Your search for ${geneQuery.term} yielded no results: ${data.reason}` :
+              `WTF!`
+            })
+          }
           sortTitle={`markerGenes`}
           ResultsHeaderClass={ExperimentsHeader}
           ResultElementClass={ExperimentCard}
-          noResultsMessageFormatter={(data) => `${geneQuery.term} is not expressed in any experiment: ${data.reason}`}
-          resultsMessageFormatter={(data) => `${geneQuery.term} ${data.matchingGeneId} is expressed in:`} />
+        />
       }
     </div>
   )

@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@ebi-gene-expression-group/atlas-homepage-cards": "^2.5.0",
-    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.5.0",
+    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.7.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

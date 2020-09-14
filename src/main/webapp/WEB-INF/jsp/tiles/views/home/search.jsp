@@ -17,7 +17,8 @@
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
       geneSearchForm.render({
-        atlasUrl: '${pageContext.request.contextPath}/',
+        host: '${pageContext.request.contextPath}/',
+        resource: 'json/suggestions/species',
         wrapperClassName: 'row expanded',
         actionEndpoint: 'search',
 
@@ -25,7 +26,6 @@
         suggesterEndpoint: 'json/suggestions/gene_ids',
 
         enableSpeciesSelect: true,
-        speciesEndpoint: 'json/suggestions/species',
         speciesSelectClassName: 'small-12 medium-4 columns',
 
         searchExamples: [

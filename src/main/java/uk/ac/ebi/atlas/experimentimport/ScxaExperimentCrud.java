@@ -106,7 +106,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "minimumMarkerProbability", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
-            @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true) })
+            @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true),
+            @CacheEvict(cacheNames = "experiment2Collections", key = "#experimentAccession") })
     public void deleteExperiment(String experimentAccession) {
         super.deleteExperiment(experimentAccession);
     }

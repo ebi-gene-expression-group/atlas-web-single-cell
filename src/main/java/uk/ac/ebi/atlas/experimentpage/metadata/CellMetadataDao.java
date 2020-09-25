@@ -145,14 +145,14 @@ public class CellMetadataDao {
                 new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, solrQueryBuilder).returnAllDocs();
         // Rename factor/characteristic value to metadata_value
         var selectStreamBuilder =
-                new SelectStreamBuilder<>(searchStreamBuilder)
+                new SelectStreamBuilder(searchStreamBuilder)
                         .addFieldMapping(ImmutableMap.of(
                                 CELL_ID.name(), CELL_ID.name(),
                                 FACET_FACTOR_VALUE.name(), METADATA_VALUE_TARGET_FIELD_NAME,
                                 FACET_CHARACTERISTIC_VALUE.name(), METADATA_VALUE_TARGET_FIELD_NAME));
         // Get unique values
         var uniqueStreamBuilder =
-                new UniqueStreamBuilder<>(selectStreamBuilder, CELL_ID.name());
+                new UniqueStreamBuilder(selectStreamBuilder, CELL_ID.name());
 
         try (var tupleStreamer = TupleStreamer.of(uniqueStreamBuilder.build())) {
             return tupleStreamer

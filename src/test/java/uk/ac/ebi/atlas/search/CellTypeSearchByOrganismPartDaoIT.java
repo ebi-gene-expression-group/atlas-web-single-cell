@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.search.metadata;
+package uk.ac.ebi.atlas.search;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
-import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 
 import javax.inject.Inject;
@@ -24,51 +23,52 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class MetadataSearchDaoIT {
+class CellTypeSearchByOrganismPartDaoIT {
     @Inject
     private DataSource dataSource;
 
     @Inject
-    private CellMetadataDao cellMetadataDao;
-
-    @Inject
     private SolrCloudCollectionProxyFactory collectionProxyFactory;
 
-    private CellMetadataSearchDao subject;
+    private CellTypeSearchByOrganismPartDao subject;
 
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(
-                new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-fixture.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment-fixture.sql"));
         populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(
-                new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-delete.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 
     @BeforeEach
     void setUp() {
-        subject = new CellMetadataSearchDao(collectionProxyFactory, cellMetadataDao);
+        subject = new CellTypeSearchByOrganismPartDao(collectionProxyFactory);
     }
 
     @Test
     void invalidCellTypeMetadataSearch() {
-        assertThat(subject.getCellTypeMetadata("foo", "bar", "E-EHCA-2"))
+        assertThat(subject.getCellTypeMetadata("E-MTAB-5061", "foobar"))
                 .isEmpty();
     }
 
     @Test
     void validCellTypeMetadataSearch() {
-        assertThat(subject.getCellTypeMetadata("sex", "female", "E-EHCA-2"))
+        // pancreas
+        var cellTypesInPancreas = subject.getCellTypeMetadata("E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264");
+        assertThat(cellTypesInPancreas)
                 .isNotEmpty();
-    }
+        // islet of Langerhans
+        var cellTypesInIsletOfLangerhans = subject.getCellTypeMetadata("E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0000006");
+        assertThat(cellTypesInIsletOfLangerhans)
+                .isNotEmpty();
 
+        assertThat(cellTypesInPancreas)
+                .containsAll(cellTypesInIsletOfLangerhans);
+    }
 }

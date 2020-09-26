@@ -40,7 +40,7 @@ public class CellMetadataDao {
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
     private final IdfParser idfParser;
 
-    private final static String INFERRED_CELL_TYPE_SOLR_VALUE = "inferred_cell_type";
+    private final static String INFERRED_CELL_TYPE_SOLR_VALUE = "inferred_cell_type_-_ontology_labels";
     private final static String SINGLE_CELL_IDENTIFIER_SOLR_VALUE = "single_cell_identifier";
     private final static String METADATA_VALUE_TARGET_FIELD_NAME = "metadata_value";
 

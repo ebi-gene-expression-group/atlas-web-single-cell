@@ -116,7 +116,7 @@ class CellMetadataDaoIT {
     @Test
     void experimentWithMissingValuesReturnsNotAvailable() {
         var experimentAccession = "E-GEOD-71585";
-        var result = subject.getMetadataValues(experimentAccession, "inferred_cell_type");
+        var result = subject.getMetadataValues(experimentAccession, "inferred_cell_type_-_ontology_labels");
 
         // Another way to test this would be to check that the result has fewer cells than the experiment, and that the
         // missing cell IDs don’t have a value for the specified metadata value
@@ -136,7 +136,7 @@ class CellMetadataDaoIT {
 
         assertThat(result)
                 .isNotEmpty()
-                .extracting("inferred_cell_type")
+                .extracting("inferred_cell_type_-_ontology_labels")
                 .isNotEmpty();
     }
 

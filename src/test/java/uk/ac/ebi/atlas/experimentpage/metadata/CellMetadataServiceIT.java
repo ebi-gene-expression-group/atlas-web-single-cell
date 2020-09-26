@@ -34,7 +34,7 @@ class CellMetadataServiceIT {
     // Ideally we would retrieve a random experiment accession, but not all experiments have metadata of interest
     // (i.e factors, inferred cell types and additional attributes in the IDF)
     private static final String EXPERIMENT_WITHOUT_METADATA_ACCESSION = "E-GEOD-99058";
-    private static final String INFERRED_CELL_TYPE = "inferred_cell_type";
+    private static final String INFERRED_CELL_TYPE = "inferred_cell_type_-_ontology_labels";
 
     @Inject
     private DataSource dataSource;

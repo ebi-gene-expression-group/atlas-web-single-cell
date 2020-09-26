@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.metadata;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,8 @@ class CellMetadataServiceIT {
     // Ideally we would retrieve a random experiment accession, but not all experiments have metadata of interest
     // (i.e factors, inferred cell types and additional attributes in the IDF)
     private static final String EXPERIMENT_WITHOUT_METADATA_ACCESSION = "E-GEOD-99058";
-    private static final String INFERRED_CELL_TYPE = "inferred_cell_type_-_ontology_labels";
+    private static final ImmutableSet<String> INFERRED_CELL_TYPE_VALUES =
+            ImmutableSet.of("inferred_cell_type_-_ontology_labels", "inferred_cell_type_-_authors_labels");
 
     @Inject
     private DataSource dataSource;
@@ -84,15 +86,16 @@ class CellMetadataServiceIT {
     void experimentWithMetadataReturnsMetadataTypes(String experimentAccession) {
         assertThat(subject.getMetadataTypes(experimentAccession))
                 .isNotEmpty()
-                .contains(INFERRED_CELL_TYPE);
+                .anyMatch(INFERRED_CELL_TYPE_VALUES::contains);
     }
 
     @ParameterizedTest
     @MethodSource("experimentsWithMetadataProvider")
     void returnsMetadataValueForGivenMetadataType(String experimentAccession) {
         //assuming all experiments have inferred_cell_types as there metadata
-        assertThat(subject.getMetadataValuesForGivenType(experimentAccession, INFERRED_CELL_TYPE))
-                .isNotEmpty();
+        assertThat(INFERRED_CELL_TYPE_VALUES)
+                .anyMatch(inferredCellTypeValue ->
+                        !subject.getMetadataValuesForGivenType(experimentAccession, inferredCellTypeValue).isEmpty());
     }
 
     @Test

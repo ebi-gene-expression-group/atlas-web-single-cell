@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage.metadata;
 
 import com.google.common.collect.ImmutableSet;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.StringUtils;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.configuration.TestConfig;
+import uk.ac.ebi.atlas.experimentimport.condensedSdrf.CondensedSdrfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
+import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
@@ -29,12 +32,15 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.ac.ebi.atlas.model.experiment.ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -51,8 +57,13 @@ class CellMetadataDaoIT {
 
     @Inject
     private JdbcUtils jdbcUtils;
+
     @Inject
     private IdfParser idfParser;
+
+    @Inject
+    private CondensedSdrfParser condensedSdrfParser;
+
     @Inject
     private DataFileHub dataFileHub;
 
@@ -153,25 +164,18 @@ class CellMetadataDaoIT {
     @ParameterizedTest
     @MethodSource("experimentsWithFactorsProvider")
     void validExperimentAccessionHasMetadataValues(String experimentAccession) {
-        var cellIds =
-                jdbcUtils.fetchRandomListOfCellsFromExperiment(
-                        experimentAccession, ThreadLocalRandom.current().nextInt(1, 2000));
-
-        LOGGER.info("Retrieving factor types for experiment {}", experimentAccession);
+        var condensedSdrfParserOutput =
+                condensedSdrfParser.parse(experimentAccession, SINGLE_CELL_RNASEQ_MRNA_BASELINE);
 
         var factorTypes = subject.getFactorTypes(experimentAccession);
-
         assertThat(factorTypes)
                 .isNotEmpty()
-                .allSatisfy(factor -> {
-                    LOGGER.info(
-                            "Retrieving values for {} metadata for {} random cell IDs from experiment {}",
-                            factor, cellIds.size(), experimentAccession);
-
-                    assertThat(subject.getMetadataValues(experimentAccession, factor))
+                .allSatisfy(factor ->
+                    assertThat(subject.getMetadataValues(experimentAccession, factor).keySet())
                             .isNotEmpty()
-                            .containsKeys(cellIds.toArray(new String[0]));
-                });
+                            // Samples in the condensed SDRF can have missing attributes
+                            .containsAnyElementsOf(
+                                    condensedSdrfParserOutput.getExperimentDesign().getAllRunOrAssay()));
     }
 
     @ParameterizedTest

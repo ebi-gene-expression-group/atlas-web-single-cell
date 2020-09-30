@@ -35,6 +35,6 @@ public class CacheConfig {
                 builder -> builder.name("jsonTSnePlotWithMetadata"),
 
                 builder -> builder.name("hcaMetadata"),
-                builder -> builder.name("cellIdsMetadata"));
+                builder -> builder.name("cellTypes"));
     }
 }

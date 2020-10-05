@@ -18,15 +18,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CellTypeSearchByOrganismPartDaoIT {
+class CellTypeSearchDaoIT {
     @Inject
     private SolrCloudCollectionProxyFactory collectionProxyFactory;
 
-    private CellTypeSearchByOrganismPartDao subject;
+    private CellTypeSearchDao subject;
 
     @BeforeEach
     void setUp() {
-        subject = new CellTypeSearchByOrganismPartDao(collectionProxyFactory);
+        subject = new CellTypeSearchDao(collectionProxyFactory);
     }
 
     @Test

@@ -30,14 +30,14 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION_PART_OF_URIS;
 
 @Repository
-public class CellTypeSearchByOrganismPartDao {
+public class CellTypeSearchDao {
     private static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_VALUE = "inferred_cell_type_-_ontology_labels";
     private static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_VALUE = "inferred_cell_type_-_authors_labels";
     private static final String CELL_TYPE_VALUE_RENAMED_FIELD = "cell_type_value";
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
-    public CellTypeSearchByOrganismPartDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
+    public CellTypeSearchDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
         this.singleCellAnalyticsCollectionProxy =
                 solrCloudCollectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }

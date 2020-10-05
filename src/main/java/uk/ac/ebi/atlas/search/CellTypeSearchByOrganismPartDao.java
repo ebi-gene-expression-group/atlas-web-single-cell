@@ -31,8 +31,8 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 
 @Repository
 public class CellTypeSearchByOrganismPartDao {
-    public static final ImmutableSet<String> CELL_TYPE_ANNOTATION_NAMES =
-            ImmutableSet.of("inferred_cell_type_-_ontology_labels");
+    private static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_VALUE = "inferred_cell_type_-_ontology_labels";
+    private static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_VALUE = "inferred_cell_type_-_authors_labels";
     private static final String CELL_TYPE_VALUE_RENAMED_FIELD = "cell_type_value";
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
@@ -40,6 +40,18 @@ public class CellTypeSearchByOrganismPartDao {
     public CellTypeSearchByOrganismPartDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
         this.singleCellAnalyticsCollectionProxy =
                 solrCloudCollectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
+    }
+
+    @Cacheable(cacheNames = "inferredCellTypesOntology", key = "{#experimentAccession, #organOrOrganismPart}")
+    public ImmutableSet<String> getInferredCellTypeOntologyLabels(String experimentAccession,
+                                                                  String organOrOrganismPart) {
+        return getCellTypeMetadata(experimentAccession, organOrOrganismPart, INFERRED_CELL_TYPE_ONTOLOGY_LABELS_VALUE);
+    }
+
+    @Cacheable(cacheNames = "inferredCellTypesAuthors", key = "{#experimentAccession, #organOrOrganismPart}")
+    public ImmutableSet<String> getInferredCellTypeAuthorsLabels(String experimentAccession,
+                                                                 String organOrOrganismPart) {
+        return getCellTypeMetadata(experimentAccession, organOrOrganismPart, INFERRED_CELL_TYPE_AUTHORS_LABELS_VALUE);
     }
 
     /*
@@ -86,9 +98,9 @@ public class CellTypeSearchByOrganismPartDao {
      )' \
      http://localhost:8983/solr/scxa-analytics-v3/stream
      */
-    @Cacheable(cacheNames = "cellTypes", key = "{#experimentAccession, #organOrOrganismPart}")
-    public ImmutableSet<String> getCellTypeMetadata(String experimentAccession,
-                                                    String organOrOrganismPart) {
+    private ImmutableSet<String> getCellTypeMetadata(String experimentAccession,
+                                                     String organOrOrganismPart,
+                                                     String cellTypeValue) {
         var cellIdsInOrganOrOrganismPartQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
@@ -101,19 +113,19 @@ public class CellTypeSearchByOrganismPartDao {
                         .sortBy(CELL_ID, SolrQuery.ORDER.asc);
         var uniqueCellIdsInOrganOrOrganismPartStreamBuilder =
                 new UniqueStreamBuilder(
-                    new SearchStreamBuilder<>(
-                            singleCellAnalyticsCollectionProxy,
-                            cellIdsInOrganOrOrganismPartQueryBuilder)
-                            .returnAllDocs(),
-                    CELL_ID.name());
+                        new SearchStreamBuilder<>(
+                                singleCellAnalyticsCollectionProxy,
+                                cellIdsInOrganOrOrganismPartQueryBuilder)
+                                .returnAllDocs(),
+                        CELL_ID.name());
 
         var cellIdsAnnotatedWithCellTypeValueQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(
                                 ImmutableMap.of(
-                                        FACET_FACTOR_NAME, CELL_TYPE_ANNOTATION_NAMES,
-                                        FACET_CHARACTERISTIC_NAME, CELL_TYPE_ANNOTATION_NAMES))
+                                        FACET_FACTOR_NAME, ImmutableSet.of(cellTypeValue),
+                                        FACET_CHARACTERISTIC_NAME, ImmutableSet.of(cellTypeValue)))
                         .setFieldList(ImmutableSet.of(CELL_ID, FACET_FACTOR_VALUE, FACET_CHARACTERISTIC_VALUE))
                         .sortBy(CELL_ID, SolrQuery.ORDER.asc);
         var uniqueCellIdsAnnotatedWithCellTypeValue =

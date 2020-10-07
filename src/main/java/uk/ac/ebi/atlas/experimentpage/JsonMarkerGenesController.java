@@ -9,7 +9,8 @@ import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.HighchartsHeatmapAdapter;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGeneService;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
-import uk.ac.ebi.atlas.utils.GsonProvider;
+
+import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class JsonMarkerGenesController extends JsonExceptionHandlingController {
@@ -30,16 +31,17 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getMarkerGenes(@PathVariable String experimentAccession,
                                  @PathVariable int k) {
-        return GsonProvider.GSON.toJson(
+        return GSON.toJson(
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapData(
-                        markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k)));
+                        markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k)
+                ));
     }
 
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/profile",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getMarkerGeneExpressionProfile(@PathVariable String experimentAccession,
                                                  @RequestParam String organismPart) {
-        return GsonProvider.GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
+        return GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
                 markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, organismPart)
         ));
     }

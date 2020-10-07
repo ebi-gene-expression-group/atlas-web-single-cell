@@ -13,9 +13,9 @@ import uk.ac.ebi.atlas.utils.GsonProvider;
 
 @RestController
 public class JsonMarkerGenesController extends JsonExceptionHandlingController {
-    private MarkerGenesDao markerGenesDao;
-    private HighchartsHeatmapAdapter highchartsHeatmapAdapter;
-    private MarkerGeneService markerGeneService;
+    private final MarkerGenesDao markerGenesDao;
+    private final HighchartsHeatmapAdapter highchartsHeatmapAdapter;
+    private final MarkerGeneService markerGeneService;
 
     public JsonMarkerGenesController(MarkerGenesDao markerGenesDao,
                                      HighchartsHeatmapAdapter highchartsHeatmapAdapter,
@@ -38,7 +38,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/profile",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getMarkerGeneExpressionProfile(@PathVariable String experimentAccession,
-                                                  @RequestParam String organismPart) {
+                                                 @RequestParam String organismPart) {
         return GsonProvider.GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
                 markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, organismPart)
         ));

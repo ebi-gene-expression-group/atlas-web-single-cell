@@ -9,6 +9,7 @@ import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
@@ -38,7 +39,7 @@ public class HighchartsHeatmapAdapter {
      * If there are no marker genes for a cluster, then no rows will be present in the data.
      */
     @Deprecated
-    public ImmutableList<Map<String, Object>> getMarkerGeneHeatmapData(Collection<MarkerGene> markerGenes) {
+    public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapData(Collection<MarkerGene> markerGenes) {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
@@ -78,7 +79,7 @@ public class HighchartsHeatmapAdapter {
      * The rows of the heatmap are ordered by the cell type, i.e. genes for celltype 1, 2, etc.
      * If there are no marker genes for a cell group, then no rows will be present in the data.
      */
-    public ImmutableList<Map<String, Object>> getCellTypeMarkerGeneHeatmapData(Collection<CellTypeMarkerGene> markerGenes) {
+    public ImmutableList<ImmutableMap<String, Object>> getCellTypeMarkerGeneHeatmapData(Collection<CellTypeMarkerGene> markerGenes) {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator

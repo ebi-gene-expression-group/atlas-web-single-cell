@@ -49,7 +49,7 @@ class JsonMarkerGenesControllerWIT {
     private MockMvc mockMvc;
 
     private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/{k}";
-    private static final String markerGeneProfileURL = "/json/experiments/{experimentAccession}/marker-genes/profile";
+    private static final String markerGeneCellTypeURL = "/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -112,9 +112,9 @@ class JsonMarkerGenesControllerWIT {
     }
 
     @Test
-    void isMarkerGeneProfilePayloadIsValidJson() throws Exception {
+    void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneProfileURL, "E-EHCA-2")
+                .perform(get(markerGeneCellTypeURL, "E-EHCA-2")
                         .param("organismPart", "skin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -130,7 +130,7 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void invalidExperimentAccessionReturnsEmptyPayload() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneProfileURL, "FOO")
+                .perform(get(markerGeneCellTypeURL, "FOO")
                         .param("organismPart", "skin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

@@ -19,7 +19,7 @@ public class HighchartsHeatmapAdapter {
     private static final Function<MarkerGene, Pair<String, Integer>> MARKER_GENE_TO_ID_CLUSTER_ID_WHERE_MARKER =
             markerGene -> Pair.of(markerGene.geneId(), markerGene.clusterIdWhereMarker());
 
-    private static final Function<CellTypeMarkerGene, Pair<String, String>> MARKER_GENE_ID_TO_CELL_TYPE_WHERE_MARKER =
+    private static final Function<CellTypeMarkerGene, Pair<String, String>> MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER =
             markerGene -> Pair.of(markerGene.geneId(), markerGene.cellGroupValueWhereMarker());
 
     private final BioEntityPropertyDao bioEntityPropertyDao;
@@ -88,7 +88,7 @@ public class HighchartsHeatmapAdapter {
 
         var rows =
                 sortedMarkerGenes.stream()
-                        .map(MARKER_GENE_ID_TO_CELL_TYPE_WHERE_MARKER)
+                        .map(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER)
                         .distinct()
                         .collect(toImmutableList());
         var columns =
@@ -107,7 +107,7 @@ public class HighchartsHeatmapAdapter {
                                 // To get x co ordinates- extract all distinct cell types as a List(columns in our case)
                                 // and get index of each cell type
                                 .put("x", columns.indexOf(markerGene.cellGroupValue()))
-                                .put("y", rows.indexOf(MARKER_GENE_ID_TO_CELL_TYPE_WHERE_MARKER.apply(markerGene)))
+                                .put("y", rows.indexOf(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER.apply(markerGene)))
                                 .put("geneName", symbolsForGeneIds.getOrDefault(markerGene.geneId(), markerGene.geneId()))
                                 .put("value", markerGene.medianExpression())
                                 .put("cellType", markerGene.cellGroupValue())

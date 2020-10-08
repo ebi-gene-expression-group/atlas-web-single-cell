@@ -7,31 +7,31 @@ public abstract class CellTypeMarkerGene {
 
     public abstract String geneId();
 
-    public abstract String inferredCellType();
+    public abstract String cellGroupType();
 
-    public abstract String cellTypeWhereMarker();
+    public abstract String cellGroupValueWhereMarker();
 
     public abstract double pValue();
 
-    public abstract String cellType();
+    public abstract String cellGroupValue();
 
     public abstract double medianExpression();
 
     public abstract double meanExpression();
 
     public static CellTypeMarkerGene create(String geneId,
-                                            String inferredCellType,
-                                            String cellTypeWhereMarker,
+                                            String cellGroupType,
+                                            String cellGroupValueWhereMarker,
                                             double pValue,
-                                            String cellType,
+                                            String cellGroupValue,
                                             double medianExpression,
                                             double meanExpression) {
         return new AutoValue_CellTypeMarkerGene(
                 geneId,
-                inferredCellType,
-                cellTypeWhereMarker,
+                cellGroupType,
+                cellGroupValueWhereMarker,
                 pValue,
-                cellType,
+                cellGroupValue,
                 medianExpression,
                 meanExpression);
     }

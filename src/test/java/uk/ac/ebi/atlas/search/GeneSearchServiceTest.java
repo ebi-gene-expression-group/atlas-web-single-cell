@@ -202,10 +202,10 @@ class GeneSearchServiceTest {
         when(geneSearchDaoMock.getFacets(anyList(), any(String.class)))
                 .thenReturn(ImmutableMap.of(
                         experimentAccession1, ImmutableMap.of(
-                                "inferred_cell_type", Arrays.asList("neuron", "stem cell"),
+                                "inferred_cell_type_-_ontology_labels", Arrays.asList("neuron", "stem cell"),
                                 "species", Collections.singletonList("homo sapiens")),
                         experimentAccession2, ImmutableMap.of(
-                                "inferred_cell_type", Arrays.asList("immune cell", "liver cell", "stem cell"),
+                                "inferred_cell_type_-_ontology_labels", Arrays.asList("immune cell", "liver cell", "stem cell"),
                                 "organism_part", Collections.singletonList("liver"),
                                 "species", Arrays.asList("homo sapiens", "mus musculus"))
                 ));

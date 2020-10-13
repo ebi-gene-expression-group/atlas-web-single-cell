@@ -139,13 +139,13 @@ class GeneSearchDaoIT {
     @ParameterizedTest
     @MethodSource("randomCellIdsProvider")
     void getFacetsForValidCellIds(List<String> cellIds) {
-        var result = subject.getFacets(cellIds, "inferred_cell_type", "organism_part", "organism");
+        var result = subject.getFacets(cellIds, "inferred_cell_type_-_ontology_labels", "organism_part", "organism");
         assertThat(result).isNotEmpty();
     }
 
     @Test
     void getForEmptyListOfCellIdsReturnsEmpty() {
-        var result = subject.getFacets(emptyList(), "inferred_cell_type", "organism_part", "organism");
+        var result = subject.getFacets(emptyList(), "inferred_cell_type_-_ontology_labels", "organism_part", "organism");
         assertThat(result).isEmpty();
     }
 

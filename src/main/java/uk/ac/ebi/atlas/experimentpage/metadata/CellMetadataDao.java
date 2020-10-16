@@ -40,7 +40,7 @@ public class CellMetadataDao {
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
     private final IdfParser idfParser;
 
-    private final static String INFERRED_CELL_TYPE_SOLR_VALUE = "inferred_cell_type";
+    private final static String INFERRED_CELL_TYPE_SOLR_VALUE = "inferred_cell_type_-_ontology_labels";
     private final static String SINGLE_CELL_IDENTIFIER_SOLR_VALUE = "single_cell_identifier";
     private final static String METADATA_VALUE_TARGET_FIELD_NAME = "metadata_value";
 
@@ -90,10 +90,10 @@ public class CellMetadataDao {
         return characteristics.build();
     }
 
-    public Map<String, String> getMetadataValuesForCellId(String experimentAccession,
-                                                          String cellId,
-                                                          Collection<String> factorFields,
-                                                          Collection<String> characteristicFields) {
+    public ImmutableMap<String, String> getMetadataValuesForCellId(String experimentAccession,
+                                                                   String cellId,
+                                                                   Collection<String> factorFields,
+                                                                   Collection<String> characteristicFields) {
         if (factorFields.isEmpty() && characteristicFields.isEmpty()) {
             return ImmutableMap.of();
         }
@@ -116,7 +116,7 @@ public class CellMetadataDao {
         return results
                 .stream()
                 .collect(
-                        toMap(
+                        toImmutableMap(
                                 entry -> ((ArrayList<?>) entry.getOrDefault(FACTOR_NAME.name(),
                                         entry.get(CHARACTERISTIC_NAME.name()))).get(0).toString(),
                                 // The factor fields in Solr are all multi-value fields, even though they technically
@@ -124,7 +124,10 @@ public class CellMetadataDao {
                                 // value. This was confirmed by curators in this Slack conversation:
                                 // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
                                 entry -> ((ArrayList<?>) entry.getOrDefault(FACTOR_VALUE.name(),
-                                        entry.get(CHARACTERISTIC_VALUE.name()))).get(0).toString()));
+                                        entry.get(CHARACTERISTIC_VALUE.name()))).get(0).toString(),
+                                // If encountering the same name as factor and characteristic the last one overwrites
+                                // any previous values
+                                (v1, v2) -> v2));
     }
 
     // Given a type of metadata and an experiment accession, this method retrieves the value of that metadata for the
@@ -145,14 +148,14 @@ public class CellMetadataDao {
                 new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, solrQueryBuilder).returnAllDocs();
         // Rename factor/characteristic value to metadata_value
         var selectStreamBuilder =
-                new SelectStreamBuilder<>(searchStreamBuilder)
+                new SelectStreamBuilder(searchStreamBuilder)
                         .addFieldMapping(ImmutableMap.of(
                                 CELL_ID.name(), CELL_ID.name(),
                                 FACET_FACTOR_VALUE.name(), METADATA_VALUE_TARGET_FIELD_NAME,
                                 FACET_CHARACTERISTIC_VALUE.name(), METADATA_VALUE_TARGET_FIELD_NAME));
         // Get unique values
         var uniqueStreamBuilder =
-                new UniqueStreamBuilder<>(selectStreamBuilder, CELL_ID.name());
+                new UniqueStreamBuilder(selectStreamBuilder, CELL_ID.name());
 
         try (var tupleStreamer = TupleStreamer.of(uniqueStreamBuilder.build())) {
             return tupleStreamer

@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.search;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,32 +98,61 @@ public class GeneSearchDao {
         );
     }
 
-    // Retrieves cluster IDs the preferred K value (if present), as well as for the minimum p-value. If the minimum
-    // p-value is equal for multiple Ks (and a preferred K is not passed in), all K values will be returned.
-    private static final String SELECT_PREFERREDK_AND_MINP_CLUSTER_ID_FOR_GENE_STATEMENT =
-    "SELECT k, cluster_id FROM scxa_marker_genes AS markers " +
-            "WHERE experiment_accession=:experiment_accession " +
-                "AND gene_id=:gene_id " +
-                "AND marker_probability<:threshold " +
-                "AND (k=:preferred_K " +
-                    "OR marker_probability IN ( " +
-                        "SELECT MIN(marker_probability) " +
-                            "FROM scxa_marker_genes " +
-                            "WHERE markers.experiment_accession = :experiment_accession " +
-                            "AND gene_id=:gene_id))";
+    // A helper method for the query below, see GeneSearchService::fetchClusterIDWithPreferredKAndMinPForGeneID
+    // In terms of design it would’ve been more consistent a cached method in GeneSearchService, but because of Spring
+    // limitations, caching isn’t possible between methods within a class.
+    private static final String SELECT_MIN_MARKER_PROBABILITY_STATEMENT =
+            "SELECT gene_id, MIN(marker_probability) AS min FROM scxa_marker_genes " +
+                    "WHERE experiment_accession = :experiment_accession " +
+                    "GROUP BY gene_id";
+    @Cacheable("minimumMarkerProbability")
+    @Transactional(readOnly = true)
+    public ImmutableMap<String, Double> fetchMinimumMarkerProbability(String experimentAccession) {
+        var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
+
+        return namedParameterJdbcTemplate.query(
+                SELECT_MIN_MARKER_PROBABILITY_STATEMENT,
+                namedParameters,
+                (ResultSet resultSet) -> {
+                    var resultsBuilder = ImmutableMap.<String, Double>builder();
+
+                    while (resultSet.next()) {
+                        resultsBuilder.put(resultSet.getString("gene_id"), resultSet.getDouble("min"));
+                    }
+
+                    return resultsBuilder.build();
+                });
+    }
+
+    // Retrieves cluster IDs for the preferred K value (if present), as well as for the minimum p-value. If the minimum
+    // p-value is equal for multiple Ks (and a preferred K is not passed in), all K values will be returned. Originally
+    // the statement contained a subquery:
+    // AND (k=... OR marker_probability IN (SELECT MIN(...) )
+    // While more elegant in the sense that all the heavy-lifting is made at the DB in a single statement, this
+    // approach became very time-consuming, each query taking 0.5-3 seconds. “Popular” genes like human CTSB which
+    // appears in 40+ experiments meant that many successive requests in the order of 0.5-3 seconds each, on aggregate
+    // taking about 50 seconds. See https://www.pivotaltracker.com/story/show/173033902 for a full report and detailed
+    // benchmarks.
+    private static final String SELECT_PREFERRED_K_AND_MIN_P_CLUSTER_ID_FOR_GENE_STATEMENT =
+            "SELECT k, cluster_id FROM scxa_marker_genes AS markers " +
+                    "WHERE experiment_accession=:experiment_accession " +
+                        "AND gene_id=:gene_id " +
+                        "AND marker_probability<:threshold " +
+                        "AND (k=:preferred_K OR marker_probability=:min_marker_probability)";
     @Transactional(readOnly = true)
     public Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
-            String geneId, String experimentAccession, int preferredK) {
+            String geneId, String experimentAccession, int preferredK, double minMarkerProbability) {
 
         var namedParameters =
                 ImmutableMap.of(
                         "gene_id", geneId,
                         "threshold", MARKER_GENE_P_VALUE_THRESHOLD,
                         "preferred_K", preferredK,
-                        "experiment_accession", experimentAccession);
+                        "experiment_accession", experimentAccession,
+                        "min_marker_probability", minMarkerProbability);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_PREFERREDK_AND_MINP_CLUSTER_ID_FOR_GENE_STATEMENT,
+                SELECT_PREFERRED_K_AND_MIN_P_CLUSTER_ID_FOR_GENE_STATEMENT,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     Map<Integer, List<Integer>> result = new HashMap<>();

@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.search;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.ebi.atlas.search.FacetGroupName.MARKER_GENE;
 import static uk.ac.ebi.atlas.search.FacetGroupName.ORGANISM;
@@ -35,6 +37,15 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class JsonGeneSearchController extends JsonExceptionHandlingController {
+    private final static ImmutableSet<String> VALID_QUERY_FIELDS =
+            ImmutableSet.<String>builder()
+                    .add("q")
+                    .addAll(
+                            ID_PROPERTY_NAMES.stream()
+                                    .map(propertyName -> propertyName.name)
+                                    .collect(toImmutableSet()))
+                    .build();
+
     private final GeneIdSearchService geneIdSearchService;
     private final SpeciesFactory speciesFactory;
     private final GeneSearchService geneSearchService;
@@ -57,16 +68,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
-            var species = Stream.ofNullable(requestParams.getFirst("species"))
+        var species = Stream.ofNullable(requestParams.getFirst("species"))
                 .filter(org.apache.commons.lang3.StringUtils::isNotEmpty)
                 .map(speciesFactory::create)
                 .findFirst();
-
-        var validQueryFields =
-                ImmutableList.<String>builder()
-                        .add("q")
-                        .addAll(ID_PROPERTY_NAMES.stream().map(propertyName -> propertyName.name).collect(toList()))
-                        .build();
 
         // We support currently only one query term; in the unlikely case that somebody fabricates a URL with more than
         // one we’ll build the query with the first match. Remember that in order to support multiple terms we’ll
@@ -74,10 +79,9 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         var category =
                 requestParams.keySet().stream()
                         // We rely on "q" and BioentityPropertyName::name’s being lower case
-                        .filter(actualField -> validQueryFields.contains(actualField.toLowerCase()))
+                        .filter(actualField -> VALID_QUERY_FIELDS.contains(actualField.toLowerCase()))
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Error parsing query"));
-
         var queryTerm = requestParams.getFirst(category);
 
         var geneQuery = category.equals("q") ?
@@ -105,7 +109,6 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         }
 
         // We found expressed gene IDs, let’s get to it now...
-
         var geneIds2ExperimentAndCellIds =
                 geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
 
@@ -129,8 +132,8 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         .flatMap(entry -> entry.getValue().entrySet().stream().map(exp2cells -> {
 
                             // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...
-                            String geneId = entry.getKey();
-                            String experimentAccession = exp2cells.getKey();
+                            var geneId = entry.getKey();
+                            var experimentAccession = exp2cells.getKey();
                             var cellIds = exp2cells.getValue();
 
                             var experimentAttributes =

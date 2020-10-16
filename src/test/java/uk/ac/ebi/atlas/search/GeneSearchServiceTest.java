@@ -106,14 +106,18 @@ class GeneSearchServiceTest {
         String experimentAccession2 = generateRandomExperimentAccession();
         String geneId = generateRandomEnsemblGeneId();
 
+        when(geneSearchDaoMock.fetchMinimumMarkerProbability(experimentAccession1))
+                .thenReturn(ImmutableMap.of(geneId, 0.0));
         when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession1)).thenReturn(Optional.of(5));
+        when(geneSearchDaoMock.fetchMinimumMarkerProbability(experimentAccession2))
+                .thenReturn(ImmutableMap.of(geneId, 0.0));
         when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession2)).thenReturn(Optional.of(10));
 
         when(geneSearchDaoMock
-                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId, experimentAccession1, 5))
+                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId, experimentAccession1, 5, 0))
                 .thenReturn(ImmutableMap.of(5, ImmutableList.of(1)));
         when(geneSearchDaoMock
-                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId, experimentAccession2, 10))
+                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId, experimentAccession2, 10, 0))
                 .thenReturn(ImmutableMap.of(10, ImmutableList.of(1)));
 
         when(geneSearchDaoMock
@@ -140,24 +144,36 @@ class GeneSearchServiceTest {
         String geneId1 = generateRandomEnsemblGeneId();
         String geneId2 = generateRandomEnsemblGeneId();
 
-        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession1)).thenReturn(Optional.of(5));
-        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession2)).thenReturn(Optional.of(10));
+        when(geneSearchDaoMock.fetchMinimumMarkerProbability(experimentAccession1))
+                .thenReturn(ImmutableMap.of(geneId1, 0.0));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession1))
+                .thenReturn(Optional.of(5));
+        when(geneSearchDaoMock.fetchMinimumMarkerProbability(experimentAccession2))
+                .thenReturn(ImmutableMap.of(geneId1, 0.0));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession2))
+                .thenReturn(Optional.of(10));
 
         when(geneSearchDaoMock
-                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId1, experimentAccession1, 5))
+                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId1, experimentAccession1, 5, 0))
                 .thenReturn(ImmutableMap.of(5, ImmutableList.of(1)));
         when(geneSearchDaoMock
-                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId1, experimentAccession2, 10))
+                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId1, experimentAccession2, 10, 0))
                 .thenReturn(ImmutableMap.of(10, ImmutableList.of(1)));
 
-        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession3)).thenReturn(Optional.of(2));
-        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession4)).thenReturn(Optional.of(4));
+        when(geneSearchDaoMock.fetchMinimumMarkerProbability(experimentAccession3))
+                .thenReturn(ImmutableMap.of(geneId2, 0.0));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession3))
+                .thenReturn(Optional.of(2));
+        when(geneSearchDaoMock.fetchMinimumMarkerProbability(experimentAccession4))
+                .thenReturn(ImmutableMap.of(geneId2, 0.0));
+        when(tSnePlotSettingsServiceMock.getExpectedClusters(experimentAccession4))
+                .thenReturn(Optional.of(4));
 
         when(geneSearchDaoMock
-                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId2, experimentAccession3, 2))
+                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId2, experimentAccession3, 2, 0))
                 .thenReturn(ImmutableMap.of(2, ImmutableList.of(1)));
         when(geneSearchDaoMock
-                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId2, experimentAccession4, 4))
+                .fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(geneId2, experimentAccession4, 4, 0))
                 .thenReturn(ImmutableMap.of(4, ImmutableList.of(1)));
 
         when(geneSearchDaoMock.fetchExperimentAccessionsWhereGeneIsMarker(geneId1))
@@ -186,10 +202,10 @@ class GeneSearchServiceTest {
         when(geneSearchDaoMock.getFacets(anyList(), any(String.class)))
                 .thenReturn(ImmutableMap.of(
                         experimentAccession1, ImmutableMap.of(
-                                "inferred_cell_type", Arrays.asList("neuron", "stem cell"),
+                                "inferred_cell_type_-_ontology_labels", Arrays.asList("neuron", "stem cell"),
                                 "species", Collections.singletonList("homo sapiens")),
                         experimentAccession2, ImmutableMap.of(
-                                "inferred_cell_type", Arrays.asList("immune cell", "liver cell", "stem cell"),
+                                "inferred_cell_type_-_ontology_labels", Arrays.asList("immune cell", "liver cell", "stem cell"),
                                 "organism_part", Collections.singletonList("liver"),
                                 "species", Arrays.asList("homo sapiens", "mus musculus"))
                 ));

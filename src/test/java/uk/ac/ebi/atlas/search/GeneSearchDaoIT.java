@@ -26,7 +26,7 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
@@ -38,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(Lifecycle.PER_CLASS)
 class GeneSearchDaoIT {
+    private final static Random RNG = ThreadLocalRandom.current();
+
     @Inject
     private DataSource dataSource;
 
@@ -54,7 +56,7 @@ class GeneSearchDaoIT {
 
     @BeforeAll
     void populateDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
@@ -64,7 +66,7 @@ class GeneSearchDaoIT {
 
     @AfterAll
     void cleanDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
@@ -87,7 +89,7 @@ class GeneSearchDaoIT {
     @ParameterizedTest
     @ValueSource(strings = {"AT1G02640"})
     void validGeneIdReturnsExperimentAccessions(String geneId) {
-        List<String> result = subject.fetchExperimentAccessionsWhereGeneIsMarker(geneId);
+        var result = subject.fetchExperimentAccessionsWhereGeneIsMarker(geneId);
 
         assertThat(result)
                 .containsOnly("E-CURD-4");
@@ -104,10 +106,11 @@ class GeneSearchDaoIT {
     @CsvSource({"'ENSMUSG00000005360', 'E-GEOD-99058', 6"})
     void validExperimentAccessionReturnsClusterIDsWithPreferredKAndMinP(String geneId,
                                                                         String experimentAccession,
-                                                                        Integer preferredK){
-        Map<Integer, List<Integer>> result =
+                                                                        Integer preferredK) {
+        var minimumMarkerProbability = subject.fetchMinimumMarkerProbability(experimentAccession).get(geneId);
+        var result =
                 subject.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
-                        geneId, experimentAccession, preferredK);
+                        geneId, experimentAccession, preferredK, minimumMarkerProbability);
 
         assertThat(result)
                 .isNotEmpty()
@@ -122,9 +125,9 @@ class GeneSearchDaoIT {
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
                                                                                   Integer preferredK){
-        Map<Integer, List<Integer>> result =
+        var result =
                 subject.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
-                        geneId, experimentAccession, preferredK);
+                        geneId, experimentAccession, preferredK, 0);
 
         assertThat(result)
                 .isNotEmpty()
@@ -136,26 +139,38 @@ class GeneSearchDaoIT {
     @ParameterizedTest
     @MethodSource("randomCellIdsProvider")
     void getFacetsForValidCellIds(List<String> cellIds) {
-        Map<String, Map<String, List<String>>> result =
-                subject.getFacets(
-                        cellIds,
-                        "inferred_cell_type", "organism_part", "organism");
-
+        var result = subject.getFacets(cellIds, "inferred_cell_type_-_ontology_labels", "organism_part", "organism");
         assertThat(result).isNotEmpty();
     }
 
     @Test
     void getForEmptyListOfCellIdsReturnsEmpty() {
-        Map<String, Map<String, List<String>>> result =
-                subject.getFacets(
-                        emptyList(),
-                        "inferred_cell_type", "organism_part", "organism");
-
+        var result = subject.getFacets(emptyList(), "inferred_cell_type_-_ontology_labels", "organism_part", "organism");
         assertThat(result).isEmpty();
+    }
+
+    @ParameterizedTest
+    @MethodSource("randomExperimentAccessionProvider")
+    void fetchMinimumMarkerProbabilityReturnsTheMinimum(String experimentAccession) {
+        var minimumMarkerProbabilities = subject.fetchMinimumMarkerProbability(experimentAccession);
+        var randomGeneId =
+                minimumMarkerProbabilities.keySet().asList().get(RNG.nextInt(minimumMarkerProbabilities.size()));
+
+        var markerProbabilitiies = namedParameterJdbcTemplate.queryForList(
+                "SELECT marker_probability FROM scxa_marker_genes WHERE gene_id=:gene_id",
+                ImmutableMap.of("gene_id", randomGeneId),
+                Double.class);
+
+        assertThat(markerProbabilitiies.stream().mapToDouble(Double::valueOf).min())
+                .hasValue(minimumMarkerProbabilities.get(randomGeneId));
     }
 
     private Stream<String> randomGeneIdProvider() {
         return Stream.of(jdbcTestUtils.fetchRandomGene());
+    }
+
+    private Stream<String> randomExperimentAccessionProvider() {
+        return Stream.of(jdbcTestUtils.fetchRandomExperimentAccession());
     }
 
     private Stream<List<String>> randomCellIdsProvider() {

@@ -67,7 +67,7 @@ public class TsnePlotServiceIT {
     @Test
     void missingMetadataValuesAreReplacedWithNotAvailable() {
         int perplexity = jdbcUtils.fetchRandomPerplexityFromExperimentTSne(EXPERIMENT_ACCESSION_WITH_MISSING_INFERRED_CELL_TYPE);
-        String metadataType = "inferred_cell_type";
+        String metadataType = "inferred_cell_type_-_ontology_labels";
 
         assertThat(
                 subject.fetchTSnePlotWithMetadata(

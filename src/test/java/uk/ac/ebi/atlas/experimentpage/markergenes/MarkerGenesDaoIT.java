@@ -47,9 +47,16 @@ class MarkerGenesDaoIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
+                //Start - These marker gene tables test data would be removed soon after
+                // we replaces functionality with new cell group tables
                 new ClassPathResource("fixtures/scxa_marker_genes-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_marker_gene_stats-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-fixture.sql"),
+                //end
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 
@@ -59,10 +66,22 @@ class MarkerGenesDaoIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                //Start - These marker gene tables deletion scripts would be removed soon after
+                // we replaces functionality with new cell group tables
                 new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_marker_gene_stats-delete.sql"));
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-delete.sql"),
+                //end
+                new ClassPathResource("fixtures/scxa_cell_group_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats_delete.sql"));
         populator.execute(dataSource);
+    }
+
+    @BeforeEach
+    void setUp() {
+        subject = new MarkerGenesDao(namedParameterJdbcTemplate);
     }
 
     @ParameterizedTest
@@ -84,9 +103,16 @@ class MarkerGenesDaoIT {
         assertThat(subject.getKsWithMarkerGenes(experimentAccession)).isNotEmpty();
     }
 
-    @BeforeEach
-    void setUp() {
-        subject = new MarkerGenesDao(namedParameterJdbcTemplate);
+    @Test
+    void shouldFetchAllMarkerGenesBelowThreshold() {
+        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", "skin");
+        assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.pValue() < 0.05);
+    }
+
+    @Test
+    void shouldFetchOnlyInferredCellTypeMarkerGenes() {
+        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", "skin");
+        assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type"));
     }
 
     private Stream<Integer> ksForExperimentWithMarkerGenes() {

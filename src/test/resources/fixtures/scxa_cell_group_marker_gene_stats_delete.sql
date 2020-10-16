@@ -1,0 +1,1 @@
+DELETE FROM scxa_cell_group_marker_gene_stats;

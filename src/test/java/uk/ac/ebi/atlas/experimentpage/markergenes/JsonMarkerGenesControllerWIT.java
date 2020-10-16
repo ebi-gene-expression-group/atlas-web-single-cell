@@ -22,9 +22,11 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-import static org.hamcrest.Matchers.isA;
+
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,6 +49,7 @@ class JsonMarkerGenesControllerWIT {
     private MockMvc mockMvc;
 
     private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/{k}";
+    private static final String markerGeneCellTypeURL = "/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -54,9 +57,16 @@ class JsonMarkerGenesControllerWIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
+                //Start - These marker gene tables test data would be removed soon after
+                // we replaces functionality with new cell group tables
                 new ClassPathResource("fixtures/scxa_marker_genes-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_marker_gene_stats-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-fixture.sql"),
+                //End
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 
@@ -66,9 +76,16 @@ class JsonMarkerGenesControllerWIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                //Start - These marker gene tables deletion scripts would be removed soon after
+                // we replaces the functionality with new cell group tables
                 new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_marker_gene_stats-delete.sql"));
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-delete.sql"),
+                //End
+                new ClassPathResource("fixtures/scxa_cell_group_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats_delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -92,5 +109,31 @@ class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].geneName", isA(String.class)))
                 .andExpect(jsonPath("$[0].value", isA(Number.class)))
                 .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
+    }
+
+    @Test
+    void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
+        this.mockMvc
+                .perform(get(markerGeneCellTypeURL, "E-EHCA-2")
+                        .param("organismPart", "skin"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$[0].cellTypeValueWhereMarker", isA(String.class)))
+                .andExpect(jsonPath("$[0].cellTypeValue", isA(String.class)))
+                .andExpect(jsonPath("$[0].x", isA(Number.class)))
+                .andExpect(jsonPath("$[0].y", isA(Number.class)))
+                .andExpect(jsonPath("$[0].geneName", isA(String.class)))
+                .andExpect(jsonPath("$[0].value", isA(Number.class)))
+                .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
+    }
+
+    @Test
+    void invalidExperimentAccessionReturnsEmptyPayload() throws Exception {
+        this.mockMvc
+                .perform(get(markerGeneCellTypeURL, "FOO")
+                        .param("organismPart", "skin"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(0))));
     }
 }

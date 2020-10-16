@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.auto.value.AutoValue;
 
+@Deprecated
 @AutoValue
 public abstract class MarkerGene {
     public abstract String geneId();

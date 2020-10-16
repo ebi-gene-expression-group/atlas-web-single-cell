@@ -22,7 +22,8 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
      * @return ImmutableList of CellTypeMarkerGene Objects
      */
     @Override
-    public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
+    public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession,
+                                                                          String organismPart) {
         var cellTypes = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
 
         if (cellTypes.isEmpty()) {

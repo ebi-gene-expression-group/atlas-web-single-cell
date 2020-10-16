@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MarkerGeneServiceIT {
+    private static final String PANCREAS_ONTOLOGY_URI = "http://purl.obolibrary.org/obo/UBERON_0001264";
+
     @Inject
     private DataSource dataSource;
 
@@ -62,7 +64,9 @@ class MarkerGeneServiceIT {
 
     @Test
     void getMarkerGeneProfileForTheValidExperimentAccession() {
-        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-GEOD-81547", PANCREAS_ONTOLOGY_URI))
+                .isNotEmpty();
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-MTAB-5061", PANCREAS_ONTOLOGY_URI))
                 .isNotEmpty();
     }
 

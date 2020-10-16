@@ -9,7 +9,7 @@ import uk.ac.ebi.atlas.solr.cloud.TupleStreamer;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.CartesianProductStreamBuilder;
-import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.HashJoinStreamBuilder;
+import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.InnerJoinStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.SortStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.UniqueStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
@@ -36,7 +36,7 @@ public class OntologyAccessionsSearchDao {
     unique(
       sort(
         cartesianProduct(
-          hashJoin(
+          innerJoin(
             unique(
               search(
                 scxa-analytics-v4,
@@ -47,7 +47,7 @@ public class OntologyAccessionsSearchDao {
               ),
               over=cell_id
             ),
-            hashed=search(
+            search(
                 scxa-analytics-v4,
                 qt="/export",
                 q="experiment_accession:E-MTAB-5061 AND ontology_annotation:*",
@@ -99,10 +99,10 @@ public class OntologyAccessionsSearchDao {
                         .returnAllDocs();
 
         var cellIdsFromOntologyUriWithOntologyAnnotationsStreamBuilder =
-                new HashJoinStreamBuilder(
+                new InnerJoinStreamBuilder(
                         uniqueCellIdsFromOntologyUriStreamBuilder,
                         cellIdsWithOntologyAnnotationStreamBuilder,
-                        ImmutableSet.of(CELL_ID.name()));
+                        CELL_ID.name());
 
         var ontologyAnnotationsFromOntologyUriStreamBuilder =
                 new UniqueStreamBuilder(

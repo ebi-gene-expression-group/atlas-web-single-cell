@@ -76,7 +76,7 @@ public class CellTypeSearchDao {
                    search(
                      scxa-analytics-v3,
                      qt="/export",
-                     q="facet_factor_name:inferred_cell_type_-_ontology_labels OR facet_characteristic_name:inferred_cell_type_-_ontology_labels",
+                     q="experiment_accession:E-MTAB-5061 AND (facet_factor_name:inferred_cell_type_-_ontology_labels OR facet_characteristic_name:inferred_cell_type_-_ontology_labels)",
                      fl="cell_id,facet_factor_value,facet_characteristic_value",
                      sort="cell_id asc"
                    ),

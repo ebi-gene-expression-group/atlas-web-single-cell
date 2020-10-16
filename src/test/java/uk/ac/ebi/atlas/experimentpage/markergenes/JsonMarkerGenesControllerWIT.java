@@ -48,8 +48,8 @@ class JsonMarkerGenesControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/{k}";
-    private static final String markerGeneCellTypeURL = "/experiments/{experimentAccession}/marker-genes/cell-types";
+    private static final String URL_TEMPLATE = "/json/experiments/{experimentAccession}/marker-genes/{k}";
+    private static final String MARKER_GENES_CELL_TYPE_URL = "/json/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -100,7 +100,7 @@ class JsonMarkerGenesControllerWIT {
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
 
         this.mockMvc
-                .perform(get(urlTemplate, experimentAccession, k))
+                .perform(get(URL_TEMPLATE, experimentAccession, k))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].clusterIdWhereMarker", isA(Number.class)))
@@ -114,8 +114,8 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneCellTypeURL, "E-EHCA-2")
-                        .param("organismPart", "skin"))
+                .perform(get(MARKER_GENES_CELL_TYPE_URL, "E-MTAB-5061")
+                        .param("organismPart", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].cellTypeValueWhereMarker", isA(String.class)))
@@ -130,8 +130,8 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void invalidExperimentAccessionReturnsEmptyPayload() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneCellTypeURL, "FOO")
-                        .param("organismPart", "skin"))
+                .perform(get(MARKER_GENES_CELL_TYPE_URL, "FOO")
+                        .param("organismPart", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(0))));

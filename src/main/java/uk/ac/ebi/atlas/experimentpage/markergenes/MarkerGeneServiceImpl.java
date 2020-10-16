@@ -2,15 +2,17 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Service;
-import java.util.List;
-
+import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
 @Service
 public class MarkerGeneServiceImpl implements MarkerGeneService {
-    private MarkerGenesDao markerGenesDao;
+    private final MarkerGenesDao markerGenesDao;
+    private final CellTypeSearchDao cellTypeSearchDao;
 
-    public MarkerGeneServiceImpl(MarkerGenesDao markerGenesDao) {
+    public MarkerGeneServiceImpl(MarkerGenesDao markerGenesDao,
+                                 CellTypeSearchDao cellTypeSearchDao) {
         this.markerGenesDao = markerGenesDao;
+        this.cellTypeSearchDao = cellTypeSearchDao;
     }
 
     /**
@@ -21,7 +23,12 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
      */
     @Override
     public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
-        List<CellTypeMarkerGene> cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, organismPart);
-        return ImmutableList.copyOf(cellTypeMarkerGenes);
+        var cellTypes = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
+
+        if (cellTypes.isEmpty()) {
+            return ImmutableList.of();
+        }
+
+        return ImmutableList.copyOf(markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellTypes));
     }
 }

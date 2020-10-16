@@ -1,7 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public class MarkerGenesDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private static final String CELL_GROUP_TYPE = "inferred cell type";
+    private static final String CELL_GROUP_TYPE = "inferred cell type - ontology labels";
 
     public MarkerGenesDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -78,17 +78,13 @@ public class MarkerGenesDao {
                     "g.value IN (:values) and " +
                     "expression_type=0 order by m.marker_probability ";
 
-    public List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experiment_accession, String organismPart) {
-        //These temporary hardcoded celltypes(values) replaces with CellMetaDataDao class result which is implemented by @Lingyun
-        // We will call this DAO class by passing two inputs: experiment_accession(Param1) and organismPart(Param2)
-        //We would get return type as a ImmutableSet<String> celltypes(@return ImmutableSet<String> celltypes)
-        ImmutableSet<String> cellGroupValues = ImmutableSet.of("T cell", "Not available");
-
+    public List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experiment_accession,
+                                                           ImmutableCollection<String> cellTypes) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,
                         "variable", CELL_GROUP_TYPE,
-                        "values", cellGroupValues);
+                        "values", cellTypes);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,

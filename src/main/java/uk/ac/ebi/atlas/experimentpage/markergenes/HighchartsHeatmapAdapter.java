@@ -95,6 +95,7 @@ public class HighchartsHeatmapAdapter {
                 sortedMarkerGenes.stream()
                         .map(CellTypeMarkerGene::cellGroupValue)
                         .distinct()
+                        .sorted()
                         .collect(toImmutableList());
 
         var symbolsForGeneIds =

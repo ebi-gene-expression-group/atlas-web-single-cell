@@ -3,12 +3,13 @@ package uk.ac.ebi.atlas.experimentpage.tsneplot;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
 import java.util.List;
 
-@Component
+@Repository
 public class TSnePlotDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 

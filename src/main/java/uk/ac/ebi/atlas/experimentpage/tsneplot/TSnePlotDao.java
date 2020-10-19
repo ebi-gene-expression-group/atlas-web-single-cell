@@ -18,11 +18,12 @@ public class TSnePlotDao {
 
     private static final String SELECT_T_SNE_PLOT_WITH_EXPRESSION_STATEMENT =
             "SELECT tsne.cell_id, tsne.x, tsne.y, analytics.expression_level " +
-            "FROM scxa_tsne AS tsne " +
-                "LEFT JOIN " +
-                "(SELECT * FROM scxa_analytics WHERE gene_id=:gene_id) AS analytics " +
-                "ON analytics.cell_id=tsne.cell_id AND analytics.experiment_accession=tsne.experiment_accession " +
-            "WHERE tsne.experiment_accession=:experiment_accession AND tsne.perplexity=:perplexity";
+                    "FROM scxa_tsne AS tsne " +
+                    "LEFT JOIN " +
+                    "(SELECT * FROM scxa_analytics WHERE gene_id=:gene_id) AS analytics " +
+                    "ON analytics.cell_id=tsne.cell_id AND analytics.experiment_accession=tsne.experiment_accession " +
+                    "WHERE tsne.experiment_accession=:experiment_accession AND tsne.perplexity=:perplexity";
+
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithExpression(String experimentAccession, int perplexity, String geneId) {
         var namedParameters =
@@ -50,6 +51,7 @@ public class TSnePlotDao {
                     "WHERE " +
                     "tsne.experiment_accession=':experiment_accession' AND tsne.perplexity=:perplexity AND " +
                     "tsne.cell_id=mem.cell_id AND mem.cell_group_id=grp.id AND grp.variable=':k' ";
+
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, int perplexity, int k) {
         var namedParameters =
@@ -69,6 +71,7 @@ public class TSnePlotDao {
             "SELECT tsne.cell_id, tsne.x, tsne.y " +
                     "FROM scxa_tsne AS tsne " +
                     "WHERE tsne.experiment_accession=:experiment_accession AND tsne.perplexity=:perplexity";
+
     public List<TSnePoint.Dto> fetchTSnePlotForPerplexity(String experimentAccession, int perplexity) {
         var namedParameters =
                 ImmutableMap.of(
@@ -84,6 +87,7 @@ public class TSnePlotDao {
 
     private static final String SELECT_DISTINCT_PERPLEXITIES_STATEMENT =
             "SELECT DISTINCT perplexity FROM scxa_tsne WHERE experiment_accession=:experiment_accession";
+
     public List<Integer> fetchPerplexities(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
@@ -95,6 +99,7 @@ public class TSnePlotDao {
 
     private static final String COUNT_CELLS_BY_EXPERIMENT_ACCESSION =
             "SELECT COUNT(DISTINCT(cell_id)) FROM scxa_tsne WHERE experiment_accession=:experiment_accession";
+
     public Integer fetchNumberOfCellsByExperimentAccession(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 

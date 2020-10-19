@@ -10,6 +10,7 @@ import uk.ac.ebi.atlas.experimentpage.markergenes.HighchartsHeatmapAdapter;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGeneService;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
@@ -42,7 +43,9 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     public String getMarkerGeneExpressionProfile(@PathVariable String experimentAccession,
                                                  @RequestParam String organismPart) {
         return GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
-                markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, organismPart)
-        ));
+                markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, organismPart).stream()
+                    .filter(cellTypeMarkerGene ->
+                            !cellTypeMarkerGene.cellGroupValueWhereMarker().equalsIgnoreCase("Not available"))
+                    .collect(toImmutableList())));
     }
 }

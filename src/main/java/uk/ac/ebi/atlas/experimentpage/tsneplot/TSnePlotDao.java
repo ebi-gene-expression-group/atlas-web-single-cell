@@ -58,7 +58,7 @@ public class TSnePlotDao {
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
                         "perplexity", perplexity,
-                        "k", k);
+                        "k", String.valueOf(k));
 
         return namedParameterJdbcTemplate.query(
                 SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT,

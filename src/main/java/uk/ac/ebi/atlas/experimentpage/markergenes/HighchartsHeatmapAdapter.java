@@ -51,6 +51,7 @@ public class HighchartsHeatmapAdapter {
                 sortedMarkerGenes.stream()
                         .map(MarkerGene::cellGroupValue)
                         .distinct()
+                        .sorted()
                         .collect(toImmutableList());
 
         var symbolsForGeneIds =

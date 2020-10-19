@@ -42,12 +42,14 @@ public class TSnePlotDao {
     }
 
     private static final String SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT =
-            "SELECT tsne.cell_id, tsne.x, tsne.y, clusters.cluster_id " +
-            "FROM scxa_tsne AS tsne " +
-                "LEFT JOIN " +
-                "(SELECT * FROM scxa_cell_clusters WHERE k=:k) AS clusters " +
-                "ON clusters.cell_id=tsne.cell_id AND clusters.experiment_accession=tsne.experiment_accession " +
-            "WHERE tsne.experiment_accession=:experiment_accession AND tsne.perplexity=:perplexity";
+            "SELECT tsne.cell_id,tsne.x,tsne.y,grp.value AS cluster_id " +
+                    "FROM " +
+                    "scxa_cell_group_membership AS mem, " +
+                    "scxa_tsne AS tsne, " +
+                    "scxa_cell_group AS grp " +
+                    "WHERE " +
+                    "tsne.experiment_accession=':experiment_accession' AND tsne.perplexity=:perplexity AND " +
+                    "tsne.cell_id=mem.cell_id AND mem.cell_group_id=grp.id AND grp.variable=':k' ";
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, int perplexity, int k) {
         var namedParameters =

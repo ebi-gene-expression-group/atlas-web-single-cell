@@ -11,7 +11,8 @@ const render = (options, mountNodeId) => {
       experimentAccession={options.content.experimentAccession}
       accessKey={options.content.accessKey}
       species={options.content.species}
-      tabs={options.content.tabs} />,
+      tabs={options.content.tabs}
+      anatomogram={options.content.anatomogram} />,
     document.getElementById(mountNodeId)
   )
 }

@@ -5,6 +5,7 @@ import {BrowserRouter, Route, NavLink, Switch, Redirect, withRouter} from 'react
 
 import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
 import HeatmapView from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
+import AnatomogramCellTypeHeatmapView from '@ebi-gene-expression-group/scxa-anatomogram-cell-type-marker-gene-heatmap-view'
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
@@ -29,10 +30,17 @@ class TSnePlotViewRoute extends React.Component {
   }
 
   render() {
-    const {location, match, history} = this.props
-    const {atlasUrl, suggesterEndpoint} = this.props
-    const {species, experimentAccession, ks, ksWithMarkerGenes, perplexities, metadata} = this.props
+    const { location, match, history } = this.props
+    const { atlasUrl, suggesterEndpoint } = this.props
+    const { species, experimentAccession, ks, ksWithMarkerGenes, perplexities, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
+
+    let organWithMostOntologies = Object.keys(anatomogram)[0]
+    for (let availableOrgan in anatomogram) {
+      organWithMostOntologies = anatomogram[availableOrgan].length > anatomogram[organWithMostOntologies].length ?
+       availableOrgan :
+       organWithMostOntologies
+    }
 
     const routes = [
       {
@@ -115,6 +123,17 @@ class TSnePlotViewRoute extends React.Component {
         />
       },
       {
+        path: `/anatomogram`,
+        title: `Anatomogram`,
+        main: () =>
+          <AnatomogramCellTypeHeatmapView
+            showIds={anatomogram[organWithMostOntologies]}
+            experimentAccession={experimentAccession}
+            species={organWithMostOntologies}
+            host={atlasUrl}
+          />
+      },
+      {
         path: `/gene-info`,
         title: `Gene information`,
         main: () =>
@@ -162,11 +181,19 @@ class TSnePlotViewRoute extends React.Component {
                   {routes[1].title}</NavLink>
               </li>
               {
+                species === `homo sapiens` && Object.keys(anatomogram).length > 0 &&
+                <li title={routes[2].title} className={`side-tabs-title`}>
+                  <NavLink to={{pathname:routes[2].path, search: location.search, hash: location.hash}}
+                    activeClassName={`active`}>
+                    {routes[2].title}</NavLink>
+                </li>
+              }
+              {
                 search.geneId &&
-                  <li title={routes[2].title} className={`side-tabs-title`}>
-                    <NavLink to={{pathname:routes[2].path, search: location.search, hash: location.hash}}
+                  <li title={routes[3].title} className={`side-tabs-title`}>
+                    <NavLink to={{pathname:routes[3].path, search: location.search, hash: location.hash}}
                       activeClassName={`active`}>
-                      {routes[2].title}</NavLink>
+                      {routes[3].title}</NavLink>
                   </li>
               }
             </ul>
@@ -207,7 +234,8 @@ TSnePlotViewRoute.propTypes = {
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired
   }).isRequired).isRequired,
-  selectedK: PropTypes.number
+  selectedK: PropTypes.number,
+  anatomogram: PropTypes.object.isRequired
 }
 
 export default TSnePlotViewRoute

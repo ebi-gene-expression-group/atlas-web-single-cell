@@ -64,7 +64,7 @@ public class TSnePlotDao {
                 SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT,
                 namedParameters,
                 (rs, rowNum) -> TSnePoint.Dto.create(
-                        rs.getDouble("x"), rs.getDouble("y"), rs.getInt("cluster_id"), rs.getString("cell_id")));
+                        rs.getDouble("x"), rs.getDouble("y"), Integer.valueOf(rs.getInt("cluster_id")), rs.getString("cell_id")));
     }
 
     private static final String SELECT_T_SNE_PLOT_WITHOUT_CLUSTERS_STATEMENT =

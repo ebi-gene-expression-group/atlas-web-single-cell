@@ -20,6 +20,7 @@ import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -51,6 +52,9 @@ class ExperimentPageContentServiceIT {
 
     @Inject
     private CellMetadataService cellMetadataService;
+
+    @Inject
+    private OntologyAccessionsSearchService ontologyAccessionsSearchService;
 
     @Inject
     private ExperimentTrader experimentTrader;
@@ -85,6 +89,7 @@ class ExperimentPageContentServiceIT {
                         dataFileHub,
                         tsnePlotSettingsService,
                         cellMetadataService,
+                        ontologyAccessionsSearchService,
                         experimentTrader);
     }
 

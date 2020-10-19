@@ -16,6 +16,7 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experiments.ExperimentBuilder;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import java.net.URI;
@@ -45,6 +46,9 @@ class ExperimentPageContentServiceTest {
 
     @Mock
     private CellMetadataService cellMetadataServiceMock;
+
+    @Mock
+    private OntologyAccessionsSearchService ontologyAccessionsSearchService;
 
     @Mock
     private ExperimentTrader experimentTraderMock;
@@ -102,6 +106,7 @@ class ExperimentPageContentServiceTest {
                 dataFileHubMock,
                 tsnePlotSettingsServiceMock,
                 cellMetadataServiceMock,
+                ontologyAccessionsSearchService,
                 experimentTraderMock);
 
         tpmsDownloadJsonObject.addProperty("url", EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE);

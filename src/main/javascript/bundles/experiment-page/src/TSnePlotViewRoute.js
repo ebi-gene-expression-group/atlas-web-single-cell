@@ -129,7 +129,7 @@ class TSnePlotViewRoute extends React.Component {
           <AnatomogramCellTypeHeatmapView
             showIds={anatomogram[organWithMostOntologies]}
             experimentAccession={experimentAccession}
-            species={organWithMostOntologies}
+            species={species}
             host={atlasUrl}
           />
       },

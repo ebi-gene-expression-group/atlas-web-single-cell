@@ -49,7 +49,7 @@ class JsonMarkerGenesControllerWIT {
     private MockMvc mockMvc;
 
     private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/{k}";
-    private static final String markerGeneCellTypeURL = "/experiments/{experimentAccession}/marker-genes/cell-types";
+    private static final String markerGeneCellTypeURL = "/json/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
     void populateDatabaseTables() {

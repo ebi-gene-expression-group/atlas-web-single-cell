@@ -8,7 +8,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
-import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -52,7 +51,7 @@ class MarkerGeneServiceIT {
 
     @BeforeEach
     void setUp() {
-        subject = new MarkerGeneServiceImpl(markerGenesDao);
+        subject = new MarkerGeneService(markerGenesDao);
     }
 
     @Test

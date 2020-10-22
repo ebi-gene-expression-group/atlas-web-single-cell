@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
+import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -22,8 +23,9 @@ class MarkerGeneServiceIT {
     @Inject
     private DataSource dataSource;
     @Inject
-    MarkerGenesDao markerGenesDao;
-    MarkerGeneService subject;
+    private MarkerGenesDao markerGenesDao;
+    private CellTypeSearchDao cellTypeSearchDao;
+    private MarkerGeneService subject;
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -51,7 +53,7 @@ class MarkerGeneServiceIT {
 
     @BeforeEach
     void setUp() {
-        subject = new MarkerGeneService(markerGenesDao);
+        subject = new MarkerGeneService(markerGenesDao, cellTypeSearchDao);
     }
 
     @Test

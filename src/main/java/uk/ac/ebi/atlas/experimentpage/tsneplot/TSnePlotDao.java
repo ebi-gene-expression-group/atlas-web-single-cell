@@ -50,8 +50,8 @@ public class TSnePlotDao {
                     "scxa_tsne AS tsne, " +
                     "scxa_cell_group AS grp " +
                     "WHERE " +
-                    "tsne.experiment_accession=':experiment_accession' AND tsne.perplexity=:perplexity AND " +
-                    "tsne.cell_id=mem.cell_id AND mem.cell_group_id=grp.id AND grp.variable=':k' ";
+                    "tsne.experiment_accession= :experiment_accession AND tsne.perplexity=:perplexity AND " +
+                    "tsne.cell_id=mem.cell_id AND mem.cell_group_id=grp.id AND grp.variable= :k ";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, int perplexity, int k) {

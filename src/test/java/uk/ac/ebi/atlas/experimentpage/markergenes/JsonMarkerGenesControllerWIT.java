@@ -1,10 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -22,14 +18,11 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -48,7 +41,7 @@ class JsonMarkerGenesControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/{k}";
+    private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/clusters";
     private static final String markerGeneCellTypeURL = "/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
@@ -96,14 +89,17 @@ class JsonMarkerGenesControllerWIT {
 
     @Test
     void payloadIsValidJson() throws Exception {
-        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
-        var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
-
+//        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
+//        var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
+//         Once we fix fixtures through script, We will access above methods to get random values,
+//         Currently very few test data available in the latest cell group tables.
+//         So tests will fail if they rely on random data
         this.mockMvc
-                .perform(get(urlTemplate, experimentAccession, k))
+                .perform(get(urlTemplate, "E-EHCA-2")
+                        .param("k", "10"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$[0].clusterIdWhereMarker", isA(Number.class)))
+                .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
                 .andExpect(jsonPath("$[0].x", isA(Number.class)))
                 .andExpect(jsonPath("$[0].y", isA(Number.class)))
                 .andExpect(jsonPath("$[0].geneName", isA(String.class)))
@@ -118,8 +114,8 @@ class JsonMarkerGenesControllerWIT {
                         .param("organismPart", "skin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$[0].cellTypeValueWhereMarker", isA(String.class)))
-                .andExpect(jsonPath("$[0].cellTypeValue", isA(String.class)))
+                .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
+                .andExpect(jsonPath("$[0].cellGroupValue", isA(String.class)))
                 .andExpect(jsonPath("$[0].x", isA(Number.class)))
                 .andExpect(jsonPath("$[0].y", isA(Number.class)))
                 .andExpect(jsonPath("$[0].geneName", isA(String.class)))

@@ -15,10 +15,6 @@ import static java.util.Comparator.comparing;
 
 @Component
 public class HighchartsHeatmapAdapter {
-    @Deprecated
-    private static final Function<MarkerGene, Pair<String, String>> MARKER_GENE_TO_ID_CLUSTER_ID_WHERE_MARKER =
-            markerGene -> Pair.of(markerGene.geneId(), markerGene.cellGroupValueWhereMarker());
-
     private static final Function<MarkerGene, Pair<String, String>> MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER =
             markerGene -> Pair.of(markerGene.geneId(), markerGene.cellGroupValueWhereMarker());
 

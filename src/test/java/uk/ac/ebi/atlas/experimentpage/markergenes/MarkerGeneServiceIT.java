@@ -8,12 +8,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
+import uk.ac.ebi.atlas.controllers.BioentityNotFoundException;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -59,13 +61,15 @@ class MarkerGeneServiceIT {
 
     @Test
     void getMarkerGeneProfileForTheValidExperimentAccession() {
-        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .isNotEmpty();
     }
 
     @Test
-    void getEmptyMarkerGeneProfileForTheInvalidExperimentAccession() {
-        assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "skin"))
-                .isEmpty();
+    void throwsExceptionForTheInvalidExperimentAccession() {
+        assertThatThrownBy(() -> {
+            subject.getCellTypeMarkerGeneProfile("FOO", "http://purl.obolibrary.org/obo/UBERON_0001264");
+        }).isInstanceOf(BioentityNotFoundException.class)
+          .hasMessageContaining("OrganismOrOrganismPart: http://purl.obolibrary.org/obo/UBERON_0001264 doesn't have annotations.");
     }
 }

@@ -24,8 +24,6 @@ import javax.sql.DataSource;
 
 
 import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -114,8 +112,8 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneCellTypeURL, "E-EHCA-2")
-                        .param("organismPart", "skin"))
+                .perform(get(markerGeneCellTypeURL, "E-MTAB-5061")
+                        .param("organismPart", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].cellTypeValueWhereMarker", isA(String.class)))
@@ -128,12 +126,10 @@ class JsonMarkerGenesControllerWIT {
     }
 
     @Test
-    void invalidExperimentAccessionReturnsEmptyPayload() throws Exception {
+    void invalidExperimentAccessionReturnsNotFound() throws Exception {
         this.mockMvc
                 .perform(get(markerGeneCellTypeURL, "FOO")
                         .param("organismPart", "skin"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(0))));
+                .andExpect(status().is4xxClientError());
     }
 }

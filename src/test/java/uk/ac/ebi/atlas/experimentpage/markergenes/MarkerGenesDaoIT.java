@@ -86,7 +86,7 @@ class MarkerGenesDaoIT {
 
     @ParameterizedTest
     @MethodSource("ksForExperimentWithMarkerGenes")
-    void testExperimentsWithMarkerGenesAboveThreshold(int k) {
+    void testExperimentsWithMarkerGenesAboveThreshold(String k) {
         var markerGenesWithAveragesPerCluster =
                 subject.getMarkerGenesWithAveragesPerCluster(EXPERIMENT_ACCESSION_WITH_MARKER_GENES, k);
 

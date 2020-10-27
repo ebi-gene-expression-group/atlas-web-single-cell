@@ -24,6 +24,7 @@ class MarkerGeneServiceIT {
     private DataSource dataSource;
     @Inject
     private MarkerGenesDao markerGenesDao;
+    @Inject
     private CellTypeSearchDao cellTypeSearchDao;
     private MarkerGeneService subject;
 

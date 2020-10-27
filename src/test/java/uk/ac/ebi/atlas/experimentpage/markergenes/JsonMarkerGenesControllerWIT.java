@@ -41,7 +41,7 @@ class JsonMarkerGenesControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/clusters";
+    private static final String markerGeneclusterURL = "/json/experiments/{experimentAccession}/marker-genes/clusters";
     private static final String markerGeneCellTypeURL = "/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
@@ -95,7 +95,7 @@ class JsonMarkerGenesControllerWIT {
 //         Currently very few test data available in the latest cell group tables.
 //         So tests will fail if they rely on random data
         this.mockMvc
-                .perform(get(urlTemplate, "E-EHCA-2")
+                .perform(get(markerGeneclusterURL, "E-EHCA-2")
                         .param("k", "10"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

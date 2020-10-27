@@ -20,8 +20,8 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
      * @return ImmutableList of CellTypeMarkerGene Objects
      */
     @Override
-    public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
-        List<CellTypeMarkerGene> cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, organismPart);
+    public ImmutableList<MarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
+        List<MarkerGene> cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, organismPart);
         return ImmutableList.copyOf(cellTypeMarkerGenes);
     }
 }

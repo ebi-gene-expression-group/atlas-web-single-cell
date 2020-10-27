@@ -16,10 +16,10 @@ import static java.util.Comparator.comparing;
 @Component
 public class HighchartsHeatmapAdapter {
     @Deprecated
-    private static final Function<MarkerGene, Pair<String, Integer>> MARKER_GENE_TO_ID_CLUSTER_ID_WHERE_MARKER =
-            markerGene -> Pair.of(markerGene.geneId(), markerGene.clusterIdWhereMarker());
+    private static final Function<MarkerGene, Pair<String, String>> MARKER_GENE_TO_ID_CLUSTER_ID_WHERE_MARKER =
+            markerGene -> Pair.of(markerGene.geneId(), markerGene.cellGroupValueWhereMarker());
 
-    private static final Function<CellTypeMarkerGene, Pair<String, String>> MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER =
+    private static final Function<MarkerGene, Pair<String, String>> MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER =
             markerGene -> Pair.of(markerGene.geneId(), markerGene.cellGroupValueWhereMarker());
 
     private final BioEntityPropertyDao bioEntityPropertyDao;
@@ -43,12 +43,18 @@ public class HighchartsHeatmapAdapter {
         // reversing the comparator
         var sortedMarkerGenes = markerGenes.stream()
                 .parallel()
-                .sorted(comparing(MarkerGene::clusterIdWhereMarker).thenComparing(MarkerGene::pValue))
+                .sorted(comparing(MarkerGene::cellGroupValueWhereMarker).thenComparing(MarkerGene::pValue))
                 .collect(toImmutableList());
 
         var rows =
                 sortedMarkerGenes.stream()
                         .map(MARKER_GENE_TO_ID_CLUSTER_ID_WHERE_MARKER)
+                        .distinct()
+                        .collect(toImmutableList());
+
+        var columns =
+                sortedMarkerGenes.stream()
+                        .map(MarkerGene::cellGroupValue)
                         .distinct()
                         .collect(toImmutableList());
 
@@ -59,11 +65,11 @@ public class HighchartsHeatmapAdapter {
         return sortedMarkerGenes.stream()
                 .map(markerGene ->
                         ImmutableMap.<String, Object>builder()
-                                .put("x", markerGene.clusterId() - 1)   // Cluster IDs start at 1, Highcharts columns are 0-based
+                                .put("x", columns.indexOf(markerGene.cellGroupValue()))   // Cluster IDs start at 1, Highcharts columns are 0-based
                                 .put("y", rows.indexOf(MARKER_GENE_TO_ID_CLUSTER_ID_WHERE_MARKER.apply(markerGene)))
                                 .put("geneName", symbolsForGeneIds.getOrDefault(markerGene.geneId(), markerGene.geneId()))
                                 .put("value", markerGene.medianExpression())
-                                .put("clusterIdWhereMarker", markerGene.clusterIdWhereMarker())
+                                .put("clusterIdWhereMarker", markerGene.cellGroupValueWhereMarker())
                                 .put("pValue", markerGene.pValue())
                                 .build())
                 .collect(toImmutableList());
@@ -77,13 +83,13 @@ public class HighchartsHeatmapAdapter {
      * The rows of the heatmap are ordered by the cell type, i.e. genes for celltype 1, 2, etc.
      * If there are no marker genes for a cell group, then no rows will be present in the data.
      */
-    public ImmutableList<ImmutableMap<String, Object>> getCellTypeMarkerGeneHeatmapData(Collection<CellTypeMarkerGene> markerGenes) {
+    public ImmutableList<ImmutableMap<String, Object>> getCellTypeMarkerGeneHeatmapData(Collection<MarkerGene> markerGenes) {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
         var sortedMarkerGenes = markerGenes.stream()
                 .parallel()
-                .sorted(comparing(CellTypeMarkerGene::cellGroupValueWhereMarker).thenComparing(CellTypeMarkerGene::pValue))
+                .sorted(comparing(MarkerGene::cellGroupValueWhereMarker).thenComparing(MarkerGene::pValue))
                 .collect(toImmutableList());
 
         var rows =
@@ -93,13 +99,13 @@ public class HighchartsHeatmapAdapter {
                         .collect(toImmutableList());
         var columns =
                 sortedMarkerGenes.stream()
-                        .map(CellTypeMarkerGene::cellGroupValue)
+                        .map(MarkerGene::cellGroupValue)
                         .distinct()
                         .collect(toImmutableList());
 
         var symbolsForGeneIds =
                 bioEntityPropertyDao.getSymbolsForGeneIds(
-                        sortedMarkerGenes.stream().map(CellTypeMarkerGene::geneId).collect(toImmutableSet()));
+                        sortedMarkerGenes.stream().map(MarkerGene::geneId).collect(toImmutableSet()));
 
         return sortedMarkerGenes.stream()
                 .map(markerGene ->

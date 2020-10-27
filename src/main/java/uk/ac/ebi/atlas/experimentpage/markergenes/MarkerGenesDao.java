@@ -29,7 +29,7 @@ public class MarkerGenesDao {
                     "m.marker_probability < 0.05 and g.variable = :k and " +
                     "expression_type=0 order by m.marker_probability ";
 
-    public List<CellTypeMarkerGene> getMarkerGenesWithAveragesPerCluster(String experimentAccession, String k) {
+    public List<MarkerGene> getMarkerGenesWithAveragesPerCluster(String experimentAccession, String k) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
@@ -38,7 +38,7 @@ public class MarkerGenesDao {
         return namedParameterJdbcTemplate.query(
                 SELECT_MARKER_GENES_WITH_AVERAGES_PER_CLUSTER,
                 namedParameters,
-                (resultSet, rowNumber) -> CellTypeMarkerGene.create(
+                (resultSet, rowNumber) -> MarkerGene.create(
                         resultSet.getString("gene_id"),
                         resultSet.getString("k_where_marker"),
                         resultSet.getString("cluster_id_where_marker"),
@@ -86,7 +86,7 @@ public class MarkerGenesDao {
                     "g.value IN (:values) and " +
                     "expression_type=0 order by m.marker_probability ";
 
-    public List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experiment_accession, String organismPart) {
+    public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, String organismPart) {
         //These temporary hardcoded celltypes(values) replaces with CellMetaDataDao class result which is implemented by @Lingyun
         // We will call this DAO class by passing two inputs: experiment_accession(Param1) and organismPart(Param2)
         //We would get return type as a ImmutableSet<String> celltypes(@return ImmutableSet<String> celltypes)
@@ -101,7 +101,7 @@ public class MarkerGenesDao {
         return namedParameterJdbcTemplate.query(
                 SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,
                 namedParameters,
-                (resultSet, rowNumber) -> CellTypeMarkerGene.create(
+                (resultSet, rowNumber) -> MarkerGene.create(
                         resultSet.getString("gene_id"),
                         resultSet.getString("cell_group_type"),
                         resultSet.getString("cell_group_value_where_marker"),

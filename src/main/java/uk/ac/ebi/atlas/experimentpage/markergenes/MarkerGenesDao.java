@@ -78,12 +78,7 @@ public class MarkerGenesDao {
                     "g.value IN (:values) and " +
                     "expression_type=0 order by m.marker_probability ";
 
-    public List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experiment_accession, String organismPart) {
-        //These temporary hardcoded celltypes(values) replaces with CellMetaDataDao class result which is implemented by @Lingyun
-        // We will call this DAO class by passing two inputs: experiment_accession(Param1) and organismPart(Param2)
-        //We would get return type as a ImmutableSet<String> celltypes(@return ImmutableSet<String> celltypes)
-        ImmutableSet<String> cellGroupValues = ImmutableSet.of("T cell", "Not available");
-
+    public List<CellTypeMarkerGene> getCellTypeMarkerGenes(String experiment_accession, ImmutableSet<String> cellGroupValues) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,

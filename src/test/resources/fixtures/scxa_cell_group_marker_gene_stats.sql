@@ -3,3 +3,5 @@ INSERT INTO scxa_cell_group_marker_gene_stats (gene_id, cell_group_id, marker_id
 INSERT INTO scxa_cell_group_marker_gene_stats (gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000008394', 24046, 1405342, 0, 431.113537539535, 273.9726);
 INSERT INTO scxa_cell_group_marker_gene_stats (gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000010278', 24046, 1405343, 0, 431.113537539535, 273.9726);
 INSERT INTO scxa_cell_group_marker_gene_stats (gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000011600', 24046, 1405344, 0, 431.113537539535, 273.9726);
+INSERT INTO scxa_cell_group_marker_gene_stats (gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000011600', 24049, 1405347, 0, 431.113537539535, 273.9726);
+INSERT INTO scxa_cell_group_marker_gene_stats (gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000011600', 24050, 1405348, 0, 431.113537539535, 273.9726);

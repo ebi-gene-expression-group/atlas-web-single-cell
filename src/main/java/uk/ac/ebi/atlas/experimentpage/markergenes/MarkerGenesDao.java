@@ -21,21 +21,21 @@ public class MarkerGenesDao {
                     "FROM scxa_marker_gene_stats " +
                     "WHERE k_where_marker = :k and experiment_accession = :experiment_accession AND marker_p_value < 0.05";
 
-    public List<MarkerGene> getMarkerGenesWithAveragesPerCluster(String experimentAccession, int k) {
+    public List<CellTypeMarkerGene> getMarkerGenesWithAveragesPerCluster(String experimentAccession, String k) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
                         "k", k);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_MARKER_GENES_WITH_AVERAGES_PER_CLUSTER,
+                SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,
                 namedParameters,
-                (resultSet, rowNumber) -> MarkerGene.create(
+                (resultSet, rowNumber) -> CellTypeMarkerGene.create(
                         resultSet.getString("gene_id"),
-                        resultSet.getInt("k_where_marker"),
-                        resultSet.getInt("cluster_id_where_marker"),
+                        resultSet.getString("k_where_marker"),
+                        resultSet.getString("cluster_id_where_marker"),
                         resultSet.getDouble("marker_p_value"),
-                        resultSet.getInt("cluster_id"),
+                        resultSet.getString("cluster_id"),
                         resultSet.getDouble("median_expression"),
                         resultSet.getDouble("mean_expression")));
     }

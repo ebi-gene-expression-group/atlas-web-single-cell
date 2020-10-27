@@ -17,9 +17,17 @@ public class MarkerGenesDao {
     }
 
     private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CLUSTER =
-            "SELECT * " +
-                    "FROM scxa_marker_gene_stats " +
-                    "WHERE k_where_marker = :k and experiment_accession = :experiment_accession AND marker_p_value < 0.05";
+            "SELECT g.experiment_accession, m.gene_id, " +
+                    "g.variable as k_where_marker, h.value as cluster_id_where_marker, " +
+                    "g.value as cluster_id, m.marker_probability as marker_p_value, " +
+                    "s.mean_expression, s.median_expression " +
+                    "FROM " +
+                    "scxa_cell_group_marker_gene_stats s, scxa_cell_group_marker_genes m, " +
+                    "scxa_cell_group g, scxa_cell_group h " +
+                    "WHERE s.cell_group_id=g.id and s.marker_id=m.id and " +
+                    "m.cell_group_id = h.id and g.experiment_accession= :experiment_accession and " +
+                    "m.marker_probability < 0.05 and g.variable = :k and " +
+                    "expression_type=0 order by m.marker_probability ";
 
     public List<CellTypeMarkerGene> getMarkerGenesWithAveragesPerCluster(String experimentAccession, String k) {
         var namedParameters =
@@ -28,7 +36,7 @@ public class MarkerGenesDao {
                         "k", k);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,
+                SELECT_MARKER_GENES_WITH_AVERAGES_PER_CLUSTER,
                 namedParameters,
                 (resultSet, rowNumber) -> CellTypeMarkerGene.create(
                         resultSet.getString("gene_id"),

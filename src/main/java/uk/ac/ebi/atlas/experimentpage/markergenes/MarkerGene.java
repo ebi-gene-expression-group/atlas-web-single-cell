@@ -2,31 +2,38 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.auto.value.AutoValue;
 
-@Deprecated
 @AutoValue
 public abstract class MarkerGene {
+
     public abstract String geneId();
-    public abstract int kWhereMarker();
-    public abstract int clusterIdWhereMarker();
+
+    public abstract String cellGroupType();
+
+    public abstract String cellGroupValueWhereMarker();
+
     public abstract double pValue();
-    public abstract int clusterId();
+
+    public abstract String cellGroupValue();
+
     public abstract double medianExpression();
+
     public abstract double meanExpression();
 
     public static MarkerGene create(String geneId,
-                                    int kWhereMarker,
-                                    int clusterIdWhereMarker,
+                                    String cellGroupType,
+                                    String cellGroupValueWhereMarker,
                                     double pValue,
-                                    int clusterId,
+                                    String cellGroupValue,
                                     double medianExpression,
                                     double meanExpression) {
         return new AutoValue_MarkerGene(
                 geneId,
-                kWhereMarker,
-                clusterIdWhereMarker,
+                cellGroupType,
+                cellGroupValueWhereMarker,
                 pValue,
-                clusterId,
+                cellGroupValue,
                 medianExpression,
                 meanExpression);
     }
 }
+

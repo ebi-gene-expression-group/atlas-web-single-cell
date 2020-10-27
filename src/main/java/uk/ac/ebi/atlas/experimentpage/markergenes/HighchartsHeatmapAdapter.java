@@ -65,8 +65,8 @@ public class HighchartsHeatmapAdapter {
                                 .put("y", rows.indexOf(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER.apply(markerGene)))
                                 .put("geneName", symbolsForGeneIds.getOrDefault(markerGene.geneId(), markerGene.geneId()))
                                 .put("value", markerGene.medianExpression())
-                                .put("cellTypeValue", markerGene.cellGroupValue())
-                                .put("cellTypeValueWhereMarker", markerGene.cellGroupValueWhereMarker())
+                                .put("cellGroupValue", markerGene.cellGroupValue())
+                                .put("cellGroupValueWhereMarker", markerGene.cellGroupValueWhereMarker())
                                 .put("pValue", markerGene.pValue())
                                 .build())
                 .collect(toImmutableList());

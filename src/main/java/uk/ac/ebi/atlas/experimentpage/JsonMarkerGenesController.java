@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage;
 
+import com.google.common.collect.ImmutableSet;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/clusters",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getMarkerGenes(@PathVariable String experimentAccession,
-                                 @PathVariable int k) {
+                                 @RequestParam String k) {
         return GSON.toJson(
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapData(
                         markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k)

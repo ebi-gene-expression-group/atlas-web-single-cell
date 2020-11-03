@@ -65,26 +65,17 @@ public class MarkerGenesDao {
 
     private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP =
             "SELECT " +
-                    "g.experiment_accession, " +
-                    "m.gene_id, " +
-                    "g.variable as cell_group_type, " + //k_where_marker
-                    "h.value as cell_group_value_where_marker, " + //cluster_id_where_marker
-                    "g.value as cell_group_value, " +             //cluster_id
-                    "m.marker_probability as marker_p_value, " +
-                    "s.mean_expression, s.median_expression " +
+                    "g.experiment_accession, m.gene_id, g.variable as cell_group_type, " +
+                    "h.value as cell_group_value_where_marker, g.value as cell_group_value, " +
+                    "m.marker_probability as marker_p_value, s.mean_expression, s.median_expression " +
                     "FROM " +
-                    "scxa_cell_group_marker_gene_stats s, " +
-                    "scxa_cell_group_marker_genes m, " +
-                    "scxa_cell_group g, " +
-                    "scxa_cell_group h " +
+                    "scxa_cell_group_marker_gene_stats s, scxa_cell_group_marker_genes m, " +
+                    "scxa_cell_group g, scxa_cell_group h " +
                     "WHERE " +
-                    "s.cell_group_id = g.id and " +
-                    "s.marker_id = m.id and " +
+                    "s.cell_group_id = g.id and s.marker_id = m.id and " +
                     "m.cell_group_id = h.id and g.experiment_accession = :experiment_accession and " +
-                    "m.marker_probability < 0.05 and " +
-                    "g.variable = :variable and " +
-                    "g.value IN (:values) and " +
-                    "expression_type = 0 order by m.marker_probability ";
+                    "m.marker_probability < 0.05 and g.variable = :variable and " +
+                    "g.value IN (:values) and expression_type = 0 order by m.marker_probability ";
 
     public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, String organismPart) {
         //These temporary hardcoded celltypes(values) replaces with CellMetaDataDao class result which is implemented by @Lingyun

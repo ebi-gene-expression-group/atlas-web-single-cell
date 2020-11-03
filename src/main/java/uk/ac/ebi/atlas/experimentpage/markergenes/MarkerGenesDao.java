@@ -24,10 +24,10 @@ public class MarkerGenesDao {
                     "FROM " +
                     "scxa_cell_group_marker_gene_stats s, scxa_cell_group_marker_genes m, " +
                     "scxa_cell_group g, scxa_cell_group h " +
-                    "WHERE s.cell_group_id=g.id and s.marker_id=m.id and " +
-                    "m.cell_group_id = h.id and g.experiment_accession= :experiment_accession and " +
+                    "WHERE s.cell_group_id = g.id and s.marker_id = m.id and " +
+                    "m.cell_group_id = h.id and g.experiment_accession = :experiment_accession and " +
                     "m.marker_probability < 0.05 and g.variable = :k and " +
-                    "expression_type=0 order by m.marker_probability ";
+                    "expression_type = 0 order by m.marker_probability ";
 
     public List<MarkerGene> getMarkerGenesWithAveragesPerCluster(String experimentAccession, String k) {
         var namedParameters =
@@ -78,13 +78,13 @@ public class MarkerGenesDao {
                     "scxa_cell_group g, " +
                     "scxa_cell_group h " +
                     "WHERE " +
-                    "s.cell_group_id=g.id and " +
-                    "s.marker_id=m.id and " +
-                    "m.cell_group_id = h.id and g.experiment_accession= :experiment_accession and " +
+                    "s.cell_group_id = g.id and " +
+                    "s.marker_id = m.id and " +
+                    "m.cell_group_id = h.id and g.experiment_accession = :experiment_accession and " +
                     "m.marker_probability < 0.05 and " +
                     "g.variable = :variable and " +
                     "g.value IN (:values) and " +
-                    "expression_type=0 order by m.marker_probability ";
+                    "expression_type = 0 order by m.marker_probability ";
 
     public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, String organismPart) {
         //These temporary hardcoded celltypes(values) replaces with CellMetaDataDao class result which is implemented by @Lingyun

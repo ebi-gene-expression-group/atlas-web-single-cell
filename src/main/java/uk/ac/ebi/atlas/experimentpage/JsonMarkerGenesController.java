@@ -29,8 +29,8 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     @Deprecated
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/clusters",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getMarkerGenes(@PathVariable String experimentAccession,
-                                 @RequestParam String k) {
+    public String getClusterMarkerGenes(@PathVariable String experimentAccession,
+                                        @RequestParam String k) {
         return GSON.toJson(
                 highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
                         markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k)
@@ -39,8 +39,8 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
 
     @GetMapping(value = "/experiments/{experimentAccession}/marker-genes/cell-types",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getMarkerGeneExpressionProfile(@PathVariable String experimentAccession,
-                                                 @RequestParam String organismPart) {
+    public String getCellTypeMarkerGenes(@PathVariable String experimentAccession,
+                                         @RequestParam String organismPart) {
         return GSON.toJson(highchartsHeatmapAdapter.getCellTypeMarkerGeneHeatmapData(
                 markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, organismPart)
         ));

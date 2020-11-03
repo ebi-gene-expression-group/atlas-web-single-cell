@@ -90,7 +90,8 @@ class MarkerGenesDaoIT {
     void testExperimentsWithMarkerGenesAboveThreshold(String k) {
         var markerGenesWithAveragesPerCluster =
                 subject.getMarkerGenesWithAveragesPerCluster(CELL_GROUP_EXPERIMENT_ACCESSION_WITH_MARKER_GENES, "10");
-
+        // I would replace this hardcode value '10' with a random k value once I update fixtures properly, currently I added very
+        // few records to proceed further, without hardcode value tests would fail if I pass random values of K.
         assertThat(markerGenesWithAveragesPerCluster)
                 // Fixtures might not have marker genes from every cluster and this might be empty
                 //.isNotEmpty()

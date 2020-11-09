@@ -1,9 +1,11 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
-import java.util.List;
-
+import java.util.Map;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class MarkerGeneServiceImpl implements MarkerGeneService {
@@ -20,8 +22,14 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
      * @return ImmutableList of CellTypeMarkerGene Objects
      */
     @Override
-    public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
-        List<CellTypeMarkerGene> cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, organismPart);
-        return ImmutableList.copyOf(cellTypeMarkerGenes);
+    public Map<String, ImmutableSet<CellTypeMarkerGene>> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
+        return markerGenesDao.getCellTypeMarkerGenes(experimentAccession, organismPart)
+                .stream()
+                .collect(groupingBy(CellTypeMarkerGene::cellGroupValue, toImmutableSet())).entrySet().stream()
+                .collect(toMap(cellTypeMarkerGenes -> cellTypeMarkerGenes.getKey(),
+                        cellTypeMarkerGenes -> cellTypeMarkerGenes.getValue()
+                                .stream()
+                                .limit(5)
+                                .collect(toImmutableSet())));
     }
 }

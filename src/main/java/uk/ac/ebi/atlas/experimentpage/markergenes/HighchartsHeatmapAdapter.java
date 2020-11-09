@@ -2,13 +2,15 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
-
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
-
+import java.util.stream.Collectors;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.Comparator.comparing;
@@ -77,22 +79,28 @@ public class HighchartsHeatmapAdapter {
      * The rows of the heatmap are ordered by the cell type, i.e. genes for celltype 1, 2, etc.
      * If there are no marker genes for a cell group, then no rows will be present in the data.
      */
-    public ImmutableList<ImmutableMap<String, Object>> getCellTypeMarkerGeneHeatmapData(Collection<CellTypeMarkerGene> markerGenes) {
+    public ImmutableList<ImmutableMap<String, Object>> getCellTypeMarkerGeneHeatmapData(Map<String, ImmutableSet<CellTypeMarkerGene>> markerGenesMap) {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
-        var sortedMarkerGenes = markerGenes.stream()
-                .parallel()
-                .sorted(comparing(CellTypeMarkerGene::cellGroupValueWhereMarker).thenComparing(CellTypeMarkerGene::pValue))
-                .collect(toImmutableList());
 
-        var rows =
-                sortedMarkerGenes.stream()
+        // Convert Map to List.This will merge all top5 cell type marker genes ImmutableSets into a a single
+        // List to use existing codebase approach of HighchartsHeatmapAdapter.
+        List<CellTypeMarkerGene> allMarkerGenes = markerGenesMap.values().stream()
+                                                    .flatMap(Collection::stream)
+                                                    .collect(Collectors.toList());
+
+        var sortedMarkerGenes = allMarkerGenes.stream()
+                                .parallel()
+                                .sorted(comparing(CellTypeMarkerGene::cellGroupValueWhereMarker).thenComparing(CellTypeMarkerGene::pValue))
+                                .collect(toImmutableList());
+
+        var rows = sortedMarkerGenes.stream()
                         .map(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER)
                         .distinct()
                         .collect(toImmutableList());
-        var columns =
-                sortedMarkerGenes.stream()
+
+        var columns = sortedMarkerGenes.stream()
                         .map(CellTypeMarkerGene::cellGroupValue)
                         .distinct()
                         .collect(toImmutableList());

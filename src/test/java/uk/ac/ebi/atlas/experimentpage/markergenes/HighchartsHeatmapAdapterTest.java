@@ -78,12 +78,12 @@ class HighchartsHeatmapAdapterTest {
                                 gene1, geneSymbol1,
                                 gene2, geneSymbol2));
 
-        var cellTypeMarkerGenes = ImmutableList.of(
+        var cellTypeMarkerGenes = ImmutableSet.of(
                 CellTypeMarkerGene.create(gene1, "inferred cell type", "CD8-positive, alpha-beta T cell", 0.004, "T cell", 199, 185),
                 CellTypeMarkerGene.create(gene2, "inferred cell type", "Not available", 0.0006, "Not available", 12, 1.11),
                 CellTypeMarkerGene.create(gene3, "inferred cell type", "T cell", 0.001, "B cell", 1000, 10000));
 
-        var result = subject.getCellTypeMarkerGeneHeatmapData(cellTypeMarkerGenes);
+        var result = subject.getCellTypeMarkerGeneHeatmapData(ImmutableMap.of("T cell",cellTypeMarkerGenes));
 
         assertThat(result).hasSize(3);
         assertThat(result).element(0).extracting("geneName").containsOnly(geneSymbol1);

@@ -33,7 +33,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
                                         @RequestParam String k) {
         return GSON.toJson(
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapData(
-                        markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k)
+                        markerGeneService.getMarkerGenesPerCluster(experimentAccession, k)
                 ));
     }
 

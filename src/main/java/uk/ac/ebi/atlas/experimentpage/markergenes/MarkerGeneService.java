@@ -1,6 +1,9 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Map;
 
 public interface MarkerGeneService {
     /**
@@ -8,7 +11,15 @@ public interface MarkerGeneService {
      *
      * @param experimentAccession
      * @param organismPart
-     * @return ImmutableList of CellTypeMarkerGene Objects
+     * @return ImmutableList of MarkerGene Objects
      */
     ImmutableList<MarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart);
+
+    /**
+     * @param experimentAccession - Id of the experiment
+     * @param k - no of clusters
+     * @return Map<String, ImmutableSet<MarkerGene>> of cell type as a key and top 5 MarkerGene
+     * Objects as a value
+     */
+    public Map<String, ImmutableSet<MarkerGene>> getMarkerGenesPerCluster(String experimentAccession, String k);
 }

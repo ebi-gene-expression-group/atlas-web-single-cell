@@ -2,12 +2,16 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
@@ -32,11 +36,18 @@ public class HighchartsHeatmapAdapter {
      * The rows of the heatmap are ordered by the cell type, i.e. genes for celltype 1, 2, etc.
      * If there are no marker genes for a cell group, then no rows will be present in the data.
      */
-    public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapData(Collection<MarkerGene> markerGenes) {
+    public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapData(Map<String, ImmutableSet<MarkerGene>> markerGenesMap) {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
-        var sortedMarkerGenes = markerGenes.stream()
+
+        // Convert Map to a List.This will merge all top5 cell type marker genes ImmutableSets into a a single
+        // List to use existing codebase approach of HighchartsHeatmapAdapter.
+        List<MarkerGene> top5MarkerGenesPerCuster = markerGenesMap.values().stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        var sortedMarkerGenes = top5MarkerGenesPerCuster.stream()
                 .parallel()
                 .sorted(comparing(MarkerGene::cellGroupValueWhereMarker).thenComparing(MarkerGene::pValue))
                 .collect(toImmutableList());

@@ -5,7 +5,9 @@ import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.controllers.BioentityNotFoundException;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
+
 import java.util.List;
+
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 @Service
@@ -26,9 +28,8 @@ public class MarkerGeneService {
      * @return ImmutableList of CellTypeMarkerGene Objects
      */
     public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
-        List<CellTypeMarkerGene> cellTypeMarkerGenes = null;
+        List<CellTypeMarkerGene> cellTypeMarkerGenes;
         ImmutableSet<String> ontologyLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
-
         if (ontologyLabelsCellTypeValues.isEmpty()) {
             ImmutableSet<String> authorsLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeAuthorsLabels(experimentAccession, organismPart);
             if (authorsLabelsCellTypeValues.isEmpty()) {

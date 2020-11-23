@@ -3,7 +3,6 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
-import uk.ac.ebi.atlas.controllers.BioentityNotFoundException;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
 import java.util.List;
@@ -32,13 +31,9 @@ public class MarkerGeneService {
         ImmutableSet<String> ontologyLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
         if (ontologyLabelsCellTypeValues.isEmpty()) {
             ImmutableSet<String> authorsLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeAuthorsLabels(experimentAccession, organismPart);
-            if (authorsLabelsCellTypeValues.isEmpty()) {
-                throw new BioentityNotFoundException("OrganismOrOrganismPart: " + organismPart + " doesn't have annotations.");
-            }//If both(OntologyLabels & AuthorsLabels) returns empty cell types, throwing this exception with the user message.
             cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, authorsLabelsCellTypeValues);
         } else
             cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, ontologyLabelsCellTypeValues);
-
         return cellTypeMarkerGenes.stream()
                 .filter(markerGene -> !markerGene.cellGroupValue().equals("Not available"))
                 .collect(toImmutableList());

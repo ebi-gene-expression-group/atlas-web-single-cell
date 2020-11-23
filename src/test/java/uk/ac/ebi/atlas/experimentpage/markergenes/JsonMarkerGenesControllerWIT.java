@@ -22,7 +22,6 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-
 import static org.hamcrest.CoreMatchers.isA;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -126,10 +125,10 @@ class JsonMarkerGenesControllerWIT {
     }
 
     @Test
-    void invalidExperimentAccessionReturnsNotFound() throws Exception {
+    void invalidExperimentAccessionReturnsEmptyJson() throws Exception {
         this.mockMvc
                 .perform(get(markerGeneCellTypeURL, "FOO")
                         .param("organismPart", "skin"))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().is2xxSuccessful());
     }
 }

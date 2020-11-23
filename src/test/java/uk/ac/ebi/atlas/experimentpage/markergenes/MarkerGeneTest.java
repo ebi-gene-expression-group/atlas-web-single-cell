@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,12 +66,9 @@ public class MarkerGeneTest {
     }
 
     private List<CellTypeMarkerGene> mockTestData() {
-        List<CellTypeMarkerGene> CellTypeValuesMock = new ArrayList<>();
-        CellTypeValuesMock.add(CellTypeMarkerGene.create("1", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0,
-                "T cell", 125.258405, 563.54442));
-        CellTypeValuesMock.add(CellTypeMarkerGene.create("2", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0,
-                "T cell", 125.258405, 563.54442));
-        return CellTypeValuesMock;
+        return ImmutableList.of(
+                CellTypeMarkerGene.create("1", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0, "T cell", 125.258405, 563.54442),
+                CellTypeMarkerGene.create("2", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0, "T cell", 125.258405, 563.54442));
     }
 }
 

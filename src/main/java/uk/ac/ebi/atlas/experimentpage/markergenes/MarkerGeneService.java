@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
@@ -28,9 +27,9 @@ public class MarkerGeneService {
      */
     public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
         List<CellTypeMarkerGene> cellTypeMarkerGenes;
-        ImmutableSet<String> ontologyLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
+        var ontologyLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
         if (ontologyLabelsCellTypeValues.isEmpty()) {
-            ImmutableSet<String> authorsLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeAuthorsLabels(experimentAccession, organismPart);
+            var authorsLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeAuthorsLabels(experimentAccession, organismPart);
             cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, authorsLabelsCellTypeValues);
         } else
             cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, ontologyLabelsCellTypeValues);

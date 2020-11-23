@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
 import java.util.ArrayList;
@@ -18,7 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class MarkerGeneTest {
     @Mock
     private CellTypeSearchDao cellTypeSearchDaoMock;
@@ -29,14 +26,14 @@ public class MarkerGeneTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
-                .thenReturn(mockTestData());
         subject = new MarkerGeneService(markerGenesDaoMock, cellTypeSearchDaoMock);
     }
 
     @Test
     @DisplayName("Fetch marker gene profile expression from ontology label cell types")
     void getMarkerGeneProfileWhenOntologyLabelsHasCellTypes() {
+        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
+                .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "skin"))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));
         assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
@@ -46,6 +43,8 @@ public class MarkerGeneTest {
     @Test
     @DisplayName("Fetch marker gene profile expression from authors label cell types")
     void getMarkerGeneProfileWhenAuthorsLabelsHasCellTypes() {
+        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
+                .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", "skin"))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));
         when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "skin"))
@@ -56,7 +55,7 @@ public class MarkerGeneTest {
 
     @Test()
     @DisplayName("Returns empty profile if both ontology labels returns empty cell type values")
-    void returnEmptyCellTypeMarkerGeneProifleIfBothOntologyAndAuthorsLabelsDoesNotHaveCellTypes() {
+    void returnEmptyCellTypeMarkerGeneProfileIfBothOntologyAndAuthorsLabelsDoesNotHaveCellTypes() {
         when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "skin"))
                 .thenReturn(ImmutableSet.of());
         when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", "skin"))

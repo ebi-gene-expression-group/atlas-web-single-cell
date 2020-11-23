@@ -14,14 +14,12 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class JsonMarkerGenesController extends JsonExceptionHandlingController {
-    private final MarkerGenesDao markerGenesDao;
     private final HighchartsHeatmapAdapter highchartsHeatmapAdapter;
     private final MarkerGeneService markerGeneService;
 
     public JsonMarkerGenesController(MarkerGenesDao markerGenesDao,
                                      HighchartsHeatmapAdapter highchartsHeatmapAdapter,
                                      MarkerGeneService markerGeneService) {
-        this.markerGenesDao = markerGenesDao;
         this.highchartsHeatmapAdapter = highchartsHeatmapAdapter;
         this.markerGeneService = markerGeneService;
     }

@@ -9,14 +9,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.ac.ebi.atlas.controllers.BioentityNotFoundException;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,16 +55,14 @@ public class MarkerGeneTest {
     }
 
     @Test()
-    @DisplayName("Throws exception if both ontology labels returns empty cell type values")
-    void throwsExceptionIfBothOntologyAndAuthorsLabelsDoesNotHaveCellTypes() {
+    @DisplayName("Returns empty profile if both ontology labels returns empty cell type values")
+    void returnEmptyCellTypeMarkerGeneProifleIfBothOntologyAndAuthorsLabelsDoesNotHaveCellTypes() {
         when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "skin"))
                 .thenReturn(ImmutableSet.of());
         when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", "skin"))
                 .thenReturn(ImmutableSet.of());
-        assertThatThrownBy(() -> {
-            subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin");
-        }).isInstanceOf(BioentityNotFoundException.class)
-                .hasMessageContaining("OrganismOrOrganismPart: skin doesn't have annotations.");
+
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin")).isEmpty();
     }
 
     private List<CellTypeMarkerGene> mockTestData() {

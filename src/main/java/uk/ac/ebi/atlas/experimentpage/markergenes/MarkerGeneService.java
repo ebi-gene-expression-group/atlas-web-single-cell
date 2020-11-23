@@ -34,7 +34,7 @@ public class MarkerGeneService {
         } else
             cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, ontologyLabelsCellTypeValues);
         return cellTypeMarkerGenes.stream()
-                .filter(markerGene -> !markerGene.cellGroupValue().equals("Not available"))
+                .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))
                 .collect(toImmutableList());
     }
 }

@@ -1,6 +1,12 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import org.junit.jupiter.api.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -8,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
-import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -65,5 +70,21 @@ class MarkerGeneServiceIT {
     void getEmptyMarkerGeneProfileForTheInvalidExperimentAccession() {
         assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "skin"))
                 .isEmpty();
+    }
+
+    @Test
+    void getEmptyClusterMarkerGenesProfileForTheInvalidExperimentAccession() {
+        assertThat(subject.getMarkerGenesPerCluster("FOO", "10"))
+                .isEmpty();
+    }
+
+    @Test
+    void getClusterTop5MarkerGenesForTheValidExperimentAccessionAndK() {
+        ImmutableMap<String, ImmutableSet<MarkerGene>> top5MarkerGenesPerCellGroupValue = subject.getMarkerGenesPerCluster("E-EHCA-2", "10");
+        assertThat(top5MarkerGenesPerCellGroupValue).containsKey("1");
+        assertThat(top5MarkerGenesPerCellGroupValue.get("1"))
+                .isNotEmpty()
+                .allMatch(markerGene -> markerGene.cellGroupValue().equalsIgnoreCase("1"))
+                .hasSize(5);
     }
 }

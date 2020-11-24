@@ -41,13 +41,9 @@ public class HighchartsHeatmapAdapter {
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
 
-        // Convert Map to a List.This will merge all top5 cell type marker genes ImmutableSets into a a single
-        // List to use existing codebase approach of HighchartsHeatmapAdapter.
-        List<MarkerGene> top5MarkerGenesPerCuster = markerGenesMap.values().stream()
+        // This will merge all top5 cell type marker genes ImmutableSets into a single ImmutableList.
+        var sortedMarkerGenes = markerGenesMap.values().stream()
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        var sortedMarkerGenes = top5MarkerGenesPerCuster.stream()
                 .parallel()
                 .sorted(comparing(MarkerGene::cellGroupValueWhereMarker).thenComparing(MarkerGene::pValue))
                 .collect(toImmutableList());

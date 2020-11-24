@@ -6,13 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toMap;
 
 
 @Service
@@ -31,7 +28,7 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
      * Objects as a value
      */
     @Override
-    public Map<String, ImmutableSet<MarkerGene>> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
+    public ImmutableMap<String, ImmutableSet<MarkerGene>> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
         return collectTop5MarkerGenes(markerGenesDao.getCellTypeMarkerGenes(experimentAccession, organismPart));
     }
 
@@ -42,7 +39,7 @@ public class MarkerGeneServiceImpl implements MarkerGeneService {
      * Objects as a value
      */
     @Override
-    public Map<String, ImmutableSet<MarkerGene>> getMarkerGenesPerCluster(String experimentAccession, String k) {
+    public ImmutableMap<String, ImmutableSet<MarkerGene>> getMarkerGenesPerCluster(String experimentAccession, String k) {
         return collectTop5MarkerGenes(markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k));
     }
 

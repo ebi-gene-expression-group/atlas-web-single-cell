@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
+
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -61,30 +62,26 @@ class MarkerGeneServiceIT {
     }
 
     @Test
-    void getMarkerGeneProfileForTheValidExperimentAccession() {
+    void getCellTypeMarkerGeneForTheValidExperimentAccession() {
         assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
                 .isNotEmpty();
     }
 
     @Test
-    void getEmptyMarkerGeneProfileForTheInvalidExperimentAccession() {
+    void getClusterMarkerGeneForTheValidExperimentAccession() {
+        assertThat(subject.getMarkerGenesPerCluster("E-EHCA-2", "10"))
+                .isNotEmpty();
+    }
+
+    @Test
+    void getEmptyCellTypeMarkerGenesForTheInvalidExperimentAccession() {
         assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "skin"))
                 .isEmpty();
     }
 
     @Test
-    void getEmptyClusterMarkerGenesProfileForTheInvalidExperimentAccession() {
+    void getEmptyClusterMarkerGenesForTheInvalidExperimentAccession() {
         assertThat(subject.getMarkerGenesPerCluster("FOO", "10"))
                 .isEmpty();
-    }
-
-    @Test
-    void getClusterTop5MarkerGenesForTheValidExperimentAccessionAndK() {
-        ImmutableMap<String, ImmutableSet<MarkerGene>> top5MarkerGenesPerCellGroupValue = subject.getMarkerGenesPerCluster("E-EHCA-2", "10");
-        assertThat(top5MarkerGenesPerCellGroupValue).containsKey("1");
-        assertThat(top5MarkerGenesPerCellGroupValue.get("1"))
-                .isNotEmpty()
-                .allMatch(markerGene -> markerGene.cellGroupValue().equalsIgnoreCase("1"))
-                .hasSize(5);
     }
 }

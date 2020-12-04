@@ -35,9 +35,9 @@ public class MarkerGeneTest {
     void getMarkerGeneProfileWhenOntologyLabelsHasCellTypes() {
         when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
-        when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "skin"))
+        when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "http://purl.obolibrary.org/obo/UBERON_0000006"))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));
-        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "http://purl.obolibrary.org/obo/UBERON_0000006"))
                 .isNotEmpty();
     }
 
@@ -46,11 +46,11 @@ public class MarkerGeneTest {
     void getMarkerGeneProfileWhenAuthorsLabelsHasCellTypes() {
         when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
-        when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", "skin"))
+        when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", "http://purl.obolibrary.org/obo/UBERON_0000006"))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));
-        when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "skin"))
+        when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "http://purl.obolibrary.org/obo/UBERON_0000006"))
                 .thenReturn(ImmutableSet.of());
-        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "http://purl.obolibrary.org/obo/UBERON_0000006"))
                 .isNotEmpty();
     }
 

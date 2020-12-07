@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
-import java.util.List;
-
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 @Service
@@ -26,13 +24,14 @@ public class MarkerGeneService {
      * @return ImmutableList of CellTypeMarkerGene Objects
      */
     public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
-        List<CellTypeMarkerGene> cellTypeMarkerGenes;
+
         var ontologyLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
-        if (ontologyLabelsCellTypeValues.isEmpty()) {
-            var authorsLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeAuthorsLabels(experimentAccession, organismPart);
-            cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, authorsLabelsCellTypeValues);
-        } else
-            cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, ontologyLabelsCellTypeValues);
+
+        var cellTypeMarkerGenes = ontologyLabelsCellTypeValues.isEmpty() ?
+                markerGenesDao.getCellTypeMarkerGenes(experimentAccession,
+                        cellTypeSearchDao.getInferredCellTypeAuthorsLabels(experimentAccession, organismPart)) :
+                markerGenesDao.getCellTypeMarkerGenes(experimentAccession, ontologyLabelsCellTypeValues);
+
         return cellTypeMarkerGenes.stream()
                 .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))
                 .collect(toImmutableList());

@@ -47,13 +47,13 @@ public class MarkerGenesDao {
                     "h.experiment_accession = ':experiment_accession' AND m.marker_probability < 0.05 " +
                     "ORDER BY k_where_marker ASC";
 
-    public List<Integer> getKsWithMarkerGenes(String experimentAccession) {
+    public List<String> getKsWithMarkerGenes(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.queryForList(
                 SELECT_DISTINCT_KS_WITH_MARKER_GENES,
                 namedParameters,
-                Integer.class);
+                String.class);
     }
 
     private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP =

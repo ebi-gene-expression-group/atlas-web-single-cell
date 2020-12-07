@@ -39,7 +39,7 @@ public class TSnePlotSettingsService {
         }
     }
 
-    public List<Integer> getKsWithMarkerGenes(String experimentAccession) {
+    public List<String> getKsWithMarkerGenes(String experimentAccession) {
         return markerGenesDao.getKsWithMarkerGenes(experimentAccession);
     }
 

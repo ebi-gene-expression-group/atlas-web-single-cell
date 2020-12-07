@@ -83,7 +83,7 @@ public class MarkerGenesDao {
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,
                         "variable", CELL_GROUP_TYPE,
-                        "values", cellGroupValues.isEmpty()?"":cellGroupValues);
+                        "values", cellGroupValues.isEmpty()? "" : cellGroupValues);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,

@@ -41,9 +41,10 @@ public class MarkerGenesDao {
     }
 
     private static final String SELECT_DISTINCT_KS_WITH_MARKER_GENES =
-            "SELECT DISTINCT k_where_marker " +
-                    "FROM scxa_marker_gene_stats " +
-                    "WHERE experiment_accession = :experiment_accession AND marker_p_value < 0.05 " +
+            "SELECT DISTINCT h.variable as k_where_marker " +
+                    "FROM scxa_cell_group_marker_genes m, scxa_cell_group h " +
+                    "WHERE m.cell_group_id = h.id AND " +
+                    "h.experiment_accession = ':experiment_accession' AND m.marker_probability < 0.05 " +
                     "ORDER BY k_where_marker ASC";
 
     public List<Integer> getKsWithMarkerGenes(String experimentAccession) {

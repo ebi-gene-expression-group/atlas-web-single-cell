@@ -1,0 +1,111 @@
+version: '3.4'
+services:
+  #### SolrCloud
+
+  zoo1:
+    image: zookeeper:3.4.14
+    restart: always
+    hostname: zoo1
+    volumes:
+      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo1/data:/data
+      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo1/datalog:/datalog
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+
+  zoo2:
+    image: zookeeper:3.4.14
+    restart: always
+    hostname: zoo2
+    volumes:
+      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo2/data:/data
+      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo2/datalog:/datalog
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=zoo3:2888:3888
+
+  zoo3:
+    image: zookeeper:3.4.14
+    restart: always
+    hostname: zoo3
+    volumes:
+      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo3/data:/data
+      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo3/datalog:/datalog
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=0.0.0.0:2888:3888
+
+  solr1:
+    image: solr:7.1
+    ports:
+      - "8983:8983"
+    volumes:
+      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/solr1:/var/solr
+    environment:
+      - SOLR_HOME=/var/solr
+      - SOLR_HEAP=2g
+      - SOLR_OPTS=-Denable.runtime.lib=true
+      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+
+  solr2:
+    image: solr:7.1.0
+    ports:
+      - "8984:8983"
+    volumes:
+      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/solr2:/var/solr
+    environment:
+      - SOLR_HOME=/var/solr
+      - SOLR_HEAP=2g
+      - SOLR_OPTS=-Denable.runtime.lib=true
+      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+
+  #### Database
+
+  postgres:
+    image: postgres:10-alpine
+    restart: always
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: atlasprd3
+      POSTGRES_PASSWORD: atlasprd3
+      POSTGRES_DB: gxpscxadev
+    ports:
+      - "5432:5432"
+    volumes:
+      - /home/alf/Projects/atlas/integration-test-data/postgres/scxa:/var/lib/postgresql/data/pgdata
+
+  flyway:
+    image: flyway/flyway
+    command: -url=jdbc:postgresql://postgres/gxpscxadev -schemas=atlasprd3 -user=atlasprd3 -password=atlasprd3 -connectRetries=60 migrate
+    volumes:
+      - ../atlas-web-core/src/test/resources/schemas/flyway/scxa/:/flyway/sql
+    depends_on:
+      - postgres
+
+  #### Web server and filesystem
+
+  tomcat:
+    image: tomcat:latest
+    environment:
+      JPDA_ADDRESS: "*:8000"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./build/libs:/usr/local/tomcat/webapps
+      - /home/alf/Projects/atlas/integration-test-data/filesystem:/atlas-data
+      - scxa_tomcat_conf:/usr/local/tomcat/conf
+    depends_on:
+      - postgres
+      - solr1
+      - solr2
+
+volumes:
+  scxa_tomcat_conf:

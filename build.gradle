@@ -12,15 +12,8 @@ plugins {
 }
 
 war {
-    archiveName 'sc.war'
+    archiveName 'gxa#sc.war'
 }
-
-task explodedWar(type: Copy) {
-    into "$buildDir/exploded"
-    with war
-}
-
-war.dependsOn explodedWar
 
 group 'uk.ac.ebi.ge'
 version '11.0.0-SNAPSHOT'

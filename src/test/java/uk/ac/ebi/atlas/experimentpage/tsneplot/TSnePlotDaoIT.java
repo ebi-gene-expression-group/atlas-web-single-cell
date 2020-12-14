@@ -56,8 +56,8 @@ class TSnePlotDaoIT {
                 new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"));
         populator.execute(dataSource);
     }
 
@@ -68,8 +68,8 @@ class TSnePlotDaoIT {
                 new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership_delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"));
         populator.execute(dataSource);
     }
 

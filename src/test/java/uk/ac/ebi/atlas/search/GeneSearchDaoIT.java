@@ -60,7 +60,9 @@ class GeneSearchDaoIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_marker_genes-fixture.sql"));
+				new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"));
         populator.execute(dataSource);
     }
 
@@ -70,7 +72,9 @@ class GeneSearchDaoIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"));
+				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -157,7 +161,7 @@ class GeneSearchDaoIT {
                 minimumMarkerProbabilities.keySet().asList().get(RNG.nextInt(minimumMarkerProbabilities.size()));
 
         var markerProbabilitiies = namedParameterJdbcTemplate.queryForList(
-                "SELECT marker_probability FROM scxa_marker_genes WHERE gene_id=:gene_id",
+                "SELECT marker_probability FROM scxa_cell_group_marker_genes WHERE gene_id=:gene_id",
                 ImmutableMap.of("gene_id", randomGeneId),
                 Double.class);
 

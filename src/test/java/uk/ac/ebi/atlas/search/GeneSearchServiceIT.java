@@ -43,7 +43,7 @@ class GeneSearchServiceIT {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_marker_genes-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"));
         populator.execute(dataSource);
     }
 
@@ -52,7 +52,7 @@ class GeneSearchServiceIT {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"));
         populator.execute(dataSource);
     }
 

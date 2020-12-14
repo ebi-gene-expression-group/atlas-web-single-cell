@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,8 +49,8 @@ class JsonMarkerGenesControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/{k}";
-    private static final String markerGeneCellTypeURL = "/experiments/{experimentAccession}/marker-genes/cell-types";
+    private static final String CLUSTER_MARKER_GENES_URL_TEMPLATE = "/json/experiments/{experimentAccession}/marker-genes/{k}";
+    private static final String CELL_TYPE_MARKER_GENES_URL_TEMPLATE = "/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -90,7 +91,7 @@ class JsonMarkerGenesControllerWIT {
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
 
         this.mockMvc
-                .perform(get(urlTemplate, experimentAccession, k))
+                .perform(get(CLUSTER_MARKER_GENES_URL_TEMPLATE, experimentAccession, k))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].clusterIdWhereMarker", isA(Number.class)))
@@ -101,10 +102,11 @@ class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
     }
 
-    @Test
+    // TODO Re-enable test when we plug CellTypeSearchDao in MarkerGeneServiceImpl
+    @Ignore
     void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneCellTypeURL, "E-EHCA-2")
+                .perform(get(CELL_TYPE_MARKER_GENES_URL_TEMPLATE, "E-EHCA-2")
                         .param("organismPart", "skin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -120,7 +122,7 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void invalidExperimentAccessionReturnsEmptyPayload() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneCellTypeURL, "FOO")
+                .perform(get(CELL_TYPE_MARKER_GENES_URL_TEMPLATE, "FOO")
                         .param("organismPart", "skin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

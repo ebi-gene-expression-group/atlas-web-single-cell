@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.io.ClassPathResource;
@@ -54,7 +55,8 @@ class MarkerGeneServiceIT {
         subject = new MarkerGeneServiceImpl(markerGenesDao);
     }
 
-    @Test
+    // TODO Re-enable test when we plug CellTypeSearchDao in MarkerGeneServiceImpl
+    @Ignore
     void getMarkerGeneProfileForTheValidExperimentAccession() {
         assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
                 .isNotEmpty();

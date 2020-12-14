@@ -125,19 +125,19 @@ class GeneSearchDaoIT {
     }
 
     @ParameterizedTest
-    @CsvSource({"'ENSMUSG00000005360', 'E-GEOD-99058', 6"})
+    @CsvSource({"'ENSMUSG00000031980', 'E-GEOD-99058', 2"})
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
                                                                                   Integer preferredK){
         var result =
                 subject.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
                         geneId, experimentAccession, preferredK, 0);
-
+        
         assertThat(result)
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                6, ImmutableList.of(3)));
+                                2, ImmutableList.of(1)));
     }
 
     @ParameterizedTest

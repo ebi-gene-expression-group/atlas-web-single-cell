@@ -78,7 +78,7 @@ public class GeneSearchDao {
 					"         INNER JOIN experiment AS exp ON exp.accession = cell_group.experiment_accession" +
 					"         INNER JOIN scxa_cell_group_marker_genes AS marker_genes ON marker_genes.gene_id = :gene_id " +
 					"WHERE private = FALSE GROUP BY experiment_accession";
-    
+
     @Transactional(readOnly = true)
     public List<String> fetchExperimentAccessionsWhereGeneIsMarker(String geneId) {
         Map<String, Object> namedParameters =
@@ -102,17 +102,20 @@ public class GeneSearchDao {
     // A helper method for the query below, see GeneSearchService::fetchClusterIDWithPreferredKAndMinPForGeneID
     // In terms of design it would’ve been more consistent a cached method in GeneSearchService, but because of Spring
     // limitations, caching isn’t possible between methods within a class.
-    private static final String SELECT_MIN_MARKER_PROBABILITY_STATEMENT =
-            "SELECT gene_id, MIN(marker_probability) AS min FROM scxa_marker_genes " +
-                    "WHERE experiment_accession = :experiment_accession " +
-                    "GROUP BY gene_id";
+    private static final String SELECT_MIN_MARKER_PROBABILITY_GENES_STATEMENT =
+            "SELECT gene_id AS gene_id, MIN(marker_probability) AS min " +
+					"FROM scxa_cell_group_marker_genes AS marker_genes" +
+					"INNER JOIN scxa_cell_group AS cell_group ON cell_group.id = marker_genes.cell_group_id " +
+					"WHERE cell_group.experiment_accession = :experiment_accession " +
+					"GROUP BY gene_id";
+    
     @Cacheable("minimumMarkerProbability")
     @Transactional(readOnly = true)
     public ImmutableMap<String, Double> fetchMinimumMarkerProbability(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_MIN_MARKER_PROBABILITY_STATEMENT,
+				SELECT_MIN_MARKER_PROBABILITY_GENES_STATEMENT,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     var resultsBuilder = ImmutableMap.<String, Double>builder();

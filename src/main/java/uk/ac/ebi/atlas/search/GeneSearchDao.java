@@ -155,7 +155,7 @@ public class GeneSearchDao {
                 ImmutableMap.of(
                         "gene_id", geneId,
                         "threshold", MARKER_GENE_P_VALUE_THRESHOLD,
-                        "preferred_K", preferredK,
+                        "preferred_K", String.valueOf(preferredK),
                         "experiment_accession", experimentAccession,
                         "min_marker_probability", minMarkerProbability);
 
@@ -166,8 +166,8 @@ public class GeneSearchDao {
                     Map<Integer, List<Integer>> result = new HashMap<>();
 
                     while (resultSet.next()) {
-                        Integer k = resultSet.getInt("k");
-                        Integer clusterId = resultSet.getInt("cluster_id");
+                        Integer k = Integer.valueOf(resultSet.getString("k"));
+                        Integer clusterId = Integer.valueOf(resultSet.getString("cluster_id"));
                         List<Integer> clusterIds = result.getOrDefault(k, new ArrayList<>());
                         clusterIds.add(clusterId);
                         result.put(k, clusterIds);

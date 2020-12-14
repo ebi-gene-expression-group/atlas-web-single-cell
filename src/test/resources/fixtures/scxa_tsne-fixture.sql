@@ -165,7 +165,6 @@ INSERT INTO scxa_tsne(experiment_accession, cell_id, x, y, perplexity) VALUES ('
 INSERT INTO scxa_tsne(experiment_accession, cell_id, x, y, perplexity) VALUES ('E-CURD-4', 'SRR8206656-GCACCCCCTGTA', -6.0852103, -79.25744, 50);
 INSERT INTO scxa_tsne(experiment_accession, cell_id, x, y, perplexity) VALUES ('E-CURD-4', 'SRR8206656-TACCCAGACGAA', -31.315754, -19.091183, 15);
 INSERT INTO scxa_tsne(experiment_accession, cell_id, x, y, perplexity) VALUES ('E-CURD-4', 'SRR8206656-CTGCGCCCTCCA', 77.91175, -31.606047, 35);
-INSERT INTO scxa_tsne(experiment_accession, cell_id, x, y, perplexity) VALUES ('', '', , , );
 INSERT INTO scxa_tsne(experiment_accession, cell_id, x, y, perplexity) VALUES ('E-CURD-4', 'SRR8206660-TAGTTTCAGGGG', -95.14927, 17.975334, 5);
 INSERT INTO scxa_tsne(experiment_accession, cell_id, x, y, perplexity) VALUES ('E-CURD-4', 'SRR8206656-GTTGAGAACGGG', 16.056122, -72.78406, 15);
 INSERT INTO scxa_tsne(experiment_accession, cell_id, x, y, perplexity) VALUES ('E-CURD-4', 'SRR8206656-AAGCACGATGTG', 86.68817, -52.15753, 5);

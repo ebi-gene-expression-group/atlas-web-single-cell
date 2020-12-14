@@ -104,8 +104,9 @@ public class GeneSearchDao {
     // limitations, caching isn’t possible between methods within a class.
     private static final String SELECT_MIN_MARKER_PROBABILITY_GENES_STATEMENT =
             "SELECT gene_id AS gene_id, MIN(marker_probability) AS min " +
-					"FROM scxa_cell_group_marker_genes AS marker_genes" +
-					"INNER JOIN scxa_cell_group AS cell_group ON cell_group.id = marker_genes.cell_group_id " +
+					"FROM scxa_cell_group_marker_genes AS marker_genes " +
+					"INNER JOIN scxa_cell_group AS cell_group " +
+					"ON cell_group.id = marker_genes.cell_group_id " +
 					"WHERE cell_group.experiment_accession = :experiment_accession " +
 					"GROUP BY gene_id";
 

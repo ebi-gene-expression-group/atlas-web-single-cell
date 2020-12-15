@@ -85,9 +85,7 @@ class JsonMarkerGenesControllerWIT {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-	// TODO - this would be fixed in the PR: https://github.com/ebi-gene-expression-group/atlas-web-single-cell/pull/113
     @Test
-	@Ignore
     void payloadIsValidJson() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);

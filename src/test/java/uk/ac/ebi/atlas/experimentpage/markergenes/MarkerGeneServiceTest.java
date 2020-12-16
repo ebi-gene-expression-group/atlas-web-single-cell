@@ -65,10 +65,9 @@ public class MarkerGeneServiceTest {
         assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin")).isEmpty();
     }
 
-    private List<CellTypeMarkerGene> mockTestData() {
+    private List<MarkerGene> mockTestData() {
         return ImmutableList.of(
-                CellTypeMarkerGene.create("1", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0, "T cell", 125.258405, 563.54442),
-                CellTypeMarkerGene.create("2", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0, "T cell", 125.258405, 563.54442));
+                MarkerGene.create("1", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0, "T cell", 125.258405, 563.54442), MarkerGene.create("2", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0, "T cell", 125.258405, 563.54442));
     }
 }
 

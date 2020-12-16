@@ -1,42 +1,51 @@
-version: '3.4'
+version: "3.6"
+
 services:
   #### SolrCloud
-
-  zoo1:
+  zk-1:
     image: zookeeper:3.4.14
+    container_name: scxa-zk-1
+    networks:
+      - scxa
     restart: always
-    hostname: zoo1
     volumes:
       - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo1/data:/data
       - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo1/datalog:/datalog
     environment:
       ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=scxa-zk-3:2888:3888
 
-  zoo2:
+  zk-2:
     image: zookeeper:3.4.14
+    container_name: scxa-zk-2
+    networks:
+      - scxa
     restart: always
-    hostname: zoo2
     volumes:
       - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo2/data:/data
       - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo2/datalog:/datalog
     environment:
       ZOO_MY_ID: 2
-      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=zoo3:2888:3888
+      ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=scxa-zk-3:2888:3888
 
-  zoo3:
+  zk-3:
     image: zookeeper:3.4.14
+    container_name: scxa-zk-3
+    networks:
+      - scxa
     restart: always
-    hostname: zoo3
     volumes:
       - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo3/data:/data
       - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo3/datalog:/datalog
     environment:
       ZOO_MY_ID: 3
-      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=0.0.0.0:2888:3888
+      ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=0.0.0.0:2888:3888
 
-  solr1:
+  solrcloud-1:
     image: solr:7.1
+    container_name: scxa-solrcloud-1
+    networks:
+      - scxa
     ports:
       - "8983:8983"
     volumes:
@@ -45,14 +54,17 @@ services:
       - SOLR_HOME=/var/solr
       - SOLR_HEAP=2g
       - SOLR_OPTS=-Denable.runtime.lib=true
-      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
+      - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
     depends_on:
-      - zoo1
-      - zoo2
-      - zoo3
+      - zk-1
+      - zk-2
+      - zk-3
 
-  solr2:
+  solrcloud-2:
     image: solr:7.1.0
+    container_name: scxa-solrcloud-2
+    networks:
+      - scxa
     ports:
       - "8984:8983"
     volumes:
@@ -61,17 +73,20 @@ services:
       - SOLR_HOME=/var/solr
       - SOLR_HEAP=2g
       - SOLR_OPTS=-Denable.runtime.lib=true
-      - ZK_HOST=zoo1:2181,zoo2:2181,zoo3:2181
+      - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
     depends_on:
-      - zoo1
-      - zoo2
-      - zoo3
+      - zk-1
+      - zk-2
+      - zk-3
 
   #### Database
-
   postgres:
     image: postgres:10-alpine
+    container_name: $POSTGRES_HOST
+    networks:
+      - scxa
     restart: always
+    command: -c max_wal_size=2GB
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_USER: atlasprd3
@@ -91,9 +106,11 @@ services:
       - postgres
 
   #### Web server and filesystem
-
   tomcat:
-    image: tomcat:latest
+    image: tomcat:8-jdk11
+    container_name: scxa-tomcat
+    networks:
+      - scxa
     environment:
       JPDA_ADDRESS: "*:8000"
     ports:
@@ -104,8 +121,13 @@ services:
       - scxa_tomcat_conf:/usr/local/tomcat/conf
     depends_on:
       - postgres
-      - solr1
-      - solr2
+      - solrcloud-1
+      - solrcloud-2
 
 volumes:
-  scxa_tomcat_conf:
+  tomcat-conf:
+    name: scxa-tomcat-conf
+
+networks:
+  scxa:
+    name: scxa

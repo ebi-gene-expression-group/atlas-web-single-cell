@@ -9,8 +9,8 @@ services:
       - scxa
     restart: always
     volumes:
-      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo1/data:/data
-      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo1/datalog:/datalog
+      - $ATLAS_DATA_PATH/solrcloud/scxa/zoo1/data:/data
+      - $ATLAS_DATA_PATH/solrcloud/scxa/zoo1/datalog:/datalog
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=scxa-zk-3:2888:3888
@@ -22,8 +22,8 @@ services:
       - scxa
     restart: always
     volumes:
-      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo2/data:/data
-      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo2/datalog:/datalog
+      - $ATLAS_DATA_PATH/solrcloud/scxa/zoo2/data:/data
+      - $ATLAS_DATA_PATH/solrcloud/scxa/zoo2/datalog:/datalog
     environment:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=scxa-zk-3:2888:3888
@@ -35,8 +35,8 @@ services:
       - scxa
     restart: always
     volumes:
-      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo3/data:/data
-      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/zoo3/datalog:/datalog
+      - $ATLAS_DATA_PATH/solrcloud/scxa/zoo3/data:/data
+      - $ATLAS_DATA_PATH/solrcloud/scxa/zoo3/datalog:/datalog
     environment:
       ZOO_MY_ID: 3
       ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=0.0.0.0:2888:3888
@@ -49,7 +49,7 @@ services:
     ports:
       - "8983:8983"
     volumes:
-      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/solr1:/var/solr
+      - $ATLAS_DATA_PATH/solrcloud/scxa/solr1:/var/solr
     environment:
       - SOLR_HOME=/var/solr
       - SOLR_HEAP=2g
@@ -68,7 +68,7 @@ services:
     ports:
       - "8984:8983"
     volumes:
-      - /home/alf/Projects/atlas/integration-test-data/solrcloud/scxa/solr2:/var/solr
+      - $ATLAS_DATA_PATH/solrcloud/scxa/solr2:/var/solr
     environment:
       - SOLR_HOME=/var/solr
       - SOLR_HEAP=2g
@@ -88,18 +88,21 @@ services:
     restart: always
     command: -c max_wal_size=2GB
     environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_USER: atlasprd3
-      POSTGRES_PASSWORD: atlasprd3
-      POSTGRES_DB: gxpscxadev
+      PGDATA: /var/lib/postgresql/scxa/pgdata
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $POSTGRES_DB
     ports:
       - "5432:5432"
     volumes:
-      - /home/alf/Projects/atlas/integration-test-data/postgres/scxa:/var/lib/postgresql/data/pgdata
+      - $ATLAS_DATA_PATH/postgresql/scxa:/var/lib/postgresql/scxa
 
   flyway:
     image: flyway/flyway
-    command: -url=jdbc:postgresql://postgres/gxpscxadev -schemas=atlasprd3 -user=atlasprd3 -password=atlasprd3 -connectRetries=60 migrate
+    container_name: scxa-flyway
+    networks:
+      - scxa
+    command: -url=jdbc:postgresql://$POSTGRES_HOST/$POSTGRES_DB -schemas=$POSTGRES_USER -user=$POSTGRES_USER -password=$POSTGRES_PASSWORD -connectRetries=60 migrate
     volumes:
       - ../atlas-web-core/src/test/resources/schemas/flyway/scxa/:/flyway/sql
     depends_on:
@@ -117,8 +120,8 @@ services:
       - "8080:8080"
     volumes:
       - ./build/libs:/usr/local/tomcat/webapps
-      - /home/alf/Projects/atlas/integration-test-data/filesystem:/atlas-data
-      - scxa_tomcat_conf:/usr/local/tomcat/conf
+      - $ATLAS_DATA_PATH/filesystem:/atlas-data
+      - tomcat-conf:/usr/local/tomcat/conf
     depends_on:
       - postgres
       - solrcloud-1

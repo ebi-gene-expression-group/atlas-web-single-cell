@@ -22,6 +22,8 @@ public class MarkerGeneService {
      * @param organismPart
      * @param experimentAccession
      * @return ImmutableList of CellTypeMarkerGene Objects
+     * @return ImmutableList<MarkerGene> of cell type marker genes
+     * Objects as a value
      */
     public ImmutableList<CellTypeMarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart) {
 
@@ -36,4 +38,13 @@ public class MarkerGeneService {
                 .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))
                 .collect(toImmutableList());
     }
+    ImmutableList<MarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, String organismPart);
+
+    /**
+     * @param experimentAccession - Id of the experiment
+     * @param k                   - no of clusters
+     * @return ImmutableList<MarkerGene> of marker genes
+     * Objects as a value
+     */
+    ImmutableList<MarkerGene> getMarkerGenesPerCluster(String experimentAccession, String k);
 }

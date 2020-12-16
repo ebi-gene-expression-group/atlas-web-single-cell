@@ -49,9 +49,9 @@ class HighchartsHeatmapAdapterTest {
                                 gene2, geneSymbol2));
 
         var markerGenes = ImmutableList.of(
-                MarkerGene.create(gene1, 1, 1, 0.004, 1, 199, 185),
-                MarkerGene.create(gene2, 1, 3, 0.0006, 2, 12, 1.11),
-                MarkerGene.create(gene3, 1, 5, 0.001, 6, 1000, 10000));
+                MarkerGene.create(gene1, "1", "1", 0.004, "1", 199, 185),
+                MarkerGene.create(gene2, "1", "3", 0.0006, "2", 12, 1.11),
+                MarkerGene.create(gene3, "1", "5", 0.001, "6", 1000, 10000));
 
         var result = subject.getMarkerGeneHeatmapData(markerGenes);
         assertThat(result).hasSize(3);
@@ -79,11 +79,11 @@ class HighchartsHeatmapAdapterTest {
                                 gene2, geneSymbol2));
 
         var cellTypeMarkerGenes = ImmutableList.of(
-                CellTypeMarkerGene.create(gene1, "inferred cell type", "CD8-positive, alpha-beta T cell", 0.004, "T cell", 199, 185),
-                CellTypeMarkerGene.create(gene2, "inferred cell type", "Not available", 0.0006, "Not available", 12, 1.11),
-                CellTypeMarkerGene.create(gene3, "inferred cell type", "T cell", 0.001, "B cell", 1000, 10000));
+                MarkerGene.create(gene1, "inferred cell type", "CD8-positive, alpha-beta T cell", 0.004, "T cell", 199, 185),
+                MarkerGene.create(gene2, "inferred cell type", "Not available", 0.0006, "Not available", 12, 1.11),
+                MarkerGene.create(gene3, "inferred cell type", "T cell", 0.001, "B cell", 1000, 10000));
 
-        var result = subject.getCellTypeMarkerGeneHeatmapData(cellTypeMarkerGenes);
+        var result = subject.getMarkerGeneHeatmapData(cellTypeMarkerGenes);
 
         assertThat(result).hasSize(3);
         assertThat(result).element(0).extracting("geneName").containsOnly(geneSymbol1);

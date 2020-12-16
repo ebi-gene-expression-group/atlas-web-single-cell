@@ -1,5 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,7 @@ import javax.sql.DataSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
+
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -72,4 +75,22 @@ class MarkerGeneServiceIT {
         assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .isEmpty();
     }
+
+    @Test
+    void getEmptyClusterMarkerGenesForTheInvalidExperimentAccession() {
+        assertThat(subject.getMarkerGenesPerCluster("FOO", "10"))
+                .isEmpty();
+    }
+
+	@Test
+	void getClusterMarkerGeneForTheValidExperimentAccession() {
+		assertThat(subject.getMarkerGenesPerCluster("E-EHCA-2", "10"))
+				.isNotEmpty();
+	}
+
+	@Test
+	void getEmptyCellTypeMarkerGenesForTheInvalidExperimentAccession() {
+		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "skin"))
+				.isEmpty();
+	}
 }

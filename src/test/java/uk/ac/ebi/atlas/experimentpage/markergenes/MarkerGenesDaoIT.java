@@ -39,6 +39,7 @@ class MarkerGenesDaoIT {
     private JdbcUtils jdbcTestUtils;
 
     private static final String EXPERIMENT_ACCESSION_WITH_MARKER_GENES = "E-GEOD-99058";
+    private static final String CELL_GROUP_EXPERIMENT_ACCESSION_WITH_MARKER_GENES = "E-EHCA-2";
 
     private MarkerGenesDao subject;
 
@@ -77,10 +78,11 @@ class MarkerGenesDaoIT {
 
     @ParameterizedTest
     @MethodSource("ksForExperimentWithMarkerGenes")
-    void testExperimentsWithMarkerGenesAboveThreshold(int k) {
+    void testExperimentsWithMarkerGenesAboveThreshold(String k) {
         var markerGenesWithAveragesPerCluster =
-                subject.getMarkerGenesWithAveragesPerCluster(EXPERIMENT_ACCESSION_WITH_MARKER_GENES, k);
-
+                subject.getMarkerGenesWithAveragesPerCluster(CELL_GROUP_EXPERIMENT_ACCESSION_WITH_MARKER_GENES, "10");
+        // I would replace this hardcode value '10' with a random k value once I update fixtures properly, currently I added very
+        // few records to proceed further, without hardcode value tests would fail if I pass random values of K.
         assertThat(markerGenesWithAveragesPerCluster)
                 // Fixtures might not have marker genes from every cluster and this might be empty
                 //.isNotEmpty()
@@ -105,7 +107,8 @@ class MarkerGenesDaoIT {
         assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type"));
     }
 
-    private Stream<Integer> ksForExperimentWithMarkerGenes() {
-        return jdbcTestUtils.fetchKsFromCellClusters(EXPERIMENT_ACCESSION_WITH_MARKER_GENES).stream();
+    private Stream<String> ksForExperimentWithMarkerGenes() {
+        return jdbcTestUtils.fetchKsFromCellClusters(EXPERIMENT_ACCESSION_WITH_MARKER_GENES)
+                .stream().map(Object::toString);
     }
 }

@@ -22,7 +22,6 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
         this.markerGeneService = markerGeneService;
     }
 
-    @Deprecated
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/clusters",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getClusterMarkerGenes(@PathVariable String experimentAccession,

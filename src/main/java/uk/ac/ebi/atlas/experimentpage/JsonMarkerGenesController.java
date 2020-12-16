@@ -37,7 +37,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
                 ));
     }
 
-    @GetMapping(value = "/experiments/{experimentAccession}/marker-genes/cell-types",
+    @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/cell-types",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getMarkerGeneExpressionProfile(@PathVariable String experimentAccession,
                                                  @RequestParam String organismPart) {

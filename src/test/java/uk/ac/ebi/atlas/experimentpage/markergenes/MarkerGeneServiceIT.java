@@ -1,7 +1,10 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import org.junit.Ignore;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -9,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
+import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -23,18 +27,20 @@ class MarkerGeneServiceIT {
     @Inject
     private DataSource dataSource;
     @Inject
-    MarkerGenesDao markerGenesDao;
-    MarkerGeneService subject;
+    private MarkerGenesDao markerGenesDao;
+    @Inject
+    private CellTypeSearchDao cellTypeSearchDao;
+    private MarkerGeneService subject;
 
     @BeforeAll
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 
@@ -43,28 +49,27 @@ class MarkerGeneServiceIT {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats_delete.sql"));
         populator.execute(dataSource);
     }
 
     @BeforeEach
     void setUp() {
-        subject = new MarkerGeneServiceImpl(markerGenesDao);
+        subject = new MarkerGeneService(markerGenesDao, cellTypeSearchDao);
     }
 
-    // TODO Re-enable test when we plug CellTypeSearchDao in MarkerGeneServiceImpl
-    @Ignore
+    @Test
     void getMarkerGeneProfileForTheValidExperimentAccession() {
-        assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "skin"))
+        assertThat(subject.getCellTypeMarkerGeneProfile("E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .isNotEmpty();
     }
 
     @Test
     void getEmptyMarkerGeneProfileForTheInvalidExperimentAccession() {
-        assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "skin"))
+        assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .isEmpty();
     }
 }

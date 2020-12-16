@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,10 +22,7 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-
 import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,8 +45,8 @@ class JsonMarkerGenesControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String CLUSTER_MARKER_GENES_URL_TEMPLATE = "/json/experiments/{experimentAccession}/marker-genes/{k}";
-    private static final String CELL_TYPE_MARKER_GENES_URL_TEMPLATE = "/experiments/{experimentAccession}/marker-genes/cell-types";
+    private static final String urlTemplate = "/json/experiments/{experimentAccession}/marker-genes/{k}";
+    private static final String markerGeneCellTypeURL = "/json/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -58,11 +54,16 @@ class JsonMarkerGenesControllerWIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
+                //Start - These marker gene tables test data would be removed soon after
+                // we replaces functionality with new cell group tables
+                new ClassPathResource("fixtures/scxa_marker_genes-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-fixture.sql"),
+                //End
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 
@@ -72,11 +73,16 @@ class JsonMarkerGenesControllerWIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                //Start - These marker gene tables deletion scripts would be removed soon after
+                // we replaces the functionality with new cell group tables
+                new ClassPathResource("fixtures/scxa_marker_genes-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
+                new ClassPathResource("fixtures/scxa_marker_gene_stats-delete.sql"),
+                //End
+                new ClassPathResource("fixtures/scxa_cell_group_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes_delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats_delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -85,14 +91,13 @@ class JsonMarkerGenesControllerWIT {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-	// TODO Re-enable test when we fix this one in the 'https://github.com/ebi-gene-expression-group/atlas-web-single-cell/pull/113'
-    @Ignore
+    @Test
     void payloadIsValidJson() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
 
         this.mockMvc
-                .perform(get(CLUSTER_MARKER_GENES_URL_TEMPLATE, experimentAccession, k))
+                .perform(get(urlTemplate, experimentAccession, k))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].clusterIdWhereMarker", isA(Number.class)))
@@ -103,13 +108,11 @@ class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
     }
 
-    // TODO Re-enable test when we plug CellTypeSearchDao in MarkerGeneServiceImpl
-	//TODO I fix this one in the pr: https://github.com/ebi-gene-expression-group/atlas-web-single-cell/pull/112
-    @Ignore
+    @Test
     void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
         this.mockMvc
-                .perform(get(CELL_TYPE_MARKER_GENES_URL_TEMPLATE, "E-EHCA-2")
-                        .param("organismPart", "skin"))
+                .perform(get(markerGeneCellTypeURL, "E-MTAB-5061")
+                        .param("organismPart", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].cellTypeValueWhereMarker", isA(String.class)))
@@ -121,14 +124,11 @@ class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
     }
 
-    //TODO I fix this one in the pr: https://github.com/ebi-gene-expression-group/atlas-web-single-cell/pull/112
-    @Ignore
-    void invalidExperimentAccessionReturnsEmptyPayload() throws Exception {
+    @Test
+    void invalidExperimentAccessionReturnsEmptyJson() throws Exception {
         this.mockMvc
-                .perform(get(CELL_TYPE_MARKER_GENES_URL_TEMPLATE, "FOO")
+                .perform(get(markerGeneCellTypeURL, "FOO")
                         .param("organismPart", "skin"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(0))));
+                .andExpect(status().is2xxSuccessful());
     }
 }

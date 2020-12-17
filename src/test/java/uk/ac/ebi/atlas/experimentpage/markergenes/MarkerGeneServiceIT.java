@@ -69,8 +69,9 @@ class MarkerGeneServiceIT {
 	}
 
 	@Test
+
 	void getMarkerGeneProfileForTheValidExperimentAccession() {
-		assertThat(subject.getCellTypeMarkerGeneProfile("E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264"))
+		assertThat(subject.getCellTypeMarkerGeneProfile("E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0000006"))
 				.isNotEmpty();
 	}
 

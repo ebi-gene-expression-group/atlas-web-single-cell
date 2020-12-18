@@ -85,7 +85,7 @@ known state; however Solr will reply with an error if the collections can’t be
 
 Again, this step will take a few minutes.
 
-## Tomcat
+### Tomcat
 Copy the Tomcat credentials file to the container. The `admin` role is used to access several admin endpoints in Single
 Cell Expression Atlas (e.g. `/admin/experiments/help`). Tomcat’s `conf` directory is persisted as a volume so that we
 need to do this only once:

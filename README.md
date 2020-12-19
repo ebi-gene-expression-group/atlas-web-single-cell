@@ -96,7 +96,7 @@ docker cp tomcat-users.xml scxa-tomcat:/usr/local/tomcat/conf
 Run the Gradle task `war` in the `atlas-web-single-cell` directory:
 ```bash
 cd atlas-web-single-cell
-./gradlew war
+./gradlew -PbuildProfile=docker war
 ```
 
 You should now have the file `build/libs/gxa#sc.war` which by default Tomcat’s naming conventions will be served at

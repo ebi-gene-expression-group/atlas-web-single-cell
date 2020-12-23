@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,10 +69,10 @@ class MarkerGeneServiceIT {
 		subject = new MarkerGeneService(markerGenesDao, cellTypeSearchDao);
 	}
 
-	@Test
-
+//    TODO: Re enable this test once we receive proper test data
+	@Ignore
 	void getMarkerGeneProfileForTheValidExperimentAccession() {
-		assertThat(subject.getCellTypeMarkerGeneProfile("E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0000006"))
+		assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "http://purl.obolibrary.org/obo/UBERON_0000061"))
 				.isNotEmpty();
 	}
 

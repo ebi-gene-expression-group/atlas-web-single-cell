@@ -19,7 +19,6 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,8 +40,8 @@ class JsonMarkerGenesControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String markerGeneclusterURL = "/json/experiments/{experimentAccession}/marker-genes/clusters";
-    private static final String markerGeneCellTypeURL = "/experiments/{experimentAccession}/marker-genes/cell-types";
+    private static final String markerGeneClusterURL = "/json/experiments/{experimentAccession}/marker-genes/clusters";
+    private static final String markerGeneCellTypeURL = "/json/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -82,7 +81,7 @@ class JsonMarkerGenesControllerWIT {
         var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
         this.mockMvc
-                .perform(get(markerGeneclusterURL, experimentAccession)
+                .perform(get(markerGeneClusterURL, experimentAccession)
                         .param("k", k))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

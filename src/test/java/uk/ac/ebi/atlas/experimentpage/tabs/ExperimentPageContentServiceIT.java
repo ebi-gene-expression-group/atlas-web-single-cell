@@ -62,8 +62,8 @@ class ExperimentPageContentServiceIT {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-fixture-alt.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-fixture-alt.sql"));
+				new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
+				new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"));
         populator.execute(dataSource);
     }
 

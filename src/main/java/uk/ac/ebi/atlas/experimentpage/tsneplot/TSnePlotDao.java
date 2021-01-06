@@ -21,7 +21,7 @@ public class TSnePlotDao {
             "SELECT tsne.cell_id, tsne.x, tsne.y, analytics.expression_level " +
                     "FROM scxa_tsne AS tsne " +
                     "LEFT JOIN " +
-                    "(SELECT * FROM scxa_analytics WHERE gene_id=:gene_id) AS analytics " +
+                    "(SELECT * FROM scxa_analytics WHERE gene_id=:gene_id and experiment_accession=:experiment_accession) AS analytics " +
                     "ON analytics.cell_id=tsne.cell_id AND analytics.experiment_accession=tsne.experiment_accession " +
                     "WHERE tsne.experiment_accession=:experiment_accession AND tsne.perplexity=:perplexity";
 

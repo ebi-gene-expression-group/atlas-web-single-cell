@@ -165,9 +165,9 @@ public class GeneSearchDao {
                     Map<Integer, List<Integer>> result = new HashMap<>();
 
                     while (resultSet.next()) {
-                        Integer k = Integer.valueOf(resultSet.getString("k"));
-                        Integer clusterId = Integer.valueOf(resultSet.getString("cluster_id"));
-                        List<Integer> clusterIds = result.getOrDefault(k, new ArrayList<>());
+                        var k = Integer.valueOf(resultSet.getString("k"));
+                        var clusterId = Integer.valueOf(resultSet.getString("cluster_id"));
+                        var clusterIds = result.getOrDefault(k, new ArrayList<>());
                         clusterIds.add(clusterId);
                         result.put(k, clusterIds);
                     }

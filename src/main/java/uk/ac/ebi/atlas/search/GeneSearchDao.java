@@ -75,8 +75,8 @@ public class GeneSearchDao {
 
     private static final String SELECT_EXPERIMENT_ACCESSIONS_FOR_MARKER_GENE_ID =
 			"SELECT experiment_accession FROM scxa_cell_group AS cell_group" +
-					"         INNER JOIN experiment AS exp ON exp.accession = cell_group.experiment_accession" +
-					"         INNER JOIN scxa_cell_group_marker_genes AS marker_genes ON marker_genes.gene_id = :gene_id " +
+					"INNER JOIN experiment AS exp ON exp.accession = cell_group.experiment_accession" +
+					"INNER JOIN scxa_cell_group_marker_genes AS marker_genes ON marker_genes.gene_id = :gene_id " +
 					"WHERE private = FALSE GROUP BY experiment_accession";
 
     @Transactional(readOnly = true)
@@ -142,7 +142,7 @@ public class GeneSearchDao {
 			"SELECT variable as k, value as cluster_id " +
 					"FROM scxa_cell_group AS cell_group " +
 					"INNER JOIN scxa_cell_group_marker_genes AS marker_genes " +
-					"ON cell_group.id = marker_genes.cell_group_id "+ 
+					"ON cell_group.id = marker_genes.cell_group_id "+
 					"WHERE marker_genes.marker_probability < :threshold " +
 					"AND (variable = :preferred_K OR marker_probability = :min_marker_probability)" +
 					"AND gene_id = :gene_id " +

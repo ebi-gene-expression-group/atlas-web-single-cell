@@ -22,7 +22,7 @@ public class TSnePlotDao {
                     "FROM scxa_tsne AS tsne " +
                     "LEFT JOIN " +
                     "(SELECT * FROM scxa_analytics WHERE gene_id=:gene_id and experiment_accession=:experiment_accession) AS analytics " +
-                    "ON analytics.cell_id=tsne.cell_id AND analytics.experiment_accession=tsne.experiment_accession " +
+                    "ON analytics.cell_id=tsne.cell_id " +
                     "WHERE tsne.experiment_accession=:experiment_accession AND tsne.perplexity=:perplexity";
 
     @Transactional(transactionManager = "txManager", readOnly = true)

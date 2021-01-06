@@ -142,10 +142,11 @@ public class GeneSearchDao {
 			"SELECT variable as k, value as cluster_id " +
 					"FROM scxa_cell_group AS cell_group " +
 					"INNER JOIN scxa_cell_group_marker_genes AS marker_genes " +
-					"ON marker_genes.marker_probability < :threshold " +
+					"ON cell_group.id = marker_genes.cell_group_id "+ 
+					"WHERE marker_genes.marker_probability < :threshold " +
 					"AND (variable = :preferred_K OR marker_probability = :min_marker_probability)" +
-					"AND cell_group.id = marker_genes.cell_group_id AND gene_id = :gene_id " +
-					"WHERE experiment_accession = :experiment_accession;";
+					"AND gene_id = :gene_id " +
+					"AND experiment_accession = :experiment_accession;";
 
     @Transactional(readOnly = true)
     public Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(

@@ -49,7 +49,7 @@ public class TSnePlotDao {
 					"                LEFT JOIN" +
 					"                (SELECT mem.*, g.value as cluster_id FROM scxa_cell_group_membership as mem JOIN  scxa_cell_group g" +
 					"                    on mem.cell_group_id = g.id WHERE g.variable = :k AND mem.experiment_accession = :experiment_accession) AS clusters" +
-					"                ON clusters.cell_id=tsne.cell_id AND clusters.experiment_accession=tsne.experiment_accession" +
+					"                ON clusters.cell_id=tsne.cell_id " +
 					"            WHERE tsne.experiment_accession = :experiment_accession AND tsne.perplexity = :perplexity";
 
     @Transactional(transactionManager = "txManager", readOnly = true)

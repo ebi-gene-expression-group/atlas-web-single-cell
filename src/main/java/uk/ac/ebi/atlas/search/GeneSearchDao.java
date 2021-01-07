@@ -139,12 +139,14 @@ public class GeneSearchDao {
     // taking about 50 seconds. See https://www.pivotaltracker.com/story/show/173033902 for a full report and detailed
     // benchmarks.
     private static final String SELECT_PREFERRED_K_AND_MIN_P_CLUSTER_ID_FOR_GENE_STATEMENT =
-			"SELECT variable as k, value as cluster_id FROM scxa_cell_group AS cell_group " +
+			"SELECT variable as k, value as cluster_id " +
+					"FROM scxa_cell_group AS cell_group " +
 					"INNER JOIN scxa_cell_group_marker_genes AS marker_genes " +
 					"ON cell_group.id = marker_genes.cell_group_id "+
 					"WHERE marker_genes.marker_probability < :threshold " +
-					"AND (variable = :preferred_K OR marker_probability = :min_marker_probability) " +
-					"AND gene_id = :gene_id AND experiment_accession = :experiment_accession";
+					"AND (variable = :preferred_K OR marker_probability = :min_marker_probability)" +
+					"AND gene_id = :gene_id " +
+					"AND experiment_accession = :experiment_accession;";
 
     @Transactional(readOnly = true)
     public Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(

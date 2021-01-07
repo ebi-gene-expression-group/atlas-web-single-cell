@@ -118,14 +118,16 @@ class GeneSearchDaoIT {
         var result =
                 subject.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
                         geneId, experimentAccession, preferredK, minimumMarkerProbability);
-        System.out.println("result:"+result);
 
         assertThat(result)
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
                                 29, ImmutableList.of(28)));
-        // May be we need to improve this test a bit, But I am fixing this one temporary
+
+     /* TODO:   Previously this test returning preferred 'K' and cluster id as a pair.we could see two combinations 6,3 and 4,2 for k value 6.
+         But now I am passing preferred K 29 as per latest test data, I could see a pair but Map size is one that is 29,28. I was suspecting
+         that we need improve test data. Need to improve this in the next Iteration.Need to get more context from @Alfonso on this.*/
     }
 
     @ParameterizedTest

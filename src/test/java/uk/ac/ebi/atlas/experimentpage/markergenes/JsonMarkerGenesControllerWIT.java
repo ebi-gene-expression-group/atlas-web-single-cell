@@ -32,76 +32,76 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonMarkerGenesControllerWIT {
 
-	@Inject
-	private DataSource dataSource;
+    @Inject
+    private DataSource dataSource;
 
-	@Inject
-	private JdbcUtils jdbcTestUtils;
+    @Inject
+    private JdbcUtils jdbcTestUtils;
 
-	@Autowired
-	private WebApplicationContext wac;
+    @Autowired
+    private WebApplicationContext wac;
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	private static final String markerGeneClusterURL = "/json/experiments/{experimentAccession}/marker-genes/clusters";
-	private static final String markerGeneCellTypeURL = "/json/experiments/{experimentAccession}/marker-genes/cell-types";
+    private static final String markerGeneClusterURL = "/json/experiments/{experimentAccession}/marker-genes/clusters";
+    private static final String markerGeneCellTypeURL = "/json/experiments/{experimentAccession}/marker-genes/cell-types";
 
-	@BeforeAll
-	void populateDatabaseTables() {
-		var populator = new ResourceDatabasePopulator();
-		populator.addScripts(
-				new ClassPathResource("fixtures/experiment-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-fixture.sql"));
-		populator.execute(dataSource);
-	}
+    @BeforeAll
+    void populateDatabaseTables() {
+        var populator = new ResourceDatabasePopulator();
+        populator.addScripts(
+                new ClassPathResource("fixtures/experiment-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-fixture.sql"));
+        populator.execute(dataSource);
+    }
 
-	@AfterAll
-	void cleanDatabaseTables() {
-		var populator = new ResourceDatabasePopulator();
-		populator.addScripts(
-				new ClassPathResource("fixtures/experiment-delete.sql"),
-				new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
-		populator.execute(dataSource);
-	}
+    @AfterAll
+    void cleanDatabaseTables() {
+        var populator = new ResourceDatabasePopulator();
+        populator.addScripts(
+                new ClassPathResource("fixtures/experiment-delete.sql"),
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
+        populator.execute(dataSource);
+    }
 
-	@BeforeEach
-	void setUp() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-	}
+    @BeforeEach
+    void setUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    }
 
-	@Test
-	void payloadIsValidJson() throws Exception {
-		var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
-		var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
-		this.mockMvc
-				.perform(get(markerGeneClusterURL, experimentAccession)
-						.param("k", k))
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
-				.andExpect(jsonPath("$[0].x", isA(Number.class)))
-				.andExpect(jsonPath("$[0].y", isA(Number.class)))
-				.andExpect(jsonPath("$[0].geneName", isA(String.class)))
-				.andExpect(jsonPath("$[0].value", isA(Number.class)))
-				.andExpect(jsonPath("$[0].pValue", isA(Number.class)));
-	}
+    @Test
+    void payloadIsValidJson() throws Exception {
+        var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
+        var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
+        this.mockMvc
+                .perform(get(markerGeneClusterURL, experimentAccession)
+                        .param(k, "k")
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
+                .andExpect(jsonPath("$[0].x", isA(Number.class)))
+                .andExpect(jsonPath("$[0].y", isA(Number.class)))
+                .andExpect(jsonPath("$[0].geneName", isA(String.class)))
+                .andExpect(jsonPath("$[0].value", isA(Number.class)))
+                .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
+    }
 
-	@Test
-	void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
-		this.mockMvc
-				.perform(get(markerGeneCellTypeURL, "E-MTAB-5061")
-						.param("organismPart", "http://purl.obolibrary.org/obo/UBERON_0001264"))
-				.andExpect(status().isOk());
+    @Test
+    void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
+        this.mockMvc
+                .perform(get(markerGeneCellTypeURL, "E-MTAB-5061")
+                        .param("organismPart", "http://purl.obolibrary.org/obo/UBERON_0001264"))
+                .andExpect(status().isOk());
 //                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 //                .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
 //                .andExpect(jsonPath("$[0].cellGroupValue", isA(String.class)))
@@ -110,15 +110,15 @@ class JsonMarkerGenesControllerWIT {
 //                .andExpect(jsonPath("$[0].geneName", isA(String.class)))
 //                .andExpect(jsonPath("$[0].value", isA(Number.class)))
 //                .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
-		// TODO: For this test I am getting empty payload, I need to check with Alfonso for proper test inputs to send Solr, Currently Solr giving empty
-		//  cell types,so DB giving empty result. We will re enable this piece of code after fixing these test case inputs.
-	}
+        // TODO: For this test I am getting empty payload, I need to check with Alfonso for proper test inputs to send Solr, Currently Solr giving empty
+        //  cell types,so DB giving empty result. We will re enable this piece of code after fixing these test case inputs.
+    }
 
-	@Test
-	void invalidExperimentAccessionReturnsEmptyJson() throws Exception {
-		this.mockMvc
-				.perform(get(markerGeneCellTypeURL, "FOO")
-						.param("organismPart", "skin"))
-				.andExpect(status().is2xxSuccessful());
-	}
+    @Test
+    void invalidExperimentAccessionReturnsEmptyJson() throws Exception {
+        this.mockMvc
+                .perform(get(markerGeneCellTypeURL, "FOO")
+                        .param("organismPart", "skin"))
+                .andExpect(status().is2xxSuccessful());
+    }
 }

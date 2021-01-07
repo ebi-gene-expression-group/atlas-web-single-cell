@@ -59,7 +59,12 @@ class GeneSearchServiceIT {
         populator.execute(dataSource);
     }
 
-    @Ignore
+	/**
+	 * As per @alfonsomunozpomer, the Clustering algorithm has been changed and we don't have a file that contains all k values that are false boolean flag.
+	 * He said that we will have a discussion with the curation team or bioinformatics team to find the right file location &
+	 * Asked me to @Ignore
+	 */
+	@Ignore
     @MethodSource("experimentAccesionWithoutPreferredKProvider")
 //	@ParameterizedTest
     void experimentsWithoutPreferredKReturnASingleProfile(String experimentAccession) {

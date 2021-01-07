@@ -74,8 +74,8 @@ public class GeneSearchDao {
     }
 
     private static final String SELECT_EXPERIMENT_ACCESSIONS_FOR_MARKER_GENE_ID =
-			"SELECT experiment_accession FROM scxa_cell_group AS cell_group" +
-					"INNER JOIN experiment AS exp ON exp.accession = cell_group.experiment_accession" +
+			"SELECT experiment_accession FROM scxa_cell_group AS cell_group " +
+					"INNER JOIN experiment AS exp ON exp.accession = cell_group.experiment_accession " +
 					"INNER JOIN scxa_cell_group_marker_genes AS marker_genes ON marker_genes.gene_id = :gene_id " +
 					"WHERE private = FALSE GROUP BY experiment_accession";
 

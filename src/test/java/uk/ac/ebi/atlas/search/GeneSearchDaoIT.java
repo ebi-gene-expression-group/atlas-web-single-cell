@@ -60,8 +60,8 @@ class GeneSearchDaoIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"));
         populator.execute(dataSource);
     }
@@ -72,8 +72,8 @@ class GeneSearchDaoIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
         populator.execute(dataSource);
     }
@@ -98,8 +98,8 @@ class GeneSearchDaoIT {
         assertThat(result)
                 .contains("E-CURD-4");
         //previous assertion is .containsOnly("E-CURD-4"), removed Only from above to fix test case
-		// Alfonso needs to review this assertion, because above method returns
-		// LIST of experiment accessions, not sure why we are using .containsOnly("E-CURD-4")
+        // Alfonso needs to review this assertion, because above method returns
+        // LIST of experiment accessions, not sure why we are using .containsOnly("E-CURD-4")
     }
 
     @ParameterizedTest
@@ -134,7 +134,7 @@ class GeneSearchDaoIT {
     @CsvSource({"'ENSMUSG00000031980', 'E-GEOD-99058', 2"})
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
-                                                                                  Integer preferredK){
+                                                                                  Integer preferredK) {
         var result =
                 subject.fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
                         geneId, experimentAccession, preferredK, 0);

@@ -44,7 +44,7 @@ class GeneSearchServiceIT {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"));
         populator.execute(dataSource);
     }
@@ -54,17 +54,17 @@ class GeneSearchServiceIT {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"));
         populator.execute(dataSource);
     }
 
-	/**
-	 * As per @alfonsomunozpomer, the Clustering algorithm has been changed and we don't have a file that contains all k values that are false boolean flag.
-	 * He said that we will have a discussion with the curation team or bioinformatics team to find the right file location &
-	 * Asked me to @Ignore
-	 */
-	@Ignore
+    /**
+     * As per @alfonsomunozpomer, the Clustering algorithm has been changed and we don't have a file that contains all k values that are false boolean flag.
+     * He said that we will have a discussion with the curation team or bioinformatics team to find the right file location &
+     * Asked me to @Ignore
+     */
+    @Ignore
     @MethodSource("experimentAccesionWithoutPreferredKProvider")
 //	@ParameterizedTest
     void experimentsWithoutPreferredKReturnASingleProfile(String experimentAccession) {

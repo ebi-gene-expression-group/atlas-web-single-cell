@@ -85,7 +85,7 @@ class JsonMarkerGenesControllerWIT {
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
         this.mockMvc
                 .perform(get(markerGeneClusterURL, experimentAccession)
-                        .param("k", k)
+                        .param("k", k))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
@@ -93,7 +93,7 @@ class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].y", isA(Number.class)))
                 .andExpect(jsonPath("$[0].geneName", isA(String.class)))
                 .andExpect(jsonPath("$[0].value", isA(Number.class)))
-                .andExpect(jsonPath("$[0].pValue", isA(Number.class))));
+                .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
     }
 
     @Test

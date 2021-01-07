@@ -54,7 +54,7 @@ public class MarkerGeneServiceTest {
                 .isNotEmpty();
     }
 
-    @Test()
+    @Test
     @DisplayName("Returns empty profile if both ontology labels returns empty cell type values")
     void returnEmptyCellTypeMarkerGeneProfileIfBothOntologyAndAuthorsLabelsDoesNotHaveCellTypes() {
         when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", "skin"))

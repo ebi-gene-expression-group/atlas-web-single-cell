@@ -73,11 +73,12 @@ public class GeneSearchDao {
         );
     }
 
-    private static final String SELECT_EXPERIMENT_ACCESSION_FOR_MARKER_GENE_ID =
-            "SELECT experiment_accession FROM scxa_marker_genes AS markers " +
-            "JOIN experiment AS experiments ON markers.experiment_accession = experiments.accession " +
-            "WHERE private=FALSE AND gene_id=:gene_id " +
-            "GROUP BY experiment_accession";
+    private static final String SELECT_EXPERIMENT_ACCESSIONS_FOR_MARKER_GENE_ID =
+			"SELECT experiment_accession FROM scxa_cell_group AS cell_group " +
+					"INNER JOIN experiment AS exp ON exp.accession = cell_group.experiment_accession " +
+					"INNER JOIN scxa_cell_group_marker_genes AS marker_genes ON marker_genes.gene_id = :gene_id " +
+					"WHERE private = FALSE GROUP BY experiment_accession";
+
     @Transactional(readOnly = true)
     public List<String> fetchExperimentAccessionsWhereGeneIsMarker(String geneId) {
         Map<String, Object> namedParameters =
@@ -85,7 +86,7 @@ public class GeneSearchDao {
                         "gene_id", geneId);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_EXPERIMENT_ACCESSION_FOR_MARKER_GENE_ID,
+				SELECT_EXPERIMENT_ACCESSIONS_FOR_MARKER_GENE_ID,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     List<String> result = new ArrayList<>();
@@ -101,17 +102,21 @@ public class GeneSearchDao {
     // A helper method for the query below, see GeneSearchService::fetchClusterIDWithPreferredKAndMinPForGeneID
     // In terms of design it would’ve been more consistent a cached method in GeneSearchService, but because of Spring
     // limitations, caching isn’t possible between methods within a class.
-    private static final String SELECT_MIN_MARKER_PROBABILITY_STATEMENT =
-            "SELECT gene_id, MIN(marker_probability) AS min FROM scxa_marker_genes " +
-                    "WHERE experiment_accession = :experiment_accession " +
-                    "GROUP BY gene_id";
+    private static final String SELECT_MIN_MARKER_PROBABILITY_GENES_STATEMENT =
+            "SELECT gene_id AS gene_id, MIN(marker_probability) AS min " +
+					"FROM scxa_cell_group_marker_genes AS marker_genes " +
+					"INNER JOIN scxa_cell_group AS cell_group " +
+					"ON cell_group.id = marker_genes.cell_group_id " +
+					"WHERE cell_group.experiment_accession = :experiment_accession " +
+					"GROUP BY gene_id";
+
     @Cacheable("minimumMarkerProbability")
     @Transactional(readOnly = true)
     public ImmutableMap<String, Double> fetchMinimumMarkerProbability(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_MIN_MARKER_PROBABILITY_STATEMENT,
+				SELECT_MIN_MARKER_PROBABILITY_GENES_STATEMENT,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     var resultsBuilder = ImmutableMap.<String, Double>builder();
@@ -134,11 +139,15 @@ public class GeneSearchDao {
     // taking about 50 seconds. See https://www.pivotaltracker.com/story/show/173033902 for a full report and detailed
     // benchmarks.
     private static final String SELECT_PREFERRED_K_AND_MIN_P_CLUSTER_ID_FOR_GENE_STATEMENT =
-            "SELECT k, cluster_id FROM scxa_marker_genes AS markers " +
-                    "WHERE experiment_accession=:experiment_accession " +
-                        "AND gene_id=:gene_id " +
-                        "AND marker_probability<:threshold " +
-                        "AND (k=:preferred_K OR marker_probability=:min_marker_probability)";
+			"SELECT variable as k, value as cluster_id " +
+					"FROM scxa_cell_group AS cell_group " +
+					"INNER JOIN scxa_cell_group_marker_genes AS marker_genes " +
+					"ON cell_group.id = marker_genes.cell_group_id "+
+					"WHERE marker_genes.marker_probability < :threshold " +
+					"AND (variable = :preferred_K OR marker_probability = :min_marker_probability)" +
+					"AND gene_id = :gene_id " +
+					"AND experiment_accession = :experiment_accession;";
+
     @Transactional(readOnly = true)
     public Map<Integer, List<Integer>> fetchClusterIdsWithPreferredKAndMinPForExperimentAccession(
             String geneId, String experimentAccession, int preferredK, double minMarkerProbability) {
@@ -147,7 +156,7 @@ public class GeneSearchDao {
                 ImmutableMap.of(
                         "gene_id", geneId,
                         "threshold", MARKER_GENE_P_VALUE_THRESHOLD,
-                        "preferred_K", preferredK,
+                        "preferred_K", String.valueOf(preferredK),
                         "experiment_accession", experimentAccession,
                         "min_marker_probability", minMarkerProbability);
 
@@ -158,13 +167,12 @@ public class GeneSearchDao {
                     Map<Integer, List<Integer>> result = new HashMap<>();
 
                     while (resultSet.next()) {
-                        Integer k = resultSet.getInt("k");
-                        Integer clusterId = resultSet.getInt("cluster_id");
-                        List<Integer> clusterIds = result.getOrDefault(k, new ArrayList<>());
+                        var k = Integer.valueOf(resultSet.getString("k"));
+                        var clusterId = Integer.valueOf(resultSet.getString("cluster_id"));
+                        var clusterIds = result.getOrDefault(k, new ArrayList<>());
                         clusterIds.add(clusterId);
                         result.put(k, clusterIds);
                     }
-
                     return result;
                 }
         );

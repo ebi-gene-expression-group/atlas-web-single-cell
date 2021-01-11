@@ -6,6 +6,7 @@ RUN git clone https://github.com/ebi-gene-expression-group/index-scxa.git \
     && git clone https://github.com/ebi-gene-expression-group/index-gxa.git
 
 COPY scxa-solrcloud-bootstrap-entrypoint.sh /entrypoint.sh
+RUN chmod a+x /entrypoint.sh
 
 # Collection .system is populated with BioSolr’s JAR blob when creating the scxa-analytics collection
 ENV SOLR_COLLECTIONS="scxa-analytics-v3 scxa-analytics-v4 scxa-analytics-v5 scxa-gene2experiment-v1 bioentities-v1"

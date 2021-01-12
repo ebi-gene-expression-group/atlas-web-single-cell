@@ -93,6 +93,12 @@ need to do this only once:
 docker cp tomcat-users.xml scxa-tomcat:/usr/local/tomcat/conf
 ```
 
+Check your Tomcat logs and look for a line similar to the one below to make sure the new user settings have been 
+loaded:
+```
+scxa-tomcat    | 12-Jan-2021 14:58:51.969 INFO [Catalina-utility-2] org.apache.catalina.users.MemoryUserDatabase.backgroundProcess Reloading memory user database [UserDatabase] from updated source [file:/usr/local/tomcat/conf/tomcat-users.xml]
+```
+
 Run the Gradle task `war` in the `atlas-web-single-cell` directory:
 ```bash
 cd atlas-web-single-cell
@@ -100,7 +106,13 @@ cd atlas-web-single-cell
 ```
 
 You should now have the file `build/libs/gxa#sc.war` which by default Tomcat’s naming conventions will be served at
-`gxa/sc`. Point your browser at `http://localhost:8080/gxa/sc` and voilà!
+`gxa/sc`. Tomcat should automatically load the application after a few seconds. You should be seeing something like 
+this in your logs:
+```
+scxa-tomcat    | 12-Jan-2021 14:59:47.566 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/usr/local/tomcat/webapps/gxa#sc.war] has finished in [5,510] ms
+```
+
+Point your browser at `http://localhost:8080/gxa/sc` and voilà!
 
 Every time you re-run the `war` task the web app will be automatically re-deployed by Tomcat.
 

@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -11,9 +10,9 @@ import java.util.List;
 @Repository
 public class MarkerGenesDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private static final String CELL_GROUP_TYPE = "inferred cell type";
+	private static final String CELL_GROUP_TYPE = "inferred cell type - ontology labels";
 
-    public MarkerGenesDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+	public MarkerGenesDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 

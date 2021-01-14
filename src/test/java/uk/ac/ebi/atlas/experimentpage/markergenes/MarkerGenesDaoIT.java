@@ -104,7 +104,7 @@ class MarkerGenesDaoIT {
     @Test
     void shouldFetchOnlyInferredCellTypeMarkerGenes() {
         var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("skin"));
-        assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type"));
+        assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
     }
 
     private Stream<String> ksForExperimentWithMarkerGenes() {

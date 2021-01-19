@@ -53,7 +53,7 @@ class HighchartsHeatmapAdapterTest {
                 MarkerGene.create(gene2, "1", "3", 0.0006, "2", 12, 1.11),
                 MarkerGene.create(gene3, "1", "5", 0.001, "6", 1000, 10000));
 
-        var result = subject.getMarkerGeneHeatmapData(markerGenes);
+        var result = subject.getMarkerGeneHeatmapDataSortedNumerically(markerGenes);
         assertThat(result).hasSize(3);
 
         assertThat(result).element(0).extracting("geneName").containsOnly(geneSymbol1);
@@ -83,7 +83,7 @@ class HighchartsHeatmapAdapterTest {
                 MarkerGene.create(gene2, "inferred cell type", "Not available", 0.0006, "Not available", 12, 1.11),
                 MarkerGene.create(gene3, "inferred cell type", "T cell", 0.001, "B cell", 1000, 10000));
 
-        var result = subject.getMarkerGeneHeatmapData(cellTypeMarkerGenes);
+        var result = subject.getMarkerGeneHeatmapDataSortedLexicographically(cellTypeMarkerGenes);
 
         assertThat(result).hasSize(3);
         assertThat(result).element(0).extracting("geneName").containsOnly(geneSymbol1);

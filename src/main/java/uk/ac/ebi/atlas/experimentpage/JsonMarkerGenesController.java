@@ -27,7 +27,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     public String getClusterMarkerGenes(@PathVariable String experimentAccession,
                                         @RequestParam String k) {
         return GSON.toJson(
-                highchartsHeatmapAdapter.getMarkerGeneHeatmapData(
+                highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedNumerically(
                         markerGeneService.getMarkerGenesPerCluster(experimentAccession, k)
                 ));
     }
@@ -36,7 +36,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getCellTypeMarkerGenes(@PathVariable String experimentAccession,
                                          @RequestParam String organismPart) {
-        return GSON.toJson(highchartsHeatmapAdapter.getMarkerGeneHeatmapData(
+        return GSON.toJson(highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
                 markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, organismPart)
         ));
     }

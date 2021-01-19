@@ -1,11 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import URI from 'urijs'
-import {BrowserRouter, Route, NavLink, Switch, Redirect, withRouter} from 'react-router-dom'
+import { BrowserRouter, Route, NavLink, Switch, Redirect, withRouter } from 'react-router-dom'
+
+import AnatomogramCellTypeHeatmapView from './results/AnatomogramCellTypeHeatmapView'
 
 import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
-import HeatmapView from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
-import AnatomogramCellTypeHeatmapView from '@ebi-gene-expression-group/scxa-anatomogram-cell-type-marker-gene-heatmap-view'
+import { ClustersHeatmapView } from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
+
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
@@ -100,9 +102,13 @@ class TSnePlotViewRoute extends React.Component {
       {
         path: `/marker-genes`,
         title: `Marker Genes`,
-        main: () => <HeatmapView
+        main: () => <ClustersHeatmapView
           host={atlasUrl}
-          resource={`json/experiments/${experimentAccession}/marker-genes/${search.markerGeneK || preferredK}`}
+          resource={
+            URI(`json/experiments/${experimentAccession}/marker-genes/clusters`)
+              .search({k: search.markerGeneK || preferredK})
+              .toString()
+          }
           wrapperClassName={`row expanded`}
           ks={ks}
           selectedK={search.markerGeneK || preferredK}
@@ -120,6 +126,7 @@ class TSnePlotViewRoute extends React.Component {
             }
           }
           ksWithMarkers={ksWithMarkerGenes}
+          species={species}
         />
       },
       {
@@ -130,6 +137,7 @@ class TSnePlotViewRoute extends React.Component {
             showIds={anatomogram[organWithMostOntologies]}
             experimentAccession={experimentAccession}
             species={species}
+            organ={organWithMostOntologies}
             host={atlasUrl}
           />
       },

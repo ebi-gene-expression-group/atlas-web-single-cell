@@ -118,6 +118,7 @@ services:
       JPDA_ADDRESS: "*:8000"
     ports:
       - "8080:8080"
+      - "8000:8000"
     volumes:
       - ../build/libs:/usr/local/tomcat/webapps
       - $ATLAS_DATA_PATH/filesystem:/atlas-data
@@ -126,6 +127,7 @@ services:
       - postgres
       - solrcloud-1
       - solrcloud-2
+    command: ["catalina.sh", "jpda", "run"]
 
 volumes:
   zk-1-data:

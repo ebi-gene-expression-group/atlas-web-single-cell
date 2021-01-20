@@ -23,6 +23,7 @@ public class CacheConfig {
                 builder -> builder.name("experimentCollections").permitNullValues(true),
                 builder -> builder.name("experiment2Collections"),
 
+                builder -> builder.name("jsonExperimentsList"),
                 builder -> builder.name("jsonExperimentMetadata"),
                 builder -> builder.name("jsonExperimentPageTabs"),
                 builder -> builder.name("cellCounts"),

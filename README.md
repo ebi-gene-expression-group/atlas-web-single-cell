@@ -18,16 +18,21 @@ Expression Atlas) and Single Cell Expression Atlas proper:
 git clone --recurse-submodules https://github.com/ebi-gene-expression-group/atlas-web-core.git && \
 git clone --recurse-submodules https://github.com/ebi-gene-expression-group/atlas-web-single-cell.git
 ```
-
+if you have already cloned above project. Take the latest code of branch & it's submodules(atlas-web-single-cel or atlas-web-core)
+```bash
+  git pull
+  git submodule update --remote
+```
 ## Data
 Choose a suitable location for the experiment files, database and Solr backup data. Set the path in the variable
 `ATLAS_DATA_PATH`.
 
-To download the data you can use `rsync` if you’re connected to the EBI network (over VPN or from campus): 
+To download the data you can use `rsync` if you’re connected to the EBI network (over VPN or from campus):
 ```bash
-ATLAS_DATA_PATH=/path/to/sc/atlas/data 
+ATLAS_DATA_PATH=/path/to/sc/atlas/data
 rsync -ravz ebi-cli:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/* $ATLAS_DATA_PATH
 ```
+Note: This would take a few minutes. After `rsync` you will see 3 new folders under scxa data folder those are filesystem,solrcloud and postgressql.
 
 Alternatively you can use `wget` and connect to EBI’s FTP server over HTTP:
 ```bash
@@ -49,6 +54,7 @@ POSTGRES_USER=atlasprd3 \
 POSTGRES_PASSWORD=atlasprd3 \
 docker-compose up
 ```
+Note: Update DB details like POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD if you want to use different details, and you need to change DB details here as well `profile-docker. gradle` file if you go with different DB details.
 
 You can also set a Docker Compose *Run* configuration in IntelliJ IDEA with the environment variables from the command
 above if you find that more convenient.
@@ -68,7 +74,7 @@ docker exec -it scxa-postgres bash -c 'pg_restore -d $POSTGRES_DB -h localhost -
 ```
 
 You’ll see some errors due to the way `pg_dump` and `pg_restore` deal with partitioned tables (`scxa_analytics` in our
-case). This is normal; they can be safely ignored. 
+case). This is normal; they can be safely ignored.
 
 A few minutes later your Postgres database will be ready.
 
@@ -85,6 +91,19 @@ known state; however Solr will reply with an error if the collections can’t be
 
 Again, this step will take a few minutes.
 
+### Create Solr Collection Alias
+Go to you're Solr admin page 'http://localhost:8983/solr'
+  Create these 3 aliases for the Solr collections:
+
+1. Alias Name: scxa-analytics
+   Collection: scxa-analytics-v3(select from the dropdown)
+
+2. Alias Name: bioentities
+   Collection: bioentities-v1
+
+3. Alias Name: Scxa-gene2experiment
+   Collection: scxa-gene2experiment-v1
+
 ### Tomcat
 Copy the Tomcat credentials file to the container. The `admin` role is used to access several admin endpoints in Single
 Cell Expression Atlas (e.g. `/admin/experiments/help`). Tomcat’s `conf` directory is persisted as a volume so that we
@@ -93,7 +112,7 @@ need to do this only once:
 docker cp tomcat-users.xml scxa-tomcat:/usr/local/tomcat/conf
 ```
 
-Check your Tomcat logs and look for a line similar to the one below to make sure the new user settings have been 
+Check your Tomcat logs and look for a line similar to the one below to make sure the new user settings have been
 loaded:
 ```
 scxa-tomcat    | 12-Jan-2021 14:58:51.969 INFO [Catalina-utility-2] org.apache.catalina.users.MemoryUserDatabase.backgroundProcess Reloading memory user database [UserDatabase] from updated source [file:/usr/local/tomcat/conf/tomcat-users.xml]
@@ -106,7 +125,7 @@ cd atlas-web-single-cell
 ```
 
 You should now have the file `build/libs/gxa#sc.war` which by default Tomcat’s naming conventions will be served at
-`gxa/sc`. Tomcat should automatically load the application after a few seconds. You should be seeing something like 
+`gxa/sc`. Tomcat should automatically load the application after a few seconds. You should be seeing something like
 this in your logs:
 ```
 scxa-tomcat    | 12-Jan-2021 14:59:47.566 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/usr/local/tomcat/webapps/gxa#sc.war] has finished in [5,510] ms
@@ -115,6 +134,20 @@ scxa-tomcat    | 12-Jan-2021 14:59:47.566 INFO [Catalina-utility-1] org.apache.c
 Point your browser at `http://localhost:8080/gxa/sc` and voilà!
 
 Every time you re-run the `war` task the web app will be automatically re-deployed by Tomcat.
+
+If you get any `war` redeploy issues or want to start again freshly, stop all the containers using this:
+
+```bash
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+POSTGRES_HOST=scxa-postgres \
+POSTGRES_DB=gxpscxadev \
+POSTGRES_USER=atlasprd3 \
+POSTGRES_PASSWORD=atlasprd3 \
+docker-compose down
+```
+If you get any `java.net.UnknownHostException: Invalid hostname for server: local` exceptions while running application.
+Go to `profile-docker. gradle` file and check these attribute values `ext.zkHost` & `ext.solrHost` and compare with running container names.
+If they are different, update them.These should be ZooKeeper and Solr container names.
 
 ## Backing up your data
 Eventually you’ll add new experiments to your development instance of SCXA, or new, improved collections in Solr will

@@ -187,3 +187,34 @@ Remember to update the file and any new experiments added to the `filesystem` di
 ```bash
 rsync -ravz $ATLAS_DATA_PATH/* ebi-cli:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/
 ```
+
+## Troubleshooting
+
+### The script that backs up Solr snapshot hangs
+Ensure you have writing privileges for the directory bind at `/var/backups/solr`. You can check the status of your
+backup operation with (set `SOLR_HOST` and `SOLR_COLLECTION` to the appropriate values):
+```bash
+docker exec -i ${SOLR_HOST} curl -s "http://localhost:8983/solr/${SOLR_COLLECTION}/replication?command=details"
+```
+
+### I’m not getting any suggestions in Single Cell Epression Atlas
+Read the important message after you run `scxa-solrlcoud-bootstrap`:
+> PLEASE READ!
+> Suggesters haven’t been built because it’s very likely to get a `java.net.SocketTimeoutException` due
+> to the size of the bioentities collection. Raising the timeout in Jetty could mask other errors down
+> the line, and ignoring the exception doesn’t guarantee the suggester to be fully built since it still
+> takes a few extra minutes: the exception is thrown before the process has completed.
+> The best option is to manually build and supervise this step.
+>
+> On one terminal session run the following command (don’t worry if the request returns a 500 error):
+> 
+> `bash docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=propertySuggesterNoHighlight'`
+>
+> On another terminal, monitor the size of the suggester directory size:
+> 
+> `docker exec -it scxa-solrcloud-1 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
+>
+> The suggester will be built when the propertySuggester directory size stabilises.
+> Run the above procedure for each of your SolrCloud containers and both suggesters (`propertySuggesterNoHighlight` and
+> `bioentitySuggester`).
+ 

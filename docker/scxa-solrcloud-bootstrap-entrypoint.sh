@@ -55,3 +55,10 @@ do
     done
   done
 done
+
+# Set aliases
+curl "http://${SOLR_HOST}/solr/admin/collections?action=CREATEALIAS&name=bioentities&collections=bioentities-v1"
+curl "http://${SOLR_HOST}/solr/admin/collections?action=CREATEALIAS&name=scxa-analytics&collections=scxa-analytics-v1"
+curl "http://${SOLR_HOST}/solr/admin/collections?action=CREATEALIAS&name=scxa-gene2experiment&collections=scxa-gene2experiment-v1"
+printf "The following aliases have been set:\n"
+curl "http://${SOLR_HOST}:8983/solr/admin/collections?action=LISTALIASES"

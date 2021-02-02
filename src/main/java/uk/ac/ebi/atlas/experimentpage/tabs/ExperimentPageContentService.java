@@ -2,7 +2,6 @@ package uk.ac.ebi.atlas.experimentpage.tabs;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -14,6 +13,7 @@ import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
@@ -31,17 +31,20 @@ public class ExperimentPageContentService {
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
     private final CellMetadataService cellMetadataService;
+    private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
                                         TSnePlotSettingsService tsnePlotSettingsService,
                                         CellMetadataService cellMetadataService,
+                                        OntologyAccessionsSearchService ontologyAccessionsSearchService,
                                         ExperimentTrader experimentTrader) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.dataFileHub = dataFileHub;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
         this.cellMetadataService = cellMetadataService;
+        this.ontologyAccessionsSearchService = ontologyAccessionsSearchService;
         this.experimentTrader = experimentTrader;
     }
 
@@ -66,6 +69,12 @@ public class ExperimentPageContentService {
         result.add("units", units);
 
         result.addProperty("suggesterEndpoint", "json/suggestions");
+
+        result.add(
+                "anatomogram",
+                GSON.toJsonTree(
+                        ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(
+                                experimentAccession)));
 
         return result;
     }

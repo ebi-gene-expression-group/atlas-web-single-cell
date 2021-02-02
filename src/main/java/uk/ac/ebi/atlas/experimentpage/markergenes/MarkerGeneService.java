@@ -34,6 +34,7 @@ public class MarkerGeneService {
 
 		return cellTypeMarkerGenes.stream()
 				.filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))
+				.filter(markerGene -> !markerGene.cellGroupValueWhereMarker().equalsIgnoreCase("Not available"))
 				.collect(toImmutableList());
 	}
 

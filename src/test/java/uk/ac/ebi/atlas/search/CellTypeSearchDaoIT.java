@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.search;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -31,9 +32,9 @@ class CellTypeSearchDaoIT {
 
     @Test
     void nonExistentValueReturnsEmptyCollection() {
-        assertThat(subject.getInferredCellTypeOntologyLabels("E-MTAB-5061", "foobar"))
+        assertThat(subject.getInferredCellTypeOntologyLabels("E-MTAB-5061", ImmutableSet.of("foobar")))
                 .isEmpty();
-        assertThat(subject.getInferredCellTypeAuthorsLabels("E-MTAB-5061", "foobar"))
+        assertThat(subject.getInferredCellTypeAuthorsLabels("E-MTAB-5061", ImmutableSet.of("foobar")))
                 .isEmpty();
     }
 
@@ -42,14 +43,14 @@ class CellTypeSearchDaoIT {
         // pancreas
         var cellTypesInPancreas =
                 subject.getInferredCellTypeOntologyLabels(
-                        "E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264");
+                        "E-MTAB-5061", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0001264"));
         assertThat(cellTypesInPancreas)
                 .isNotEmpty();
 
         // islet of Langerhans
         var cellTypesInIsletOfLangerhans =
                 subject.getInferredCellTypeOntologyLabels(
-                        "E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0000006");
+                        "E-MTAB-5061", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006"));
         assertThat(cellTypesInIsletOfLangerhans)
                 .isNotEmpty();
 
@@ -62,10 +63,10 @@ class CellTypeSearchDaoIT {
     void onotologyLabelsAndAuthorMayBeDifferent() {
         var ontologyLabelsInPancreas =
                 subject.getInferredCellTypeOntologyLabels(
-                        "E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264");
+                        "E-MTAB-5061", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0001264"));
         var authorsLabelsInPancreas =
                 subject.getInferredCellTypeAuthorsLabels(
-                        "E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264");
+                        "E-MTAB-5061", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0001264"));
 
         assertThat(ontologyLabelsInPancreas)
                 .doesNotContainSequence(authorsLabelsInPancreas);

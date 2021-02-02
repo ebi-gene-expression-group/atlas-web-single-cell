@@ -73,4 +73,20 @@ class CellTypeSearchDaoIT {
         assertThat(ontologyLabelsInPancreas)
                 .containsAnyElementsOf(authorsLabelsInPancreas);
     }
+
+    @Test
+    void ontologyLabelsAcceptMultipleOrganismParts(){
+		var ontologyLabels =
+				subject.getInferredCellTypeOntologyLabels(
+						"E-MTAB-5061", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0001264","http://purl.obolibrary.org/obo/UBERON_0001987"));
+		assertThat(ontologyLabels).isNotEmpty();
+	}
+
+	@Test
+	void authorsLabelsAcceptMultipleOrganismParts(){
+		var authorsLabels =
+				subject.getInferredCellTypeAuthorsLabels(
+						"E-MTAB-5061", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006","http://purl.obolibrary.org/obo/UBERON_0001264"));
+		assertThat(authorsLabels).isNotEmpty();
+	}
 }

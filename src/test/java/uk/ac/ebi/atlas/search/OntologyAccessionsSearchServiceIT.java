@@ -29,8 +29,12 @@ class OntologyAccessionsSearchServiceIT {
     }
 
     @Test
-    void foo() {
+    void humanPancreasExperimentReturnsAnatomogramAnnotations() {
         assertThat(subject.searchAvailableAnnotationsForOrganAnatomogram("E-MTAB-5061")).isNotEmpty();
+    }
+
+    @Test
+    void nonHumanExperimentReturnsNoAnatomogramData() {
         assertThat(subject.searchAvailableAnnotationsForOrganAnatomogram("E-EHCA-2")).isEmpty();
     }
 }

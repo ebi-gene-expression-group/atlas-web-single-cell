@@ -31,7 +31,10 @@ class OntologyAccessionsSearchDaoIT {
 
 
     @Test
-    void foo() {
-        assertThat(subject.searchOntologyAnnotations("E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264")).isNotEmpty();
+    void ontologyAnnotationsForPancreasInPancreasExperimentReturnsAnnotations() {
+        assertThat(
+                subject.searchOntologyAnnotations(
+                        "E-MTAB-5061", "http://purl.obolibrary.org/obo/UBERON_0001264"))
+                .isNotEmpty();
     }
 }

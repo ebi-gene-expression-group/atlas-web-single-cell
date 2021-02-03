@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.tabs;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,7 +35,7 @@ public class ExperimentPageContentService {
     private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
 
-    private final static List<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableList.of(
+    private final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-GEOD-130473",
             "E-HCAD-8",
             "E-MTAB-6653",

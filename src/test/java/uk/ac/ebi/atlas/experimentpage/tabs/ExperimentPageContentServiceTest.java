@@ -1,6 +1,8 @@
 package uk.ac.ebi.atlas.experimentpage.tabs;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import java.net.URI;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -34,6 +37,7 @@ class ExperimentPageContentServiceTest {
     private static final String EXPERIMENT_FILES_URI_TEMPLATE =
             "experiment/abc/download?fileType=xyz&accessKey=efg";
     private static final String EXPERIMENT_ACCESSION = generateRandomExperimentAccession();
+    private static final String NON_ANATOMOGRAM_EXPERIMENT_ACCESSION = "E-GEOD-130473";
 
     @Mock
     private ExperimentFileLocationService experimentFileLocationServiceMock;
@@ -101,6 +105,19 @@ class ExperimentPageContentServiceTest {
                 "")
         ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
 
+        when(tsnePlotSettingsServiceMock.getAvailableKs(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+                .thenReturn(ImmutableList.of(1, 2, 3));
+        when(tsnePlotSettingsServiceMock.getKsWithMarkerGenes(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+                .thenReturn(ImmutableList.of("1", "2"));
+        when(tsnePlotSettingsServiceMock.getExpectedClusters(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+                .thenReturn(Optional.of(1));
+        when(tsnePlotSettingsServiceMock.getAvailablePerplexities(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+                .thenReturn(ImmutableList.of(1, 2, 3));
+        when(cellMetadataServiceMock.getMetadataTypes(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+                .thenReturn(ImmutableSet.of("foo"));
+        when(cellMetadataServiceMock.getMetadataValuesForGivenType(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION, "foo"))
+                .thenReturn(ImmutableMap.of());
+
         subject = new ExperimentPageContentService(
                 experimentFileLocationServiceMock,
                 dataFileHubMock,
@@ -159,5 +176,13 @@ class ExperimentPageContentServiceTest {
                     assertThat(jsonArray).hasSize(4);
                     assertThat(jsonArray).doesNotContain(tpmsDownloadJsonObject);
                 });
+    }
+
+    @Test
+    void anatomogramDoesNotExistsForValidExperiment() {
+        assertThat(this.subject
+                .getTsnePlotData(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION)
+                .has("anatomogram"))
+                .isFalse();
     }
 }

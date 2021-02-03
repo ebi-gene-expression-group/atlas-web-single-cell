@@ -195,12 +195,4 @@ class ExperimentPageContentServiceIT {
 
         assertThat(result.has("anatomogram")).isTrue();
     }
-
-    @Test
-    void anatomogramDoesNotExistsForValidExperiment() {
-        var experimentAccession = "E-GEOD-130473";
-        var result = this.subject.getTsnePlotData(experimentAccession);
-
-        assertThat(result.has("anatomogram")).isFalse();
-    }
 }

@@ -198,7 +198,7 @@ class ExperimentPageContentServiceIT {
 
     @Test
     void anatomogramDoesNotExistsForValidExperiment() {
-        var experimentAccession = "E-HCAD-8";
+        var experimentAccession = "E-MTAB-6308";
         var result = this.subject.getTsnePlotData(experimentAccession);
 
         assertThat(result.has("anatomogram")).isFalse();

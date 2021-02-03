@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage;
 
+import com.google.common.collect.ImmutableSet;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.HighchartsHeatmapAdapter;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGeneService;
+
+import java.util.Set;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -35,9 +38,9 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/cell-types",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getCellTypeMarkerGenes(@PathVariable String experimentAccession,
-                                         @RequestParam String organismPart) {
+                                         @RequestParam Set<String> organismPart) {
         return GSON.toJson(highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
-                markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, organismPart)
+                markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, ImmutableSet.copyOf(organismPart))
         ));
     }
 }

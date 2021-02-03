@@ -112,6 +112,24 @@ class JsonMarkerGenesControllerWIT {
     }
 
     @Test
+    void isMarkerGeneCellTypePayloadIsValidJsonForMultipleOrganismParts() throws Exception {
+        this.mockMvc
+                .perform(get(markerGeneCellTypeURL, "E-MTAB-5061")
+                        .param("organismPart",
+                                "http://purl.obolibrary.org/obo/UBERON_0001264",
+                                "http://purl.obolibrary.org/obo/UBERON_0002107"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
+                .andExpect(jsonPath("$[0].cellGroupValue", isA(String.class)))
+                .andExpect(jsonPath("$[0].x", isA(Number.class)))
+                .andExpect(jsonPath("$[0].y", isA(Number.class)))
+                .andExpect(jsonPath("$[0].geneName", isA(String.class)))
+                .andExpect(jsonPath("$[0].value", isA(Number.class)))
+                .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
+    }
+
+    @Test
     void invalidExperimentAccessionReturnsEmptyJson() throws Exception {
         this.mockMvc
                 .perform(get(markerGeneCellTypeURL, "FOO")

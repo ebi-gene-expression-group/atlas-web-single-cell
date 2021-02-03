@@ -34,6 +34,17 @@ public class ExperimentPageContentService {
     private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
 
+    private final static List<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableList.of(
+            "E-GEOD-130473",
+            "E-HCAD-8",
+            "E-MTAB-6653",
+            "E-GEOD-86618",
+            "E-CURD-11",
+            "E-MTAB-6308",
+            "E-HCAD-10",
+            "E-CURD-10"
+    );
+
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
                                         TSnePlotSettingsService tsnePlotSettingsService,
@@ -70,11 +81,13 @@ public class ExperimentPageContentService {
 
         result.addProperty("suggesterEndpoint", "json/suggestions");
 
-        result.add(
-                "anatomogram",
-                GSON.toJsonTree(
-                        ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(
-                                experimentAccession)));
+        if(!EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession)) {
+            result.add(
+                    "anatomogram",
+                    GSON.toJsonTree(
+                            ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(
+                                    experimentAccession)));
+        }
 
         return result;
     }

@@ -24,8 +24,7 @@ public class MarkerGeneService {
      * @param experimentAccession
      * @return ImmutableList of CellTypeMarkerGene Objects
      */
-    public ImmutableList<MarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession,
-                                                                  ImmutableSet<String> organismPart) {
+    public ImmutableList<MarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, ImmutableSet<String> organismPart) {
 
         var ontologyLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
 

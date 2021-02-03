@@ -46,32 +46,34 @@ class AnatomogramCellTypeHeatmapView extends React.Component {
   }
 
   _addRemoveFromSelectIds(ids) {
-    let selectedAccessionOrLinkAccession = ids[0]
+    let selectedAccessionOrLinkAccession = ids
     if (ids[0] === `link_islet_of_langerhans`) {
-      selectedAccessionOrLinkAccession = `UBERON_0001264`
+      selectedAccessionOrLinkAccession = [`UBERON_0001264`]
     } else if (ids[0] === `link_glomerulus`) {
-      selectedAccessionOrLinkAccession = `UBERON_0000074`
+      selectedAccessionOrLinkAccession = [`UBERON_0000074`]
     } else if (ids[0] === `link_duct`) {
-      selectedAccessionOrLinkAccession = `UBERON_0001232`
+      selectedAccessionOrLinkAccession = [`UBERON_0001232`]
     } else if (ids[0] === `link_nephron`) {
-      selectedAccessionOrLinkAccession = `UBERON_0001285`
+      selectedAccessionOrLinkAccession = [`UBERON_0001285`]
     } else if (ids[0] === `link_lobule_of_liver`) {
-      selectedAccessionOrLinkAccession = `UBERON_0004647`
+      selectedAccessionOrLinkAccession = [`UBERON_0004647`]
     } else if (ids[0] === `link_alveoli`) {
-      selectedAccessionOrLinkAccession = `UBERON_0002299`
+      selectedAccessionOrLinkAccession = [`UBERON_0002299`]
     } else if (ids[0] === `link_segmental_bronchus`) {
-      selectedAccessionOrLinkAccession = `UBERON_0002184`
+      selectedAccessionOrLinkAccession = [`UBERON_0002184`]
     } else if (ids[0] === `link_alveolus_section`) {
-      selectedAccessionOrLinkAccession = `UBERON_0003215`
+      selectedAccessionOrLinkAccession = [`UBERON_0003215`]
     } else if (ids[0] === `link_cell_level`) {
-      selectedAccessionOrLinkAccession = `UBERON_0001987`
+      selectedAccessionOrLinkAccession =
+        [`CL_2000002`,  `EFO_0010710`, `CL_3000001`, `UBERON_0000371`, `UBERON_0000319`, `UBERON_0000426`,
+         `EFO_0010712`, `EFO_0010711`, `CL_0002601`, `EFO_0010708`]
     }
 
     this.setState({
       selectIds: ids,
       resource:
         URI(`json/experiments/${this.props.experimentAccession}/marker-genes/cell-types`, this.props.host)
-          .search({organismPart: ontologyAccessionToOntologyUri(selectedAccessionOrLinkAccession)})
+          .search({organismPart: selectedAccessionOrLinkAccession.map(ontologyAccessionToOntologyUri).join(`,`)})
           .toString()
     })
   }

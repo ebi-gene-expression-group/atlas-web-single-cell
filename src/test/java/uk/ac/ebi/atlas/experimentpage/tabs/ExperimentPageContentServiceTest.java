@@ -180,9 +180,9 @@ class ExperimentPageContentServiceTest {
 
     @Test
     void anatomogramDoesNotExistsForValidExperiment() {
-        assertThat(this.subject
-                .getTsnePlotData(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION)
-                .has("anatomogram"))
-                .isFalse();
+        var result = this.subject.getTsnePlotData(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION);
+
+        assertThat(result.has("anatomogram")).isTrue();
+        assertThat(result.get("anatomogram").getAsString()).isEqualToIgnoringCase("");
     }
 }

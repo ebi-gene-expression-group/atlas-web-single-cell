@@ -36,8 +36,6 @@ class TSnePlotViewRoute extends React.Component {
     const { atlasUrl, suggesterEndpoint } = this.props
     const { species, experimentAccession, ks, ksWithMarkerGenes, perplexities, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
-    const initialCellTypeValues = [`inferred_cell_type_-_authors_labels`, `inferred_cell_type_-_ontology_labels`]
-    const cellType = _.first(_.intersection(_.map(metadata, `value`), initialCellTypeValues))
 
     let organWithMostOntologies = Object.keys(anatomogram)[0]
     for (let availableOrgan in anatomogram) {
@@ -60,8 +58,8 @@ class TSnePlotViewRoute extends React.Component {
           experimentAccession={experimentAccession}
           ks={ks}
           metadata={metadata}
-          selectedColourBy={search.k || search.metadata || cellType || preferredK}
-          selectedColourByCategory={search.colourBy || (cellType && `metadata`) || `clusters`} // Is the plot coloured by clusters or metadata
+          selectedColourBy={search.k || search.metadata || preferredK}
+          selectedColourByCategory={search.colourBy || `clusters`} // Is the plot coloured by clusters or metadata
           highlightClusters={search.clusterId ? JSON.parse(search.clusterId) : []}
           perplexities={perplexitiesOrdered}
           selectedPerplexity={Number(search.perplexity) || perplexitiesOrdered[Math.round((perplexitiesOrdered.length - 1) / 2)]}

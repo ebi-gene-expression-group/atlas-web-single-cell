@@ -187,4 +187,12 @@ class ExperimentPageContentServiceIT {
         assertThat(result.has("units")).isTrue();
         assertThat(result.get("units").getAsJsonArray()).isNotEmpty();
     }
+
+    @Test
+    void anatomogramExistsForValidExperiment() {
+        var experimentAccession = "E-MTAB-5061";
+        var result = this.subject.getTsnePlotData(experimentAccession);
+
+        assertThat(result.has("anatomogram")).isTrue();
+    }
 }

@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.tabs;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -33,6 +34,17 @@ public class ExperimentPageContentService {
     private final CellMetadataService cellMetadataService;
     private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
+
+    private final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
+            "E-GEOD-130473",
+            "E-HCAD-8",
+            "E-MTAB-6653",
+            "E-GEOD-86618",
+            "E-CURD-11",
+            "E-MTAB-6308",
+            "E-HCAD-10",
+            "E-CURD-10"
+    );
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
@@ -72,9 +84,9 @@ public class ExperimentPageContentService {
 
         result.add(
                 "anatomogram",
-                GSON.toJsonTree(
-                        ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(
-                                experimentAccession)));
+                GSON.toJsonTree(EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession) ?
+                        "" :
+                        ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(experimentAccession)));
 
         return result;
     }

@@ -82,16 +82,11 @@ public class ExperimentPageContentService {
 
         result.addProperty("suggesterEndpoint", "json/suggestions");
 
-        if (EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession)) {
-            result.add(
-                    "anatomogram", GSON.toJsonTree(""));
-        } else {
-            result.add(
-                    "anatomogram",
-                    GSON.toJsonTree(
-                            ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(
-                                    experimentAccession)));
-        }
+        result.add(
+                "anatomogram",
+                GSON.toJsonTree(EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession) ?
+                        "" :
+                        ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(experimentAccession)));
 
         return result;
     }

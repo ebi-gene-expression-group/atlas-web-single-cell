@@ -44,13 +44,13 @@ public class CellTypeSearchDao {
 
     @Cacheable(cacheNames = "inferredCellTypesOntology", key = "{#experimentAccession, #organOrOrganismPart}")
     public ImmutableSet<String> getInferredCellTypeOntologyLabels(String experimentAccession,
-                                                                  String organOrOrganismPart) {
+                                                                  ImmutableSet<String> organOrOrganismPart) {
         return getCellTypeMetadata(experimentAccession, organOrOrganismPart, INFERRED_CELL_TYPE_ONTOLOGY_LABELS_VALUE);
     }
 
     @Cacheable(cacheNames = "inferredCellTypesAuthors", key = "{#experimentAccession, #organOrOrganismPart}")
     public ImmutableSet<String> getInferredCellTypeAuthorsLabels(String experimentAccession,
-                                                                 String organOrOrganismPart) {
+                                                                 ImmutableSet<String> organOrOrganismPart) {
         return getCellTypeMetadata(experimentAccession, organOrOrganismPart, INFERRED_CELL_TYPE_AUTHORS_LABELS_VALUE);
     }
 
@@ -99,16 +99,16 @@ public class CellTypeSearchDao {
      http://localhost:8983/solr/scxa-analytics-v3/stream
      */
     private ImmutableSet<String> getCellTypeMetadata(String experimentAccession,
-                                                     String organOrOrganismPart,
+                                                     ImmutableSet<String> organOrOrganismPart,
                                                      String cellTypeValue) {
         var cellIdsInOrganOrOrganismPartQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(ImmutableMap.of(
-                                ONTOLOGY_ANNOTATION, ImmutableSet.of(organOrOrganismPart),
-                                ONTOLOGY_ANNOTATION_ANCESTORS_URIS, ImmutableSet.of(organOrOrganismPart),
-                                ONTOLOGY_ANNOTATION_LOCATED_IN_URIS, ImmutableSet.of(organOrOrganismPart),
-                                ONTOLOGY_ANNOTATION_PART_OF_URIS, ImmutableSet.of(organOrOrganismPart)))
+                                ONTOLOGY_ANNOTATION, organOrOrganismPart,
+                                ONTOLOGY_ANNOTATION_ANCESTORS_URIS, organOrOrganismPart,
+                                ONTOLOGY_ANNOTATION_LOCATED_IN_URIS, organOrOrganismPart,
+                                ONTOLOGY_ANNOTATION_PART_OF_URIS, organOrOrganismPart))
                         .setFieldList(CELL_ID)
                         .sortBy(CELL_ID, SolrQuery.ORDER.asc);
         var uniqueCellIdsInOrganOrOrganismPartStreamBuilder =

@@ -36,6 +36,8 @@ class TSnePlotViewRoute extends React.Component {
     const { atlasUrl, suggesterEndpoint } = this.props
     const { species, experimentAccession, ks, ksWithMarkerGenes, perplexities, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
+    const initialCellTypeValues = [`inferred_cell_type_-_authors_labels`, `inferred_cell_type_-_ontology_labels`]
+    const cellType = _.first(_.intersection(_.map(metadata, `value`), initialCellTypeValues))
 
     let organWithMostOntologies = Object.keys(anatomogram)[0]
     for (let availableOrgan in anatomogram) {
@@ -58,8 +60,8 @@ class TSnePlotViewRoute extends React.Component {
           experimentAccession={experimentAccession}
           ks={ks}
           metadata={metadata}
-          selectedColourBy={search.k || search.metadata || preferredK}
-          selectedColourByCategory={search.colourBy || `clusters`} // Is the plot coloured by clusters or metadata
+          selectedColourBy={search.k || search.metadata || cellType || preferredK}
+          selectedColourByCategory={search.colourBy || (cellType && `metadata`) || `clusters`} // Is the plot coloured by clusters or metadata
           highlightClusters={search.clusterId ? JSON.parse(search.clusterId) : []}
           perplexities={perplexitiesOrdered}
           selectedPerplexity={Number(search.perplexity) || perplexitiesOrdered[Math.round((perplexitiesOrdered.length - 1) / 2)]}
@@ -168,6 +170,7 @@ class TSnePlotViewRoute extends React.Component {
 
     const basename = URI(`experiments/${experimentAccession}${match.path}`, URI(atlasUrl).path()).toString()
 
+    const sideTabStyle = {overflow: `clip`, textOverflow: `ellipsis`}
     return (
       <BrowserRouter basename={basename}>
         <div className={`row expanded`}>
@@ -180,19 +183,19 @@ class TSnePlotViewRoute extends React.Component {
             <ul className={`side-tabs`}>
               <li title={routes[0].title} className={`side-tabs-title`}>
                 <NavLink to={{pathname:routes[0].path, search: location.search, hash: location.hash}}
-                  activeClassName={`active`}>
+                  activeClassName={`active`} style={sideTabStyle}>
                   {routes[0].title}</NavLink>
               </li>
               <li title={routes[1].title} className={`side-tabs-title`}>
                 <NavLink to={{pathname:routes[1].path, search: location.search, hash: location.hash}}
-                  activeClassName={`active`}>
+                  activeClassName={`active`} style={sideTabStyle}>
                   {routes[1].title}</NavLink>
               </li>
               {
                 species === `homo sapiens` && Object.keys(anatomogram).length > 0 &&
                 <li title={routes[2].title} className={`side-tabs-title`}>
                   <NavLink to={{pathname:routes[2].path, search: location.search, hash: location.hash}}
-                    activeClassName={`active`}>
+                    activeClassName={`active`} style={sideTabStyle}>
                     {routes[2].title}</NavLink>
                 </li>
               }
@@ -200,7 +203,7 @@ class TSnePlotViewRoute extends React.Component {
                 search.geneId &&
                   <li title={routes[3].title} className={`side-tabs-title`}>
                     <NavLink to={{pathname:routes[3].path, search: location.search, hash: location.hash}}
-                      activeClassName={`active`}>
+                      activeClassName={`active`} style={sideTabStyle}>
                       {routes[3].title}</NavLink>
                   </li>
               }

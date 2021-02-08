@@ -72,19 +72,25 @@ class MarkerGeneServiceIT {
 //    TODO: Re enable this test once we receive proper test data
 	@Ignore
 	void getMarkerGeneProfileForTheValidExperimentAccession() {
-		assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", "http://purl.obolibrary.org/obo/UBERON_0000061"))
+		assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000061")))
 				.isNotEmpty();
 	}
 
 	@Test
 	void getEmptyMarkerGeneProfileForTheInvalidExperimentAccession() {
-		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "http://purl.obolibrary.org/obo/UBERON_0001264"))
+		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0001264")))
 				.isEmpty();
 	}
 
 	@Test
 	void getEmptyClusterMarkerGenesForTheInvalidExperimentAccession() {
 		assertThat(subject.getMarkerGenesPerCluster("FOO", "10"))
+				.isEmpty();
+	}
+
+	@Test
+	void getCellTypeMarkerGenesForTheMultipleOrganismParts(){
+		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000061","http://purl.obolibrary.org/obo/UBERON_0001987")))
 				.isEmpty();
 	}
 
@@ -98,7 +104,7 @@ class MarkerGeneServiceIT {
 
 	@Test
 	void getEmptyCellTypeMarkerGenesForTheInvalidExperimentAccession() {
-		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", "skin"))
+		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", ImmutableSet.of("skin")))
 				.isEmpty();
 	}
 }

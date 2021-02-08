@@ -35,7 +35,7 @@ public class ExperimentPageContentService {
     private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
 
-    private final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
+    final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-GEOD-130473",
             "E-HCAD-8",
             "E-MTAB-6653",

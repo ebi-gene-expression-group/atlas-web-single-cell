@@ -84,9 +84,11 @@ public class ExperimentPageContentService {
 
         result.add(
                 "anatomogram",
-                GSON.toJsonTree(EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession) ?
-                        ImmutableMap.of("", ImmutableSet.of("")) :
-                        ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(experimentAccession)));
+                EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession) ?
+                        new JsonObject() :
+                        GSON.toJsonTree(
+                                ontologyAccessionsSearchService
+                                        .searchAvailableAnnotationsForOrganAnatomogram(experimentAccession)));
 
         return result;
     }

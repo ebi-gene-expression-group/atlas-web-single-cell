@@ -23,21 +23,26 @@ import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import java.net.URI;
 import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentService.EXPERIMENTS_WITH_NO_ANATOMOGRAM;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ExperimentPageContentServiceTest {
+    private static final Random RNG = ThreadLocalRandom.current();
 
     private static final String EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE =
             "experiment/abc/download/zip?fileType=xyx&accessKey=efg";
     private static final String EXPERIMENT_FILES_URI_TEMPLATE =
             "experiment/abc/download?fileType=xyz&accessKey=efg";
     private static final String EXPERIMENT_ACCESSION = generateRandomExperimentAccession();
-    private static final String NON_ANATOMOGRAM_EXPERIMENT_ACCESSION = "E-GEOD-130473";
+    private static final String NON_ANATOMOGRAM_EXPERIMENT_ACCESSION =
+            EXPERIMENTS_WITH_NO_ANATOMOGRAM.asList().get(RNG.nextInt(EXPERIMENTS_WITH_NO_ANATOMOGRAM.size()));
 
     @Mock
     private ExperimentFileLocationService experimentFileLocationServiceMock;
@@ -57,7 +62,7 @@ class ExperimentPageContentServiceTest {
     @Mock
     private ExperimentTrader experimentTraderMock;
 
-    private JsonObject tpmsDownloadJsonObject = new JsonObject();
+    private final JsonObject tpmsDownloadJsonObject = new JsonObject();
 
     private ExperimentPageContentService subject;
 
@@ -179,10 +184,9 @@ class ExperimentPageContentServiceTest {
     }
 
     @Test
-    void anatomogramDoesNotExistsForValidExperiment() {
+    void anatomogramDoesNotExistForValidExperiment() {
         var result = this.subject.getTsnePlotData(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION);
 
-        assertThat(result.has("anatomogram")).isTrue();
-        assertThat(result.get("anatomogram").getAsString()).isEqualToIgnoringCase("");
+        assertThat(result.getAsJsonObject("anatomogram").size()).isEqualTo(0);
     }
 }

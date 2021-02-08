@@ -35,7 +35,7 @@ public class ExperimentPageContentService {
     private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
 
-    private final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
+    final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-GEOD-130473",
             "E-HCAD-8",
             "E-MTAB-6653",
@@ -84,9 +84,11 @@ public class ExperimentPageContentService {
 
         result.add(
                 "anatomogram",
-                GSON.toJsonTree(EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession) ?
-                        "" :
-                        ontologyAccessionsSearchService.searchAvailableAnnotationsForOrganAnatomogram(experimentAccession)));
+                EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession) ?
+                        new JsonObject() :
+                        GSON.toJsonTree(
+                                ontologyAccessionsSearchService
+                                        .searchAvailableAnnotationsForOrganAnatomogram(experimentAccession)));
 
         return result;
     }

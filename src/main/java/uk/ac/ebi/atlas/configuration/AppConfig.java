@@ -5,6 +5,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ebi.atlas.model.experiment.ExperimentType;
+import uk.ac.ebi.atlas.utils.BioentityIdentifiersReader;
+
+import java.util.HashSet;
 
 @Configuration
 @ComponentScan(basePackages = "uk.ac.ebi.atlas")
@@ -18,5 +22,20 @@ public class AppConfig {
         requestFactory.setConnectTimeout(MAX_TIMEOUT_MILLIS);
 
         return new RestTemplate(requestFactory);
+    }
+
+    @Bean
+    public BioentityIdentifiersReader bioentityIdentifiersReader() {
+        return new BioentityIdentifiersReader() {
+            @Override
+            protected int addBioentityIdentifiers(HashSet<String> bioentityIdentifiers, ExperimentType experimentType) {
+                return 0;
+            }
+
+            @Override
+            public HashSet<String> getBioentityIdsFromExperiment(String experimentAccession) {
+                return new HashSet<>();
+            }
+        };
     }
 }

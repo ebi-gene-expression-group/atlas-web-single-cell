@@ -1,10 +1,6 @@
 package uk.ac.ebi.atlas.home;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -60,6 +56,7 @@ public class JsonExperimentsSummaryControllerWIT {
 
     @Test
     void hasLatestAndFeaturedExperiments() throws Exception {
+        System.out.println(mockMvc.perform(get(ENDPOINT_URL)).andReturn().getResponse().getContentAsString());
         mockMvc.perform(get(ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

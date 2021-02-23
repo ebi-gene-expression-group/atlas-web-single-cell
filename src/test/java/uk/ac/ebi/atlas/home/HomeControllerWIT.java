@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
-class HomeControllerTest {
+class HomeControllerWIT {
 
     @Autowired
     private WebApplicationContext wac;

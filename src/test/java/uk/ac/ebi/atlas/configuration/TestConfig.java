@@ -6,6 +6,10 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ebi.atlas.model.experiment.ExperimentType;
+import uk.ac.ebi.atlas.utils.BioentityIdentifiersReader;
+
+import java.util.HashSet;
 
 @Configuration
 // Enabling component scanning will also load BasePathsConfig, JdbcConfig and SolrConfig, so just using this class as
@@ -21,5 +25,20 @@ public class TestConfig {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public BioentityIdentifiersReader bioentityIdentifiersReader() {
+        return new BioentityIdentifiersReader() {
+            @Override
+            protected int addBioentityIdentifiers(HashSet<String> bioentityIdentifiers, ExperimentType experimentType) {
+                return 0;
+            }
+
+            @Override
+            public HashSet<String> getBioentityIdsFromExperiment(String experimentAccession) {
+                return new HashSet<>();
+            }
+        };
     }
 }

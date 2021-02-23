@@ -7,6 +7,8 @@ services:
     container_name: scxa-zk-1
     networks:
       - scxa
+    ports:
+      - "2181:2181"
     restart: always
     volumes:
       - zk-1-data:/data
@@ -20,6 +22,8 @@ services:
     container_name: scxa-zk-2
     networks:
       - scxa
+    ports:
+      - "2182:2181"
     restart: always
     volumes:
       - zk-2-data:/data
@@ -33,6 +37,8 @@ services:
     container_name: scxa-zk-3
     networks:
       - scxa
+    ports:
+      - "2183:2181"
     restart: always
     volumes:
       - zk-3-data:/data
@@ -118,6 +124,7 @@ services:
       JPDA_ADDRESS: "*:8000"
     ports:
       - "8080:8080"
+      - "8000:8000"
     volumes:
       - ../build/libs:/usr/local/tomcat/webapps
       - $ATLAS_DATA_PATH/filesystem:/atlas-data
@@ -126,6 +133,7 @@ services:
       - postgres
       - solrcloud-1
       - solrcloud-2
+    command: ["catalina.sh", "jpda", "run"]
 
 volumes:
   zk-1-data:

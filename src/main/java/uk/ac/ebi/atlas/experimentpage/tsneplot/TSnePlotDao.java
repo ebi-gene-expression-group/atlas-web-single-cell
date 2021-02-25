@@ -2,7 +2,6 @@ package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
@@ -25,14 +24,15 @@ public class TSnePlotDao {
                     "LEFT JOIN " +
                     "(SELECT * FROM scxa_analytics WHERE gene_id=:gene_id and experiment_accession=:experiment_accession) AS analytics " +
                     "ON analytics.cell_id=coords.cell_id " +
-                    "WHERE coords.experiment_accession=:experiment_accession AND coords.parameterisation=:perplexity";
+                    "WHERE coords.experiment_accession=:experiment_accession " +
+                    "AND coords.parameterisation->0->>'perplexity'= :perplexity";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithExpression(String experimentAccession, int perplexity, String geneId) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
-                        "perplexity", "perplexity=" + perplexity,
+                        "perplexity", String.valueOf(perplexity),
                         "gene_id", geneId);
 
         return namedParameterJdbcTemplate.query(
@@ -52,14 +52,15 @@ public class TSnePlotDao {
 					"                (SELECT mem.*, g.value as cluster_id FROM scxa_cell_group_membership as mem JOIN  scxa_cell_group g" +
 					"                    on mem.cell_group_id = g.id WHERE g.variable = :k AND mem.experiment_accession = :experiment_accession) AS clusters" +
 					"                ON clusters.cell_id=tsne.cell_id " +
-					"            WHERE coords.experiment_accession = :experiment_accession AND coords.perplexity = :perplexity";
+					"            WHERE coords.experiment_accession = :experiment_accession " +
+                    "               AND coords.parameterisation->0->>'perplexity'= :perplexity";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, int perplexity, int k) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
-                        "perplexity", "perplexity=" + perplexity,
+                        "perplexity", String.valueOf(perplexity),
                         "k", String.valueOf(k));
 
         return namedParameterJdbcTemplate.query(
@@ -72,13 +73,14 @@ public class TSnePlotDao {
     private static final String SELECT_T_SNE_PLOT_WITHOUT_CLUSTERS_STATEMENT =
             "SELECT coords.cell_id, coords.x, coords.y " +
                     "FROM scxa_coords AS coords " +
-                    "WHERE coords.experiment_accession=:experiment_accession AND coords.parameterisation=:perplexity";
+                    "WHERE coords.experiment_accession=:experiment_accession " +
+                    "AND coords.parameterisation->0->>'perplexity'= :perplexity";
 
     public List<TSnePoint.Dto> fetchTSnePlotForPerplexity(String experimentAccession, int perplexity) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
-                        "perplexity", "perplexity=" + perplexity);
+                        "perplexity", String.valueOf(perplexity));
 
         return namedParameterJdbcTemplate.query(
                 SELECT_T_SNE_PLOT_WITHOUT_CLUSTERS_STATEMENT,
@@ -88,8 +90,9 @@ public class TSnePlotDao {
     }
 
     private static final String SELECT_DISTINCT_PERPLEXITIES_STATEMENT =
-            "SELECT DISTINCT parameterisation FROM scxa_coords AS coords " +
-                    "WHERE coords.experiment_accession=:experiment_accession AND coords.method=:method";
+            "SELECT DISTINCT value " +
+                    "FROM scxa_coords, lateral jsonb_each(parameterisation->0) " +
+                    "WHERE experiment_accession=:experiment_accession AND method=:method";
 
     public List<Integer> fetchPerplexities(String experimentAccession) {
         var namedParameters = ImmutableMap.of(
@@ -101,7 +104,7 @@ public class TSnePlotDao {
                 namedParameters,
                 String.class)
                 .stream()
-                .map(perplexity -> Integer.parseInt(perplexity.substring(11)))
+                .map(perplexity -> Integer.valueOf(perplexity))
                 .collect(Collectors.toList());
     }
 

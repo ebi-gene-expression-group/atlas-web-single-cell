@@ -25,7 +25,7 @@ public class TSnePlotDao {
                     "(SELECT * FROM scxa_analytics WHERE gene_id=:gene_id and experiment_accession=:experiment_accession) AS analytics " +
                     "ON analytics.cell_id=coords.cell_id " +
                     "WHERE coords.experiment_accession=:experiment_accession " +
-                    "AND coords.parameterisation->0->>'perplexity'= :perplexity";
+                    "AND coords.parameterisation->0->>'perplexity'= :perplexity AND coords.method=:method";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithExpression(String experimentAccession, int perplexity, String geneId) {
@@ -33,6 +33,7 @@ public class TSnePlotDao {
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
                         "perplexity", String.valueOf(perplexity),
+                        "method", TSNE_METHOD,
                         "gene_id", geneId);
 
         return namedParameterJdbcTemplate.query(
@@ -53,7 +54,7 @@ public class TSnePlotDao {
 					"                    on mem.cell_group_id = g.id WHERE g.variable = :k AND mem.experiment_accession = :experiment_accession) AS clusters" +
 					"                ON clusters.cell_id=tsne.cell_id " +
 					"            WHERE coords.experiment_accession = :experiment_accession " +
-                    "               AND coords.parameterisation->0->>'perplexity'= :perplexity";
+                    "               AND coords.parameterisation->0->>'perplexity'= :perplexity AND coords.method=:method";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, int perplexity, int k) {
@@ -61,6 +62,7 @@ public class TSnePlotDao {
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
                         "perplexity", String.valueOf(perplexity),
+                        "method", TSNE_METHOD,
                         "k", String.valueOf(k));
 
         return namedParameterJdbcTemplate.query(
@@ -73,13 +75,14 @@ public class TSnePlotDao {
     private static final String SELECT_T_SNE_PLOT_WITHOUT_CLUSTERS_STATEMENT =
             "SELECT coords.cell_id, coords.x, coords.y " +
                     "FROM scxa_coords AS coords " +
-                    "WHERE coords.experiment_accession=:experiment_accession " +
+                    "WHERE coords.experiment_accession=:experiment_accession AND coords.method=:method" +
                     "AND coords.parameterisation->0->>'perplexity'= :perplexity";
 
     public List<TSnePoint.Dto> fetchTSnePlotForPerplexity(String experimentAccession, int perplexity) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
+                        "method", TSNE_METHOD,
                         "perplexity", String.valueOf(perplexity));
 
         return namedParameterJdbcTemplate.query(

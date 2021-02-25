@@ -43,7 +43,8 @@ public class ExperimentPageContentService {
             "E-CURD-11",
             "E-MTAB-6308",
             "E-HCAD-10",
-            "E-CURD-10"
+            "E-CURD-10",
+			"E-GEOD-114530"
     );
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,

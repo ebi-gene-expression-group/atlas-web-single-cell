@@ -48,6 +48,7 @@ class JsonExperimentsSummaryControllerWIT {
 
     @Autowired
     private WebApplicationContext wac;
+    private MockMvc mockMvc;
 
     private static final String ENDPOINT_URL = "/json/experiments-summary";
     @BeforeAll
@@ -57,16 +58,21 @@ class JsonExperimentsSummaryControllerWIT {
         populator.execute(dataSource2);
     }
 
-//    @AfterAll
-//    void cleanDatabaseTables() {
-//        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-//        populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
-//        populator.execute(dataSource2);
-//    }
+    @AfterAll
+    void cleanDatabaseTables() {
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
+        populator.execute(dataSource2);
+    }
+
+    @BeforeEach
+    void setUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    }
 
     @Test
     void hasLatestAndFeaturedExperiments() throws Exception {
-        var mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        System.out.println(mockMvc.perform(get(ENDPOINT_URL)).andReturn().getResponse().getContentAsString());
         mockMvc.perform(get(ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

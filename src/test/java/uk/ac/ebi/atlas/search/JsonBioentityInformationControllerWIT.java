@@ -51,7 +51,7 @@ class JsonBioentityInformationControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String urlTemplate = "/json/bioentity-information/{geneId}";
+    private static final String URL_TEMPLATE = "/json/bioentity-information/{geneId}";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -77,7 +77,7 @@ class JsonBioentityInformationControllerWIT {
         String geneId = jdbcTestUtils.fetchRandomGene();
 
         this.mockMvc
-                .perform(get(urlTemplate, geneId))
+                .perform(get(URL_TEMPLATE, geneId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.bioentityProperties[0].type", isA(String.class)))
@@ -94,7 +94,7 @@ class JsonBioentityInformationControllerWIT {
 
         if(!geneId.isEmpty()) {
             this.mockMvc
-                    .perform(get(urlTemplate, geneId))
+                    .perform(get(URL_TEMPLATE, geneId))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
         }
@@ -103,7 +103,7 @@ class JsonBioentityInformationControllerWIT {
     @Test
     void geneNotFound() throws Exception {
         this.mockMvc
-                .perform(get(urlTemplate, "unknown"))
+                .perform(get(URL_TEMPLATE, "unknown"))
                 .andExpect(status().isNotFound());
     }
 
@@ -112,7 +112,7 @@ class JsonBioentityInformationControllerWIT {
         String geneId = jdbcTestUtils.fetchRandomGene();
 
         this.mockMvc
-                .perform(get(urlTemplate, geneId))
+                .perform(get(URL_TEMPLATE, geneId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.bioentityProperties[-1:].type", contains("expression_atlas")))

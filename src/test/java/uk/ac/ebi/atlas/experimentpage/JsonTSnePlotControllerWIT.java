@@ -87,7 +87,7 @@ class JsonTSnePlotControllerWIT {
         // If our fixtures contained full experiments we could use any random perplexity with
         // fetchRandomPerplexityFromExperimentTSne(experimentAccession), but since we have a subset of all the rows, we
         // need to restrict this value to the perplexities actually available for the particular gene we choose.
-        int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession, geneId);
+        var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession, geneId);
 
         this.mockMvc
                 .perform(get(

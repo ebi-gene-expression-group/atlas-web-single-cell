@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.atlas.model.experiment.ExperimentType;
+import uk.ac.ebi.atlas.species.SpeciesFinder;
 import uk.ac.ebi.atlas.utils.BioentityIdentifiersReader;
 
 import java.util.HashSet;
@@ -37,5 +38,10 @@ public class AppConfig {
                 return new HashSet<>();
             }
         };
+    }
+
+    @Bean
+    public SpeciesFinder speciesFinder() {
+        return new SpeciesFinder() {};
     }
 }

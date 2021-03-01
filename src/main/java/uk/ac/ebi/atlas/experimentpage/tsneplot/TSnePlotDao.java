@@ -19,13 +19,13 @@ public class TSnePlotDao {
     }
 
     private static final String SELECT_T_SNE_PLOT_WITH_EXPRESSION_STATEMENT =
-            "SELECT coords.cell_id, coords.x, coords.y, analytics.expression_level " +
-                    "FROM scxa_coords AS coords " +
-                    "LEFT JOIN " +
-                    "(SELECT * FROM scxa_analytics WHERE gene_id=:gene_id and experiment_accession=:experiment_accession) AS analytics " +
-                    "ON analytics.cell_id=coords.cell_id " +
-                    "WHERE coords.experiment_accession=:experiment_accession " +
-                    "AND coords.parameterisation->0->>'perplexity'= :perplexity AND coords.method=:method";
+        "SELECT c.cell_id, c.x, c.y, a.expression_level " +
+                "FROM scxa_coords c LEFT JOIN scxa_analytics a ON " +
+                "c.experiment_accession=a.experiment_accession AND " +
+                "c.cell_id=a.cell_id AND a.gene_id=:gene_id " +
+                "WHERE c.experiment_accession=:experiment_accession AND " +
+                "c.method=:method AND c.parameterisation->0->>'perplexity'=:perplexity " +
+                "ORDER BY c.cell_id";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithExpression(String experimentAccession, int perplexity, String geneId) {

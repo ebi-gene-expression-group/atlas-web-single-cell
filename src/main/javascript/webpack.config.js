@@ -14,7 +14,8 @@ module.exports = {
     homepageSpeciesSummaryPanel: `./bundles/homepage-species-summary-panel`,
     homepageExperimentsSummaryPanel: `./bundles/homepage-experiments-summary-panel`,
     homepageCards: `./bundles/homepage-cards`,
-    experimentTable: `./bundles/experiment-table`
+    experimentTable: `./bundles/experiment-table`,
+    informationBanner: `./bundles/atlas-information-banner`
   },
 
   plugins: [

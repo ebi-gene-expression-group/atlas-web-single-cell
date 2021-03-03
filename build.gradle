@@ -16,7 +16,7 @@ war {
 }
 
 group 'uk.ac.ebi.ge'
-version '11.0.0'
+version '11.0.2'
 sourceCompatibility = 11
 targetCompatibility = 11
 
@@ -31,7 +31,7 @@ repositories {
 
 def cache2kVersion = '1.2.4.Final'
 dependencies {
-    implementation 'uk.ac.ebi.ge:atlas-web-core:6.0.0-SNAPSHOT'
+    implementation 'uk.ac.ebi.ge:atlas-web-core:6.0.0'
 
     implementation 'org.springframework:spring-context:5.1.5.RELEASE'
     implementation 'org.springframework:spring-jdbc:5.1.5.RELEASE'

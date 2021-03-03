@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 
+<div id="information-banner" style="background: #C5C5C5; font-size: large"></div>
 <div data-sticky-container>
     <header id="masthead" class="masthead" data-sticky data-sticky-on="large" data-top-anchor="content:top" data-btm-anchor="content:bottom">
         <div class="masthead-inner row expanded">

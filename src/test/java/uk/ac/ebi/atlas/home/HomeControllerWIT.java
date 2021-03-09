@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -20,8 +21,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
-class HomeControllerTest {
-
+// This test is a quite the mystery: running it together with JsonExperimentsSummaryControllerWIT would make the latter
+// fail because it will re-use the DB in whatever state is in here. If we add the experiments fixture here it will pass
+// and if we don’t it will fail. Moreover, adding the fixture in JsonExperimentsSummaryControllerWIT will have no
+// effect, and trying to clean the experiment table with experiment-delete.sql here in either @AfterAll or with
+// @Sql(..., executionPhase = AFTER_TEST_METHOD) seems also not to work. For whatever reason, this test cripples the DB
+// and only @DirtiesContext solves the issue. Future Atlas developers: I hope you can explain to me what’s going on
+// here!
+@DirtiesContext
+class HomeControllerWIT {
     @Autowired
     private WebApplicationContext wac;
     private MockMvc mockMvc;

@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @WebAppConfiguration
@@ -28,6 +29,7 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @ContextConfiguration(classes = TestConfig.class)
 @Transactional
 @Sql("/fixtures/experiment-fixture.sql")
+@Sql(scripts = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
 class ScxaExperimentCrudIT {
     private static final Random RNG = ThreadLocalRandom.current();
 

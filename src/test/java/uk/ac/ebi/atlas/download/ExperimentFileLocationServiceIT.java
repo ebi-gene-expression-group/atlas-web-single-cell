@@ -90,12 +90,12 @@ class ExperimentFileLocationServiceIT {
 	void cleanDatabaseTables() {
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		populator.addScripts(
-				new ClassPathResource("fixtures/experiment-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"),
 				new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
+				new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+				new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
+				new ClassPathResource("fixtures/experiment-delete.sql"));
 		populator.execute(dataSource);
 	}
 

@@ -167,11 +167,16 @@ public class GeneSearchDao {
                     Map<Integer, List<Integer>> result = new HashMap<>();
 
                     while (resultSet.next()) {
-                        var k = Integer.valueOf(resultSet.getString("k"));
-                        var clusterId = Integer.valueOf(resultSet.getString("cluster_id"));
-                        var clusterIds = result.getOrDefault(k, new ArrayList<>());
-                        clusterIds.add(clusterId);
-                        result.put(k, clusterIds);
+                        try {
+                            var k = Integer.valueOf(resultSet.getString("k"));
+                            var clusterId = Integer.valueOf(resultSet.getString("cluster_id"));
+                            var clusterIds = result.getOrDefault(k, new ArrayList<>());
+                            clusterIds.add(clusterId);
+                            result.put(k, clusterIds);
+                        } catch (Exception e) {
+                            // k may be "inferred cell type - ..."
+                            // See https://github.com/ebi-gene-expression-group/atlas-web-single-cell/issues/111
+                        }
                     }
                     return result;
                 }

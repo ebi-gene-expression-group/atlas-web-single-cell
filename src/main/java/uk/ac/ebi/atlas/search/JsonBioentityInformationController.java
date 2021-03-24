@@ -20,10 +20,9 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class JsonBioentityInformationController extends JsonExceptionHandlingController {
-
-    private BioEntityPropertyDao bioEntityPropertyDao;
-    private BioEntityCardModelFactory bioEntityCardModelFactory;
-    private SpeciesInferrer speciesInferrer;
+    private final BioEntityPropertyDao bioEntityPropertyDao;
+    private final BioEntityCardModelFactory bioEntityCardModelFactory;
+    private final SpeciesInferrer speciesInferrer;
 
     @Inject
     public JsonBioentityInformationController(BioEntityPropertyDao bioEntityPropertyDao,

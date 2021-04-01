@@ -1,12 +1,10 @@
 package uk.ac.ebi.atlas.hcalandingpage;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
+import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experiments.ExperimentJsonSerializer;
 
 import java.util.Set;
@@ -15,7 +13,7 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
-public class HcaHumanExperimentsController {
+public class HcaHumanExperimentsController extends JsonExceptionHandlingController {
     private final static String CHARACTERISTIC_NAME = "organism_part";
     private final HcaHumanExperimentService hcaHumanExperimentService;
     private final ExperimentJsonSerializer experimentJsonSerializer;
@@ -30,16 +28,11 @@ public class HcaHumanExperimentsController {
     @GetMapping(value = "/json/experiments/hca/human",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getOrganismPartExperimentsList(@RequestParam(defaultValue = "") Set<String> organismPart) {
-        try {
             return GSON.toJson(
                     hcaHumanExperimentService
                             .getPublicHumanExperiments(CHARACTERISTIC_NAME, organismPart)
                             .stream()
                             .map(experimentJsonSerializer::serialize)
                             .collect(toImmutableSet()));
-        } catch (ResourceNotFoundException ex) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
-                    "There was error reading experiments", ex);
         }
     }
-}

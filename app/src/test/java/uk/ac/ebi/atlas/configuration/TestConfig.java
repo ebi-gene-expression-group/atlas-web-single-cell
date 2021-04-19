@@ -5,11 +5,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.species.SpeciesFinder;
 import uk.ac.ebi.atlas.utils.BioentityIdentifiersReader;
 
+import javax.servlet.ServletContext;
 import java.util.HashSet;
 
 @Configuration
@@ -47,4 +49,9 @@ public class TestConfig {
     public SpeciesFinder speciesFinder() {
         return new SpeciesFinder() {};
     }
+
+//    @Bean
+//    public ServletContext servletContext() {
+//        return new MockServletContext();
+//    }
 }

@@ -110,7 +110,7 @@ services:
       - scxa
     command: -url=jdbc:postgresql://$POSTGRES_HOST/$POSTGRES_DB -schemas=$POSTGRES_USER -user=$POSTGRES_USER -password=$POSTGRES_PASSWORD -connectRetries=60 migrate
     volumes:
-      - ../../atlas-web-core/src/test/resources/schemas/flyway/scxa/:/flyway/sql
+      - ../schemas/flyway/scxa/:/flyway/sql
     depends_on:
       - postgres
 

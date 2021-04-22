@@ -48,7 +48,7 @@ services:
       ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=0.0.0.0:2888:3888
 
   solrcloud-1:
-    image: solr:7.1
+    image: solr:7.1.0
     container_name: scxa-solrcloud-1
     networks:
       - scxa

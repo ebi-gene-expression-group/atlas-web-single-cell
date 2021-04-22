@@ -126,7 +126,7 @@ services:
       - "8080:8080"
       - "8000:8000"
     volumes:
-      - ../build/libs:/usr/local/tomcat/webapps
+      - ../webapp:/usr/local/tomcat/webapps
       - $ATLAS_DATA_PATH/filesystem:/atlas-data
       - tomcat-conf:/usr/local/tomcat/conf
     depends_on:

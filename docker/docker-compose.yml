@@ -127,6 +127,7 @@ services:
       - "8000:8000"
     volumes:
       - ../webapp:/usr/local/tomcat/webapps
+      - ./atlas-properties:/atlas-properties
       - $ATLAS_DATA_PATH/filesystem:/atlas-data
       - tomcat-conf:/usr/local/tomcat/conf
     depends_on:

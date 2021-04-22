@@ -68,7 +68,7 @@
                     dataKey: 'experimentAccession',
                     tableHeaderCellOnClick:
                         experimentTable.loadExperimentDownloadModule(
-                            'https://www.ebi.ac.uk/gxa/sc/',
+                            '${pageContext.request.contextPath}/',
                             [
                                 {
                                     description: 'Raw quantification files',

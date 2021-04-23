@@ -53,30 +53,12 @@ public class ExpressionAtlasContentService {
             String accessKey,
             ExternallyAvailableContent.ContentType contentType) {
         Experiment<?> experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
-        var externalResourceType = getExternalResourceType(experiment);
 
-        var arrayExpressResourceLinks = singleCellBaselineExperimentExternallyAvailableContentService.list(
-                (SingleCellBaselineExperiment) experiment, contentType);
-        var otherExternalResourceLinks =  externalResourceType.equals("geo") ?
-                singleCellBaselineExperimentExternallyAvailableContentServiceGeo.list(
-                (SingleCellBaselineExperiment) experiment, contentType) :
-                externalResourceType.equals("ega") ?
-                        singleCellBaselineExperimentExternallyAvailableContentServiceEga.list(
-                        (SingleCellBaselineExperiment) experiment, contentType) :
-                        singleCellBaselineExperimentExternallyAvailableContentServiceEna.list(
-                        (SingleCellBaselineExperiment) experiment, contentType);
-        otherExternalResourceLinks.addAll(arrayExpressResourceLinks);
-        return otherExternalResourceLinks;
-    }
-
-    private String getExternalResourceType(Experiment<?> experiment) {
-        var geoAccessions = experiment.getSecondaryAccessions().stream()
-                .filter(accession -> accession.matches("GSE.*"))
-                .collect(toImmutableList());
-        var egaAccessions = experiment.getSecondaryAccessions().stream()
-                .filter(accession -> accession.matches("EGA.*"))
-                .collect(toImmutableList());
-
-        return geoAccessions.isEmpty() ? egaAccessions.isEmpty() ? "ena" : "ega" : "geo";
+        return ImmutableList.<ExternallyAvailableContent>builder()
+                .addAll(singleCellBaselineExperimentExternallyAvailableContentService.list((SingleCellBaselineExperiment) experiment, contentType))
+                .addAll(singleCellBaselineExperimentExternallyAvailableContentServiceGeo.list((SingleCellBaselineExperiment) experiment, contentType))
+                .addAll(singleCellBaselineExperimentExternallyAvailableContentServiceEga.list((SingleCellBaselineExperiment) experiment, contentType))
+                .addAll(singleCellBaselineExperimentExternallyAvailableContentServiceEna.list((SingleCellBaselineExperiment) experiment, contentType))
+                .build();
     }
 }

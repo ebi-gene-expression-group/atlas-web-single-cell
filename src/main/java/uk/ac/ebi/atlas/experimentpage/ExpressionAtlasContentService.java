@@ -28,8 +28,7 @@ public class ExpressionAtlasContentService {
     private final ExperimentTrader experimentTrader;
 
     public ExpressionAtlasContentService(
-            LinkToArrayExpress.SingleCell singleCellLinkToArrayExpress
-            ,
+            LinkToArrayExpress.SingleCell singleCellLinkToArrayExpress,
             LinkToEna.SingleCell singleCellLinkToEna,
             LinkToEga.SingleCell singleCellLinkToEga,
             LinkToGeo.SingleCell singleCellLinkToGeo,
@@ -49,11 +48,12 @@ public class ExpressionAtlasContentService {
                 new ExternallyAvailableContentService<>(ImmutableList.of(singleCellLinkToEga));
     }
 
-    public List<ExternallyAvailableContent> getExternalResourceLinks(String experimentAccession,
-                                                 String accessKey,
-                                                 ExternallyAvailableContent.ContentType contentType) {
+    public List<ExternallyAvailableContent> getExternalResourceLinks(
+            String experimentAccession,
+            String accessKey,
+            ExternallyAvailableContent.ContentType contentType) {
         Experiment<?> experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
-        var externalResourceType = getExternalResouceType(experiment);
+        var externalResourceType = getExternalResourceType(experiment);
 
         var arrayExpressResourceLinks = singleCellBaselineExperimentExternallyAvailableContentService.list(
                 (SingleCellBaselineExperiment) experiment, contentType);
@@ -69,7 +69,7 @@ public class ExpressionAtlasContentService {
         return otherExternalResourceLinks;
     }
 
-    private String getExternalResouceType(Experiment<?> experiment) {
+    private String getExternalResourceType(Experiment<?> experiment) {
         var geoAccessions = experiment.getSecondaryAccessions().stream()
                 .filter(accession -> accession.matches("GSE.*"))
                 .collect(toImmutableList());
@@ -78,6 +78,5 @@ public class ExpressionAtlasContentService {
                 .collect(toImmutableList());
 
         return geoAccessions.isEmpty() ? egaAccessions.isEmpty() ? "ena" : "ega" : "geo";
-
     }
 }

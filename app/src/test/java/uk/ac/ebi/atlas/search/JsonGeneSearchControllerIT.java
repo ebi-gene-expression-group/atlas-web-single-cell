@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 @WebAppConfiguration
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @ContextConfiguration(classes = TestConfig.class)
-class JsonGeneSearchControllerTest {
+class JsonGeneSearchControllerIT {
     @Mock
     private GeneIdSearchService geneIdSearchServiceMock;
 

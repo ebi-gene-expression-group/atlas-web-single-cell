@@ -124,7 +124,6 @@ public class TSnePlotDao {
 
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
-        List<String> parameterisationList = new ArrayList<>();
         return namedParameterJdbcTemplate.query(
                 SELECT_DISTINCT_T_SNE_PLOT_TYPES,
                 namedParameters,
@@ -132,11 +131,11 @@ public class TSnePlotDao {
                     Map<String, List<String>> result = new HashMap<>();
                     while (resultSet.next()) {
                         String method = resultSet.getString("method");
-                        String parameterisations = resultSet.getString("parameterisation");
+                        String parameterisation = resultSet.getString("parameterisation");
 
-                        List<String> oldParamerisationList = result.getOrDefault(method, parameterisationList);
-                        oldParamerisationList.add(parameterisations);
-                        result.put(method, oldParamerisationList);
+                        List<String> parameterisations = result.getOrDefault(method, new ArrayList<>());
+                        parameterisations.add(parameterisation);
+                        result.put(method, parameterisations);
                     }
                     return result;
                 });

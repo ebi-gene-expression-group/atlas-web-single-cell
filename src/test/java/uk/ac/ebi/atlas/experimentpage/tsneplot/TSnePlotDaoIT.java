@@ -57,7 +57,8 @@ class TSnePlotDaoIT {
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_coords-fixture.sql"));
         populator.execute(dataSource);
     }
 
@@ -69,7 +70,8 @@ class TSnePlotDaoIT {
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-fixture.sql"));
         populator.execute(dataSource);
     }
 
@@ -133,6 +135,13 @@ class TSnePlotDaoIT {
                 .isEqualTo(fileContentLines-1);
         cleanDatabaseTables();
         populateDatabaseTables();
+    }
+
+    @ParameterizedTest
+    @MethodSource("randomExperimentAccessionProvider")
+    void testTSnePlotTypesAndOptions(String experimentAccession){
+       Map<String,List<String>> response = subject.getTsnePlotTypes("E-MTAB-5061");
+        assertThat(response).isNotEmpty();
     }
 
     private static final String SELECT_CELL_IDS_STATEMENT =

@@ -9,6 +9,7 @@ import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -70,5 +71,9 @@ public class TSnePlotSettingsService {
     @Cacheable("cellCounts")
     public int getCellCount(String experimentAccession) {
         return tSnePlotDao.fetchNumberOfCellsByExperimentAccession(experimentAccession);
+    }
+
+    public Map<String, List<String>> getAvailablePlotTypes(String experimentAccession){
+        return tSnePlotDao.getTsnePlotTypes(experimentAccession);
     }
 }

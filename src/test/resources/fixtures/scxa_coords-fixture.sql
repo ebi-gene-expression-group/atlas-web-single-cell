@@ -1,0 +1,9 @@
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1632241', -5.4101815, 3.8634012, '[{"n_neighbors": 5}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1632898', -5.1183767, 6.050566, '[{"n_neighbors": 15}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1631733', -4.9828777, -5.9507236, '[{"n_neighbors": 10}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1631559', -1.4054004, 5.540149, '[{"n_neighbors": 50}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1631548', 3.727548, -5.403536, '[{"n_neighbors": 30}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1633417', 4.355326, 5.893925, '[{"n_neighbors": 3}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1632650', 4.6092134, -6.8978767, '[{"n_neighbors": 100}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1632055', -4.586969, -4.414085, '[{"n_neighbors": 30}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1631135', -2.291764, -4.251097, '[{"n_neighbors": 100}]');

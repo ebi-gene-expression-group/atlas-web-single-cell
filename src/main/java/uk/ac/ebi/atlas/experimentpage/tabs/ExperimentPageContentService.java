@@ -22,6 +22,7 @@ import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
@@ -67,6 +68,11 @@ public class ExperimentPageContentService {
                 .ifPresent(value -> result.addProperty("selectedK", value));
 
         result.add("perplexities", getPerplexities(experimentAccession));
+
+//        add plot types and plot options response
+        result.add("plotTypes",
+                GSON.toJsonTree(getAvailablePlotTypes(experimentAccession)));
+
         result.add("metadata", getMetadata(experimentAccession));
 
         var units = new JsonArray();
@@ -242,5 +248,9 @@ public class ExperimentPageContentService {
     private static boolean isSmartExperiment(Collection<String> technologyType) {
         return technologyType.stream()
                 .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
+    }
+
+    public Map<String,List<String>> getAvailablePlotTypes(String experimentAccession) {
+        return tsnePlotSettingsService.getAvailablePlotTypes(experimentAccession);
     }
 }

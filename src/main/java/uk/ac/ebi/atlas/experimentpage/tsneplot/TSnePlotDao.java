@@ -2,12 +2,15 @@ package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class TSnePlotDao {
@@ -107,5 +110,35 @@ public class TSnePlotDao {
                 COUNT_CELLS_BY_EXPERIMENT_ACCESSION,
                 namedParameters,
                 Integer.class);
+    }
+
+    private static final String SELECT_DISTINCT_T_SNE_PLOT_TYPES =
+            "SELECT DISTINCT " +
+                    "method," +
+                    "parameterisation " +
+                    "FROM scxa_coords " +
+                    "WHERE method IN (select method from scxa_coords) " +
+                    "AND experiment_accession=:experiment_accession ORDER BY method DESC ";
+
+    public Map<String, List<String>> getTsnePlotTypes(String experimentAccession) {
+
+        var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
+
+        List<String> parameterisationList = new ArrayList<>();
+        return namedParameterJdbcTemplate.query(
+                SELECT_DISTINCT_T_SNE_PLOT_TYPES,
+                namedParameters,
+                (ResultSet resultSet) -> {
+                    Map<String, List<String>> result = new HashMap<>();
+                    while (resultSet.next()) {
+                        String method = resultSet.getString("method");
+                        String parameterisations = resultSet.getString("parameterisation");
+
+                        List<String> oldParamerisationList = result.getOrDefault(method, parameterisationList);
+                        oldParamerisationList.add(parameterisations);
+                        result.put(method, oldParamerisationList);
+                    }
+                    return result;
+                });
     }
 }

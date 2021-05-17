@@ -73,7 +73,7 @@ class TSnePlotDaoIT {
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-                new ClassPathResource("fixtures/scxa_coords-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -142,15 +142,14 @@ class TSnePlotDaoIT {
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionProvider")
     void testTSnePlotTypesAndOptions(String experimentAccession) {
-        Map<String, List<String>> tsnePlotTypesAndOptions = subject.getTSnePlotTypesAndOptions(experimentAccession);
+        var tsnePlotTypesAndOptions = subject.getTSnePlotTypesAndOptions(experimentAccession);
         assertThat(tsnePlotTypesAndOptions.get("umap")).isNotEmpty().doesNotHaveDuplicates();
         assertThat(tsnePlotTypesAndOptions.get("tsne")).isNotEmpty().doesNotHaveDuplicates();
     }
 
     @Test
     void testTSnePlotTypesAndOptionsWithWrongExperimentAccession() {
-        Map<String, List<String>> tsnePlotTypesAndOptions = subject.getTSnePlotTypesAndOptions("Foo");
-        assertThat(tsnePlotTypesAndOptions).isEmpty();
+        assertThat(subject.getTSnePlotTypesAndOptions("Foo")).isEmpty();
     }
 
     private static final String SELECT_CELL_IDS_STATEMENT =

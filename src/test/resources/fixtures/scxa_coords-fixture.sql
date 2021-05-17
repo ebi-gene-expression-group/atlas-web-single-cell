@@ -7,3 +7,28 @@ INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameteri
 INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1632650', 4.6092134, -6.8978767, '[{"n_neighbors": 100}]');
 INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1632055', -4.586969, -4.414085, '[{"n_neighbors": 30}]');
 INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-MTAB-5061', 'umap', 'ERR1631135', -2.291764, -4.251097, '[{"n_neighbors": 100}]');
+
+-- E-CURD-4
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206655-GCAGTGAGGTCG', -7.763526, -2.240726, '[{"n_neighbors": 3}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206658-TGTTATAGCACG', -6.4309506, -0.68891805, '[{"n_neighbors": 15}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206657-ACGAAGCCAGGA', -6.238459, -0.59740704, '[{"n_neighbors": 30}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206655-CGAGACCGGGCT', -6.1135664, -0.14525838, '[{"n_neighbors": 25}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206660-GTGAATAGAATC', -5.5126557, -0.31961456, '[{"n_neighbors": 20}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206663-ATTGATGGGCGC', -3.947509, -0.7827067, '[{"n_neighbors": 100}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SSRR8206662-TACATTGACTTG', 2.6895955, 5.1414, '[{"n_neighbors": 5}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206662-GTATGTATTCTG', 4.835074, -0.086276785, '[{"n_neighbors": 50}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206657-CTATGCGTCAGT', 5.598916, 0.59349173, '[{"n_neighbors": 10}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'umap', 'SRR8206656-TCCATAGGCTTA', -7.5162477, -2.524374, '[{"n_neighbors": 3}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206657-TTTATCCTATTA', 42.638042, 43.368465, '[{"perplexity": 15}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206654-CGGATTTTCATA', 53.57441, -5.372438, '[{"perplexity": 5}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206654-TTCTGCTCTCAA', -38.36484, -4.416078, '[{"perplexity": 5}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206656-GGTCGGCTGAGG', -35.21073, 1.520414, '[{"perplexity": 10}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206655-TGAAACGTTCGG', -35.141193, -0.9706737, '[{"perplexity": 15}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206656-CCGCTTTTATTA', -30.807276, -7.9473133, '[{"perplexity": 20}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206659-CCGTCCTCGTGG', -21.260115, -1.3245233, '[{"perplexity": 25}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206657-CTGAATAAGATA', -16.757412, -13.3607, '[{"perplexity": 30}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206663-GCTAAGTATCCC', -7.9697886, -8.18951, '[{"perplexity": 35}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206655-AAACTATAAATC', -5.8783116, -11.036719, '[{"perplexity": 45}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206662-GTTCAACTACCG', -5.408373, -9.14465, '[{"perplexity": 50}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206656-AATTGGATGCGC', -5.0445485, -8.169077, '[{"perplexity": 40}]');
+INSERT INTO scxa_coords (experiment_accession, method, cell_id, x, y, parameterisation) VALUES ('E-CURD-4', 'tsne', 'SRR8206656-TTTGTCTACACC', 5.70601, 65.60204, '[{"perplexity": 1}]');

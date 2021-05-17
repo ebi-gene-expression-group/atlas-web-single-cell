@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,6 +19,7 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.model.resource.AtlasResource;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
+
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.nio.file.Path;
@@ -139,9 +141,16 @@ class TSnePlotDaoIT {
 
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionProvider")
-    void testTSnePlotTypesAndOptions(String experimentAccession){
-       Map<String,List<String>> response = subject.getTsnePlotTypes(experimentAccession);
-        assertThat(response).isNotEmpty();
+    void testTSnePlotTypesAndOptions(String experimentAccession) {
+        Map<String, List<String>> tsnePlotTypesAndOptions = subject.getTSnePlotTypesAndOptions(experimentAccession);
+        assertThat(tsnePlotTypesAndOptions.get("umap")).isNotEmpty().doesNotHaveDuplicates();
+        assertThat(tsnePlotTypesAndOptions.get("tsne")).isNotEmpty().doesNotHaveDuplicates();
+    }
+
+    @Test
+    void testTSnePlotTypesAndOptionsWithWrongExperimentAccession() {
+        Map<String, List<String>> tsnePlotTypesAndOptions = subject.getTSnePlotTypesAndOptions("Foo");
+        assertThat(tsnePlotTypesAndOptions).isEmpty();
     }
 
     private static final String SELECT_CELL_IDS_STATEMENT =

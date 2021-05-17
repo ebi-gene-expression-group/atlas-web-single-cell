@@ -11,18 +11,17 @@ import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
-import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
-import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
@@ -69,9 +68,9 @@ public class ExperimentPageContentService {
 
         result.add("perplexities", getPerplexities(experimentAccession));
 
-//        add plot types and plot options response
-        result.add("plotTypes",
-                GSON.toJsonTree(getAvailablePlotTypes(experimentAccession)));
+        //        Add plot types and plot options response here
+        result.add("plotTypesAndOptions",
+                GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)));
 
         result.add("metadata", getMetadata(experimentAccession));
 
@@ -248,9 +247,5 @@ public class ExperimentPageContentService {
     private static boolean isSmartExperiment(Collection<String> technologyType) {
         return technologyType.stream()
                 .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
-    }
-
-    public Map<String,List<String>> getAvailablePlotTypes(String experimentAccession) {
-        return tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession);
     }
 }

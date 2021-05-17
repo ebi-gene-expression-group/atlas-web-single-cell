@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,15 +9,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
-import uk.ac.ebi.atlas.testutils.MockDataFileHub;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.testutils.MockDataFileHub;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import com.google.common.collect.ImmutableSet;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -207,5 +208,22 @@ class TSnePlotSettingsServiceTest {
         when(tSnePlotDaoMock.fetchPerplexities(EXPERIMENT_ACCESSION)).thenReturn(Collections.emptyList());
 
         assertThat(subject.getAvailablePerplexities(EXPERIMENT_ACCESSION)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Get PlotTypes and PlotOptions for the valid experiment accession")
+    void validAccessionPlotTypesAndPlotOptions() {
+        when(tSnePlotDaoMock.getTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION)).thenReturn(Map.of("tsne",
+                Arrays.asList("[{\"perplexity\": 1}]", "[{\"perplexity\": 5}]", "[{\"perplexity\": 10}]"), "umap",
+                Arrays.asList("[{\"n_neighbors\": 25}]", "[{\"n_neighbors\": 30}]", "[{\"n_neighbors\": 50}]")));
+        assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("Get PlotTypes and PlotOptions for the invalid experiment accession")
+    void invalidAccessionPlotTypesAndOptions() {
+        when(tSnePlotDaoMock.getTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION)).thenReturn(Collections.EMPTY_MAP);
+
+        assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isEmpty();
     }
 }

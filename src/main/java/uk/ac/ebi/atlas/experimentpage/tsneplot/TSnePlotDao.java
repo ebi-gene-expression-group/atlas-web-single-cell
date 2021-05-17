@@ -120,6 +120,15 @@ public class TSnePlotDao {
                     "WHERE method IN (select method from scxa_coords) " +
                     "AND experiment_accession=:experiment_accession ORDER BY method DESC ";
 
+    /**
+     * Gets response of the TSne PlotTypes and TSne Plot Options for the experiment
+     * @param experimentAccession
+     * @return Map<PlotTypes, List<String>PlotOptions> -
+     * {
+     *   "tsne": [{ "perplexity": 10 }, { "perplexity": 20 } ...],
+     *   "umap": [{ "n_neighbours": 3 }, ... ]|
+     * }
+     */
     public Map<String, List<String>> getTSnePlotTypesAndOptions(String experimentAccession) {
 
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);

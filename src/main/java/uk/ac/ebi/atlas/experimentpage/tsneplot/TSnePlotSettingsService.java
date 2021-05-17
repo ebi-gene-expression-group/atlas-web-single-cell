@@ -74,6 +74,6 @@ public class TSnePlotSettingsService {
     }
 
     public Map<String, List<String>> getAvailablePlotTypes(String experimentAccession){
-        return tSnePlotDao.getTsnePlotTypes(experimentAccession);
+        return tSnePlotDao.getTSnePlotTypesAndOptions(experimentAccession);
     }
 }

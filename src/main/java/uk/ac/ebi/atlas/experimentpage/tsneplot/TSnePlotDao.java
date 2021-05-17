@@ -120,7 +120,7 @@ public class TSnePlotDao {
                     "WHERE method IN (select method from scxa_coords) " +
                     "AND experiment_accession=:experiment_accession ORDER BY method DESC ";
 
-    public Map<String, List<String>> getTsnePlotTypes(String experimentAccession) {
+    public Map<String, List<String>> getTSnePlotTypesAndOptions(String experimentAccession) {
 
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 

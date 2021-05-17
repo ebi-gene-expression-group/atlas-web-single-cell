@@ -140,7 +140,7 @@ class TSnePlotDaoIT {
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionProvider")
     void testTSnePlotTypesAndOptions(String experimentAccession){
-       Map<String,List<String>> response = subject.getTsnePlotTypes("E-MTAB-5061");
+       Map<String,List<String>> response = subject.getTsnePlotTypes(experimentAccession);
         assertThat(response).isNotEmpty();
     }
 

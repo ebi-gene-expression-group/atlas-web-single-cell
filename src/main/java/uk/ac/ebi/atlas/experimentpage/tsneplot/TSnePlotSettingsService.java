@@ -73,7 +73,7 @@ public class TSnePlotSettingsService {
         return tSnePlotDao.fetchNumberOfCellsByExperimentAccession(experimentAccession);
     }
 
-    public Map<String, List<String>> getAvailablePlotTypes(String experimentAccession){
+    public Map<String, List<String>> getAvailablePlotTypesAndPlotOptions(String experimentAccession){
         return tSnePlotDao.getTSnePlotTypesAndOptions(experimentAccession);
     }
 }

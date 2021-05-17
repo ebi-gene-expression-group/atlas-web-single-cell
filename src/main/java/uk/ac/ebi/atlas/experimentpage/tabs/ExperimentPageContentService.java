@@ -251,6 +251,6 @@ public class ExperimentPageContentService {
     }
 
     public Map<String,List<String>> getAvailablePlotTypes(String experimentAccession) {
-        return tsnePlotSettingsService.getAvailablePlotTypes(experimentAccession);
+        return tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession);
     }
 }

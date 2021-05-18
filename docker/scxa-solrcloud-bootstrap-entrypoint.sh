@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-/index-gxa/bin/create-bioentities-collection.sh
-/index-gxa/bin/create-bioentities-schema.sh
+/index-bioentities/bin/create-bioentities-collection.sh
+/index-bioentities/bin/create-bioentities-schema.sh
+/index-bioentities/bin/create-bioentities-suggesters-scxa.sh
 
 /index-scxa/bin/create-scxa-gene2experiment-config-set.sh
 /index-scxa/bin/create-scxa-gene2experiment-collection.sh

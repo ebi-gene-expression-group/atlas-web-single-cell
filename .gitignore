@@ -27,7 +27,8 @@ hs_err_pid*
 ################################################################################################
 # https://github.com/github/gitignore/blob/master/Gradle.gitignore
 .gradle
-/build/
+build/
+/webapp/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -141,4 +142,3 @@ _idea
 # OS X “Desktop Services” files
 .DS_Store
 .module-cache
-

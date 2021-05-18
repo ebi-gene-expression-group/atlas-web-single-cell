@@ -1,12 +1,12 @@
-[submodule "src/test/resources/schemas"]
-	path = src/test/resources/schemas
+[submodule "atlas-web-core"]
+	path = atlas-web-core
+	url = https://github.com/ebi-gene-expression-group/atlas-web-core.git
+[submodule "schemas"]
+	path = schemas
 	url = https://github.com/ebi-gene-expression-group/atlas-schemas.git
-[submodule "src/main/javascript/modules/species-summary-panel"]
-	path = src/main/javascript/modules/species-summary-panel
-	url = https://github.com/ebi-gene-expression-group/species-summary-panel.git
-[submodule "src/main/javascript/modules/experiments-summary-panel"]
-	path = src/main/javascript/modules/experiments-summary-panel
+[submodule "app/src/main/javascript/modules/experiments-summary-panel"]
+	path = app/src/main/javascript/modules/experiments-summary-panel
 	url = https://github.com/ebi-gene-expression-group/experiments-summary-panel.git
-[submodule "build-profiles"]
-	path = build-profiles
-	url = https://github.com/ebi-gene-expression-group/atlas-web-build-profiles.git
+[submodule "app/src/main/javascript/modules/species-summary-panel"]
+	path = app/src/main/javascript/modules/species-summary-panel
+	url = https://github.com/ebi-gene-expression-group/species-summary-panel.git

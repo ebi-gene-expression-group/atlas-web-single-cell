@@ -1,0 +1,47 @@
+plugins {
+    id 'atlas-web-app.java-conventions'
+    id 'war'
+}
+
+version = '11.0.0'
+
+war {
+    // Let’s clean the exploded WAR if it’s there
+    def destinationPath = '../webapp'
+    def artifactName = 'gxa#sc'
+    doFirst {
+        delete "${destinationPath}/${artifactName}"
+    }
+
+    archiveFileName = "${artifactName}.war"
+    destinationDirectory = file "${destinationPath}"
+}
+
+//tasks.register('cleanExplodedWar') {
+//    doLast {
+//        delete '../webapp/gxa#sc'
+//    }
+//}
+
+def cache2kVersion = '1.2.4.Final'
+dependencies {
+    implementation project(':atlas-web-core')
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
+    //implementation 'javax.validation:validation-api:2.0.1.Final'
+    runtimeOnly 'javax.validation:validation-api:2.0.1.Final'
+
+    implementation "org.cache2k:cache2k-api:${cache2kVersion}"
+    runtimeOnly "org.cache2k:cache2k-core:${cache2kVersion}"
+    implementation "org.cache2k:cache2k-spring:${cache2kVersion}"
+
+    //implementation 'org.apache.tiles:tiles-extras:3.0.8'
+    runtimeOnly 'org.apache.tiles:tiles-extras:3.0.8'
+    implementation 'javax.servlet.jsp:jsp-api:2.2'
+
+    // For URL rewrite (see WEB-INF/web.xml), or your Filter will fail with the most confusing error messages
+    //implementation 'org.tuckey:urlrewritefilter:4.0.3'
+    runtimeOnly 'org.tuckey:urlrewritefilter:4.0.3'
+    // implementation 'jstl:jstl:1.2'
+    runtimeOnly 'jstl:jstl:1.2'
+}

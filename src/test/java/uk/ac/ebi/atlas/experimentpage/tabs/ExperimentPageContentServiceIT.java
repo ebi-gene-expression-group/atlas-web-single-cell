@@ -177,6 +177,9 @@ class ExperimentPageContentServiceIT {
 
         assertThat(result.has("perplexities")).isTrue();
         assertThat(result.get("perplexities").getAsJsonArray()).isNotEmpty();
+        
+        assertThat(result.has("plotTypesAndOptions")).isTrue();
+        assertThat(result.get("plotTypesAndOptions").getAsJsonArray()).isNotEmpty();
 
         // Not all experiments have metadata, see E-GEOD-99058
         if (result.has("metadata")) {

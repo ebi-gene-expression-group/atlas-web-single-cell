@@ -68,7 +68,7 @@ public class ExperimentPageContentService {
 
         result.add("perplexities", getPerplexities(experimentAccession));
 
-        //        Add plot types and plot options response here
+        // Add plot types and plot options response here
         result.add("plotTypesAndOptions",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)));
 

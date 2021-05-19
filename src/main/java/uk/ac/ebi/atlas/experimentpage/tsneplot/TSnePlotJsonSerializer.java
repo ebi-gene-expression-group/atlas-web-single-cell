@@ -39,8 +39,18 @@ public class TSnePlotJsonSerializer {
                                 tSnePlotService.fetchTSnePlotWithClusters(experiment.getAccession(), perplexity, k))));
     }
 
-    @Cacheable(cacheNames = "jsonTSnePlotWithMetadata", key = "{#experimentAccession, #perplexity, #metadata}")
-    public String tSnePlotWithMetadata(String experimentAccession, int perplexity, String metadata, String accessKey) {
+    @Cacheable(cacheNames = "jsonTSnePlotWithUmap", key = "{#experimentAccession, #number}")
+    public String tSnePlotWithParameterisation(String experimentAccession, int number, String accessKey) {
+        var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
+
+        return GSON.toJson(
+                ImmutableMap.of(
+                        "series",
+                        tSnePlotService.fetchTSnePlotWithUmap(experiment.getAccession(), number)));
+    }
+
+    @Cacheable(cacheNames = "jsonTSnePlotWithMetadata", key = "{#experimentAccession, #parameter, #metadata}")
+    public String tSnePlotWithMetadata(String experimentAccession, int parameter, String metadata, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         return GSON.toJson(
@@ -50,18 +60,18 @@ public class TSnePlotJsonSerializer {
                                 "",
                                 new TreeMap<>(
                                         tSnePlotService.fetchTSnePlotWithMetadata(
-                                                experiment.getAccession(), perplexity, metadata)))));
+                                                experiment.getAccession(), parameter, metadata)))));
     }
 
-    public String tSnePlotWithExpression(String experimentAccession, int perplexity, String accessKey) {
-        return tSnePlotWithExpression(experimentAccession, perplexity, "", accessKey);
+    public String tSnePlotWithExpression(String experimentAccession, String method, int parameter, String accessKey) {
+        return tSnePlotWithExpression(experimentAccession, method, parameter, "", accessKey);
     }
 
-    public String tSnePlotWithExpression(String experimentAccession, int perplexity, String geneId, String accessKey) {
+    public String tSnePlotWithExpression(String experimentAccession, String method, int parameter, String geneId, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         var pointsWithExpression =
-                tSnePlotService.fetchTSnePlotWithExpression(experiment.getAccession(), perplexity, geneId);
+                tSnePlotService.fetchTSnePlotWithExpression(experiment.getAccession(), method, parameter, geneId);
 
         var max = pointsWithExpression.stream()
                 .map(TSnePoint::expressionLevel)

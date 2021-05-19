@@ -141,9 +141,9 @@ public class TSnePlotDao {
                     while (resultSet.next()) {
                         String method = resultSet.getString("method");
                         String parameterisation = resultSet.getString("parameterisation");
-
+                        List parameterisationList = Arrays.asList(parameterisation);
                         List<String> parameterisations = result.getOrDefault(method, new ArrayList<>());
-                        parameterisations.add(parameterisation);
+                        parameterisations.addAll(parameterisationList);
                         result.put(method, parameterisations);
                     }
                     return result;

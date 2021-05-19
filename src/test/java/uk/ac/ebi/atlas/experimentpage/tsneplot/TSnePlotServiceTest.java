@@ -50,13 +50,14 @@ class TSnePlotServiceTest {
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
         var perplexities = new int[]{1, 5, 10, 15, 20};
         var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
-        var k = ThreadLocalRandom.current().nextInt(5, 20);
+        var variable = String.valueOf(ThreadLocalRandom.current().nextInt(5, 20));
+        var method = "tsne";
 
-        var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithClusters(NUMBER_OF_CELLS, k);
-        when(tSnePlotDaoMock.fetchTSnePlotWithClusters(experimentAccession, perplexity, k))
+        var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithClusters(NUMBER_OF_CELLS, Integer.valueOf(variable));
+        when(tSnePlotDaoMock.fetchTSnePlotWithClusters(experimentAccession, method, perplexity, variable))
                 .thenReturn(ImmutableList.copyOf(randomPointDtos));
 
-        var results = subject.fetchTSnePlotWithClusters(experimentAccession, perplexity, k);
+        var results = subject.fetchTSnePlotWithClusters(experimentAccession, method, perplexity, variable);
         for(TSnePoint.Dto tSnePointDto : randomPointDtos) {
             assertThat(results.get(tSnePointDto.clusterId()))
                     .contains(TSnePoint.create(MathUtils.round(tSnePointDto.x(), 2),
@@ -137,12 +138,13 @@ class TSnePlotServiceTest {
         var perplexities = new int[]{1, 5, 10, 15, 20};
         var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
         var geneId = RandomDataTestUtils.generateRandomEnsemblGeneId();
+        var method = "tsne";
 
         var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithExpression(NUMBER_OF_CELLS);
-        when(tSnePlotDaoMock.fetchTSnePlotWithExpression(experimentAccession, perplexity, geneId))
+        when(tSnePlotDaoMock.fetchTSnePlotWithExpression(experimentAccession, method, perplexity, geneId))
                 .thenReturn(ImmutableList.copyOf(randomPointDtos));
 
-        var results = subject.fetchTSnePlotWithExpression(experimentAccession, perplexity, geneId);
+        var results = subject.fetchTSnePlotWithExpression(experimentAccession, method, perplexity, geneId);
         assertThat(results)
                 .containsExactlyInAnyOrder(
                         randomPointDtos.stream()

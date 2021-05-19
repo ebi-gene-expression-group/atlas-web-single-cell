@@ -28,13 +28,24 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, perplexity, k, accessKey);
     }
 
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression",
+    //umap projection method
+    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{number}/numbers",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String tSnePlotWithUmap(@PathVariable String experimentAccession,
+                                       @PathVariable int number,
+                                       @RequestParam(defaultValue = "") String accessKey) {
+        return tSnePlotJsonSerializer.tSnePlotWithParameterisation(experimentAccession, number, accessKey);
+    }
+
+    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/expression",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
-                                         @PathVariable int perplexity,
+                                         @PathVariable int parameter,
+                                         @RequestParam(defaultValue = "tsne") String method,
                                          @RequestParam(defaultValue = "") String accessKey) {
-        return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, perplexity, accessKey);
+        return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, method, parameter, accessKey);
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/metadata/{metadata}",
@@ -47,13 +58,14 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         return tSnePlotJsonSerializer.tSnePlotWithMetadata(experimentAccession, perplexity, metadata, accessKey);
     }
 
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression/{geneId}",
+    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/expression/{geneId}",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
-                                         @PathVariable int perplexity,
+                                         @PathVariable int parameter,
                                          @PathVariable String geneId,
+                                         @RequestParam(defaultValue = "tsne") String method,
                                          @RequestParam(defaultValue = "") String accessKey) {
-        return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, perplexity, geneId, accessKey);
+        return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, method, parameter, geneId, accessKey);
     }
 }

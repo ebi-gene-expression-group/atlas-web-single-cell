@@ -142,14 +142,15 @@ class TSnePlotDaoIT {
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionProvider")
     void testTSnePlotTypesAndOptions(String experimentAccession) {
-        var tsnePlotTypesAndOptions = subject.getTSnePlotTypesAndOptions(experimentAccession);
+        var tsnePlotTypesAndOptions = subject.fetchTSnePlotTypesAndOptions(experimentAccession);
+        System.out.println("umap: "+tsnePlotTypesAndOptions.get("umap").toString());
         assertThat(tsnePlotTypesAndOptions.get("umap")).isNotEmpty().doesNotHaveDuplicates();
         assertThat(tsnePlotTypesAndOptions.get("tsne")).isNotEmpty().doesNotHaveDuplicates();
     }
 
     @Test
     void testTSnePlotTypesAndOptionsWithWrongExperimentAccession() {
-        assertThat(subject.getTSnePlotTypesAndOptions("Foo")).isEmpty();
+        assertThat(subject.fetchTSnePlotTypesAndOptions("Foo")).isEmpty();
     }
 
     private static final String SELECT_CELL_IDS_STATEMENT =

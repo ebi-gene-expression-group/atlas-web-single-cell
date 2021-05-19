@@ -8,6 +8,7 @@ import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public class TSnePlotDao {
                 Integer.class);
     }
 
-    private static final String SELECT_DISTINCT_T_SNE_PLOT_TYPES =
+    private static final String SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_ITS_PLOT_OPTIONS =
             "SELECT DISTINCT " +
                     "method," +
                     "parameterisation " +
@@ -129,12 +130,11 @@ public class TSnePlotDao {
      *   "umap": [{ "n_neighbours": 3 }, ... ]|
      * }
      */
-    public Map<String, List<String>> getTSnePlotTypesAndOptions(String experimentAccession) {
+    public Map<String, List<String>> fetchTSnePlotTypesAndOptions(String experimentAccession) {
 
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
-        return namedParameterJdbcTemplate.query(
-                SELECT_DISTINCT_T_SNE_PLOT_TYPES,
+        return namedParameterJdbcTemplate.query(SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_ITS_PLOT_OPTIONS,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     Map<String, List<String>> result = new HashMap<>();

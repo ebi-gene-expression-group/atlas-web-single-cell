@@ -46,8 +46,8 @@ public class TSnePlotService {
     public ImmutableMap<Integer, ImmutableSet<TSnePoint>> fetchTSnePlotWithClusters(String experimentAccession,
                                                                                     String method,
                                                                                     int parameter,
-                                                                                    int k) {
-        var points = tSnePlotDao.fetchTSnePlotWithClusters(experimentAccession, method, parameter, k);
+                                                                                    String variable) {
+        var points = tSnePlotDao.fetchTSnePlotWithClusters(experimentAccession, method, parameter, variable);
 
         return points.stream()
                 .collect(groupingBy(TSnePoint.Dto::clusterId))
@@ -63,26 +63,6 @@ public class TSnePlotService {
                                 )
                                 .collect(toImmutableSet())));
     }
-
-    public ImmutableMap<Integer, ImmutableSet<TSnePoint>> fetchTSnePlotWithUmap(String experimentAccession,
-                                                                                    int number) {
-        var points = tSnePlotDao.fetchTSnePlotWithUmap(experimentAccession, number);
-
-        return points.stream()
-                .collect(groupingBy(TSnePoint.Dto::clusterId))
-                .entrySet().stream()
-                .collect(toImmutableMap(
-                        Map.Entry::getKey,
-                        entry -> entry.getValue().stream()
-                                .map(pointDto ->
-                                        TSnePoint.create(
-                                                MathUtils.round(pointDto.x(), 2),
-                                                MathUtils.round(pointDto.y(), 2),
-                                                pointDto.name())
-                                )
-                                .collect(toImmutableSet())));
-    }
-
 
     public ImmutableMap<String, ImmutableSet<TSnePoint>> fetchTSnePlotWithMetadata(String experimentAccession,
                                                                                    int parameter,

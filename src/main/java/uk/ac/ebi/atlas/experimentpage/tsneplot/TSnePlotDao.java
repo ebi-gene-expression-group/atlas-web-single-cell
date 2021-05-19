@@ -49,24 +49,26 @@ public class TSnePlotDao {
     }
 
     private static final String SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT =
-            "SELECT coords.cell_id, coords.x, coords.y, clusters.cluster_id" +
-                    "            FROM scxa_coords AS coords" +
-                    "                LEFT JOIN" +
-                    "                (SELECT mem.*, g.value as cluster_id FROM scxa_cell_group_membership as mem JOIN  scxa_cell_group g" +
-                    "                    on mem.cell_group_id = g.id WHERE g.variable = :k AND mem.experiment_accession = :experiment_accession) AS clusters" +
-                    "                ON clusters.cell_id=coords.cell_id " +
-					"            WHERE coords.experiment_accession = :experiment_accession " +
-                            "               AND coords.parameterisation->0->>:parameter_name= :perplexity AND coords.method=:method";
+    "SELECT c.cell_id,c.x,c.y, g.value as cluster_id" +
+            "FROM scxa_cell_group g" +
+            "JOIN scxa_cell_group_membership m ON" +
+                "g.id = m.cell_group_id AND" +
+                "g.experiment_accession = :experiment_accession AND" +
+                "g.variable = :variable" +
+            "RIGHT JOIN scxa_coords c ON" +
+                "m.cell_id=c.cell_id AND" +
+                "m.experiment_accession=c.experiment_accession" +
+            "WHERE c.method='umap' AND c.parameterisation->0->>:parameter_name=:parameter AND c.experiment_accession=:experiment_accession";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
-    public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, String method, int parameter, int k) {
+    public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, String method, int parameter, String variable) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
                         "perplexity", String.valueOf(parameter),
                         "parameter_name", method == TSNE_METHOD ? "perplexity" : "n_neighbors",
                         "method", method,
-                        "k", String.valueOf(k));
+                        "variable", variable);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT,

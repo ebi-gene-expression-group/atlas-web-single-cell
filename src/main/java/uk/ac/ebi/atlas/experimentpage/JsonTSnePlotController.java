@@ -18,15 +18,15 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         this.tSnePlotJsonSerializer = tSnePlotJsonSerializer;
     }
 
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/clusters/k/{k}",
+    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/clusters/variable/{variable}",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithClusters(@PathVariable String experimentAccession,
                                        @PathVariable int parameter,
-                                       @PathVariable int k,
+                                       @PathVariable String variable,
                                        @RequestParam(defaultValue = "tsne") String method,
                                        @RequestParam(defaultValue = "") String accessKey) {
-        return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, method, parameter, k, accessKey);
+        return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, method, parameter, variable, accessKey);
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/expression",

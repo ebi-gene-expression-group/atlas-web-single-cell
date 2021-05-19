@@ -27,8 +27,8 @@ public class TSnePlotJsonSerializer {
         this.tSnePlotService = tSnePlotService;
     }
 
-    @Cacheable(cacheNames = "jsonTSnePlotWithClusters", key = "{#experimentAccession, #perplexity, #k}")
-    public String tSnePlotWithClusters(String experimentAccession, int perplexity, int k, String accessKey) {
+    @Cacheable(cacheNames = "jsonTSnePlotWithClusters", key = "{#experimentAccession, #method, #parameter, #k}")
+    public String tSnePlotWithClusters(String experimentAccession,String method, int parameter, int k, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         return GSON.toJson(
@@ -36,17 +36,7 @@ public class TSnePlotJsonSerializer {
                         "series",
                         modelForHighcharts(
                                 "Cluster ",
-                                tSnePlotService.fetchTSnePlotWithClusters(experiment.getAccession(), perplexity, k))));
-    }
-
-    @Cacheable(cacheNames = "jsonTSnePlotWithUmap", key = "{#experimentAccession, #number}")
-    public String tSnePlotWithParameterisation(String experimentAccession, int number, String accessKey) {
-        var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
-
-        return GSON.toJson(
-                ImmutableMap.of(
-                        "series",
-                        tSnePlotService.fetchTSnePlotWithUmap(experiment.getAccession(), number)));
+                                tSnePlotService.fetchTSnePlotWithClusters(experiment.getAccession(), method, parameter, k))));
     }
 
     @Cacheable(cacheNames = "jsonTSnePlotWithMetadata", key = "{#experimentAccession, #parameter, #metadata}")

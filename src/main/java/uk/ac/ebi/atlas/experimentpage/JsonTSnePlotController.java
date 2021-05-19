@@ -22,20 +22,11 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithClusters(@PathVariable String experimentAccession,
-                                       @PathVariable int perplexity,
+                                       @PathVariable int parameter,
                                        @PathVariable int k,
+                                       @RequestParam(defaultValue = "tsne") String method,
                                        @RequestParam(defaultValue = "") String accessKey) {
-        return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, perplexity, k, accessKey);
-    }
-
-    //umap projection method
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{number}/numbers",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String tSnePlotWithUmap(@PathVariable String experimentAccession,
-                                       @PathVariable int number,
-                                       @RequestParam(defaultValue = "") String accessKey) {
-        return tSnePlotJsonSerializer.tSnePlotWithParameterisation(experimentAccession, number, accessKey);
+        return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, method, parameter, k, accessKey);
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/expression",

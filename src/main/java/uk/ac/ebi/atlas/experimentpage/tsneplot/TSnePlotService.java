@@ -43,7 +43,7 @@ public class TSnePlotService {
                 .collect(toImmutableSet());
     }
 
-    public ImmutableMap<Integer, ImmutableSet<TSnePoint>> fetchTSnePlotWithClusters(String experimentAccession,
+    public ImmutableMap<String, ImmutableSet<TSnePoint>> fetchTSnePlotWithClusters(String experimentAccession,
                                                                                     String method,
                                                                                     int parameter,
                                                                                     String variable) {

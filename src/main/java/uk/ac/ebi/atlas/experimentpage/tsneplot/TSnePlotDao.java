@@ -49,23 +49,24 @@ public class TSnePlotDao {
     }
 
     private static final String SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT =
-    "SELECT c.cell_id,c.x,c.y, g.value as cluster_id" +
-            "FROM scxa_cell_group g" +
-            "JOIN scxa_cell_group_membership m ON" +
-                "g.id = m.cell_group_id AND" +
-                "g.experiment_accession = :experiment_accession AND" +
-                "g.variable = :variable" +
-            "RIGHT JOIN scxa_coords c ON" +
-                "m.cell_id=c.cell_id AND" +
-                "m.experiment_accession=c.experiment_accession" +
-            "WHERE c.method='umap' AND c.parameterisation->0->>:parameter_name=:parameter AND c.experiment_accession=:experiment_accession";
+    "SELECT c.cell_id,c.x,c.y, g.value as cluster_id " +
+            "FROM scxa_cell_group g " +
+            "JOIN scxa_cell_group_membership m ON " +
+                "g.id = m.cell_group_id AND " +
+                "g.experiment_accession = :experiment_accession AND " +
+                "g.variable = :variable " +
+            "RIGHT JOIN scxa_coords c ON " +
+                "m.cell_id=c.cell_id AND " +
+                "m.experiment_accession=c.experiment_accession " +
+            "WHERE c.method=:method AND c.parameterisation->0->>:parameter_name=:parameter " +
+                "AND c.experiment_accession=:experiment_accession";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, String method, int parameter, String variable) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
-                        "perplexity", String.valueOf(parameter),
+                        "parameter", String.valueOf(parameter),
                         "parameter_name", method == TSNE_METHOD ? "perplexity" : "n_neighbors",
                         "method", method,
                         "variable", variable);
@@ -74,7 +75,8 @@ public class TSnePlotDao {
                 SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT,
                 namedParameters,
                 (rs, rowNum) -> TSnePoint.Dto.create(
-                        rs.getDouble("x"), rs.getDouble("y"), rs.getInt("cluster_id"), rs.getString("cell_id")));
+                        rs.getDouble("x"), rs.getDouble("y"),
+                        rs.getString("cluster_id"), rs.getString("cell_id")));
     }
 
     private static final String SELECT_T_SNE_PLOT_WITHOUT_CLUSTERS_STATEMENT =

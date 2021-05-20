@@ -1,0 +1,12 @@
+#   Test PostgresSql
+postgresSql:
+  image: postgres:10-alpine
+
+flyway:
+  image: flyway/flyway
+
+  command: -url=jdbc:tc:postgresql:9.6.8:///test -schemas=test -user=test -password=test -connectRetries=60 migrate
+  volumes:
+    - ../../atlas-web-core/src/test/resources/schemas/flyway/scxa/:/flyway/sql
+  depends_on:
+    - postgresSql

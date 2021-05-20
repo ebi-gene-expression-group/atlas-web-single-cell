@@ -13,7 +13,7 @@ import javax.sql.DataSource;
 import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
 @Configuration
-public class TestJdbcConfig {
+public class TestJdbcConfig extends AbstractContainerBaseTest{
     @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()

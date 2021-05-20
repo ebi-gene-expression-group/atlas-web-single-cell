@@ -33,7 +33,7 @@ public class TSnePlotDao {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
-                        "perplexity", String.valueOf(parameter),
+                        "parameter", String.valueOf(parameter),
                         "method", method,
                         "parameter_name", method == TSNE_METHOD ? "perplexity" : "n_neighbors",
                         "gene_id", geneId);

@@ -95,6 +95,7 @@ dependencies {
     implementation 'jstl:jstl:1.2'
     // http://commons.apache.org/proper/commons-configuration/dependencies.html
     implementation 'commons-beanutils:commons-beanutils:1.9.3'
+    implementation 'com.zaxxer:HikariCP:3.3.1'
 
     testImplementation 'org.springframework:spring-test:5.1.5.RELEASE'
     testImplementation 'com.h2database:h2:1.4.199'

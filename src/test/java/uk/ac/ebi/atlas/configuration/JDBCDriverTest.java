@@ -8,9 +8,9 @@ public class JDBCDriverTest extends AbstractContainerBaseTest {
 
     public static void sampleInitFunction(Connection connection) throws SQLException {
         // e.g. run schema setup or Flyway/liquibase/etc DB migrations here...
-        String jdbcUrl = testDatabase.getJdbcUrl();
-        String username = testDatabase.getUsername();
-        String password = testDatabase.getPassword();
+        String jdbcUrl = POSTGRES_SQL_CONTAINER.getJdbcUrl();
+        String username = POSTGRES_SQL_CONTAINER.getUsername();
+        String password = POSTGRES_SQL_CONTAINER.getPassword();
         connection = DriverManager
                 .getConnection(jdbcUrl, username, password);
 

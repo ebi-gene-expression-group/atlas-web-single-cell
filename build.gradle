@@ -112,9 +112,11 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
-    testImplementation "org.testcontainers:testcontainers:1.15.3"
-    testImplementation "org.testcontainers:junit-jupiter:1.15.3"
-    testImplementation "org.testcontainers:postgresql:1.15.3"
+
+    implementation platform('org.testcontainers:testcontainers-bom:1.15.3') //import bom
+//    testImplementation "org.testcontainers:testcontainers:1.15.3"
+//    testImplementation "org.testcontainers:junit-jupiter:1.15.3"
+    testImplementation "org.testcontainers:postgresql"
 
 //    testCompile 'org.junit.jupiter:junit-jupiter-api:5.4.1'
 //    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.1'

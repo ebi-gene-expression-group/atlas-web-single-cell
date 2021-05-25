@@ -10,7 +10,7 @@ create table if not exists scxa_analytics_e_curd_4
     FOR VALUES IN ('E-CURD-4');
 
 -- E-EHCA-2
-create table scxa_analytics_e_ehca_2
+create table if not exists scxa_analytics_e_ehca_2
     partition of scxa_analytics
 (
     constraint scxa_analytics_e_ehca_2_pk
@@ -22,7 +22,7 @@ create table scxa_analytics_e_ehca_2
 
 -- E-GEOD-71585
 
-create table scxa_analytics_e_geod_71585
+create table if not exists scxa_analytics_e_geod_71585
     partition of scxa_analytics
 (
     constraint scxa_analytics_e_geod_71585_pk
@@ -34,7 +34,7 @@ create table scxa_analytics_e_geod_71585
 
 
 -- experiment E-GEOD-81547 Partition table
-create table scxa_analytics_e_geod_81547
+create table if not exists scxa_analytics_e_geod_81547
     partition of scxa_analytics
 (
     constraint scxa_analytics_e_geod_81547_pk
@@ -45,7 +45,7 @@ create table scxa_analytics_e_geod_81547
     FOR VALUES IN ('E-GEOD-81547');
 
 -- experiment E-GEOD-99058 Partition table
-create table scxa_analytics_e_geod_99058
+create table if not exists scxa_analytics_e_geod_99058
     partition of scxa_analytics
 (
     constraint scxa_analytics_e_geod_99058_pk
@@ -56,7 +56,7 @@ create table scxa_analytics_e_geod_99058
     FOR VALUES IN ('E-GEOD-99058');
 
 -- experiment E-MTAB-5061 Partition table
-create table scxa_analytics_e_mtab_5061
+create table if not exists scxa_analytics_e_mtab_5061
     partition of scxa_analytics
 (
     constraint scxa_analytics_e_mtab_5061_pk
@@ -66,53 +66,7 @@ create table scxa_analytics_e_mtab_5061
     )
     FOR VALUES IN ('E-MTAB-5061');
 
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604871', 341.01962);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604877', 744.02484);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604881', 197.00055);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604901', 2.4898334);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604906', 555.415);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604911', 175.41522);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604914', 463.55115);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604916', 2.971967);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604917', 153.08138);
--- INSERT INTO scxa_analytics_e_geod_99058 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-99058', 'ENSMUSG00000000001', 'SRR5604920', 196.94687);
-
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630018', 27.827284);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630021', 81.56242);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630015', 1.3342087);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630014', 125.133675);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630022', 61.633945);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630025', 2.1759415);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630026', 7.358897);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630029', 4.5528936);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630030', 2.1786058);
--- INSERT INTO scxa_analytics_e_mtab_5061 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000000003', 'ERR1630032', 3.4724596);
-
-/*INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT2G077731', 'SRR8206655-GCAGTGAGGTCG', 592.24164);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G112902', 'SRR8206658-TGTTATAGCACG', 4954.583);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G190302', 'SRR8206657-ACGAAGCCAGGA', 959.6929);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT1G052602', 'SRR8206655-CGAGACCGGGCT', 294.20416);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT3G149902', 'SRR8206660-GTGAATAGAATC', 2931.1187);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G338651', 'SRR8206663-ATTGATGGGCGC', 1879.6993);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT2G369504', 'RR8206662-TACATTGACTTG', 1295.3368);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT1G504901', 'SRR8206662-GTATGTATTCTG', 290.69766);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT1G032204', 'SRR8206657-CTATGCGTCAGT', 424.98938);
-INSERT INTO scxa_analytics_e_curd_4 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT2G210452', 'SRR8206656-TCCATAGGCTTA', 1768.3466);*/
-
-
-
-
-
-/*INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562210', 1.9300232);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562212', 223.5907);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562213', 25.825342);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562215', 3.341197);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562226', 13.1448);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562228', 60.585575);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562229', 23.86451);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562231', 9.544231);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562234', 140.42891);
-INSERT INTO scxa_analytics_e_geod_81547 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-GEOD-81547', 'ENSG00000000003', 'SRR3562236', 4.4513745);*/
+-- End of partition table creation
 
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT2G07773', 'SRR8206655-GCAGTGAGGTCG', 592.24164);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G11290', 'SRR8206658-TGTTATAGCACG', 4954.583);
@@ -322,21 +276,6 @@ INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_le
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT5G02380', 'SRR8206659-GTATGCCTCGTC', 1713.062);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G15910', 'SRR8206663-TAAGTGTATTCA', 1664.8169);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT5G06200', 'SRR8206656-CATTTCAAGCCG', 1103.4048);
-
-
-
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_102', 118.889725);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_100', 319.41333);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_103', 2.1912718);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_108', 648.6046);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_111', 387.00726);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_112', 446.7571);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_114', 1743.2457);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_115', 1524.167);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_116', 856.5534);
--- INSERT INTO scxa_analytics_e_ehca_2 (experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000000001', '21784_6_119', 299.08093);
-
-
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000002985', '21935_8_274', 1.9666302);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000039384', '21935_6_68', 599.9974);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-EHCA-2', 'ENSMUSG00000075062', '22028_2_315', 4.197724);

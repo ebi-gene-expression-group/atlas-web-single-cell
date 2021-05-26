@@ -13,9 +13,6 @@ import javax.sql.DataSource;
 public class TestJdbcConfig extends AbstractContainerBaseTest{
     @Bean
     public DataSource dataSource() {
-        System.out.println("docker container status:"+TEST_DATABASE.getLogs());
-        System.out.println("docker container status:"+TEST_DATABASE.isRunning());
-        System.out.println("docker container status:"+TEST_DATABASE.isShouldBeReused());
         return getDataSource(TEST_DATABASE);
     }
 

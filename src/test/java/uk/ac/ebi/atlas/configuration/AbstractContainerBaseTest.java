@@ -20,7 +20,7 @@ abstract class AbstractContainerBaseTest {
     }
 
     protected static DataSource getDataSource(JdbcDatabaseContainer<?> container) {
-        HikariConfig hikariConfig = new HikariConfig();
+        var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(container.getJdbcUrl());
         hikariConfig.setUsername(container.getUsername());
         hikariConfig.setPassword(container.getPassword());

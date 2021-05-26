@@ -66,7 +66,7 @@ create table if not exists scxa_analytics_e_mtab_5061
     )
     FOR VALUES IN ('E-MTAB-5061');
 
--- End of partition table creation
+-- End of partition tables creation
 
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT2G07773', 'SRR8206655-GCAGTGAGGTCG', 592.24164);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G11290', 'SRR8206658-TGTTATAGCACG', 4954.583);

@@ -30,6 +30,7 @@ repositories {
 }
 
 def cache2kVersion = '1.2.4.Final'
+def junitJupiterVersion = '5.6.0'
 dependencies {
     implementation 'uk.ac.ebi.ge:atlas-web-core:6.0.0-SNAPSHOT'
 
@@ -98,6 +99,8 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:3.3.1'
     // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.2.0'
+    //This takes care of 'TestContainer' versioning
+    implementation platform('org.testcontainers:testcontainers-bom:1.15.3') //import bom
 
     testImplementation 'org.springframework:spring-test:5.1.5.RELEASE'
     testImplementation 'com.h2database:h2:1.4.199'
@@ -108,24 +111,10 @@ dependencies {
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
     testImplementation 'commons-beanutils:commons-beanutils:1.9.3'
 
-    def junitJupiterVersion = '5.6.0'
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
-
-    implementation platform('org.testcontainers:testcontainers-bom:1.15.3') //import bom
-//    testImplementation "org.testcontainers:testcontainers:1.15.3"
-//    testImplementation "org.testcontainers:junit-jupiter:1.15.3"
     testImplementation "org.testcontainers:postgresql"
-
-//    testCompile 'org.junit.jupiter:junit-jupiter-api:5.4.1'
-//    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
-//    testCompile 'junit:junit:4.12'
-//    testRuntime 'org.junit.vintage:junit-vintage-engine:5.4.1'
-//
-//    testImplementation "org.testcontainers:testcontainers:1.15.3"
-//    testImplementation "org.testcontainers:junit-jupiter:1.15.3"
-
 }
 
 test {

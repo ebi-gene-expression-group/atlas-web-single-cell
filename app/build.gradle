@@ -7,7 +7,7 @@ version = '11.0.0'
 
 war {
     // Let’s clean the exploded WAR if it’s there
-    def destinationPath = '../webapp'
+    def destinationPath = '../webapps'
     def artifactName = 'gxa#sc'
     doFirst {
         delete "${destinationPath}/${artifactName}"

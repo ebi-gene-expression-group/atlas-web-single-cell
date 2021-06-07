@@ -211,16 +211,16 @@ class TSnePlotSettingsServiceTest {
     }
 
     @Test
-    @DisplayName("Get PlotTypes and PlotOptions for the valid experiment accession")
+    @DisplayName("Get PlotTypes and Options for the valid experiment accession")
     void validAccessionPlotTypesAndPlotOptions() {
         when(tSnePlotDaoMock.fetchTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION)).thenReturn(Map.of("tsne",
-                Arrays.asList("[{\"perplexity\": 1}]", "[{\"perplexity\": 5}]", "[{\"perplexity\": 10}]"), "umap",
-                Arrays.asList("[{\"n_neighbors\": 25}]", "[{\"n_neighbors\": 30}]", "[{\"n_neighbors\": 50}]")));
+                Arrays.asList("{\"perplexity\": 1}", "{\"perplexity\": 5}", "{\"perplexity\": 10}"), "umap",
+                Arrays.asList("{\"n_neighbors\": 25}", "{\"n_neighbors\": 30}", "{\"n_neighbors\": 50}")));
         assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isNotEmpty();
     }
 
     @Test
-    @DisplayName("Get PlotTypes and PlotOptions for the invalid experiment accession")
+    @DisplayName("Get PlotTypes and Options for the invalid experiment accession")
     void invalidAccessionPlotTypesAndOptions() {
         when(tSnePlotDaoMock.fetchTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION)).thenReturn(Collections.EMPTY_MAP);
 

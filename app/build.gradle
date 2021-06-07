@@ -17,12 +17,6 @@ war {
     destinationDirectory = file "${destinationPath}"
 }
 
-//tasks.register('cleanExplodedWar') {
-//    doLast {
-//        delete '../webapp/gxa#sc'
-//    }
-//}
-
 def cache2kVersion = '1.2.4.Final'
 dependencies {
     implementation project(':atlas-web-core')

@@ -118,9 +118,9 @@ public class TSnePlotDao {
                     "WHERE experiment_accession =:experiment_accession ORDER BY option ASC";
 
     /**
-     * Gets response of the TSne PlotTypes and TSne Plot Options for the experiment
-     * @param experimentAccession
-     * @return Map<PlotType, List<String>PlotOptions> -
+     * Get projection methods and  corresponding PlotOptions for the experiment accession
+     * @param experimentAccession - id of the experiment
+     * @return Map<PlotType, List<String>PlotOptions> - key-projectionMethod and value-plotOptions
      * {
      *   "tsne": [{ "perplexity": 10 }, { "perplexity": 20 } ...],
      *   "umap": [{ "n_neighbours": 3 }, ... ]|
@@ -129,18 +129,17 @@ public class TSnePlotDao {
     public Map<String, List<String>> fetchTSnePlotTypesAndOptions(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
-        return namedParameterJdbcTemplate.query(SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS,
-                namedParameters,
+        return namedParameterJdbcTemplate.query(SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS, namedParameters,
                 (ResultSet resultSet) -> {
-                    Map<String, List<String>> plotTypeAndOptions = new HashMap<>();
-                    while (resultSet.next()) {
-                        var projectionMethod = resultSet.getString("method");
-                        var plotOption = resultSet.getString("option");
-                        var plotOptions = plotTypeAndOptions.getOrDefault(projectionMethod, new ArrayList<>());
-                        plotOptions.add(plotOption);
-                        plotTypeAndOptions.put(projectionMethod, plotOptions);
-                    }
-                    return plotTypeAndOptions;
-                });
+            Map<String, List<String>> plotTypeAndOptions = new HashMap<>();
+            while (resultSet.next()) {
+                var projectionMethod = resultSet.getString("method");
+                var plotOption = resultSet.getString("option");
+                var plotOptions = plotTypeAndOptions.getOrDefault(projectionMethod, new ArrayList<>());
+                plotOptions.add(plotOption);
+                plotTypeAndOptions.put(projectionMethod, plotOptions);
+            }
+            return plotTypeAndOptions;
+        });
     }
 }

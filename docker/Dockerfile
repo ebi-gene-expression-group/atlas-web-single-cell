@@ -3,7 +3,7 @@ FROM alpine:3.12
 RUN apk --no-cache add bash curl git grep
 
 RUN git clone https://github.com/ebi-gene-expression-group/index-scxa.git \
-    && git clone https://github.com/ebi-gene-expression-group/index-gxa.git
+    && git clone https://github.com/ebi-gene-expression-group/index-bioentities.git
 
 COPY scxa-solrcloud-bootstrap-entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh

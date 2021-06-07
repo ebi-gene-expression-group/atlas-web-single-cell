@@ -113,13 +113,10 @@ public class TSnePlotDao {
                 Integer.class);
     }
 
-    private static final String SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_ITS_PLOT_OPTIONS =
-            "SELECT DISTINCT " +
-                    "method," +
-                    "parameterisation " +
-                    "FROM scxa_coords " +
-                    "WHERE method IN (select method from scxa_coords) " +
-                    "AND experiment_accession=:experiment_accession ORDER BY method DESC ";
+    private static final String SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS =
+            "SELECT DISTINCT method,option FROM scxa_coords AS coords " +
+                    ",jsonb_array_elements(coords.parameterisation) option " +
+                    "WHERE experiment_accession =:experiment_accession ORDER BY option ASC";
 
     /**
      * Gets response of the TSne PlotTypes and TSne Plot Options for the experiment
@@ -131,10 +128,9 @@ public class TSnePlotDao {
      * }
      */
     public Map<String, List<String>> fetchTSnePlotTypesAndOptions(String experimentAccession) {
-
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
-
-        return namedParameterJdbcTemplate.query(SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_ITS_PLOT_OPTIONS,
+        
+        return namedParameterJdbcTemplate.query(SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     Map<String, List<String>> result = new HashMap<>();

@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   #### SolrCloud
-  zk-1:
+  scxa-zk-1:
     image: zookeeper:3.4.14
     container_name: scxa-zk-1
     networks:
@@ -11,13 +11,13 @@ services:
       - "2181:2181"
     restart: always
     volumes:
-      - zk-1-data:/data
-      - zk-1-datalog:/datalog
+      - scxa-zk-1-data:/data
+      - scxa-zk-1-datalog:/datalog
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=scxa-zk-3:2888:3888
 
-  zk-2:
+  scxa-zk-2:
     image: zookeeper:3.4.14
     container_name: scxa-zk-2
     networks:
@@ -26,13 +26,13 @@ services:
       - "2182:2181"
     restart: always
     volumes:
-      - zk-2-data:/data
-      - zk-2-datalog:/datalog
+      - scxa-zk-2-data:/data
+      - scxa-zk-2-datalog:/datalog
     environment:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=scxa-zk-3:2888:3888
 
-  zk-3:
+  scxa-zk-3:
     image: zookeeper:3.4.14
     container_name: scxa-zk-3
     networks:
@@ -41,13 +41,13 @@ services:
       - "2183:2181"
     restart: always
     volumes:
-      - zk-3-data:/data
-      - zk-3-datalog:/datalog
+      - scxa-zk-3-data:/data
+      - scxa-zk-3-datalog:/datalog
     environment:
       ZOO_MY_ID: 3
       ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=0.0.0.0:2888:3888
 
-  solrcloud-1:
+  scxa-solrcloud-1:
     image: solr:7.1.0
     container_name: scxa-solrcloud-1
     networks:
@@ -55,18 +55,18 @@ services:
     ports:
       - "8983:8983"
     volumes:
-      - solrcloud-1-data:/opt/solr/server/solr
+      - scxa-solrcloud-1-data:/opt/solr/server/solr
       - $ATLAS_DATA_PATH/solrcloud/solr1:/var/backups/solr
     environment:
       - SOLR_HEAP=2g
       - SOLR_OPTS=-Denable.runtime.lib=true
       - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
     depends_on:
-      - zk-1
-      - zk-2
-      - zk-3
+      - scxa-zk-1
+      - scxa-zk-2
+      - scxa-zk-3
 
-  solrcloud-2:
+  scxa-solrcloud-2:
     image: solr:7.1.0
     container_name: scxa-solrcloud-2
     networks:
@@ -74,19 +74,19 @@ services:
     ports:
       - "8984:8983"
     volumes:
-      - solrcloud-2-data:/opt/solr/server/solr
+      - scxa-solrcloud-2-data:/opt/solr/server/solr
       - $ATLAS_DATA_PATH/solrcloud/solr2:/var/backups/solr
     environment:
       - SOLR_HEAP=2g
       - SOLR_OPTS=-Denable.runtime.lib=true
       - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
     depends_on:
-      - zk-1
-      - zk-2
-      - zk-3
+      - scxa-zk-1
+      - scxa-zk-2
+      - scxa-zk-3
 
   #### PostgreSQL database
-  postgres:
+  scxa-postgres:
     image: postgres:10-alpine
     container_name: $POSTGRES_HOST
     networks:
@@ -100,10 +100,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - scxa-pgdata:/var/lib/postgresql/data
       - $ATLAS_DATA_PATH/postgresql:/var/backups/postgresql
 
-  flyway:
+  scxa-flyway:
     image: flyway/flyway
     container_name: scxa-flyway
     networks:
@@ -112,10 +112,10 @@ services:
     volumes:
       - ../schemas/flyway/scxa/:/flyway/sql
     depends_on:
-      - postgres
+      - scxa-postgres
 
   #### Web server and filesystem
-  tomcat:
+  scxa-tomcat:
     image: tomcat:9-jdk11
     container_name: scxa-tomcat
     networks:
@@ -129,33 +129,33 @@ services:
       - ../webapps:/usr/local/tomcat/webapps
       - ./atlas-properties:/atlas-properties
       - $ATLAS_DATA_PATH/filesystem:/atlas-data
-      - tomcat-conf:/usr/local/tomcat/conf
+      - scxa-tomcat-conf:/usr/local/tomcat/conf
     depends_on:
-      - postgres
-      - solrcloud-1
-      - solrcloud-2
+      - scxa-postgres
+      - scxa-solrcloud-1
+      - scxa-solrcloud-2
     command: ["catalina.sh", "jpda", "run"]
 
 volumes:
-  zk-1-data:
+  scxa-zk-1-data:
     name: scxa-zk-1-data
-  zk-1-datalog:
+  scxa-zk-1-datalog:
     name: scxa-zk-1-datalog
-  zk-2-data:
+  scxa-zk-2-data:
     name: scxa-zk-2-data
-  zk-2-datalog:
+  scxa-zk-2-datalog:
     name: scxa-zk-2-datalog
-  zk-3-data:
+  scxa-zk-3-data:
     name: scxa-zk-3-data
-  zk-3-datalog:
+  scxa-zk-3-datalog:
     name: scxa-zk-3-datalog
-  solrcloud-1-data:
+  scxa-solrcloud-1-data:
     name: scxa-solrcloud-1-data
-  solrcloud-2-data:
+  scxa-solrcloud-2-data:
     name: scxa-solrcloud-2-data
-  pgdata:
+  scxa-pgdata:
     name: scxa-pgdata
-  tomcat-conf:
+  scxa-tomcat-conf:
     name: scxa-tomcat-conf
 
 networks:

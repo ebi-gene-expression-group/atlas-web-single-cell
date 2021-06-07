@@ -8,7 +8,6 @@ import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +120,7 @@ public class TSnePlotDao {
     /**
      * Gets response of the TSne PlotTypes and TSne Plot Options for the experiment
      * @param experimentAccession
-     * @return Map<PlotTypes, List<String>PlotOptions> -
+     * @return Map<PlotType, List<String>PlotOptions> -
      * {
      *   "tsne": [{ "perplexity": 10 }, { "perplexity": 20 } ...],
      *   "umap": [{ "n_neighbours": 3 }, ... ]|
@@ -129,20 +128,19 @@ public class TSnePlotDao {
      */
     public Map<String, List<String>> fetchTSnePlotTypesAndOptions(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
-        
+
         return namedParameterJdbcTemplate.query(SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS,
                 namedParameters,
                 (ResultSet resultSet) -> {
-                    Map<String, List<String>> result = new HashMap<>();
+                    Map<String, List<String>> plotTypeAndOptions = new HashMap<>();
                     while (resultSet.next()) {
-                        String method = resultSet.getString("method");
-                        String parameterisation = resultSet.getString("parameterisation");
-                        List parameterisationList = Arrays.asList(parameterisation);
-                        List<String> parameterisations = result.getOrDefault(method, new ArrayList<>());
-                        parameterisations.addAll(parameterisationList);
-                        result.put(method, parameterisations);
+                        var projectionMethod = resultSet.getString("method");
+                        var plotOption = resultSet.getString("option");
+                        var plotOptions = plotTypeAndOptions.getOrDefault(projectionMethod, new ArrayList<>());
+                        plotOptions.add(plotOption);
+                        plotTypeAndOptions.put(projectionMethod, plotOptions);
                     }
-                    return result;
+                    return plotTypeAndOptions;
                 });
     }
 }

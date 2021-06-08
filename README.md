@@ -206,15 +206,15 @@ Read the important message after you run `scxa-solrlcoud-bootstrap`:
 > takes a few extra minutes: the exception is thrown before the process has completed.
 > The best option is to manually build and supervise this step.
 >
-> On one terminal session run the following command (don’t worry if the request returns a 500 error):
+> Run the following command (don’t worry if the request returns a 500 error after a while):
 > 
 > `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=propertySuggesterNoHighlight'`
 >
-> On another terminal, monitor the size of the suggester directory size:
+> While the command above is running, monitor the size of the suggester directory size:
 > 
 > `docker exec -it scxa-solrcloud-1 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
+> `docker exec -it scxa-solrcloud-2 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
 >
-> The suggester will be built when the propertySuggester directory size stabilises.
-> Run the above procedure for each of your SolrCloud containers and both suggesters (`propertySuggesterNoHighlight` and
-> `bioentitySuggester`).
+> The suggester in all shards will be built when the propertySuggester directory size stabilises. 
+> Run the above procedure for `bioentitySuggester` as well.
  

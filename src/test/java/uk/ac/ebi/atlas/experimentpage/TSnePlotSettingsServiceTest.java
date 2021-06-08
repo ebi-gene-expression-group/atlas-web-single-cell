@@ -216,6 +216,7 @@ class TSnePlotSettingsServiceTest {
         when(tSnePlotDaoMock.fetchTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION)).thenReturn(Map.of("tsne",
                 Arrays.asList("{\"perplexity\": 1}", "{\"perplexity\": 5}", "{\"perplexity\": 10}"), "umap",
                 Arrays.asList("{\"n_neighbors\": 25}", "{\"n_neighbors\": 30}", "{\"n_neighbors\": 50}")));
+
         assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isNotEmpty();
     }
 

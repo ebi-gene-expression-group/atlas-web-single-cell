@@ -1,3 +1,73 @@
+-- Create partitioned tables
+
+-- E-CURD-4
+CREATE TABLE IF NOT EXISTS scxa_analytics_e_curd_4
+    PARTITION OF scxa_analytics
+    (
+        CONSTRAINT scxa_analytics_e_curd_4_pk
+        PRIMARY KEY (gene_id, experiment_accession, cell_id),
+        CONSTRAINT check_e_ebi_e_curd_4
+        CHECK ((experiment_accession)::TEXT = 'E-CURD-4'::TEXT)
+    )
+    FOR VALUES IN ('E-CURD-4');
+
+-- E-EHCA-2
+CREATE TABLE IF NOT EXISTS scxa_analytics_e_ehca_2
+    PARTITION OF scxa_analytics
+    (
+        CONSTRAINT scxa_analytics_e_ehca_2_pk
+        PRIMARY KEY (gene_id, experiment_accession, cell_id),
+        CONSTRAINT check_e_ebi_e_ehca_2
+        CHECK ((experiment_accession)::TEXT = 'E-EHCA-2'::TEXT)
+    )
+    FOR VALUES IN ('E-EHCA-2');
+
+-- E-GEOD-71585
+CREATE TABLE IF NOT EXISTS scxa_analytics_e_geod_71585
+    PARTITION OF scxa_analytics(
+        CONSTRAINT scxa_analytics_e_geod_71585_pk
+        PRIMARY KEY (gene_id, experiment_accession, cell_id),
+        CONSTRAINT check_e_ebi_e_geod_71585
+        CHECK ((experiment_accession)::text = 'E-GEOD-71585'::text)
+    )
+    FOR VALUES IN ('E-GEOD-71585');
+
+
+-- E-GEOD-81547
+CREATE TABLE IF NOT EXISTS scxa_analytics_e_geod_81547
+    PARTITION OF scxa_analytics
+    (
+        CONSTRAINT scxa_analytics_e_geod_81547_pk
+        PRIMARY KEY (gene_id, experiment_accession, cell_id),
+        CONSTRAINT check_e_ebi_e_geod_81547
+        CHECK ((experiment_accession)::text = 'E-GEOD-81547'::text)
+    )
+    FOR VALUES IN ('E-GEOD-81547');
+
+-- E-GEOD-99058
+CREATE TABLE IF NOT EXISTS scxa_analytics_e_geod_99058
+    PARTITION OF scxa_analytics
+    (
+        CONSTRAINT scxa_analytics_e_geod_99058_pk
+        PRIMARY KEY (gene_id, experiment_accession, cell_id),
+        CONSTRAINT check_e_ebi_e_geod_99058
+        CHECK ((experiment_accession)::TEXT = 'E-GEOD-99058'::TEXT)
+    )
+    FOR VALUES IN ('E-GEOD-99058');
+
+-- E-MTAB-5061
+CREATE TABLE IF NOT EXISTS scxa_analytics_e_mtab_5061
+    PARTITION OF scxa_analytics
+    (
+        CONSTRAINT scxa_analytics_e_mtab_5061_pk
+        PRIMARY KEY (gene_id, experiment_accession, cell_id),
+        CONSTRAINT check_e_ebi_e_mtab_5061
+        CHECK ((experiment_accession)::text = 'E-MTAB-5061'::text)
+    )
+    FOR VALUES IN ('E-MTAB-5061');
+
+-- End of partitioned tables creation
+
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT2G07773', 'SRR8206655-GCAGTGAGGTCG', 592.24164);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G11290', 'SRR8206658-TGTTATAGCACG', 4954.583);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G19030', 'SRR8206657-ACGAAGCCAGGA', 959.6929);

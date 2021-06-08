@@ -141,15 +141,14 @@ class TSnePlotDaoIT {
 
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionProvider")
-    void testTSnePlotTypesAndOptions(String experimentAccession) {
+    void getTSnePlotTypesAndOptions(String experimentAccession) {
         var tsnePlotTypesAndOptions = subject.fetchTSnePlotTypesAndOptions(experimentAccession);
-        System.out.println("umap: "+tsnePlotTypesAndOptions.get("umap").toString());
         assertThat(tsnePlotTypesAndOptions.get("umap")).isNotEmpty().doesNotHaveDuplicates();
         assertThat(tsnePlotTypesAndOptions.get("tsne")).isNotEmpty().doesNotHaveDuplicates();
     }
 
     @Test
-    void testTSnePlotTypesAndOptionsWithWrongExperimentAccession() {
+    void getEmptyTSnePlotTypesAndOptionsWithWrongExperimentAccession() {
         assertThat(subject.fetchTSnePlotTypesAndOptions("Foo")).isEmpty();
     }
 

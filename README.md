@@ -208,7 +208,7 @@ Read the important message after you run `scxa-solrlcoud-bootstrap`:
 >
 > On one terminal session run the following command (don’t worry if the request returns a 500 error):
 > 
-> `bash docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=propertySuggesterNoHighlight'`
+> `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=propertySuggesterNoHighlight'`
 >
 > On another terminal, monitor the size of the suggester directory size:
 > 

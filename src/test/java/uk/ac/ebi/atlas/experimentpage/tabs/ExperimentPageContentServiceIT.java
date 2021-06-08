@@ -67,7 +67,8 @@ class ExperimentPageContentServiceIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-fixture-alt.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-fixture-alt.sql"));
+                new ClassPathResource("fixtures/scxa_cell_clusters-fixture-alt.sql"),
+                new ClassPathResource("fixtures/scxa_coords-fixture.sql"));
         populator.execute(dataSource);
     }
 
@@ -77,7 +78,8 @@ class ExperimentPageContentServiceIT {
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
         populator.execute(dataSource);
     }
 

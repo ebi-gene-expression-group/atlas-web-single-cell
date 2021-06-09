@@ -113,8 +113,8 @@ public class TSnePlotDao {
     }
 
     private static final String SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS =
-            "SELECT DISTINCT method,option FROM scxa_coords AS coords " +
-                    ",jsonb_array_elements(coords.parameterisation) option " +
+            "SELECT DISTINCT method,option FROM scxa_coords AS coords, " +
+                    "jsonb_array_elements(coords.parameterisation) option " +
                     "WHERE experiment_accession =:experiment_accession ORDER BY option ASC";
 
     /**

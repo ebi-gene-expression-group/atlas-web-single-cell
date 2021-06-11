@@ -1,7 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
@@ -9,10 +9,11 @@ import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class TSnePlotSettingsService {
     private final DataFileHub dataFileHub;
     private final IdfParser idfParser;
@@ -70,5 +71,9 @@ public class TSnePlotSettingsService {
     @Cacheable("cellCounts")
     public int getCellCount(String experimentAccession) {
         return tSnePlotDao.fetchNumberOfCellsByExperimentAccession(experimentAccession);
+    }
+
+    public Map<String, List<String>> getAvailablePlotTypesAndPlotOptions(String experimentAccession){
+        return tSnePlotDao.fetchTSnePlotTypesAndOptions(experimentAccession);
     }
 }

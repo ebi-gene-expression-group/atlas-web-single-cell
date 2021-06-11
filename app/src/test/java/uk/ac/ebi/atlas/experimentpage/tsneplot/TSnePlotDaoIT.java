@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,6 +19,7 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.model.resource.AtlasResource;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
+
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.nio.file.Path;
@@ -57,7 +59,8 @@ class TSnePlotDaoIT {
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_coords-fixture.sql"));
         populator.execute(dataSource);
     }
 
@@ -69,7 +72,8 @@ class TSnePlotDaoIT {
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -133,6 +137,19 @@ class TSnePlotDaoIT {
                 .isEqualTo(fileContentLines-1);
         cleanDatabaseTables();
         populateDatabaseTables();
+    }
+
+    @ParameterizedTest
+    @MethodSource("randomExperimentAccessionProvider")
+    void getTSnePlotTypesAndOptions(String experimentAccession) {
+        var tsnePlotTypesAndOptions = subject.fetchTSnePlotTypesAndOptions(experimentAccession);
+        assertThat(tsnePlotTypesAndOptions.get("umap")).isNotEmpty().doesNotHaveDuplicates();
+        assertThat(tsnePlotTypesAndOptions.get("tsne")).isNotEmpty().doesNotHaveDuplicates();
+    }
+
+    @Test
+    void getEmptyTSnePlotTypesAndOptionsWithWrongExperimentAccession() {
+        assertThat(subject.fetchTSnePlotTypesAndOptions("Foo")).isEmpty();
     }
 
     private static final String SELECT_CELL_IDS_STATEMENT =

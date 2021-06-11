@@ -7,18 +7,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
-import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
-import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
-@Component
+@Service
 public class ExperimentPageContentService {
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
@@ -59,6 +59,7 @@ public class ExperimentPageContentService {
         result.add(
                 "ks",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailableKs(experimentAccession)));
+
         result.add(
                 "ksWithMarkerGenes",
                 GSON.toJsonTree(tsnePlotSettingsService.getKsWithMarkerGenes(experimentAccession)));
@@ -67,6 +68,10 @@ public class ExperimentPageContentService {
                 .ifPresent(value -> result.addProperty("selectedK", value));
 
         result.add("perplexities", getPerplexities(experimentAccession));
+
+        result.add("plotTypesAndOptions",
+                GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)));
+
         result.add("metadata", getMetadata(experimentAccession));
 
         var units = new JsonArray();

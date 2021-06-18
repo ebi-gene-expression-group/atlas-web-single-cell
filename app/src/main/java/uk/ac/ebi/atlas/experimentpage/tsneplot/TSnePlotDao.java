@@ -28,13 +28,13 @@ public class TSnePlotDao {
                     "ORDER BY c.cell_id";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
-    public List<TSnePoint.Dto> fetchTSnePlotWithExpression(String experimentAccession, String method, int parameter, String geneId) {
+    public List<TSnePoint.Dto> fetchTSnePlotWithExpression(String experimentAccession, String plotType, int plotOption, String geneId) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
-                        "parameter", String.valueOf(parameter),
-                        "method", method,
-                        "parameter_name", method == TSNE_METHOD ? "perplexity" : "n_neighbors",
+                        "parameter", String.valueOf(plotOption),
+                        "method", plotType,
+                        "parameter_name", plotType == TSNE_METHOD ? "perplexity" : "n_neighbors",
                         "gene_id", geneId);
 
         return namedParameterJdbcTemplate.query(
@@ -61,13 +61,13 @@ public class TSnePlotDao {
                     "AND c.experiment_accession=:experiment_accession";
 
     @Transactional(transactionManager = "txManager", readOnly = true)
-    public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, String method, int parameter, String variable) {
+    public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, String plotType, int plotOption, String variable) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experimentAccession,
-                        "parameter", String.valueOf(parameter),
-                        "parameter_name", method == TSNE_METHOD ? "perplexity" : "n_neighbors",
-                        "method", method,
+                        "parameter", String.valueOf(plotOption),
+                        "parameter_name", plotType == TSNE_METHOD ? "perplexity" : "n_neighbors",
+                        "method", plotType,
                         "variable", variable);
 
         return namedParameterJdbcTemplate.query(

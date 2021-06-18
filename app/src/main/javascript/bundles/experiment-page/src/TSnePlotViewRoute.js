@@ -29,12 +29,22 @@ const RedirectWithLocation = withRouter(RedirectWithSearchAndHash)
 class TSnePlotViewRoute extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      selectedPlotType: this.props.plotTypeDropdown[0].plotType.toLowerCase(),
+      geneId: ``,
+      selectedPlotOption: Object.values(this.props.plotTypeDropdown[0].plotOptions[0])[0],
+      selectedPlotOptionLabel: Object.keys(this.props.plotTypeDropdown[0].plotOptions[0])[0] + `: ` + Object.values(this.props.plotTypeDropdown[0].plotOptions[0])[0],
+      selectedColourBy: ks[Math.round((ks.length -1) / 2)].toString(),
+      highlightClusters: [],
+      experimentAccession: accession,
+      selectedColourByCategory: `clusters`
+    }
   }
 
   render() {
     const { location, match, history } = this.props
     const { atlasUrl, suggesterEndpoint } = this.props
-    const { species, experimentAccession, ks, ksWithMarkerGenes, perplexities, metadata, anatomogram } = this.props
+    const { species, experimentAccession, ks, ksWithMarkerGenes, plotTypeDropdown, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
     const initialCellTypeValues = [`inferred_cell_type_-_authors_labels`, `inferred_cell_type_-_ontology_labels`]
     const cellType = _.first(_.intersection(_.map(metadata, `value`), initialCellTypeValues))
@@ -58,12 +68,14 @@ class TSnePlotViewRoute extends React.Component {
           expressionPlotClassName={`small-12 large-6 columns`}
           speciesName={species}
           experimentAccession={experimentAccession}
+          selectedPlotOption={this.state.selectedPlotOption}
+          selectedPlotType={this.state.selectedPlotType}
           ks={ks}
           metadata={metadata}
           selectedColourBy={search.k || search.metadata || cellType || preferredK}
           selectedColourByCategory={search.colourBy || (cellType && `metadata`) || `clusters`} // Is the plot coloured by clusters or metadata
           highlightClusters={search.clusterId ? JSON.parse(search.clusterId) : []}
-          perplexities={perplexitiesOrdered}
+
           selectedPerplexity={Number(search.perplexity) || perplexitiesOrdered[Math.round((perplexitiesOrdered.length - 1) / 2)]}
           geneId={search.geneId || ``}
           height={800}
@@ -75,28 +87,42 @@ class TSnePlotViewRoute extends React.Component {
               updateUrlWithParams(query)
             }
           }
-          onChangePerplexity={
-            (perplexity) => {
-              const query = new URLSearchParams(history.location.search)
-              query.set(`perplexity`, perplexity)
-              updateUrlWithParams(query)
-            }
+          plotTypeDropdown={plotTypeDropdown}
+          selectedPlotOptionLabel={this.state.selectedPlotOptionLabel}
+          onChangePlotTypes={
+              (plotOption) => {
+                this.setState({
+                  selectedPlotType: plotOption,
+                  selectedPlotOption: Object.values(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === plotOption).plotOptions[0])[0],
+                  selectedPlotOptionLabel: Object.keys(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === plotOption).plotOptions[0])[0] + `: ` +
+                      Object.values(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === plotOption).plotOptions[0])[0]
+                })}
           }
+          onChangePlotOptions={
+            (plotOption) => {
+              this.setState({
+                selectedPlotOption: plotOption.value,
+                selectedPlotOptionLabel: plotOption.label
+              })}
+          }
+
           onChangeColourBy={
             (colourByCategory, colourByValue) => {
-              const query = new URLSearchParams(history.location.search)
-              query.set(`colourBy`, colourByCategory)
-              if(colourByCategory === `clusters`) {
-                query.set(`k`, colourByValue)
-                query.set(`markerGeneK`, colourByValue)
-                query.delete(`metadata`)
-              }
-              else if(colourByCategory === `metadata`) {
-                query.set(`metadata`, colourByValue)
-                query.delete(`k`)
-              }
-              resetHighlightClusters(query)
-              updateUrlWithParams(query)
+              this.setState({
+                selectedColourBy : colourByValue,
+                selectedColourByCategory : colourByCategory
+
+              })
+              this._resetHighlightClusters()
+            }
+          }
+          onSelectGeneId={
+            (geneId) => {
+              this.setState({ geneId: geneId })
+              this._resetHighlightClusters()
             }
           }
         />

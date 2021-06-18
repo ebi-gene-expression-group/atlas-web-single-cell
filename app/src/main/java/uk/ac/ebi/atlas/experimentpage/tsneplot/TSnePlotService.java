@@ -29,10 +29,10 @@ public class TSnePlotService {
     }
 
     public ImmutableSet<TSnePoint> fetchTSnePlotWithExpression(String experimentAccession,
-                                                               String method,
-                                                               int parameter,
+                                                               String plotType,
+                                                               int plotOption,
                                                                String geneId) {
-        return tSnePlotDao.fetchTSnePlotWithExpression(experimentAccession, method, parameter, geneId).stream()
+        return tSnePlotDao.fetchTSnePlotWithExpression(experimentAccession, plotType, plotOption, geneId).stream()
                 .map(
                         pointDto ->
                                 TSnePoint.create(
@@ -44,10 +44,10 @@ public class TSnePlotService {
     }
 
     public ImmutableMap<String, ImmutableSet<TSnePoint>> fetchTSnePlotWithClusters(String experimentAccession,
-                                                                                   String method,
-                                                                                   int parameter,
+                                                                                   String plotType,
+                                                                                   int plotOption,
                                                                                    String variable) {
-        var points = tSnePlotDao.fetchTSnePlotWithClusters(experimentAccession, method, parameter, variable);
+        var points = tSnePlotDao.fetchTSnePlotWithClusters(experimentAccession, plotType, plotOption, variable);
 
         return points.stream()
                 .collect(groupingBy(TSnePoint.Dto::clusterId))

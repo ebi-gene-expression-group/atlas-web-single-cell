@@ -19,7 +19,6 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/clusters/variable/{variable}",
-            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithClusters(@PathVariable String experimentAccession,
                                        @PathVariable int parameter,
@@ -29,18 +28,16 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
         return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, method, parameter, variable, accessKey);
     }
 
-    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/expression",
-            method = RequestMethod.GET,
+    @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{plotOption}/expression",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
-                                         @PathVariable int parameter,
-                                         @RequestParam(defaultValue = "tsne") String method,
+                                         @PathVariable int plotOption,
+                                         @RequestParam(defaultValue = "tsne") String plotType,
                                          @RequestParam(defaultValue = "") String accessKey) {
-        return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, method, parameter, accessKey);
+        return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, plotType, plotOption, accessKey);
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/metadata/{metadata}",
-            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithMetadata(@PathVariable String experimentAccession,
                                        @PathVariable int perplexity,
@@ -50,7 +47,6 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/expression/{geneId}",
-            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
                                          @PathVariable int parameter,

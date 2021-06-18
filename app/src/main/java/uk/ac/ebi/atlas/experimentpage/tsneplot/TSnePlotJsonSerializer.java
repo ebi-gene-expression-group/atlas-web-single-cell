@@ -53,15 +53,15 @@ public class TSnePlotJsonSerializer {
                                                 experiment.getAccession(), parameter, metadata)))));
     }
 
-    public String tSnePlotWithExpression(String experimentAccession, String method, int parameter, String accessKey) {
-        return tSnePlotWithExpression(experimentAccession, method, parameter, "", accessKey);
+    public String tSnePlotWithExpression(String experimentAccession, String plotType, int plotOption, String accessKey) {
+        return tSnePlotWithExpression(experimentAccession, plotType, plotOption, "", accessKey);
     }
 
-    public String tSnePlotWithExpression(String experimentAccession, String method, int parameter, String geneId, String accessKey) {
+    public String tSnePlotWithExpression(String experimentAccession, String plotType, int plotOption, String geneId, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         var pointsWithExpression =
-                tSnePlotService.fetchTSnePlotWithExpression(experiment.getAccession(), method, parameter, geneId);
+                tSnePlotService.fetchTSnePlotWithExpression(experiment.getAccession(), plotType, plotOption, geneId);
 
         var max = pointsWithExpression.stream()
                 .map(TSnePoint::expressionLevel)

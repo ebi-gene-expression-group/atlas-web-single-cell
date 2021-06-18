@@ -63,7 +63,7 @@ class TSnePlotSettingsServiceIT {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_coords-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
@@ -76,7 +76,7 @@ class TSnePlotSettingsServiceIT {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),

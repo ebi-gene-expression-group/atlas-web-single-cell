@@ -1,7 +1,7 @@
 pipeline {
   agent {
-    docker {
-      image 'gradle:7.0.0-jdk11'
+    kubernetes {
+      label 'k8s-gradle'
     }
   }
 

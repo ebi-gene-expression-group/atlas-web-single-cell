@@ -8,10 +8,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        checkout([$class: 'GitSCM',
-                  extensions: [[$class: 'SubmoduleOption',
-                                disableSubmodules: false,
-                                recursiveSubmodules: true]]])
+        checkout scm
         sh './gradlew :app:testClasses'
       }
     }

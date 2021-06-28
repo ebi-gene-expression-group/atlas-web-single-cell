@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
+import com.google.gson.JsonObject;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
@@ -73,7 +74,7 @@ public class TSnePlotSettingsService {
         return tSnePlotDao.fetchNumberOfCellsByExperimentAccession(experimentAccession);
     }
 
-    public Map<String, List<String>> getAvailablePlotTypesAndPlotOptions(String experimentAccession){
+    public Map<String, List<JsonObject>> getAvailablePlotTypesAndPlotOptions(String experimentAccession){
         return tSnePlotDao.fetchTSnePlotTypesAndOptions(experimentAccession);
     }
 }

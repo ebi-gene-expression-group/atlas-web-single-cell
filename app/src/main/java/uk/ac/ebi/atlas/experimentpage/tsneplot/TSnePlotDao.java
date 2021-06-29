@@ -33,12 +33,19 @@ public class TSnePlotDao {
     @Transactional(transactionManager = "txManager", readOnly = true)
     public List<TSnePoint.Dto> fetchTSnePlotWithExpression(String experimentAccession, String plotType,
                                                            int plotOption, String geneId) {
-        var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession, "parameter",
-                String.valueOf(plotOption), "method", plotType, "parameter_name", plotType == TSNE_METHOD ?
-                        "perplexity" : "n_neighbors", "gene_id", geneId);
+        var namedParameters = ImmutableMap.of(
+                "experiment_accession", experimentAccession,
+                "parameter", String.valueOf(plotOption),
+                "method", plotType,
+                "parameter_name", plotType.equals(TSNE_METHOD) ? "perplexity" : "n_neighbors",
+                "gene_id", geneId);
 
-        return namedParameterJdbcTemplate.query(SELECT_T_SNE_PLOT_WITH_EXPRESSION_STATEMENT, namedParameters, (rs,
-                                                                                                               rowNum) -> TSnePoint.Dto.create(rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("expression_level"), rs.getString("cell_id")));
+        return namedParameterJdbcTemplate.query(
+                SELECT_T_SNE_PLOT_WITH_EXPRESSION_STATEMENT,
+                namedParameters,
+                (rs, rowNum) -> TSnePoint.Dto.create(rs.getDouble("x"),
+                        rs.getDouble("y"), rs.getDouble("expression_level"),
+                        rs.getString("cell_id")));
     }
 
     private static final String SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT = "SELECT c.cell_id,c.x,c.y, g.value as " +
@@ -49,7 +56,7 @@ public class TSnePlotDao {
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, String plotType, int plotOption,
                                                          String variable) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession, "parameter",
-                String.valueOf(plotOption), "parameter_name", plotType == TSNE_METHOD ? "perplexity" : "n_neighbors",
+                String.valueOf(plotOption), "parameter_name", plotType.equals(TSNE_METHOD) ? "perplexity" : "n_neighbors",
                 "method", plotType, "variable", variable);
 
         return namedParameterJdbcTemplate.query(SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT, namedParameters, (rs,

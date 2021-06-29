@@ -111,16 +111,11 @@ public class TSnePlotDao {
             Map<String, List<JsonObject>> plotTypeAndOptions = new HashMap<>();
             while (resultSet.next()) {
                 var projectionMethod = resultSet.getString("method");
-                try {
-
-                    var plotOption = resultSet.getString("option");
-                    JsonObject plotOptionObject = new Gson().fromJson(plotOption, JsonObject.class);
-                    var plotOptions = plotTypeAndOptions.getOrDefault(projectionMethod, new ArrayList<>());
-                    plotOptions.add(plotOptionObject);
-                    plotTypeAndOptions.put(projectionMethod, plotOptions);
-                } catch (Exception e) {
-
-                }
+                var plotOption = resultSet.getString("option");
+                var plotOptionObject = new Gson().fromJson(plotOption, JsonObject.class);
+                var plotOptions = plotTypeAndOptions.getOrDefault(projectionMethod, new ArrayList<>());
+                plotOptions.add(plotOptionObject);
+                plotTypeAndOptions.put(projectionMethod, plotOptions);
             }
             return plotTypeAndOptions;
         });

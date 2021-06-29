@@ -113,19 +113,19 @@
           ks: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
           metadata: [
             {
-              value: "characteristic_inferred_cell_type",
-              label: "Inferred cell type"
+              value: `inferred cell type - authors labels`,
+              label: `inferred cell type - authors labels`
             },
             {
-              value: "factor_sampling_site",
-              label: "Sampling site"
-            },
-            {
-              value: "factor_time",
-              label: "Time"
+              value: `inferred cell type - ontology labels`,
+              label: `inferred cell type - ontology labels`
             }
           ],
-          perplexities: [1, 5, 10, 15, 20],
+          plotTypesAndOptions: {
+            "tsne": [{ "perplexity": 40 }, { "perplexity": 25 }, { "perplexity": 45 },{ "perplexity": 1 },{ "perplexity": 30 },
+            {"perplexity": 10 },{ "perplexity": 15 },{ "perplexity": 50 },{ "perplexity": 35 },{ "perplexity": 20 },{ "perplexity": 5 }],
+            "umap": [{"n_neighbors": 5},{"n_neighbors": 100},{"n_neighbors": 50},{"n_neighbors": 10},{"n_neighbors": 30},{"n_neighbors": 15},{"n_neighbors": 3}]
+          }
           suggesterEndpoint: 'json/suggestions'
         }
       },

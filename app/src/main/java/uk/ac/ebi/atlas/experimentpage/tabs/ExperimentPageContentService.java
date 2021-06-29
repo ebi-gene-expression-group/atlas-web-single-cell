@@ -69,7 +69,7 @@ public class ExperimentPageContentService {
                 .ifPresent(value -> result.addProperty("selectedK", value));
 
         result.add("perplexities", getPerplexities(experimentAccession));
-        
+
         result.add("plotTypesAndOptions", getPlotTypesAndOptions(
                 tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)));
 

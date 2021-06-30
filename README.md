@@ -49,9 +49,9 @@ In the `atlas-web-single-cell/docker` directory run the following:
 ```bash
 ATLAS_DATA_PATH=/path/to/sc/atlas/data \
 POSTGRES_HOST=scxa-postgres \
-POSTGRES_DB=gxpscxadev \
-POSTGRES_USER=atlasprd3 \
-POSTGRES_PASSWORD=atlasprd3 \
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
 docker-compose up
 ```
 Note: Update DB details like POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD if you want to use different details, and you need to change DB details here as well `profile-docker. gradle` file if you go with different DB details.
@@ -140,9 +140,9 @@ If you get any `war` redeploy issues or want to start again freshly, stop all th
 ```bash
 ATLAS_DATA_PATH=/path/to/sc/atlas/data \
 POSTGRES_HOST=scxa-postgres \
-POSTGRES_DB=gxpscxadev \
-POSTGRES_USER=atlasprd3 \
-POSTGRES_PASSWORD=atlasprd3 \
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
 docker-compose down
 ```
 If you get any `java.net.UnknownHostException: Invalid hostname for server: local` exceptions while running application.

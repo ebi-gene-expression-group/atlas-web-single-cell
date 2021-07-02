@@ -60,7 +60,6 @@ class TSnePlotViewRoute extends React.Component {
     const { atlasUrl, suggesterEndpoint } = this.props
     const { species, experimentAccession, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
-    const initialCellTypeValues = [`inferred_cell_type_-_authors_labels`, `inferred_cell_type_-_ontology_labels`]
 
       const plotTypeDropdown =  [
         {
@@ -97,7 +96,7 @@ class TSnePlotViewRoute extends React.Component {
           selectedPlotOption={search.plotOption || this.state.selectedPlotOption}
           selectedPlotType={search.plotType || this.state.selectedPlotType}
           ks={ks}
-          metadata={metadata}
+          metadata={metadata.map(data => {return {value: data.value.replaceAll(`_`, ` `), label: data.label}})}
           selectedColourBy={search.colourBy || this.state.selectedColourBy }
           selectedColourByCategory={this.state.selectedColourByCategory} // Is the plot coloured by clusters or metadata
           highlightClusters={search.clusterId ? JSON.parse(search.clusterId) : []}

@@ -1,0 +1,142 @@
+version: "3.0"
+
+services:
+  #### SolrCloud
+  scxa-zk-1:
+    image: zookeeper:3.4.14
+    container_name: scxa-zk-1
+    networks:
+      - scxa
+    ports:
+      - "2181:2181"
+    restart: always
+    volumes:
+      - scxa-zk-1-data:/data
+      - scxa-zk-1-datalog:/datalog
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=scxa-zk-3:2888:3888
+
+  scxa-zk-2:
+    image: zookeeper:3.4.14
+    container_name: scxa-zk-2
+    networks:
+      - scxa
+    ports:
+      - "2182:2181"
+    restart: always
+    volumes:
+      - scxa-zk-2-data:/data
+      - scxa-zk-2-datalog:/datalog
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=scxa-zk-3:2888:3888
+
+  scxa-zk-3:
+    image: zookeeper:3.4.14
+    container_name: scxa-zk-3
+    networks:
+      - scxa
+    ports:
+      - "2183:2181"
+    restart: always
+    volumes:
+      - scxa-zk-3-data:/data
+      - scxa-zk-3-datalog:/datalog
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=0.0.0.0:2888:3888
+
+  scxa-solrcloud-1:
+    image: solr:7.1.0
+    container_name: scxa-solrcloud-1
+    networks:
+      - scxa
+    ports:
+      - "8983:8983"
+    volumes:
+      - scxa-solrcloud-1-data:/opt/solr/server/solr
+      - $ATLAS_DATA_PATH/solrcloud/solr1:/var/backups/solr
+    environment:
+      - SOLR_HEAP=2g
+      - SOLR_OPTS=-Denable.runtime.lib=true
+      - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
+    depends_on:
+      - scxa-zk-1
+      - scxa-zk-2
+      - scxa-zk-3
+
+  scxa-solrcloud-2:
+    image: solr:7.1.0
+    container_name: scxa-solrcloud-2
+    networks:
+      - scxa
+    ports:
+      - "8984:8983"
+    volumes:
+      - scxa-solrcloud-2-data:/opt/solr/server/solr
+      - $ATLAS_DATA_PATH/solrcloud/solr2:/var/backups/solr
+    environment:
+      - SOLR_HEAP=2g
+      - SOLR_OPTS=-Denable.runtime.lib=true
+      - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
+    depends_on:
+      - scxa-zk-1
+      - scxa-zk-2
+      - scxa-zk-3
+
+
+  #### Gradle and it's filesystem
+  scxa-gradle:
+    image: openjdk:11
+    container_name: scxa-gradle
+    networks:
+      - scxa
+    working_dir: /root/project
+    volumes:
+      - $PWD:/root/project
+      - $ATLAS_MAVEN_CACHE:/root/.m2
+      - $ATLAS_GRADLE_CACHE:/root/.gradle
+      - $ATLAS_DATA_PATH/filesystem:/root/scxa/integration-test-data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    depends_on:
+      - scxa-solrcloud-1
+      - scxa-solrcloud-2
+
+#  Below multiple ./gradlew commands we can move to bash script and script can be called from the command,
+#  so it's looks a bit cleaner than this,But I leave this for the next improvements.
+    command:
+      - /bin/bash
+      - -c
+      - "./gradlew \
+      -PdataFilesLocation=/root/scxa/integration-test-data \
+      -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa \
+      -PzkHost=scxa-zk-1 \
+      -PsolrHost=scxa-solrcloud-1 \
+      :app:clean :app:testClasses && \
+      ./gradlew :app:test --tests *Test && \
+      ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT && \
+      ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT
+      "
+volumes:
+  scxa-zk-1-data:
+    name: scxa-zk-1-data
+  scxa-zk-1-datalog:
+    name: scxa-zk-1-datalog
+  scxa-zk-2-data:
+    name: scxa-zk-2-data
+  scxa-zk-2-datalog:
+    name: scxa-zk-2-datalog
+  scxa-zk-3-data:
+    name: scxa-zk-3-data
+  scxa-zk-3-datalog:
+    name: scxa-zk-3-datalog
+  scxa-solrcloud-1-data:
+    name: scxa-solrcloud-1-data
+  scxa-solrcloud-2-data:
+    name: scxa-solrcloud-2-data
+
+networks:
+  scxa:
+    name: scxa

@@ -219,7 +219,7 @@ Read the important message after you run `scxa-solrlcoud-bootstrap`:
 >
 > The suggester in all shards will be built when the propertySuggester directory size stabilises.
 
-### Run Tests using gradle container
+### Run Tests using Gradle container
 If you invoke docker-compose-gradle.yml , it will spin up Solr and Zookeeper containers, creates a gradle container and run tests in the Gradle container.
 If you are already running the scxa application using docker-compose, if you invoke the docker-compose-gradle.yml file,it uses already running Solr and Zookeeper containers to run tests.
 

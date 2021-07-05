@@ -206,15 +206,59 @@ Read the important message after you run `scxa-solrlcoud-bootstrap`:
 > takes a few extra minutes: the exception is thrown before the process has completed.
 > The best option is to manually build and supervise this step.
 >
-> Run the following command (don’t worry if the request returns a 500 error after a while):
+> Run the following commands one by one(don’t worry if the request returns a 500 error after a while):
 > 
 > `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=propertySuggesterNoHighlight'`
+
+> `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=bioentitySuggester'`
 >
 > While the command above is running, monitor the size of the suggester directory size:
 > 
 > `docker exec -it scxa-solrcloud-1 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
 > `docker exec -it scxa-solrcloud-2 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
 >
-> The suggester in all shards will be built when the propertySuggester directory size stabilises. 
-> Run the above procedure for `bioentitySuggester` as well.
- 
+> The suggester in all shards will be built when the propertySuggester directory size stabilises.
+
+### Run Tests using gradle docker compose
+
+If your already running application using docker compose stop & remove the solr and zookeeper containers. 
+Or else do docker compose down to remove network along with all containers.
+
+#### Note: A few tests depends on suggesters. So don't forget to build suggestions in your local machine
+
+In the `atlas-web-single-cell/docker` directory run the following:
+```bash
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+POSTGRES_HOST=scxa-postgres \
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+docker-compose down
+```
+
+Invoke `gradle docker compose`:
+```bash
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+GRADLE_HOST=scxa-gradle\
+PWD=/path/to/sc/project \
+ATLAS_MAVEN_CACHE=/path/to/maven/cache \
+ATLAS_GRADLE_CACHE=/path/to/gradle/cache \
+docker-compose -f docker-compose-test.yml up
+```
+> Please check the logs in the `scxa-gradle` how it is going on.
+> It would spin up solr and zookeeper containers first, then if that part is success, 
+> it will create and runs the `scxa-gradle` container. 
+> In that container it will execute all our `./gradlew` command to trigger our unit,integrations and web integration(e2e) tests. 
+> Finally if everything went well you should see all test ./gradlew builds successful!
+
+Once you finish test cases, to remove containers along with scxa network. 
+Please run `docker-compose-gradle down`
+
+```bash
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+GRADLE_HOST=scxa-gradle\
+PWD=/path/to/sc/project \
+ATLAS_MAVEN_CACHE=/path/to/maven/cache \
+ATLAS_GRADLE_CACHE=/path/to/gradle/cache \
+docker-compose -f docker-compose-gradle.yml down
+```

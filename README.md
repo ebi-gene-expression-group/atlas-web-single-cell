@@ -219,24 +219,14 @@ Read the important message after you run `scxa-solrlcoud-bootstrap`:
 >
 > The suggester in all shards will be built when the propertySuggester directory size stabilises.
 
-### Run Tests using gradle docker compose
+### Run Tests using gradle container
+If you invoke docker-compose-gradle.yml , it will spin up Solr and Zookeeper containers, creates a gradle container and run tests in the Gradle container.
+If you are already running the scxa application using docker-compose, if you invoke the docker-compose-gradle.yml file,it uses already running Solr and Zookeeper containers to run tests.
 
-If your already running application using docker compose stop & remove the solr and zookeeper containers. 
-Or else do docker compose down to remove network along with all containers.
-
-#### Note: A few tests depends on suggesters. So don't forget to build suggestions in your local machine
+#### Note: A few tests depends on suggesters. So don't forget to build suggestions in your local machine.
 
 In the `atlas-web-single-cell/docker` directory run the following:
-```bash
-ATLAS_DATA_PATH=/path/to/sc/atlas/data \
-POSTGRES_HOST=scxa-postgres \
-POSTGRES_DB=gxpatlasloc \
-POSTGRES_USER=atlas3dev \
-POSTGRES_PASSWORD=atlas3dev \
-docker-compose down
-```
 
-Invoke `gradle docker compose`:
 ```bash
 ATLAS_DATA_PATH=/path/to/sc/atlas/data \
 GRADLE_HOST=scxa-gradle\
@@ -245,14 +235,13 @@ ATLAS_MAVEN_CACHE=/path/to/maven/cache \
 ATLAS_GRADLE_CACHE=/path/to/gradle/cache \
 docker-compose -f docker-compose-test.yml up
 ```
-> Please check the logs in the `scxa-gradle` how it is going on.
-> It would spin up solr and zookeeper containers first, then if that part is success, 
-> it will create and runs the `scxa-gradle` container. 
-> In that container it will execute all our `./gradlew` command to trigger our unit,integrations and web integration(e2e) tests. 
-> Finally if everything went well you should see all test ./gradlew builds successful!
+> Please check the logs in the `scxa-gradle` container how it is going on.
+> It would spin up solr and zookeeper containers first if they are not running already.
+> It will create `scxa-gradle` container and mount volumes
+> in that container, it executes all `./gradlew` commands for unit,integrations and web integration(e2e) tests. 
+> Finally if everything went well you should see all tests ./gradlew builds successful!
 
-Once you finish test cases, to remove containers along with scxa network. 
-Please run `docker-compose-gradle down`
+Once you finish test cases, to remove containers along with scxa network. Please run following:
 
 ```bash
 ATLAS_DATA_PATH=/path/to/sc/atlas/data \

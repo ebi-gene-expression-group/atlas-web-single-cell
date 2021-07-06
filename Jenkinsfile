@@ -1,7 +1,13 @@
 pipeline {
   agent {
     kubernetes {
-      inheritFrom 'k8s-gradle'
+      label 'k8s-gradle'
+      yaml '''
+      spec:
+        containers:
+        - name: openjdk11
+          image: openjdk:11
+'''
     }
   }
 

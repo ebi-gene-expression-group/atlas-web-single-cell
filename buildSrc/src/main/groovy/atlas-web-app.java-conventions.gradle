@@ -16,7 +16,7 @@ repositories {
   // unless we’re on the VPN, in which case the build fails
   mavenLocal()
   maven {
-    url "http://193.62.54.19:30007/artifactory/maven-local/"
+    url "http://artifactory-oss-artifactory.artifactory-oss.svc.cluster.local:8082"
     allowInsecureProtocol true
   }
 }

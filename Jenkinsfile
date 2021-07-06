@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      label 'k8s-gradle'
+      inheritFrom 'k8s-gradle'
     }
   }
 

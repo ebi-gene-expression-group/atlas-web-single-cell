@@ -1,7 +1,6 @@
 pipeline {
   agent {
     kubernetes {
-      inheritFrom 'k8s-jdk'
       yaml '''
       spec:
         containers:

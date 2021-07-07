@@ -11,16 +11,27 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 public class TestJdbcConfig {
-    @Bean
-    public DataSource dataSource() {
-        var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:postgresql://scxa-postgres");
-        hikariConfig.setUsername("scxa");
-        hikariConfig.setPassword("scxa");
-        hikariConfig.setDriverClassName("org.postgresql.ds.PGSimpleDataSource");
+    private final HikariConfig hikariConfig;
+
+    public TestJdbcConfig() {
+        hikariConfig = new HikariConfig();
+        hikariConfig.setMaximumPoolSize(20);
+        hikariConfig.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
+        hikariConfig.setPoolName("scxa");
+        hikariConfig.setMaxLifetime(30000L);    // EBI policy requires URL requests to be resolved within 30 seconds
+
+        Properties dataSourceProperties = new Properties();
+        dataSourceProperties.setProperty("url", "jdbc:postgresql://localhost:5432/scxa");
+        dataSourceProperties.setProperty("user", "scxa");
+        dataSourceProperties.setProperty("password", "scxa");
+
+        hikariConfig.setDataSourceProperties(dataSourceProperties);
+
+        hikariConfig.setConnectionTestQuery("SELECT 1");
 
         var dataSource = new HikariDataSource(hikariConfig);
         Flyway.configure()
@@ -28,8 +39,11 @@ public class TestJdbcConfig {
                 .locations("filesystem:./src/test/resources/schemas/flyway/scxa")
                 .load()
                 .migrate();
+    }
 
-        return dataSource;
+    @Bean
+    public DataSource dataSource() {
+        return new HikariDataSource(hikariConfig);
     }
 
     @Bean

@@ -9,25 +9,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import javax.sql.DataSource;
 
 @Configuration
 public class TestJdbcConfig {
-    private final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:10-alpine");
-
-    public TestJdbcConfig() {
-        postgreSQLContainer.start();
-    }
-
     @Bean
     public DataSource dataSource() {
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(postgreSQLContainer.getJdbcUrl());
-        hikariConfig.setUsername(postgreSQLContainer.getUsername());
-        hikariConfig.setPassword(postgreSQLContainer.getPassword());
-        hikariConfig.setDriverClassName(postgreSQLContainer.getDriverClassName());
+        hikariConfig.setJdbcUrl("jdbc:postgresql://scxa-postgres");
+        hikariConfig.setUsername("scxa");
+        hikariConfig.setPassword("scxa");
+        hikariConfig.setDriverClassName("org.postgresql.ds.PGSimpleDataSource");
 
         var dataSource = new HikariDataSource(hikariConfig);
         Flyway.configure()

@@ -25,7 +25,7 @@ public class TestJdbcConfig {
         hikariConfig.setMaxLifetime(30000L);    // EBI policy requires URL requests to be resolved within 30 seconds
 
         Properties dataSourceProperties = new Properties();
-        dataSourceProperties.setProperty("url", "jdbc:postgresql://localhost:5432/scxa");
+        dataSourceProperties.setProperty("url", "jdbc:postgresql://scxa-postgres:5432/scxa");
         dataSourceProperties.setProperty("user", "scxa");
         dataSourceProperties.setProperty("password", "scxa");
 

@@ -39,6 +39,8 @@ dependencies {
     // implementation 'jstl:jstl:1.2'
     runtimeOnly 'jstl:jstl:1.2'
 
+    testImplementation platform('org.testcontainers:testcontainers-bom:1.15.3')
+    testImplementation 'org.testcontainers:postgresql'
     testImplementation 'com.zaxxer:HikariCP:3.3.1'
 
     testImplementation 'org.flywaydb:flyway-core:7.2.0'

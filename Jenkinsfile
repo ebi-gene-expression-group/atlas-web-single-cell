@@ -1,5 +1,6 @@
 pipeline {
   agent {
+    // Remember to add a Pod Template named 'k8s-jdk' and container templates to match the stages
     label 'k8s-jdk'
   }
 

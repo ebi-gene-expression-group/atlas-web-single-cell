@@ -1,13 +1,12 @@
 pipeline {
   agent {
-    kubernetes {
-      yaml '''
-      spec:
-        containers:
-        - name: openjdk
-          image: openjdk:11
+    label 'k8s-jdk'
+    yaml '''
+    spec:
+      containers:
+      - name: openjdk
+        image: openjdk:11
 '''
-    }
   }
 
   stages {

@@ -6,25 +6,27 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        checkout scm
-        echo 'Checked out!'
+        container('openjdk') {
+          sh './gradlew :app:testClasses'
+        }
       }
     }
 
     stage('Test') {
       steps {
         container('openjdk') {
-          sh 'java --version'
-          echo 'Test'
+          sh './gradlew :app:test --tests *Test'
+          sh './gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+          sh './gradlew -PtestResultsPath=e2e :app:test --tests *WIT'
         }
       }
     }
 
-    stage('Deploy') {
-      steps {
-        echo 'Deploy'
-      }
-    }
+//    stage('Deploy') {
+//      steps {
+//        echo 'Deploy'
+//      }
+//    }
 
   }
 }

@@ -1,19 +1,14 @@
 pipeline {
   agent {
     kubernetes {
-      label 'k8s-gradle'
-      yaml '''
-      spec:
-        containers:
-        - name: openjdk11
-          image: openjdk:11
-'''
+      inheritFrom 'jdk11'
     }
   }
 
   stages {
     stage('Build') {
       steps {
+        sh 'echo $JAVA_HOME && java --version'
         checkout scm
         sh './gradlew :app:testClasses'
       }

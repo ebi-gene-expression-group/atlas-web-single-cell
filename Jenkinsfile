@@ -1,19 +1,19 @@
 pipeline {
   agent {
-   label 'jdk11'
+   label 'k8s-jdk'
   }
 
   stages {
     stage('Build') {
       steps {
-        sh 'echo $JAVA_HOME && java --version'
         checkout scm
-        sh './gradlew :app:testClasses'
       }
     }
 
     stage('Test') {
       steps {
+        container('openjdk11')
+        sh 'echo $JAVA_HOME && java --version'
         echo 'Test'
       }
     }

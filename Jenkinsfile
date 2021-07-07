@@ -12,9 +12,10 @@ pipeline {
 
     stage('Test') {
       steps {
-        container('openjdk11')
-        sh 'echo $JAVA_HOME && java --version'
-        echo 'Test'
+        container('openjdk11') {
+          sh 'echo $JAVA_HOME && java --version'
+          echo 'Test'
+        }
       }
     }
 

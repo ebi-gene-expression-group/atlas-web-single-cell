@@ -1,14 +1,6 @@
 pipeline {
   agent {
-    kubernetes {
-      inheritFrom 'jdk11'
-      yaml '''
-      spec:
-        containers:
-        - name: openjdk
-          image: openjdk:11
-'''
-    }
+   label 'jdk11'
   }
 
   stages {

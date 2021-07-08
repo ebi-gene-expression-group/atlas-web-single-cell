@@ -8,7 +8,7 @@ pipeline {
     stage('Build') {
       steps {
         container('openjdk') {
-          sh './gradlew :app:testClasses'
+          sh './gradlew -PdataFilesLocation=/test-data -PexperimentFilesLocation=/test-data/scxa :app:testClasses'
         }
       }
     }

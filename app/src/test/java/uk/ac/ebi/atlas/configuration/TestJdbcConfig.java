@@ -2,40 +2,26 @@ package uk.ac.ebi.atlas.configuration;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import javax.sql.DataSource;
 
 @Configuration
 public class TestJdbcConfig {
-    private final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:10-alpine");
-
-    public TestJdbcConfig() {
-        postgreSQLContainer.start();
-    }
 
     @Bean
     public DataSource dataSource() {
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(postgreSQLContainer.getJdbcUrl());
-        hikariConfig.setUsername(postgreSQLContainer.getUsername());
-        hikariConfig.setPassword(postgreSQLContainer.getPassword());
-        hikariConfig.setDriverClassName(postgreSQLContainer.getDriverClassName());
-
+        hikariConfig.setJdbcUrl("jdbc:postgresql://scxa-postgres:5432/gxpatlasloc");
+        hikariConfig.setUsername("atlas3dev");
+        hikariConfig.setPassword("atlas3dev");
+        hikariConfig.setDriverClassName("org.postgresql.Driver");
         var dataSource = new HikariDataSource(hikariConfig);
-        Flyway.configure()
-                .dataSource(dataSource)
-                .locations("filesystem:./src/test/resources/schemas/flyway/scxa")
-                .load()
-                .migrate();
-
         return dataSource;
     }
 

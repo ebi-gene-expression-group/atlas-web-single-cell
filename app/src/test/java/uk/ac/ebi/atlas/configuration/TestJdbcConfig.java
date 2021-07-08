@@ -15,10 +15,10 @@ import java.util.Properties;
 
 @Configuration
 public class TestJdbcConfig {
-    private final HikariConfig hikariConfig;
+    private final DataSource dataSource;
 
     public TestJdbcConfig() {
-        hikariConfig = new HikariConfig();
+        var hikariConfig = new HikariConfig();
         hikariConfig.setMaximumPoolSize(20);
         hikariConfig.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
         hikariConfig.setPoolName("scxa");
@@ -33,7 +33,7 @@ public class TestJdbcConfig {
 
         hikariConfig.setConnectionTestQuery("SELECT 1");
 
-        var dataSource = new HikariDataSource(hikariConfig);
+        dataSource = new HikariDataSource(hikariConfig);
         Flyway.configure()
                 .dataSource(dataSource)
                 .locations("filesystem:./src/test/resources/schemas/flyway/scxa")
@@ -43,7 +43,7 @@ public class TestJdbcConfig {
 
     @Bean
     public DataSource dataSource() {
-        return new HikariDataSource(hikariConfig);
+        return dataSource;
     }
 
     @Bean

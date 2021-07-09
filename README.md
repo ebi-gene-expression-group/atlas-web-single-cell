@@ -47,12 +47,12 @@ Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres contai
 
 In the `atlas-web-single-cell/docker` directory run the following:
 ```bash
-ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \ 
 POSTGRES_HOST=scxa-postgres \
-POSTGRES_DB=gxpscxadev \
-POSTGRES_USER=atlasprd3 \
-POSTGRES_PASSWORD=atlasprd3 \
-docker-compose up
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+docker-compose -f docker-compose-cluster.yml -f docker-compose-postgres.yml -f docker-compose-tomcat.yml up
 ```
 Note: Update DB details like POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD if you want to use different details, and you need to change DB details here as well `profile-docker. gradle` file if you go with different DB details.
 
@@ -140,10 +140,10 @@ If you get any `war` redeploy issues or want to start again freshly, stop all th
 ```bash
 ATLAS_DATA_PATH=/path/to/sc/atlas/data \
 POSTGRES_HOST=scxa-postgres \
-POSTGRES_DB=gxpscxadev \
-POSTGRES_USER=atlasprd3 \
-POSTGRES_PASSWORD=atlasprd3 \
-docker-compose down
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+docker-compose -f docker-compose-cluster.yml -f docker-compose-postgres.yml -f docker-compose-tomcat.yml down
 ```
 If you get any `java.net.UnknownHostException: Invalid hostname for server: local` exceptions while running application.
 Go to `profile-docker. gradle` file and check these attribute values `ext.zkHost` & `ext.solrHost` and compare with running container names.
@@ -206,18 +206,16 @@ Read the important message after you run `scxa-solrlcoud-bootstrap`:
 > takes a few extra minutes: the exception is thrown before the process has completed.
 > The best option is to manually build and supervise this step.
 >
-> Run the following commands one by one(don’t worry if the request returns a 500 error after a while):
+> Run the following commands(don’t worry if the request returns a 500 error after a while):
 > 
-> `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=propertySuggesterNoHighlight'`
-
-> `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=bioentitySuggester'`
+> `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=bioentitySuggester&suggest.dictionary=propertySuggesterNoHighlight'`
 >
 > While the command above is running, monitor the size of the suggester directory size:
 > 
 > `docker exec -it scxa-solrcloud-1 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
 > `docker exec -it scxa-solrcloud-2 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
 >
-> The suggester in all shards will be built when the propertySuggester directory size stabilises.
+> Both suggesters in every shard will be built when the suggester directory size stabilises.
 
 ### Run Tests using Gradle container
 If you invoke docker-compose-gradle.yml , it will spin up Solr and Zookeeper containers, creates a gradle container and run tests in the Gradle container.
@@ -228,12 +226,16 @@ If you are already running the scxa application using docker-compose, if you inv
 In the `atlas-web-single-cell/docker` directory run the following:
 
 ```bash
-ATLAS_DATA_PATH=/path/to/sc/atlas/data \
-GRADLE_HOST=scxa-gradle\
+ATLAS_DATA_PATH=/path/to/sc/atlas/data  \
+POSTGRES_HOST=scxa-postgres \
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+GRADLE_HOST=scxa-gradle \
 PWD=/path/to/sc/project \
 ATLAS_MAVEN_CACHE=/path/to/maven/cache \
 ATLAS_GRADLE_CACHE=/path/to/gradle/cache \
-docker-compose -f docker-compose-test.yml up
+docker-compose -f docker-compose-cluster.yml -f docker-compose-postgres.yml -f docker-compose-gradle.yml up
 ```
 > Please check the logs in the `scxa-gradle` container how it is going on.
 > It would spin up solr and zookeeper containers first if they are not running already.
@@ -244,10 +246,14 @@ docker-compose -f docker-compose-test.yml up
 Once you finish test cases, to remove containers along with scxa network. Please run following:
 
 ```bash
-ATLAS_DATA_PATH=/path/to/sc/atlas/data \
-GRADLE_HOST=scxa-gradle\
+ATLAS_DATA_PATH=/path/to/sc/atlas/data  \
+POSTGRES_HOST=scxa-postgres \
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+GRADLE_HOST=scxa-gradle \
 PWD=/path/to/sc/project \
 ATLAS_MAVEN_CACHE=/path/to/maven/cache \
 ATLAS_GRADLE_CACHE=/path/to/gradle/cache \
-docker-compose -f docker-compose-gradle.yml down
+docker-compose -f docker-compose-cluster.yml -f docker-compose-postgres.yml -f docker-compose-gradle.yml down
 ```

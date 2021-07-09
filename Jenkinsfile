@@ -23,10 +23,16 @@ pipeline {
     stage('Test') {
       steps {
         container('openjdk') {
-          sh './gradlew :app:test --tests *Test'
+          sh './gradlew -PtestResultsPath=ut :app:test --tests *Test'
           sh './gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
           sh './gradlew -PtestResultsPath=e2e :app:test --tests *WIT'
         }
+      }
+    }
+
+    post {
+      always {
+        junit 'app/build/test-results/**/*.xml'
       }
     }
 

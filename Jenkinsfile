@@ -38,9 +38,11 @@ pipeline {
 
   post {
     always {
-      junit 'app/build/test-results/ut/test/*.xml'
-      junit 'app/build/test-results/it/test/*.xml'
-      junit 'app/build/test-results/e2e/test/*.xml'
+      echo '${PWD}'
+      sh 'ls'
+      junit 'build/test-results/ut/test/*.xml'
+      junit 'build/test-results/it/test/*.xml'
+      junit 'build/test-results/e2e/test/*.xml'
     }
   }
 }

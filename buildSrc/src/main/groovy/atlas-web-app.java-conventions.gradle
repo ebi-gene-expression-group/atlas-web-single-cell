@@ -127,8 +127,8 @@ processTestResources {
 
 test {
   if (project.hasProperty('testResultsPath')) {
-    reporting.baseDir = "${buildDir}/reports/" + project.property('testResultsPath')
-    testResultsDirName = "${buildDir}/test-results/" + project.property('testResultsPath')
+    reporting.baseDir = "/build/reports/" + project.property('testResultsPath')
+    testResultsDirName = "/build/test-results/" + project.property('testResultsPath')
 
     jacoco {
       destinationFile = file("${buildDir}/jacoco/${project.property('testResultsPath')}.exec")

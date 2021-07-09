@@ -8,7 +8,14 @@ pipeline {
     stage('Build') {
       steps {
         container('openjdk') {
-          sh './gradlew -PdataFilesLocation=/test-data -PexperimentFilesLocation=/test-data/scxa :app:testClasses'
+          sh './gradlew ' +
+                  '-PdataFilesLocation=/test-data ' +
+                  '-PexperimentFilesLocation=/test-data/scxa ' +
+                  '-PzkHost=scxa-test.scxa-zk.svc.cluster.local ' +
+                  '-PzkPort=2181 ' +
+                  '-PsolrHost=scxa-test.scxa-solrcloud.svc.cluster.local ' +
+                  '-PsolrPort=8983 ' +
+                  ':app:testClasses'
         }
       }
     }

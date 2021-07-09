@@ -29,18 +29,16 @@ pipeline {
         }
       }
     }
-
-    post {
-      always {
-        junit 'app/build/test-results/**/*.xml'
-      }
-    }
-
 //    stage('Deploy') {
 //      steps {
 //        echo 'Deploy'
 //      }
 //    }
+  }
 
+  post {
+    always {
+      junit 'app/build/test-results/**/*.xml'
+    }
   }
 }

@@ -11,9 +11,9 @@ pipeline {
           sh './gradlew ' +
                   '-PdataFilesLocation=/test-data ' +
                   '-PexperimentFilesLocation=/test-data/scxa ' +
-                  '-PzkHost=scxa-test.scxa-zk.svc.cluster.local ' +
+                  '-PzkHost=scxa-zk.svc.scxa-test.cluster.local ' +
                   '-PzkPort=2181 ' +
-                  '-PsolrHost=scxa-test.scxa-solrcloud.svc.cluster.local ' +
+                  '-PsolrHost=scxa-solrcloud.scxa-test.svc.cluster.local ' +
                   '-PsolrPort=8983 ' +
                   ':app:testClasses'
         }

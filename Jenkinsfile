@@ -38,11 +38,13 @@ pipeline {
 
   post {
     always {
-      echo '${PWD}'
-      sh 'ls'
-      junit 'build/test-results/ut/test/*.xml'
-      junit 'build/test-results/it/test/*.xml'
-      junit 'build/test-results/e2e/test/*.xml'
+      container('openjdk') {
+        echo '${PWD}'
+        sh 'ls'
+        junit 'build/test-results/ut/test/*.xml'
+        junit 'build/test-results/it/test/*.xml'
+        junit 'build/test-results/e2e/test/*.xml'
+      }
     }
   }
 }

@@ -24,8 +24,9 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
                                        @PathVariable int parameter,
                                        @PathVariable String variable,
                                        @RequestParam(defaultValue = "tsne") String method,
+                                       @RequestParam(defaultValue = "metadata") String variableType,
                                        @RequestParam(defaultValue = "") String accessKey) {
-        return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, method, parameter, variable, accessKey);
+        return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, method, parameter, variable, variableType, accessKey);
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{plotOption}/expression",

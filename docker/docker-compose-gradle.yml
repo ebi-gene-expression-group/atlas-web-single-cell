@@ -34,25 +34,6 @@ services:
       ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT && \
       ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT
       "
-volumes:
-  scxa-zk-1-data:
-    name: scxa-zk-1-data
-  scxa-zk-1-datalog:
-    name: scxa-zk-1-datalog
-  scxa-zk-2-data:
-    name: scxa-zk-2-data
-  scxa-zk-2-datalog:
-    name: scxa-zk-2-datalog
-  scxa-zk-3-data:
-    name: scxa-zk-3-data
-  scxa-zk-3-datalog:
-    name: scxa-zk-3-datalog
-  scxa-solrcloud-1-data:
-    name: scxa-solrcloud-1-data
-  scxa-solrcloud-2-data:
-    name: scxa-solrcloud-2-data
-  scxa-pgdata:
-      name: scxa-pgdata
 
 networks:
   scxa:

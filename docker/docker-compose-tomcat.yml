@@ -24,12 +24,6 @@ services:
     command: ["catalina.sh", "jpda", "run"]
 
 volumes:
-  scxa-solrcloud-1-data:
-    name: scxa-solrcloud-1-data
-  scxa-solrcloud-2-data:
-    name: scxa-solrcloud-2-data
-  scxa-pgdata:
-    name: scxa-pgdata
   scxa-tomcat-conf:
     name: scxa-tomcat-conf
 

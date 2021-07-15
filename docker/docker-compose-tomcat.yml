@@ -1,7 +1,6 @@
 version: "3.6"
 
 services:
-#### Web server and filesystem
   scxa-tomcat:
     image: tomcat:9-jdk11
     container_name: scxa-tomcat

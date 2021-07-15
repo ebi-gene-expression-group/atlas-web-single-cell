@@ -1,4 +1,4 @@
-version: "3.0"
+version: "3.6"
 
 services:
   #### Gradle and it's filesystem

@@ -1,7 +1,6 @@
 version: "3.6"
 
 services:
-  #### Gradle and it's filesystem
   scxa-gradle:
     image: openjdk:11
     container_name: scxa-gradle
@@ -18,22 +17,19 @@ services:
       - scxa-solrcloud-1
       - scxa-solrcloud-2
       - scxa-postgres
-
-#  Below multiple ./gradlew commands we can move to bash script and script can be called from the command,
-#  so it's looks a bit cleaner than this,But I leave this for the next improvements.
     command:
       - /bin/bash
       - -c
-      - "./gradlew \
-      -PdataFilesLocation=/root/scxa/integration-test-data \
-      -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa \
-      -PzkHost=scxa-zk-1 \
-      -PsolrHost=scxa-solrcloud-1 \
-      :app:clean :app:testClasses && \
-      ./gradlew :app:test --tests *Test && \
-      ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT && \
-      ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT
-      "
+      - >
+        ./gradlew
+          -PdataFilesLocation=/root/scxa/integration-test-data
+          -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa
+          -PzkHost=scxa-zk-1
+          -PsolrHost=scxa-solrcloud-1
+          :app:clean :app:testClasses &&
+        ./gradlew :app:test --tests *Test &&
+        ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
+        ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT
 
 networks:
   scxa:

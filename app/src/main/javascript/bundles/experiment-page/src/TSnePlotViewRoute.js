@@ -11,6 +11,8 @@ import { ClustersHeatmapView } from '@ebi-gene-expression-group/scxa-marker-gene
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
+import {find as _find} from "lodash"
+
 const BioentityInformationWithFetchLoader = withFetchLoader(BioentityInformation)
 
 const RedirectWithSearchAndHash = (props) =>
@@ -28,16 +30,49 @@ const RedirectWithLocation = withRouter(RedirectWithSearchAndHash)
 
 class TSnePlotViewRoute extends React.Component {
   constructor(props) {
-    super(props)
+      super(props)
+      let plotTypeDropdown =  [
+        {
+          plotType: `UMAP`,
+          plotOptions: this.props.plotTypesAndOptions.umap
+        },
+        {
+          plotType: `tSNE`,
+          plotOptions: this.props.plotTypesAndOptions.tsne
+        }
+     ]
+
+    this.state = {
+      selectedPlotType: plotTypeDropdown[0].plotType.toLowerCase(),
+      geneId: ``,
+      selectedPlotOption: Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
+      selectedPlotOptionLabel: Object.keys(plotTypeDropdown[0].plotOptions[0])[0] + `: ` +
+        Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
+      selectedColourBy: this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      highlightClusters: [],
+      experimentAccession: this.props.experimentAccession,
+      selectedColourByCategory: `clusters`
+    }
   }
 
   render() {
     const { location, match, history } = this.props
     const { atlasUrl, suggesterEndpoint } = this.props
-    const { species, experimentAccession, ks, ksWithMarkerGenes, perplexities, metadata, anatomogram } = this.props
+    const { species, experimentAccession, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
-    const initialCellTypeValues = [`inferred_cell_type_-_authors_labels`, `inferred_cell_type_-_ontology_labels`]
-    const cellType = _.first(_.intersection(_.map(metadata, `value`), initialCellTypeValues))
+
+      const plotTypeDropdown =  [
+        {
+          plotType: `UMAP`,
+          plotOptions: plotTypesAndOptions.umap
+        },
+        {
+          plotType: `tSNE`,
+          plotOptions: plotTypesAndOptions.tsne
+        }
+      ]
+
+    let preferredPlotOptionsIndex = Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)
 
     let organWithMostOntologies = Object.keys(anatomogram)[0]
     for (let availableOrgan in anatomogram) {
@@ -58,13 +93,13 @@ class TSnePlotViewRoute extends React.Component {
           expressionPlotClassName={`small-12 large-6 columns`}
           speciesName={species}
           experimentAccession={experimentAccession}
+          selectedPlotOption={search.plotOption || this.state.selectedPlotOption}
+          selectedPlotType={search.plotType || this.state.selectedPlotType}
           ks={ks}
-          metadata={metadata}
-          selectedColourBy={search.k || search.metadata || cellType || preferredK}
-          selectedColourByCategory={search.colourBy || (cellType && `metadata`) || `clusters`} // Is the plot coloured by clusters or metadata
+          metadata={metadata.map(data => {return {value: data.value.replaceAll(`_`, ` `), label: data.label}})}
+          selectedColourBy={search.colourBy || this.state.selectedColourBy }
+          selectedColourByCategory={this.state.selectedColourByCategory} // Is the plot coloured by clusters or metadata
           highlightClusters={search.clusterId ? JSON.parse(search.clusterId) : []}
-          perplexities={perplexitiesOrdered}
-          selectedPerplexity={Number(search.perplexity) || perplexitiesOrdered[Math.round((perplexitiesOrdered.length - 1) / 2)]}
           geneId={search.geneId || ``}
           height={800}
           onSelectGeneId={
@@ -75,28 +110,59 @@ class TSnePlotViewRoute extends React.Component {
               updateUrlWithParams(query)
             }
           }
-          onChangePerplexity={
-            (perplexity) => {
+          plotTypeDropdown={plotTypeDropdown}
+          selectedPlotOptionLabel={search.plotOption ?
+                    search.plotType ?
+                    Object.keys(_find(plotTypeDropdown,
+                     (plot) => plot.plotType.toLowerCase() === search.plotType).plotOptions[0])[0] + `: ` + search.plotOption
+                     :
+                     Object.keys(_find(plotTypeDropdown,
+                                      (plot) => plot.plotType.toLowerCase() === this.state.selectedPlotType).plotOptions[0])[0] + `: ` + search.plotOption
+                     :
+                 this.state.selectedPlotOptionLabel}
+           onChangePlotTypes={
+              (plotType) => {
+                this.setState({
+                  selectedPlotType: plotType,
+                  selectedPlotOption: Object.values(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === plotType).plotOptions[preferredPlotOptionsIndex])[0],
+                  selectedPlotOptionLabel: Object.keys(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === plotType).plotOptions[0])[0] + `: ` +
+                      Object.values(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === plotType).plotOptions[preferredPlotOptionsIndex])[0]
+                })
               const query = new URLSearchParams(history.location.search)
-              query.set(`perplexity`, perplexity)
-              updateUrlWithParams(query)
-            }
-          }
-          onChangeColourBy={
-            (colourByCategory, colourByValue) => {
-              const query = new URLSearchParams(history.location.search)
-              query.set(`colourBy`, colourByCategory)
-              if(colourByCategory === `clusters`) {
-                query.set(`k`, colourByValue)
-                query.set(`markerGeneK`, colourByValue)
-                query.delete(`metadata`)
-              }
-              else if(colourByCategory === `metadata`) {
-                query.set(`metadata`, colourByValue)
-                query.delete(`k`)
-              }
+              query.set(`plotType`, plotType)
+              query.set(`plotOption`,
+                Object.values(_find(plotTypeDropdown,
+                                      (plot) => plot.plotType.toLowerCase() === plotType).plotOptions[preferredPlotOptionsIndex])[0])
               resetHighlightClusters(query)
               updateUrlWithParams(query)
+              }
+          }
+          onChangePlotOptions={
+            (plotOption) => {
+              this.setState({
+                selectedPlotOption: plotOption.value,
+                selectedPlotOptionLabel: plotOption.label
+              })
+              const query = new URLSearchParams(history.location.search)
+              query.set(`plotOption`, plotOption.value)
+              resetHighlightClusters(query)
+              updateUrlWithParams(query)
+              }
+          }
+
+          onChangeColourBy={
+            (colourByCategory, colourByValue) => {
+              this.setState({
+                selectedColourBy : colourByValue,
+                selectedColourByCategory : colourByCategory
+              })
+            const query = new URLSearchParams(history.location.search)
+            query.set(`colourBy`, colourByValue)
+            resetHighlightClusters(query)
+            updateUrlWithParams(query)
             }
           }
         />
@@ -162,9 +228,6 @@ class TSnePlotViewRoute extends React.Component {
         query.delete(`clusterId`)
       }
     }
-
-    // Sort perplexities in ascending order
-    const perplexitiesOrdered = perplexities.sort((a, b) => a - b)
 
     const preferredK = this.props.selectedK ? this.props.selectedK.toString() : this.props.ks[0].toString()
 
@@ -238,7 +301,6 @@ TSnePlotViewRoute.propTypes = {
   experimentAccession: PropTypes.string.isRequired,
   ks: PropTypes.arrayOf(PropTypes.number).isRequired,
   ksWithMarkerGenes: PropTypes.arrayOf(PropTypes.number).isRequired,
-  perplexities: PropTypes.arrayOf(PropTypes.number).isRequired,
   suggesterEndpoint: PropTypes.string.isRequired,
   species: PropTypes.string.isRequired,
   metadata: PropTypes.arrayOf(PropTypes.shape({

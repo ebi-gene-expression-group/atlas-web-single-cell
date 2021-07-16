@@ -49,14 +49,15 @@ class TSnePlotServiceTest {
     void testFetchPlotWithClusters() {
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
         var perplexities = new int[]{1, 5, 10, 15, 20};
-        var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
+        var plotOption = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
         var k = ThreadLocalRandom.current().nextInt(5, 20);
+        var plotType = "tsne";
 
         var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithClusters(NUMBER_OF_CELLS, k);
-        when(tSnePlotDaoMock.fetchTSnePlotWithClusters(experimentAccession, perplexity, k))
+        when(tSnePlotDaoMock.fetchTSnePlotWithClusters(experimentAccession, plotType, plotOption, String.valueOf(k)))
                 .thenReturn(ImmutableList.copyOf(randomPointDtos));
 
-        var results = subject.fetchTSnePlotWithClusters(experimentAccession, perplexity, k);
+        var results = subject.fetchTSnePlotWithClusters(experimentAccession, plotType, plotOption, String.valueOf(k));
         for(TSnePoint.Dto tSnePointDto : randomPointDtos) {
             assertThat(results.get(tSnePointDto.clusterId()))
                     .contains(TSnePoint.create(MathUtils.round(tSnePointDto.x(), 2),
@@ -64,12 +65,11 @@ class TSnePlotServiceTest {
                             tSnePointDto.name()));
         }
 
-        assertThat(results)
-                .containsOnlyKeys(
+        assertThat(results).containsOnlyKeys(
                         randomPointDtos.stream()
                                 .collect(groupingBy(TSnePoint.Dto::clusterId))
                                 .keySet()
-                                .toArray(new Integer[0]));
+                                .toArray(new String[0]));
 
         assertThat(results.values().stream().flatMap(Set::stream).collect(toSet()))
                 .containsExactlyInAnyOrder(
@@ -135,14 +135,15 @@ class TSnePlotServiceTest {
     void testFetchPlotWithExpressionLevels() {
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
         var perplexities = new int[]{1, 5, 10, 15, 20};
-        var perplexity = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
+        var plotOption = perplexities[ThreadLocalRandom.current().nextInt(0, perplexities.length)];
         var geneId = RandomDataTestUtils.generateRandomEnsemblGeneId();
+        var plotType = "tsne";
 
         var randomPointDtos = RandomDataTestUtils.generateRandomTSnePointDtosWithExpression(NUMBER_OF_CELLS);
-        when(tSnePlotDaoMock.fetchTSnePlotWithExpression(experimentAccession, perplexity, geneId))
+        when(tSnePlotDaoMock.fetchTSnePlotWithExpression(experimentAccession, plotType, plotOption, geneId))
                 .thenReturn(ImmutableList.copyOf(randomPointDtos));
 
-        var results = subject.fetchTSnePlotWithExpression(experimentAccession, perplexity, geneId);
+        var results = subject.fetchTSnePlotWithExpression(experimentAccession, plotType, plotOption, geneId);
         assertThat(results)
                 .containsExactlyInAnyOrder(
                         randomPointDtos.stream()

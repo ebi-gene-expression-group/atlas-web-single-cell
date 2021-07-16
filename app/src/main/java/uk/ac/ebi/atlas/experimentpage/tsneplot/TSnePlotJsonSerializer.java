@@ -27,20 +27,20 @@ public class TSnePlotJsonSerializer {
         this.tSnePlotService = tSnePlotService;
     }
 
-    @Cacheable(cacheNames = "jsonTSnePlotWithClusters", key = "{#experimentAccession, #perplexity, #k}")
-    public String tSnePlotWithClusters(String experimentAccession, int perplexity, int k, String accessKey) {
+    @Cacheable(cacheNames = "jsonTSnePlotWithClusters", key = "{#experimentAccession, #method, #parameter, #variable}")
+    public String tSnePlotWithClusters(String experimentAccession, String method, int parameter, String variable, String variableType, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         return GSON.toJson(
                 ImmutableMap.of(
                         "series",
                         modelForHighcharts(
-                                "Cluster ",
-                                tSnePlotService.fetchTSnePlotWithClusters(experiment.getAccession(), perplexity, k))));
+                                variableType.equals("metadata") ? "" : "Cluster ",
+                                tSnePlotService.fetchTSnePlotWithClusters(experiment.getAccession(), method, parameter, variable))));
     }
 
-    @Cacheable(cacheNames = "jsonTSnePlotWithMetadata", key = "{#experimentAccession, #perplexity, #metadata}")
-    public String tSnePlotWithMetadata(String experimentAccession, int perplexity, String metadata, String accessKey) {
+    @Cacheable(cacheNames = "jsonTSnePlotWithMetadata", key = "{#experimentAccession, #parameter, #metadata}")
+    public String tSnePlotWithMetadata(String experimentAccession, int parameter, String metadata, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         return GSON.toJson(
@@ -50,18 +50,18 @@ public class TSnePlotJsonSerializer {
                                 "",
                                 new TreeMap<>(
                                         tSnePlotService.fetchTSnePlotWithMetadata(
-                                                experiment.getAccession(), perplexity, metadata)))));
+                                                experiment.getAccession(), parameter, metadata)))));
     }
 
-    public String tSnePlotWithExpression(String experimentAccession, int perplexity, String accessKey) {
-        return tSnePlotWithExpression(experimentAccession, perplexity, "", accessKey);
+    public String tSnePlotWithExpression(String experimentAccession, String plotType, int plotOption, String accessKey) {
+        return tSnePlotWithExpression(experimentAccession, plotType, plotOption, "", accessKey);
     }
 
-    public String tSnePlotWithExpression(String experimentAccession, int perplexity, String geneId, String accessKey) {
+    public String tSnePlotWithExpression(String experimentAccession, String plotType, int plotOption, String geneId, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         var pointsWithExpression =
-                tSnePlotService.fetchTSnePlotWithExpression(experiment.getAccession(), perplexity, geneId);
+                tSnePlotService.fetchTSnePlotWithExpression(experiment.getAccession(), plotType, plotOption, geneId);
 
         var max = pointsWithExpression.stream()
                 .map(TSnePoint::expressionLevel)

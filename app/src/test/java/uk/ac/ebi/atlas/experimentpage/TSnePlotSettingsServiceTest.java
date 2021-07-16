@@ -1,5 +1,8 @@
 package uk.ac.ebi.atlas.experimentpage;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,15 +11,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
-import uk.ac.ebi.atlas.testutils.MockDataFileHub;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.testutils.MockDataFileHub;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import com.google.common.collect.ImmutableSet;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -207,5 +212,31 @@ class TSnePlotSettingsServiceTest {
         when(tSnePlotDaoMock.fetchPerplexities(EXPERIMENT_ACCESSION)).thenReturn(Collections.emptyList());
 
         assertThat(subject.getAvailablePerplexities(EXPERIMENT_ACCESSION)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Get PlotTypes and Options for the valid experiment accession")
+    void validAccessionPlotTypesAndPlotOptions() {
+        var tsne = getTsneTestData();
+        when(tSnePlotDaoMock.fetchTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION))
+                .thenReturn(Map.of("tsne", tsne));
+        assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isNotEmpty();
+    }
+
+    private List<JsonObject> getTsneTestData() {
+        List<JsonObject> tsne = new ArrayList<>();
+        String[] tsneArray = {"{\"perplexity\": 40}", "{\"perplexity\": 25}", "{\"perplexity\": 45}", "{\"perplexity" +
+                "\": 1}", "{\"perplexity\": 30}", "{\"perplexity\": 10}", "{\"perplexity\": 15}"};
+
+        Arrays.asList(tsneArray).forEach(tsneData -> tsne.add(new Gson().fromJson(tsneData, JsonObject.class)));
+        return tsne;
+    }
+
+    @Test
+    @DisplayName("Get PlotTypes and Options for the invalid experiment accession")
+    void invalidAccessionPlotTypesAndOptions() {
+        when(tSnePlotDaoMock.fetchTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION)).thenReturn(Collections.EMPTY_MAP);
+
+        assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isEmpty();
     }
 }

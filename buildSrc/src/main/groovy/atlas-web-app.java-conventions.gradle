@@ -11,14 +11,15 @@ targetCompatibility = 11
 
 repositories {
   mavenCentral()
-  // For patched version of SolrJ (see dependencies below) and ae-efo-loader
-  // Ideally mavenLocal() would be the last repo to have as fallback, but we won’t have access to our Artifactory
-  // unless we’re on the VPN, in which case the build fails
-  mavenLocal()
   maven {
     url "http://193.62.54.19:30007/artifactory/maven-local/"
     allowInsecureProtocol true
   }
+  // For patched version of SolrJ (see dependencies below) and ae-efo-loader
+  // Ideally mavenLocal() would be the last repo to have as fallback, but we won’t have access to our Artifactory
+  // unless we’re on the VPN, in which case the build fails
+  mavenLocal()
+//  }
 }
 
 dependencies {

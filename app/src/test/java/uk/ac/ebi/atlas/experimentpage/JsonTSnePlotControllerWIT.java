@@ -54,7 +54,7 @@ class JsonTSnePlotControllerWIT {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_coords-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
@@ -70,7 +70,7 @@ class JsonTSnePlotControllerWIT {
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
                 new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
@@ -145,7 +145,7 @@ class JsonTSnePlotControllerWIT {
         this.mockMvc
                 .perform(get(
                         "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
-                        "/clusters/k/" + k))
+                        "/clusters/variable/" + k))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 // With full experiments this test could be even better:
@@ -163,7 +163,7 @@ class JsonTSnePlotControllerWIT {
         this.mockMvc
                 .perform(get(
                         "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
-                        "/clusters/k/9000"))
+                        "/clusters/variable/9000"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.series", hasSize(1)));

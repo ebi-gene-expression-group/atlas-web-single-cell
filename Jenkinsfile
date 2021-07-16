@@ -1,8 +1,6 @@
 pipeline {
   agent {
-    docker {
-      image 'gradle:7.0.0-jdk11'
-    }
+    label 'k8s-gradle'
   }
 
   stages {

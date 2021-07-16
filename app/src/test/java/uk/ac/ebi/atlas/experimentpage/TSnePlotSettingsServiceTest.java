@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.testutils.MockDataFileHub;
 
 import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -215,15 +217,19 @@ class TSnePlotSettingsServiceTest {
     @Test
     @DisplayName("Get PlotTypes and Options for the valid experiment accession")
     void validAccessionPlotTypesAndPlotOptions() {
-
-        Array<JsonObject> hello = new Array("{ "perplexity": 40 }", "{ "perplexity": 25 }", "{ "perplexity": 45 }","{ "perplexity": 1 }",{ "perplexity": 30 },
-        {"perplexity": 10 },{ "perplexity": 15 },{ "perplexity": 50 },{ "perplexity": 35 },{ "perplexity": 20 },{ "perplexity": 5 })
-
+        var tsne = getTsneTestData();
         when(tSnePlotDaoMock.fetchTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION))
-                .thenReturn(Map.of("tsne",
-                        Arrays.asList({"perplexity\": 1}, {\"perplexity\": 5}, {\"perplexity\": 10}))
-
+                .thenReturn(Map.of("tsne", tsne));
         assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isNotEmpty();
+    }
+
+    private List<JsonObject> getTsneTestData() {
+        List<JsonObject> tsne = new ArrayList<>();
+        String[] tsneArray = {"{\"perplexity\": 40}", "{\"perplexity\": 25}", "{\"perplexity\": 45}", "{\"perplexity" +
+                "\": 1}", "{\"perplexity\": 30}", "{\"perplexity\": 10}", "{\"perplexity\": 15}"};
+
+        Arrays.asList(tsneArray).forEach(tsneData -> tsne.add(new Gson().fromJson(tsneData, JsonObject.class)));
+        return tsne;
     }
 
     @Test

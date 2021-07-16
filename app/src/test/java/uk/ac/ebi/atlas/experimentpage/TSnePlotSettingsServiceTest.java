@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +15,11 @@ import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.testutils.MockDataFileHub;
 
+import java.sql.Array;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -209,17 +212,19 @@ class TSnePlotSettingsServiceTest {
         assertThat(subject.getAvailablePerplexities(EXPERIMENT_ACCESSION)).isEmpty();
     }
 
-//    @Test
-//    @DisplayName("Get PlotTypes and Options for the valid experiment accession")
-//    void validAccessionPlotTypesAndPlotOptions() {
-//        when(tSnePlotDaoMock.fetchTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION)).thenReturn(Map.of("tsne",
-//                Arrays.asList({"perplexity\": 1}, {\"perplexity\": 5}, {\"perplexity\": 10}) +
-//                        "umap",
-//                Arrays.asList({\"n_neighbors\": 25}, {\"n_neighbors\": 30}, {\"n_neighbors\": 50}) +
-//                                ");
-//
-//        assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isNotEmpty();
-//    }
+    @Test
+    @DisplayName("Get PlotTypes and Options for the valid experiment accession")
+    void validAccessionPlotTypesAndPlotOptions() {
+
+        Array<JsonObject> hello = new Array("{ "perplexity": 40 }", "{ "perplexity": 25 }", "{ "perplexity": 45 }","{ "perplexity": 1 }",{ "perplexity": 30 },
+        {"perplexity": 10 },{ "perplexity": 15 },{ "perplexity": 50 },{ "perplexity": 35 },{ "perplexity": 20 },{ "perplexity": 5 })
+
+        when(tSnePlotDaoMock.fetchTSnePlotTypesAndOptions(EXPERIMENT_ACCESSION))
+                .thenReturn(Map.of("tsne",
+                        Arrays.asList({"perplexity\": 1}, {\"perplexity\": 5}, {\"perplexity\": 10}))
+
+        assertThat(subject.getAvailablePlotTypesAndPlotOptions(EXPERIMENT_ACCESSION)).isNotEmpty();
+    }
 
     @Test
     @DisplayName("Get PlotTypes and Options for the invalid experiment accession")

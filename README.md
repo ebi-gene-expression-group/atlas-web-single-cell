@@ -47,14 +47,13 @@ Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres contai
 
 In the `atlas-web-single-cell/docker` directory run the following:
 ```bash
-ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \ 
 POSTGRES_HOST=scxa-postgres \
-POSTGRES_DB=gxpscxadev \
-POSTGRES_USER=atlasprd3 \
-POSTGRES_PASSWORD=atlasprd3 \
-docker-compose up
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+docker-compose -f docker-compose-solrcloud.yml -f docker-compose-postgres.yml -f docker-compose-tomcat.yml up
 ```
-Note: Update DB details like POSTGRES_DB, POSTGRES_USER, and POSTGRES_PASSWORD if you want to use different details, and you need to change DB details here as well `profile-docker. gradle` file if you go with different DB details.
 
 You can also set a Docker Compose *Run* configuration in IntelliJ IDEA with the environment variables from the command
 above if you find that more convenient.
@@ -101,7 +100,7 @@ Go to you're Solr admin page 'http://localhost:8983/solr'
 2. Alias Name: bioentities
    Collection: bioentities-v1
 
-3. Alias Name: Scxa-gene2experiment
+3. Alias Name: scxa-gene2experiment
    Collection: scxa-gene2experiment-v1
 
 ### Tomcat
@@ -140,10 +139,10 @@ If you get any `war` redeploy issues or want to start again freshly, stop all th
 ```bash
 ATLAS_DATA_PATH=/path/to/sc/atlas/data \
 POSTGRES_HOST=scxa-postgres \
-POSTGRES_DB=gxpscxadev \
-POSTGRES_USER=atlasprd3 \
-POSTGRES_PASSWORD=atlasprd3 \
-docker-compose down
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+docker-compose -f docker-compose-solrcloud.yml -f docker-compose-postgres.yml -f docker-compose-tomcat.yml down
 ```
 If you get any `java.net.UnknownHostException: Invalid hostname for server: local` exceptions while running application.
 Go to `profile-docker. gradle` file and check these attribute values `ext.zkHost` & `ext.solrHost` and compare with running container names.
@@ -188,6 +187,42 @@ Remember to update the file and any new experiments added to the `filesystem` di
 rsync -ravz $ATLAS_DATA_PATH/* ebi-cli:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/
 ```
 
+## Running tests
+If you are already running the scxa application using docker-compose, if you invoke the docker-compose-gradle.yml file,
+it uses already running Solr and Zookeeper containers to run tests.
+
+#### Note: A few tests depends on suggesters. So don't forget to build suggestions in your local machine.
+
+In the `atlas-web-single-cell/docker` directory run the following:
+
+```bash
+ATLAS_DATA_PATH=/path/to/sc/atlas/data  \
+POSTGRES_HOST=scxa-postgres \
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+GRADLE_HOST=scxa-gradle \
+PWD=/path/to/sc/project \
+docker-compose -f docker-compose-solrcloud.yml -f docker-compose-postgres-test.yml -f docker-compose-gradle.yml up
+```
+> Please check the logs in the `scxa-gradle` container how it is going on.
+> It would spin up solr and zookeeper containers first if they are not running already.
+> It will create `scxa-gradle` container and mount volumes
+> in that container, it executes all `./gradlew` commands for unit,integrations and web integration(e2e) tests.
+> Finally if everything went well you should see all tests ./gradlew builds successful!
+
+Once you finish test cases, to remove containers along with scxa network. Please run following:
+
+```bash
+ATLAS_DATA_PATH=/path/to/sc/atlas/data  \
+POSTGRES_HOST=scxa-postgres \
+POSTGRES_DB=gxpatlasloc \
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev \
+docker-compose -f docker-compose-solrcloud.yml -f docker-compose-postgres.yml -f docker-compose-gradle.yml down
+```
+
+
 ## Troubleshooting
 
 ### The script that backs up Solr snapshot hangs
@@ -206,15 +241,13 @@ Read the important message after you run `scxa-solrlcoud-bootstrap`:
 > takes a few extra minutes: the exception is thrown before the process has completed.
 > The best option is to manually build and supervise this step.
 >
-> Run the following command (don’t worry if the request returns a 500 error after a while):
+> Run the following commands(don’t worry if the request returns a 500 error after a while):
 > 
-> `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=propertySuggesterNoHighlight'`
+> `docker exec -i scxa-solrcloud-1 curl 'http://localhost:8983/solr/bioentities-v1/suggest?suggest.build=true&suggest.dictionary=bioentitySuggester&suggest.dictionary=propertySuggesterNoHighlight'`
 >
 > While the command above is running, monitor the size of the suggester directory size:
 > 
 > `docker exec -it scxa-solrcloud-1 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
 > `docker exec -it scxa-solrcloud-2 bash -c 'watch du -sc server/solr/bioentities-v1*/data/*'`
 >
-> The suggester in all shards will be built when the propertySuggester directory size stabilises. 
-> Run the above procedure for `bioentitySuggester` as well.
- 
+> Both suggesters in every shard will be built when the suggester directory size stabilises.

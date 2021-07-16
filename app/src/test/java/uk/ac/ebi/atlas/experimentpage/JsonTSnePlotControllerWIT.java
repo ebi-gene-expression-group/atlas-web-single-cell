@@ -145,7 +145,7 @@ class JsonTSnePlotControllerWIT {
         this.mockMvc
                 .perform(get(
                         "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
-                        "/clusters/k/" + k))
+                        "/clusters/variable/" + k))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 // With full experiments this test could be even better:
@@ -163,7 +163,7 @@ class JsonTSnePlotControllerWIT {
         this.mockMvc
                 .perform(get(
                         "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
-                        "/clusters/k/9000"))
+                        "/clusters/variable/9000"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.series", hasSize(1)));

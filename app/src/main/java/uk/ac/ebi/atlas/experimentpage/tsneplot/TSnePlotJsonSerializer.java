@@ -28,14 +28,14 @@ public class TSnePlotJsonSerializer {
     }
 
     @Cacheable(cacheNames = "jsonTSnePlotWithClusters", key = "{#experimentAccession, #method, #parameter, #variable}")
-    public String tSnePlotWithClusters(String experimentAccession,String method, int parameter, String variable, String accessKey) {
+    public String tSnePlotWithClusters(String experimentAccession, String method, int parameter, String variable, String variableType, String accessKey) {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         return GSON.toJson(
                 ImmutableMap.of(
                         "series",
                         modelForHighcharts(
-                                "Cluster ",
+                                variableType.equals("metadata") ? "" : "Cluster ",
                                 tSnePlotService.fetchTSnePlotWithClusters(experiment.getAccession(), method, parameter, variable))));
     }
 

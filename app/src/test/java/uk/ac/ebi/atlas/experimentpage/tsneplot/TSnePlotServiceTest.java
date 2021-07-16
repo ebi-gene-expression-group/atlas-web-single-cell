@@ -65,12 +65,11 @@ class TSnePlotServiceTest {
                             tSnePointDto.name()));
         }
 
-        assertThat(results)
-                .containsOnlyKeys(
-                        String.valueOf(randomPointDtos.stream()
+        assertThat(results).containsOnlyKeys(
+                        randomPointDtos.stream()
                                 .collect(groupingBy(TSnePoint.Dto::clusterId))
                                 .keySet()
-                                .toArray(new Integer[0])));
+                                .toArray(new String[0]));
 
         assertThat(results.values().stream().flatMap(Set::stream).collect(toSet()))
                 .containsExactlyInAnyOrder(

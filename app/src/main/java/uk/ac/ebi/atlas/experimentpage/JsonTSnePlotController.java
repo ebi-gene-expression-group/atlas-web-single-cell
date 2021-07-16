@@ -23,7 +23,7 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
     public String tSnePlotWithClusters(@PathVariable String experimentAccession,
                                        @PathVariable int parameter,
                                        @PathVariable String variable,
-                                       @RequestParam(defaultValue = "tsne") String method,
+                                       @RequestParam(defaultValue = "umap") String method,
                                        @RequestParam(defaultValue = "metadata") String variableType,
                                        @RequestParam(defaultValue = "") String accessKey) {
         return tSnePlotJsonSerializer.tSnePlotWithClusters(experimentAccession, method, parameter, variable, variableType, accessKey);
@@ -33,9 +33,9 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
                                          @PathVariable int plotOption,
-                                         @RequestParam(defaultValue = "tsne") String plotType,
+                                         @RequestParam(defaultValue = "umap") String method,
                                          @RequestParam(defaultValue = "") String accessKey) {
-        return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, plotType, plotOption, accessKey);
+        return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, method, plotOption, accessKey);
     }
 
     @RequestMapping(value = "/json/experiments/{experimentAccession}/tsneplot/{perplexity}/metadata/{metadata}",
@@ -52,7 +52,7 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
                                          @PathVariable int parameter,
                                          @PathVariable String geneId,
-                                         @RequestParam(defaultValue = "tsne") String method,
+                                         @RequestParam(defaultValue = "umap") String method,
                                          @RequestParam(defaultValue = "") String accessKey) {
         return tSnePlotJsonSerializer.tSnePlotWithExpression(experimentAccession, method, parameter, geneId, accessKey);
     }

@@ -22,7 +22,7 @@ services:
         ./gradlew \
           -PdataFilesLocation=/root/scxa/integration-test-data \
           -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa \
-          -PjdbcUrl=jdbc:postgresql://localhost:5432/$POSTGRES_DB \
+          -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB \
           -PjdbcUsername=$POSTGRES_USER \
           -PjdbcPassword=$POSTGRES_PASSWORD \
           -PzkHost=scxa-zk-1 \

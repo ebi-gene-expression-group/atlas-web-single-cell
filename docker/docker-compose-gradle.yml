@@ -1,0 +1,37 @@
+version: "3.6"
+
+services:
+  scxa-gradle:
+    image: openjdk:11
+    container_name: scxa-gradle
+    networks:
+      - scxa
+    working_dir: /root/project
+    volumes:
+      - ..:/root/project
+      - ./packages:/root/.m2
+      - $ATLAS_DATA_PATH:/root/scxa/integration-test-data
+    depends_on:
+      - scxa-solrcloud-1
+      - scxa-solrcloud-2
+      - scxa-postgres
+    command:
+      - /bin/bash
+      - -c
+      - >
+        ./gradlew \
+          -PdataFilesLocation=/root/scxa/integration-test-data \
+          -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa \
+          -PjdbcUrl=jdbc:postgresql://localhost:5432/$POSTGRES_DB \
+          -PjdbcUsername=$POSTGRES_USER \
+          -PjdbcPassword=$POSTGRES_PASSWORD \
+          -PzkHost=scxa-zk-1 \
+          -PsolrHost=scxa-solrcloud-1 \
+          :app:clean :app:testClasses && \
+        ./gradlew :app:test --tests *Test && \
+        ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT && \
+        ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT
+
+networks:
+  scxa:
+    name: scxa

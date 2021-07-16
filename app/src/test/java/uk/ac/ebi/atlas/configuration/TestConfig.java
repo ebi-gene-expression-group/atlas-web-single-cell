@@ -5,13 +5,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.species.SpeciesFinder;
 import uk.ac.ebi.atlas.utils.BioentityIdentifiersReader;
 
-import javax.servlet.ServletContext;
 import java.util.HashSet;
 
 @Configuration
@@ -20,10 +18,8 @@ import java.util.HashSet;
 // complain if you want to inject classes such as ScxaExperimentTrader, since a proxy will be injected instead! As an
 // exercise, remove CacheConfig.class and run tests in ScxaExperimentTraderIT.
 @ComponentScan(basePackages = "uk.ac.ebi.atlas",
-               includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
-                                        value = TestJdbcConfig.class),
                excludeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE,
-                                        value = {JdbcConfig.class, AppConfig.class, CacheConfig.class}))
+                                        value = {AppConfig.class, CacheConfig.class}))
 public class TestConfig {
     @Bean
     public RestTemplate restTemplate() {
@@ -49,9 +45,4 @@ public class TestConfig {
     public SpeciesFinder speciesFinder() {
         return new SpeciesFinder() {};
     }
-
-//    @Bean
-//    public ServletContext servletContext() {
-//        return new MockServletContext();
-//    }
 }

@@ -1,0 +1,31 @@
+version: "3.6"
+
+services:
+  scxa-tomcat:
+    image: tomcat:9-jdk11
+    container_name: scxa-tomcat
+    networks:
+      - scxa
+    environment:
+      JPDA_ADDRESS: "*:8000"
+    ports:
+      - "8080:8080"
+      - "8000:8000"
+    volumes:
+      - ../webapps:/usr/local/tomcat/webapps
+      - ./atlas-properties:/atlas-properties
+      - $ATLAS_DATA_PATH/filesystem:/atlas-data
+      - scxa-tomcat-conf:/usr/local/tomcat/conf
+    depends_on:
+      - scxa-postgres
+      - scxa-solrcloud-1
+      - scxa-solrcloud-2
+    command: ["catalina.sh", "jpda", "run"]
+
+volumes:
+  scxa-tomcat-conf:
+    name: scxa-tomcat-conf
+
+networks:
+  scxa:
+    name: scxa

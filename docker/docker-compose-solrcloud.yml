@@ -1,7 +1,6 @@
 version: "3.6"
 
 services:
-  #### SolrCloud
   scxa-zk-1:
     image: zookeeper:3.4.14
     container_name: scxa-zk-1
@@ -85,57 +84,6 @@ services:
       - scxa-zk-2
       - scxa-zk-3
 
-  #### PostgreSQL database
-  scxa-postgres:
-    image: postgres:10-alpine
-    container_name: $POSTGRES_HOST
-    networks:
-      - scxa
-    restart: always
-    command: -c max_wal_size=2GB
-    environment:
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_DB: $POSTGRES_DB
-    ports:
-      - "5432:5432"
-    volumes:
-      - scxa-pgdata:/var/lib/postgresql/data
-      - $ATLAS_DATA_PATH/postgresql:/var/backups/postgresql
-
-  scxa-flyway:
-    image: flyway/flyway
-    container_name: scxa-flyway
-    networks:
-      - scxa
-    command: -url=jdbc:postgresql://$POSTGRES_HOST/$POSTGRES_DB -schemas=$POSTGRES_USER -user=$POSTGRES_USER -password=$POSTGRES_PASSWORD -connectRetries=60 migrate
-    volumes:
-      - ../schemas/flyway/scxa/:/flyway/sql
-    depends_on:
-      - scxa-postgres
-
-  #### Web server and filesystem
-  scxa-tomcat:
-    image: tomcat:9-jdk11
-    container_name: scxa-tomcat
-    networks:
-      - scxa
-    environment:
-      JPDA_ADDRESS: "*:8000"
-    ports:
-      - "8080:8080"
-      - "8000:8000"
-    volumes:
-      - ../webapps:/usr/local/tomcat/webapps
-      - ./atlas-properties:/atlas-properties
-      - $ATLAS_DATA_PATH/filesystem:/atlas-data
-      - scxa-tomcat-conf:/usr/local/tomcat/conf
-    depends_on:
-      - scxa-postgres
-      - scxa-solrcloud-1
-      - scxa-solrcloud-2
-    command: ["catalina.sh", "jpda", "run"]
-
 volumes:
   scxa-zk-1-data:
     name: scxa-zk-1-data
@@ -153,10 +101,6 @@ volumes:
     name: scxa-solrcloud-1-data
   scxa-solrcloud-2-data:
     name: scxa-solrcloud-2-data
-  scxa-pgdata:
-    name: scxa-pgdata
-  scxa-tomcat-conf:
-    name: scxa-tomcat-conf
 
 networks:
   scxa:

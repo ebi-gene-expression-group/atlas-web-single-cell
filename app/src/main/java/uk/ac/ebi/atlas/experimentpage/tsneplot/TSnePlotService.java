@@ -29,9 +29,10 @@ public class TSnePlotService {
     }
 
     public ImmutableSet<TSnePoint> fetchTSnePlotWithExpression(String experimentAccession,
-                                                               int perplexity,
+                                                               String plotType,
+                                                               int plotOption,
                                                                String geneId) {
-        return tSnePlotDao.fetchTSnePlotWithExpression(experimentAccession, perplexity, geneId).stream()
+        return tSnePlotDao.fetchTSnePlotWithExpression(experimentAccession, plotType, plotOption, geneId).stream()
                 .map(
                         pointDto ->
                                 TSnePoint.create(
@@ -42,10 +43,11 @@ public class TSnePlotService {
                 .collect(toImmutableSet());
     }
 
-    public ImmutableMap<Integer, ImmutableSet<TSnePoint>> fetchTSnePlotWithClusters(String experimentAccession,
-                                                                                    int perplexity,
-                                                                                    int k) {
-        var points = tSnePlotDao.fetchTSnePlotWithClusters(experimentAccession, perplexity, k);
+    public ImmutableMap<String, ImmutableSet<TSnePoint>> fetchTSnePlotWithClusters(String experimentAccession,
+                                                                                   String plotType,
+                                                                                   int plotOption,
+                                                                                   String variable) {
+        var points = tSnePlotDao.fetchTSnePlotWithClusters(experimentAccession, plotType, plotOption, variable);
 
         return points.stream()
                 .collect(groupingBy(TSnePoint.Dto::clusterId))
@@ -62,14 +64,13 @@ public class TSnePlotService {
                                 .collect(toImmutableSet())));
     }
 
-
     public ImmutableMap<String, ImmutableSet<TSnePoint>> fetchTSnePlotWithMetadata(String experimentAccession,
-                                                                                   int perplexity,
+                                                                                   int parameter,
                                                                                    String metadataCategory) {
         var metadataValuesForCells = cellMetadataDao.getMetadataValues(experimentAccession, metadataCategory);
 
         return ImmutableMap.copyOf(
-                tSnePlotDao.fetchTSnePlotForPerplexity(experimentAccession, perplexity).stream()
+                tSnePlotDao.fetchTSnePlotForPerplexity(experimentAccession, parameter).stream()
                         .map(
                                 pointDto ->
                                         TSnePoint.create(

@@ -54,7 +54,7 @@ class JsonTSnePlotControllerWIT {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_coords-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
@@ -70,7 +70,7 @@ class JsonTSnePlotControllerWIT {
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
                 new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }

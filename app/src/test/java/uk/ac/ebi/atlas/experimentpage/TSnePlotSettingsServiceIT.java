@@ -65,7 +65,9 @@ class TSnePlotSettingsServiceIT {
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
+                new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
+                new ClassPathResource("fixtures/scxa_coords-fixture.sql"));
         populator.execute(dataSource);
     }
 
@@ -76,7 +78,9 @@ class TSnePlotSettingsServiceIT {
                 new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_tsne-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -126,6 +130,19 @@ class TSnePlotSettingsServiceIT {
 
         assertThat(fileDescriptorsOpenAfter)
                 .isEqualTo(fileDescriptorsOpenBefore);
+    }
+
+    @ParameterizedTest
+    @MethodSource("randomSingleCellExperimentAccessionProvider")
+    void getTSnePlotTypesAndOptionsForValidAccession(String experimentAccession) {
+        var tsnePlotTypesAndOptions = subject.getAvailablePlotTypesAndPlotOptions(experimentAccession);
+        assertThat(tsnePlotTypesAndOptions.get("umap")).isNotEmpty().doesNotHaveDuplicates();
+        assertThat(tsnePlotTypesAndOptions.get("tsne")).isNotEmpty().doesNotHaveDuplicates();
+    }
+
+    @Test
+    void getEmptyTSnePlotTypesAndOptionsForInvalidAccession() {
+        assertThat(subject.getAvailablePlotTypesAndPlotOptions("Foo")).isEmpty();
     }
 
     // https://stackoverflow.com/questions/16360720/how-to-find-out-number-of-files-currently-open-by-java-application

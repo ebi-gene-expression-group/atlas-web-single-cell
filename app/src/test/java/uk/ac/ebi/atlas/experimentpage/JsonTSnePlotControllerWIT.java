@@ -22,7 +22,7 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -51,7 +51,7 @@ class JsonTSnePlotControllerWIT {
 
     @BeforeAll
     void populateDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_coords-fixture.sql"),
@@ -64,7 +64,7 @@ class JsonTSnePlotControllerWIT {
 
     @AfterAll
     void cleanDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
@@ -82,12 +82,12 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForExpressedGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        String geneId = jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(experimentAccession);
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var geneId = jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(experimentAccession);
         // If our fixtures contained full experiments we could use any random perplexity with
         // fetchRandomPerplexityFromExperimentTSne(experimentAccession), but since we have a subset of all the rows, we
         // need to restrict this value to the perplexities actually available for the particular gene we choose.
-        int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession, geneId);
+        var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession, geneId);
 
         this.mockMvc
                 .perform(get(
@@ -105,8 +105,8 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForInvalidGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc
                 .perform(get(
@@ -122,8 +122,8 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void noExpressionForEmptyGeneId() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc
                 .perform(get("/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity + "/expression/"))
@@ -138,9 +138,9 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForValidK() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        int k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
-        int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
+        var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc
                 .perform(get(
@@ -157,8 +157,8 @@ class JsonTSnePlotControllerWIT {
 
     @Test
     void validJsonForInvalidK() throws Exception {
-        String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        int perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
         this.mockMvc
                 .perform(get(

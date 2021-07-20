@@ -1249,3 +1249,10 @@ INSERT INTO scxa_analytics_e_mtab_5061(experiment_accession, gene_id, cell_id, e
 INSERT INTO scxa_analytics_e_mtab_5061(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000183018', 'ERR1631656', 243.10197);
 INSERT INTO scxa_analytics_e_mtab_5061(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000138468', 'ERR1632372', 8.242393);
 INSERT INTO scxa_analytics_e_mtab_5061(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000270388', 'ERR1633113', 9.946982);
+
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_curd_4 FOR VALUES IN ('E-CURD-4');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_ehca_2 FOR VALUES IN ('E-EHCA-2');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_71585 FOR VALUES IN ('E-GEOD-71585');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_81547 FOR VALUES IN ('E-GEOD-81547');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_99058 FOR VALUES IN ('E-GEOD-99058');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_mtab_5061 FOR VALUES IN ('E-MTAB-5061');

@@ -168,4 +168,23 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.series", hasSize(1)));
     }
+
+    @Test
+    void defaultMethodInExpressionRequestsWithoutAGeneIdIsUmap() throws Exception {
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var nNeighbors = jdbcTestUtils.fetchRandomNeighboursFromExperimentUmap(experimentAccession);
+
+        var expected =
+                this.mockMvc
+                        .perform(get(
+                                "/json/experiments/" + experimentAccession + "/tsneplot/" + nNeighbors + "/expression")
+                                .param("method", "umap"))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsByteArray();
+
+        this.mockMvc
+                .perform(get("/json/experiments/" + experimentAccession + "/tsneplot/" + nNeighbors + "/expression"))
+                .andExpect(content().bytes(expected));
+    }
 }

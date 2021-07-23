@@ -69,11 +69,6 @@ public class TSnePlotSettingsService {
         }
     }
 
-    @Cacheable("cellCounts")
-    public int getCellCount(String experimentAccession) {
-        return tSnePlotDao.fetchNumberOfCellsByExperimentAccession(experimentAccession);
-    }
-
     public Map<String, List<JsonObject>> getAvailablePlotTypesAndPlotOptions(String experimentAccession){
         return tSnePlotDao.fetchTSnePlotTypesAndOptions(experimentAccession);
     }

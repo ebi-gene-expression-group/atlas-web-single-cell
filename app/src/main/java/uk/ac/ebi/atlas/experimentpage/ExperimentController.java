@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
-import uk.ac.ebi.atlas.download.FileDownloadController;
 import uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentSerializer;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 @Controller
 public class ExperimentController extends HtmlExceptionHandlingController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentController.class);
 
     private final ExperimentTrader experimentTrader;
     private final ExperimentPageContentSerializer experimentPageContentSerializer;

@@ -69,6 +69,7 @@ public class TSnePlotSettingsService {
         }
     }
 
+    @Cacheable("plotOptions")
     public Map<String, List<JsonObject>> getAvailablePlotTypesAndPlotOptions(String experimentAccession){
         return tSnePlotDao.fetchTSnePlotTypesAndOptions(experimentAccession);
     }

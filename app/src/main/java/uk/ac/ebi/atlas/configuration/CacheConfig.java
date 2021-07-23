@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.configuration;
 
 import org.cache2k.extra.spring.SpringCache2kCacheManager;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ public class CacheConfig {
                 builder -> builder.name("jsonExperimentMetadata"),
                 builder -> builder.name("jsonExperimentPageTabs"),
                 // We need null values for Optional; see https://github.com/cache2k/cache2k/issues/141
+                builder -> builder.name("plotOptions"),
                 builder -> builder.name("expectedClusters").permitNullValues(true),
                 builder -> builder.name("minimumMarkerProbability"),
 

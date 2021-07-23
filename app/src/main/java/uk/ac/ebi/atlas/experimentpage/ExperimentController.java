@@ -61,6 +61,8 @@ public class ExperimentController extends HtmlExceptionHandlingController {
         stopwatch.stop();
 
         LOGGER.debug(stopwatch.prettyPrint());
+
+        LOGGER.debug("Analysed assays count = {}", experiment.getAnalysedAssays().size());
         return "experiment-page";
     }
 }

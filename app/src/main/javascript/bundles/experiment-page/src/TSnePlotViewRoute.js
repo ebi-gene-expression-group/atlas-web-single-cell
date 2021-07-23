@@ -84,7 +84,7 @@ class TSnePlotViewRoute extends React.Component {
     const routes = [
       {
         path: `/tsne`,
-        title: `t-SNE plots`,
+        title: `Cell plots`,
         main: () => <TSnePlotView
           atlasUrl={atlasUrl}
           suggesterEndpoint={suggesterEndpoint}

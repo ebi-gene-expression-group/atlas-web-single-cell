@@ -38,7 +38,7 @@ public class ExperimentController extends HtmlExceptionHandlingController {
     public String showExperimentPage(Model model,
                                      @PathVariable String experimentAccession,
                                      @RequestParam(defaultValue = "") String accessKey) {
-        var stopwatch = new StopWatch();
+        var stopwatch = new StopWatch(this.getClass().getSimpleName());
 
         stopwatch.start("Get experiment from trader");
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);

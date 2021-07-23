@@ -7,7 +7,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
@@ -28,6 +31,8 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Service
 public class ExperimentPageContentService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentPageContentService.class);
+
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
@@ -54,32 +59,49 @@ public class ExperimentPageContentService {
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
+        var stopwatch = new StopWatch(this.getClass().getSimpleName());
+
         var result = new JsonObject();
 
+        stopwatch.start("Get k values");
         result.add(
                 "ks",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailableKs(experimentAccession)));
+        stopwatch.stop();
 
+        stopwatch.start("Get k values with marker genes");
         result.add(
                 "ksWithMarkerGenes",
                 GSON.toJsonTree(tsnePlotSettingsService.getKsWithMarkerGenes(experimentAccession)));
+        stopwatch.stop();
 
+        stopwatch.start("Get selected k");
         tsnePlotSettingsService.getExpectedClusters(experimentAccession)
                 .ifPresent(value -> result.addProperty("selectedK", value));
+        stopwatch.stop();
 
+        stopwatch.start("Get perplexities (why?)");
         result.add("perplexities", getPerplexities(experimentAccession));
+        stopwatch.stop();
 
+        stopwatch.start("Get plot types and options");
         result.add("plotTypesAndOptions",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)));
+        stopwatch.stop();
 
+        stopwatch.start("Get metadata");
         result.add("metadata", getMetadata(experimentAccession));
+        stopwatch.stop();
 
+        stopwatch.start("Get units");
         var units = new JsonArray();
         units.add("CPM");
         result.add("units", units);
+        stopwatch.stop();
 
         result.addProperty("suggesterEndpoint", "json/suggestions");
 
+        stopwatch.start("Add anatomogram data");
         result.add(
                 "anatomogram",
                 EXPERIMENTS_WITH_NO_ANATOMOGRAM.contains(experimentAccession) ?
@@ -87,6 +109,9 @@ public class ExperimentPageContentService {
                         GSON.toJsonTree(
                                 ontologyAccessionsSearchService
                                         .searchAvailableAnnotationsForOrganAnatomogram(experimentAccession)));
+        stopwatch.stop();
+
+        LOGGER.debug(stopwatch.prettyPrint());
 
         return result;
     }

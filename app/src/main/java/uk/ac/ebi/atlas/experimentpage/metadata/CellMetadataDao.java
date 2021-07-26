@@ -2,6 +2,8 @@ package uk.ac.ebi.atlas.experimentpage.metadata;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
@@ -17,12 +19,10 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
-import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.solr.client.solrj.SolrQuery.ORDER.asc;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
@@ -37,6 +37,8 @@ import static uk.ac.ebi.atlas.solr.cloud.search.SolrQueryResponseUtils.extractSi
 
 @Component
 public class CellMetadataDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CellMetadataDao.class);
+
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
     private final IdfParser idfParser;
 
@@ -166,7 +168,26 @@ public class CellMetadataDao {
                             // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
                             // value. This was confirmed by curators in this Slack conversation:
                             // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
-                            tuple -> tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME).get(0)));        }
+                            // Missing values of a given metadata type is technically an invalid condensed SDRF file,
+                            // but it’s a situation that we’ve encountered in the past and we want the web app to be
+                            // somewhat lenient about it and show the experiment, rather than show a cryptic 400 error;
+                            // instead we log an error and fill those fields with “Not available”.
+                            // Please see:
+                            // https://ebi-fg.slack.com/archives/C9P2QETJ9/p1624354966014500
+                            // https://ebi-fg.slack.com/archives/C800ZEPPS/p1624362599003900
+                            // https://www.pivotaltracker.com/story/show/177533187
+                            tuple -> {
+                                if (tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME) == null ||
+                                    !tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME).isEmpty()) {
+                                    LOGGER.error(
+                                            "Missing metadata value for {} – {}",
+                                            tuple.getString(CELL_ID.name()),
+                                            metadataType);
+                                    return "Not available";
+                                }
+                                return tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME).get(0);
+                            }));
+        }
     }
 
     private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> buildFactorTypeQuery(String experimentAccession) {

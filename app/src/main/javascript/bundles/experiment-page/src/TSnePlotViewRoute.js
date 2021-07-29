@@ -11,7 +11,7 @@ import { ClustersHeatmapView } from '@ebi-gene-expression-group/scxa-marker-gene
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
-import {find as _find} from "lodash"
+import {find as _find, intersection as _intersection, first as _first, map as _map} from 'lodash'
 
 const BioentityInformationWithFetchLoader = withFetchLoader(BioentityInformation)
 
@@ -57,7 +57,7 @@ class TSnePlotViewRoute extends React.Component {
 
   render() {
     const { location, match, history } = this.props
-    const { atlasUrl, suggesterEndpoint } = this.props
+    const { atlasUrl, suggesterEndpoint, initialCellTypeValues } = this.props
     const { species, experimentAccession, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
 
@@ -79,6 +79,15 @@ class TSnePlotViewRoute extends React.Component {
       organWithMostOntologies = anatomogram[availableOrgan].length > anatomogram[organWithMostOntologies].length ?
        availableOrgan :
        organWithMostOntologies
+    }
+
+    let cellType = _first(_intersection(_map(metadata,`value`), initialCellTypeValues))
+
+    if (cellType) {
+      this.setState({
+        selectedColourByCategory: `metadata`,
+        selectedColourBy: cellType
+      })
     }
 
     const routes = [
@@ -308,7 +317,12 @@ TSnePlotViewRoute.propTypes = {
     value: PropTypes.string.isRequired
   }).isRequired).isRequired,
   selectedK: PropTypes.number,
-  anatomogram: PropTypes.object.isRequired
+  anatomogram: PropTypes.object.isRequired,
+  initialCellTypeValues: PropTypes.array
+}
+
+TSnePlotViewRoute.defaultProps = {
+  initialCellTypeValues: [`inferred_cell_type_-_ontology_labels`, `inferred_cell_type_-_authors_labels`, `cell_type`, `progenitor_cell_type`]
 }
 
 export default TSnePlotViewRoute

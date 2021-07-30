@@ -42,16 +42,18 @@ class TSnePlotViewRoute extends React.Component {
         }
      ]
 
+    let cellType = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
+
     this.state = {
       selectedPlotType: plotTypeDropdown[0].plotType.toLowerCase(),
       geneId: ``,
       selectedPlotOption: Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
       selectedPlotOptionLabel: Object.keys(plotTypeDropdown[0].plotOptions[0])[0] + `: ` +
         Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
-      selectedColourBy: this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      selectedColourBy: cellType ? cellType.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: `clusters`
+      selectedColourByCategory: cellType ? `metadata` : `clusters`
     }
   }
 
@@ -79,15 +81,6 @@ class TSnePlotViewRoute extends React.Component {
       organWithMostOntologies = anatomogram[availableOrgan].length > anatomogram[organWithMostOntologies].length ?
        availableOrgan :
        organWithMostOntologies
-    }
-
-    let cellType = _first(_intersection(_map(metadata,`value`), initialCellTypeValues))
-
-    if (cellType) {
-      this.setState({
-        selectedColourByCategory: `metadata`,
-        selectedColourBy: cellType
-      })
     }
 
     const routes = [
@@ -322,7 +315,7 @@ TSnePlotViewRoute.propTypes = {
 }
 
 TSnePlotViewRoute.defaultProps = {
-  initialCellTypeValues: [`inferred_cell_type_-_ontology_labels`, `inferred_cell_type_-_authors_labels`, `cell_type`, `progenitor_cell_type`]
+  initialCellTypeValues: [`Inferred cell type - ontology labels`, `Inferred cell type - authors labels`, `Cell type`, `Progenitor cell type`]
 }
 
 export default TSnePlotViewRoute

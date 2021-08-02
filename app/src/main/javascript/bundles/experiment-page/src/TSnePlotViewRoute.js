@@ -42,7 +42,7 @@ class TSnePlotViewRoute extends React.Component {
         }
      ]
 
-    let cellType = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
+    const cellTypeValue = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
 
     this.state = {
       selectedPlotType: plotTypeDropdown[0].plotType.toLowerCase(),
@@ -50,10 +50,10 @@ class TSnePlotViewRoute extends React.Component {
       selectedPlotOption: Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
       selectedPlotOptionLabel: Object.keys(plotTypeDropdown[0].plotOptions[0])[0] + `: ` +
         Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
-      selectedColourBy: cellType ? cellType.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: cellType ? `metadata` : `clusters`
+      selectedColourByCategory: cellTypeValue ? `metadata` : `clusters`
     }
   }
 
@@ -311,7 +311,7 @@ TSnePlotViewRoute.propTypes = {
   }).isRequired).isRequired,
   selectedK: PropTypes.number,
   anatomogram: PropTypes.object.isRequired,
-  initialCellTypeValues: PropTypes.array
+  initialCellTypeValues: PropTypes.arrayOf(PropTypes.string)
 }
 
 TSnePlotViewRoute.defaultProps = {

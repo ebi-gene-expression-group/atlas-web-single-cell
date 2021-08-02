@@ -11,7 +11,7 @@ import { ClustersHeatmapView } from '@ebi-gene-expression-group/scxa-marker-gene
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
-import {find as _find} from "lodash"
+import {find as _find, intersection as _intersection, first as _first, map as _map} from 'lodash'
 
 const BioentityInformationWithFetchLoader = withFetchLoader(BioentityInformation)
 
@@ -42,22 +42,24 @@ class TSnePlotViewRoute extends React.Component {
         }
      ]
 
+    const cellTypeValue = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
+
     this.state = {
       selectedPlotType: plotTypeDropdown[0].plotType.toLowerCase(),
       geneId: ``,
       selectedPlotOption: Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
       selectedPlotOptionLabel: Object.keys(plotTypeDropdown[0].plotOptions[0])[0] + `: ` +
         Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
-      selectedColourBy: this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: `clusters`
+      selectedColourByCategory: cellTypeValue ? `metadata` : `clusters`
     }
   }
 
   render() {
     const { location, match, history } = this.props
-    const { atlasUrl, suggesterEndpoint } = this.props
+    const { atlasUrl, suggesterEndpoint, initialCellTypeValues } = this.props
     const { species, experimentAccession, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
 
@@ -308,7 +310,12 @@ TSnePlotViewRoute.propTypes = {
     value: PropTypes.string.isRequired
   }).isRequired).isRequired,
   selectedK: PropTypes.number,
-  anatomogram: PropTypes.object.isRequired
+  anatomogram: PropTypes.object.isRequired,
+  initialCellTypeValues: PropTypes.arrayOf(PropTypes.string)
+}
+
+TSnePlotViewRoute.defaultProps = {
+  initialCellTypeValues: [`Inferred cell type - ontology labels`, `Inferred cell type - authors labels`, `Cell type`, `Progenitor cell type`]
 }
 
 export default TSnePlotViewRoute

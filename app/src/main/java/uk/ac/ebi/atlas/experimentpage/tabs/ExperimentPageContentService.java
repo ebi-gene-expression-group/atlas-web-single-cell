@@ -37,7 +37,7 @@ public class ExperimentPageContentService {
 
     final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-GEOD-130473", "E-HCAD-8", "E-MTAB-6653", "E-GEOD-86618", "E-CURD-11", "E-MTAB-6308",
-            "E-HCAD-10", "E-CURD-10", "E-GEOD-114530");
+            "E-HCAD-10", "E-CURD-10", "E-GEOD-114530", "E-MTAB-7407", "E-MTAB-9067");
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,

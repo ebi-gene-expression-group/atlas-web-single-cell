@@ -178,7 +178,7 @@ public class CellMetadataDao {
                             // https://www.pivotaltracker.com/story/show/177533187
                             tuple -> {
                                 if (tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME) == null ||
-                                    !tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME).isEmpty()) {
+                                    tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME).isEmpty()) {
                                     LOGGER.error(
                                             "Missing metadata value for {} – {}",
                                             tuple.getString(CELL_ID.name()),

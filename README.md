@@ -18,7 +18,8 @@ Expression Atlas) and Single Cell Expression Atlas proper:
 git clone --recurse-submodules https://github.com/ebi-gene-expression-group/atlas-web-core.git && \
 git clone --recurse-submodules https://github.com/ebi-gene-expression-group/atlas-web-single-cell.git
 ```
-if you have already cloned above project. Take the latest code of branch & it's submodules(atlas-web-single-cel or atlas-web-core)
+
+If you have already cloned the project ensure it’s up-to-date:
 ```bash
   git pull
   git submodule update --remote
@@ -32,7 +33,6 @@ To download the data you can use `rsync` if you’re connected to the EBI networ
 ATLAS_DATA_PATH=/path/to/sc/atlas/data
 rsync -ravz ebi-cli:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/* $ATLAS_DATA_PATH
 ```
-Note: This would take a few minutes. After `rsync` you will see 3 new folders under scxa data folder those are filesystem,solrcloud and postgressql.
 
 Alternatively you can use `wget` and connect to EBI’s FTP server over HTTP:
 ```bash
@@ -40,6 +40,9 @@ wget -P $ATLAS_DATA_PATH -c --reject="index.html*" --recursive -np -nc -nH --cut
 ```
 
 Notice that either way `ATLAS_DATA_PATH` will be created for you if the directory doesn’t exist.
+
+This task will take a variable amount of time that depends on your connection speed. After its completion you will see
+three new folders under `ATLAS_DATA_PATH`: `filesystem`, `solrcloud` and `postgressql`.
 
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace
@@ -90,12 +93,11 @@ known state; however Solr will reply with an error if the collections can’t be
 
 Again, this step will take a few minutes.
 
-### Create Solr Collection Alias
-Go to you're Solr admin page 'http://localhost:8983/solr'
-  Create these 3 aliases for the Solr collections:
+### Create Solr aliases
+Go to your Solr admin page `http://localhost:8983/solr` and create these three aliases:
 
 1. Alias Name: scxa-analytics
-   Collection: scxa-analytics-v3(select from the dropdown)
+   Collection: scxa-analytics-v5
 
 2. Alias Name: bioentities
    Collection: bioentities-v1
@@ -232,7 +234,7 @@ backup operation with (set `SOLR_HOST` and `SOLR_COLLECTION` to the appropriate 
 docker exec -i ${SOLR_HOST} curl -s "http://localhost:8983/solr/${SOLR_COLLECTION}/replication?command=details"
 ```
 
-### I’m not getting any suggestions in Single Cell Epression Atlas
+### I’m not getting any suggestions in Single Cell Expression Atlas
 Read the important message after you run `scxa-solrlcoud-bootstrap`:
 > PLEASE READ!
 > Suggesters haven’t been built because it’s very likely to get a `java.net.SocketTimeoutException` due

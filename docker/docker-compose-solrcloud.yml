@@ -57,7 +57,7 @@ services:
       - scxa-solrcloud-1-data:/opt/solr/server/solr
       - $ATLAS_DATA_PATH/solrcloud/solr1:/var/backups/solr
     environment:
-      - SOLR_HEAP=2g
+      - SOLR_HEAP=3g
       - SOLR_OPTS=-Denable.runtime.lib=true
       - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
     depends_on:
@@ -76,7 +76,7 @@ services:
       - scxa-solrcloud-2-data:/opt/solr/server/solr
       - $ATLAS_DATA_PATH/solrcloud/solr2:/var/backups/solr
     environment:
-      - SOLR_HEAP=2g
+      - SOLR_HEAP=3g
       - SOLR_OPTS=-Denable.runtime.lib=true
       - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
     depends_on:

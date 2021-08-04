@@ -1,7 +1,7 @@
 version: "3.6"
 
 services:
-  scxa-postgres:
+  scxa-postgres-test:
     image: postgres:10-alpine
     container_name: $POSTGRES_HOST
     networks:
@@ -16,16 +16,16 @@ services:
     ports:
       - "5432:5432"
 
-  scxa-flyway:
+  scxa-flyway-test:
     image: flyway/flyway
-    container_name: scxa-flyway
+    container_name: scxa-flyway-test
     networks:
       - scxa
     command: -url=jdbc:postgresql://$POSTGRES_HOST/$POSTGRES_DB -schemas=$POSTGRES_USER -user=$POSTGRES_USER -password=$POSTGRES_PASSWORD -connectRetries=60 migrate
     volumes:
       - ../schemas/flyway/scxa/:/flyway/sql
     depends_on:
-      - scxa-postgres
+      - scxa-postgres-test
 
 networks:
   scxa:

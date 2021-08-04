@@ -67,8 +67,6 @@ public class ExperimentPageContentService {
         tsnePlotSettingsService.getExpectedClusters(experimentAccession)
                 .ifPresent(value -> result.addProperty("selectedK", value));
 
-        result.add("perplexities", getPerplexities(experimentAccession));
-
         result.add("plotTypesAndOptions",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)));
 

@@ -49,7 +49,6 @@ public class ExperimentPageContentSerializer {
         availableTabs.add(customContentTab("downloads", "Downloads", data));
 
         result.add("tabs", availableTabs);
-
         return GSON.toJson(result);
     }
 

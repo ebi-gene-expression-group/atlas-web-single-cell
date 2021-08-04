@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentSerializer;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 @Controller
@@ -16,16 +15,13 @@ public class ExperimentController extends HtmlExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private final ExperimentPageContentSerializer experimentPageContentSerializer;
     private final ExperimentAttributesService experimentAttributesService;
-    private final TSnePlotSettingsService tSnePlotSettingsService;
 
     public ExperimentController(ExperimentTrader experimentTrader,
                                 ExperimentPageContentSerializer experimentPageContentSerializer,
-                                ExperimentAttributesService experimentAttributesService,
-                                TSnePlotSettingsService tSnePlotSettingsService) {
+                                ExperimentAttributesService experimentAttributesService) {
         this.experimentTrader = experimentTrader;
         this.experimentPageContentSerializer = experimentPageContentSerializer;
         this.experimentAttributesService = experimentAttributesService;
-        this.tSnePlotSettingsService = tSnePlotSettingsService;
     }
 
     @RequestMapping(value = {"/experiments/{experimentAccession}", "/experiments/{experimentAccession}/**"},
@@ -36,14 +32,12 @@ public class ExperimentController extends HtmlExceptionHandlingController {
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
         model.addAllAttributes(experimentAttributesService.getAttributes(experiment));
-
         model.addAttribute(
                 "content",
                 experimentPageContentSerializer.experimentPageContentForExperiment(experimentAccession, accessKey));
-
         model.addAttribute(
                 "numberOfCells",
-                tSnePlotSettingsService.getCellCount(experimentAccession));
+                experiment.getAnalysedAssays().size());
 
         return "experiment-page";
     }

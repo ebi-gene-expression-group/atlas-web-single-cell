@@ -93,18 +93,6 @@ known state; however Solr will reply with an error if the collections can’t be
 
 Again, this step will take a few minutes.
 
-### Create Solr aliases
-Go to your Solr admin page `http://localhost:8983/solr` and create these three aliases:
-
-1. Alias Name: scxa-analytics
-   Collection: scxa-analytics-v5
-
-2. Alias Name: bioentities
-   Collection: bioentities-v1
-
-3. Alias Name: scxa-gene2experiment
-   Collection: scxa-gene2experiment-v1
-
 ### Tomcat
 Copy the Tomcat credentials file to the container. The `admin` role is used to access several admin endpoints in Single
 Cell Expression Atlas (e.g. `/admin/experiments/help`). Tomcat’s `conf` directory is persisted as a volume so that we

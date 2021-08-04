@@ -92,8 +92,8 @@ dependencies {
 processTestResources {
   filesMatching('configuration.properties') {
     expand(
-            dataFilesLocation: project.hasProperty('dataFilesLocation') ? dataFilesLocation : "${System.env.ATLAS_DATA_PATH}",
-            experimentFilesLocation: project.hasProperty('experimentFilesLocation') ? experimentFilesLocation : "${System.env.ATLAS_DATA_PATH}/scxa",
+            dataFilesLocation: dataFilesLocation,
+            experimentFilesLocation: experimentFilesLocation,
             buildNumber: project.hasProperty('buildNumber') ? buildNumber : '42',
             buildBranch: project.hasProperty('buildBranch') ? buildBranch : 'dev',
             buildRevision: project.hasProperty('buildRevision') ? buildRevision : 'dev',
@@ -112,9 +112,9 @@ processTestResources {
 
   filesMatching('jdbc.properties') {
     expand(
-            jdbcUrl: project.hasProperty('jdbcUrl') ? jdbcUrl : 'jdbc:postgresql://localhost:5432/gxpscxadev',
-            jdbcUsername: project.hasProperty('jdbcUsername') ? jdbcUsername : 'atlasprd3',
-            jdbcPassword: project.hasProperty('jdbcPassword') ? jdbcPassword : 'atlasprd3'
+            jdbcUrl: jdbcUrl,
+            jdbcUsername: jdbcUsername,
+            jdbcPassword: jdbcPassword
     )
   }
 

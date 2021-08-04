@@ -14,7 +14,12 @@ services:
     depends_on:
       - scxa-solrcloud-1
       - scxa-solrcloud-2
-      - scxa-postgres
+      - scxa-flyway
+    environment:
+      POSTGRES_HOST: $POSTGRES_HOST
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     command:
       - /bin/bash
       - -c

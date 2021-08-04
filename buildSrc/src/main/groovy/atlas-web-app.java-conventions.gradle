@@ -144,8 +144,6 @@ test {
     }
   }
 
-  finalizedBy jacocoTestReport
-
   testLogging {
     outputs.upToDateWhen {false}
     showStandardStreams = true

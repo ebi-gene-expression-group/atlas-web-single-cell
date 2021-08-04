@@ -38,7 +38,8 @@ services:
         :app:testClasses &&
         ./gradlew -PtestResultsPath=ut :app:test --tests *Test &&
         ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
-        ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT
+        ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT &&
+        ./gradlew :app:jacocoTestReport
 
 networks:
   scxa:

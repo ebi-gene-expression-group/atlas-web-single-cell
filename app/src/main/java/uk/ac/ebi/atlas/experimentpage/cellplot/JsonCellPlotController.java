@@ -74,7 +74,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                                       @RequestParam Map<String,String> requestParams) {
         return cellPlotJsonSerializer.clusterPlotWithMetadata(
                 experimentAccession,
-                metadata,
+                metadata.replaceAll(" ", "_"),
                 plotMethod,
                 parsePlotParametersFromRequestParameters(plotMethod, requestParams),
                 requestParams.getOrDefault("accessKey", ""));

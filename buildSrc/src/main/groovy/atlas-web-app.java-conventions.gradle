@@ -136,17 +136,15 @@ test {
   }
 
   if (project.hasProperty('testResultsPath')) {
-    reporting.baseDir = "${buildDir}/reports/" + project.property('testResultsPath')
-    testResultsDirName = "${buildDir}/test-results/" + project.property('testResultsPath')
+    testReportDirName = project.property('testResultsPath')
+    testResultsDirName = project.property('testResultsPath')
 
     jacoco {
       destinationFile = file("${buildDir}/jacoco/${project.property('testResultsPath')}.exec")
     }
   }
 
-  if (project.hasProperty('excludeTests')) {
-    exclude project.property('excludeTests')
-  }
+  finalizedBy jacocoTestReport
 
   testLogging {
     outputs.upToDateWhen {false}
@@ -160,8 +158,7 @@ test {
 
 jacocoTestReport {
   executionData.setFrom fileTree(dir: "${buildDir}/jacoco", include: '*.exec' )
-
   reports {
-    html.destination file("${buildDir}/jacoco/html")
+    html.outputLocation = layout.buildDirectory.dir("reports/jacoco")
   }
 }

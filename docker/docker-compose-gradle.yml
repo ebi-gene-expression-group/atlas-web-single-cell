@@ -6,6 +6,8 @@ services:
     container_name: scxa-gradle
     networks:
       - scxa
+    ports:
+      - "5005:5005"
     working_dir: /root/project
     volumes:
       - ..:/root/project

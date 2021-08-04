@@ -127,6 +127,14 @@ processTestResources {
 }
 
 test {
+  if (project.hasProperty('remoteDebug')) {
+    jvmArgs '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005'
+  }
+
+  if (project.hasProperty('excludeTests')) {
+    exclude project.property('excludeTests')
+  }
+
   if (project.hasProperty('testResultsPath')) {
     reporting.baseDir = "${buildDir}/reports/" + project.property('testResultsPath')
     testResultsDirName = "${buildDir}/test-results/" + project.property('testResultsPath')

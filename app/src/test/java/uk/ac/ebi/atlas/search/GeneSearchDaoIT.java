@@ -58,11 +58,11 @@ class GeneSearchDaoIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"));
+                new ClassPathResource("fixtures/202108/experiment.sql"),
+                new ClassPathResource("fixtures/202108/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes.sql"));
         populator.execute(dataSource);
     }
 
@@ -70,11 +70,11 @@ class GeneSearchDaoIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/experiment-delete.sql"));
+                new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/202108/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -90,8 +90,9 @@ class GeneSearchDaoIT {
                 .isNotEmpty();
     }
 
+    // Any gene with marker_probability < 0.05
     @ParameterizedTest
-    @ValueSource(strings = {"AT4G11290"})
+    @ValueSource(strings = {"AT1G11740"})
     void validGeneIdReturnsExperimentAccessions(String geneId) {
         var result = subject.fetchExperimentAccessionsWhereGeneIsMarker(geneId);
 
@@ -109,8 +110,10 @@ class GeneSearchDaoIT {
                 .isEmpty();
     }
 
+    // Look for the cell group IDs that match an experiment and its preferred K variable, then find a gene in that cell
+    // group that has marker_probability < 0.05
     @ParameterizedTest
-    @CsvSource({"'ENSG00000130066', 'E-GEOD-81547', 29"})
+    @CsvSource({"'ENSG00000001626', 'E-GEOD-81547', 25"})
     void validExperimentAccessionReturnsClusterIDsWithPreferredKAndMinP(String geneId,
                                                                         String experimentAccession,
                                                                         Integer preferredK) {
@@ -123,15 +126,12 @@ class GeneSearchDaoIT {
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                29, ImmutableList.of(28)));
-
-     /* TODO:   Previously this test returning preferred 'K' and cluster id as a pair.we could see two combinations 6,3 and 4,2 for k value 6.
-         But now I am passing preferred K 29 as per latest test data, I could see a pair but Map size is one that is 29,28. I was suspecting
-         that we need improve test data. Need to improve this in the next Iteration.Need to get more context from @Alfonso on this.*/
+                                // Hard-coded values depending on the gene,experiment we use for this test
+                                25, ImmutableList.of(12, 14, 22, 8)));
     }
 
     @ParameterizedTest
-    @CsvSource({"'ENSMUSG00000031980', 'E-GEOD-99058', 2"})
+    @CsvSource({"'ENSMUSG00000028565', 'E-EHCA-2', 24"})
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
                                                                                   Integer preferredK) {
@@ -143,7 +143,7 @@ class GeneSearchDaoIT {
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                2, ImmutableList.of(1)));
+                                24, ImmutableList.of(11)));
     }
 
     @ParameterizedTest
@@ -166,12 +166,18 @@ class GeneSearchDaoIT {
         var randomGeneId =
                 minimumMarkerProbabilities.keySet().asList().get(RNG.nextInt(minimumMarkerProbabilities.size()));
 
-        var markerProbabilitiies = namedParameterJdbcTemplate.queryForList(
-                "SELECT marker_probability FROM scxa_cell_group_marker_genes WHERE gene_id=:gene_id",
-                ImmutableMap.of("gene_id", randomGeneId),
+        var markerProbabilities = namedParameterJdbcTemplate.queryForList(
+                "SELECT mg.marker_probability " +
+                    "FROM scxa_cell_group_marker_genes mg " +
+                        "JOIN scxa_cell_group cg " +
+                        "ON mg.cell_group_id=cg.id " +
+                "WHERE mg.gene_id=:gene_id AND cg.experiment_accession=:experiment_accession",
+                ImmutableMap.of(
+                        "gene_id", randomGeneId,
+                        "experiment_accession", experimentAccession),
                 Double.class);
 
-        assertThat(markerProbabilitiies.stream().mapToDouble(Double::valueOf).min())
+        assertThat(markerProbabilities.stream().mapToDouble(Double::valueOf).min())
                 .hasValue(minimumMarkerProbabilities.get(randomGeneId));
     }
 

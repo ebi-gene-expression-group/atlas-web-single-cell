@@ -75,27 +75,25 @@ class ExperimentFileLocationServiceIT {
 
 	@BeforeAll
 	void populateDatabaseTables() {
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
 				new ClassPathResource("fixtures/experiment-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-fixture.sql"));
+				new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_gene_stats.sql"));
 		populator.execute(dataSource);
 	}
 
 	@AfterAll
 	void cleanDatabaseTables() {
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
-				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-				new ClassPathResource("fixtures/experiment-delete.sql"));
+				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_gene_stats-delete.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes-delete.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_membership-delete.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group-delete.sql"),
+				new ClassPathResource("fixtures/202108/experiment-delete.sql"));
 		populator.execute(dataSource);
 	}
 

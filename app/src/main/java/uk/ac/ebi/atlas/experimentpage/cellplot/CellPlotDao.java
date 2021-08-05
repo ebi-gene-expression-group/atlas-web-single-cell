@@ -43,7 +43,8 @@ public class CellPlotDao {
                         "AND m.experiment_accession=c.experiment_accession " +
                     "WHERE c.method=:method " +
                         "AND c.parameterisation @> :parameterisation::jsonb " +
-                        "AND c.experiment_accession=:experiment_accession";
+                        "AND c.experiment_accession=:experiment_accession " +
+            "ORDER BY cast(g.value as integer) ASC";
     public List<TSnePoint.Dto> fetchCellPlotWithK(String experimentAccession,
                                                   int k,
                                                   String plotMethod,

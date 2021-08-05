@@ -9,12 +9,13 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
 import java.util.Map;
-
+import java.util.LinkedHashMap;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class CellPlotService {
@@ -36,7 +37,9 @@ public class CellPlotService {
 
         return points
                 .stream()
-                .collect(groupingBy(TSnePoint.Dto::clusterId))
+                .collect(groupingBy(TSnePoint.Dto::clusterId,
+                        LinkedHashMap::new,
+                        toList()))
                 .entrySet().stream()
                 .collect(toImmutableMap(
                         Map.Entry::getKey,

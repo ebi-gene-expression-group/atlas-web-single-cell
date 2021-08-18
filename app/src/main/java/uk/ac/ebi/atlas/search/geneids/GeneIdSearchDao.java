@@ -85,13 +85,18 @@ public class GeneIdSearchDao {
     // A set since we don’t care about the order, we might want a list if results are ranked somehow
     private ImmutableSet<String> searchWithinGeneIdsExpressedInExperiments(
             SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder) {
+        var privateExperimentAccessions = experimentTraderDao.fetchPrivateExperimentAccessions();
         var g2eQueryBuilder =
                 new SolrQueryBuilder<Gene2ExperimentCollectionProxy>()
-                        .addNegativeFilterFieldByTerm(Gene2ExperimentCollectionProxy.EXPERIMENT_ACCESSION,
-                                experimentTraderDao.fetchPrivateExperimentAccessions())
                         .setFieldList(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER)
                         .sortBy(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc)
                         .setRows(SOLR_MAX_ROWS);
+
+        //Ignores(skip) negative filter if we don't have any private experiments
+        if(!privateExperimentAccessions.isEmpty()){
+            g2eQueryBuilder.addNegativeFilterFieldByTerm(Gene2ExperimentCollectionProxy.EXPERIMENT_ACCESSION,
+                    experimentTraderDao.fetchPrivateExperimentAccessions());
+        }
 
         var bioentitiesSearchBuilder = new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder);
         var g2eSearchBuilder = new SearchStreamBuilder<>(gene2ExperimentCollectionProxy, g2eQueryBuilder);

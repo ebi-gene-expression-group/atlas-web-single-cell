@@ -4,12 +4,27 @@ pipeline {
     label 'k8s-jdk'
   }
 
+
+
   stages {
+    stage('Prepare environment') {
+      options {
+        timeout (time: 5, unit: "MINUTES")
+      }
+      steps {
+        container('openjdk') {
+          sh 'echo Download Gradle and start daemon...'
+          sh './gradlew'
+        }
+      }
+    }
+
+
     stage('Core lib') {
       stages {
         stage('Compile') {
           options {
-            timeout (time: 15, unit: "MINUTES")
+            timeout (time: 5, unit: "MINUTES")
           }
           steps {
             container('openjdk') {
@@ -48,7 +63,7 @@ pipeline {
       stages {
         stage('Compile') {
           options {
-            timeout (time: 15, unit: "MINUTES")
+            timeout (time: 5, unit: "MINUTES")
           }
           steps {
             container('openjdk') {

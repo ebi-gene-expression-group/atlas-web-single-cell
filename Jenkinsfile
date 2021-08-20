@@ -98,7 +98,7 @@ pipeline {
 
         stage('Build') {
           options {
-            timeout (time: 30, unit: "MINUTES")
+            timeout (time: 45, unit: "MINUTES")
           }
 //          when { anyOf {
 //            branch 'develop'

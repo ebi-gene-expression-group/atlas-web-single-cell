@@ -160,6 +160,7 @@ pipeline {
         // junit 'app/build/e2e/**/*.xml'
         archiveArtifacts artifacts: 'atlas-web-core/build/reports/**', fingerprint: true, allowEmptyArchive: true
         archiveArtifacts artifacts: 'app/build/reports/**', fingerprint: true, allowEmptyArchive: true
+        archiveArtifacts artifacts: 'app/src/main/webapp/resources/js-bundles/report.html', fingerprint: true, allowEmptyArchive: true
       }
     }
   }

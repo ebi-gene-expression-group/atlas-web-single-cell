@@ -5,7 +5,7 @@
     "@babel/polyfill": "^7.11.5",
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-react": "^7.10.4",
-    "@ebi-gene-expression-group/eslint-config": "^2.3.0",
+    "@ebi-gene-expression-group/eslint-config": "^2.3.1",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
     "eslint": "^7.8.1",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@ebi-gene-expression-group/atlas-feedback-form": "^1.4.0",
-    "@ebi-gene-expression-group/atlas-homepage-cards": "^2.5.0",
+    "@ebi-gene-expression-group/atlas-homepage-cards": "^2.5.1",
     "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.7.0",
     "@ebi-gene-expression-group/scxa-gene-search-form": "^1.7.2",
     "expression-atlas-autocomplete": "^3.2.0",

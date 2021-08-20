@@ -107,10 +107,9 @@ pipeline {
           steps {
             container('openjdk') {
               sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash'
-              sh '. ~/.bashrc'
-              sh 'nvm install 14'
-              sh 'npm install -g ncu'
-              sh './update-compile-front-end-packages.sh'
+              sh '. ~/.bashrc && nvm install 14'
+              sh '. ~/.bashrc && npm install -g ncu'
+              sh '. ~/.bashrc && ./update-compile-front-end-packages.sh'
               sh './gradlew :app:war'
               archiveArtifacts artifacts: 'webapps/gxa#sc.war', fingerprint: true
             }

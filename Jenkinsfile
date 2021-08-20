@@ -107,7 +107,7 @@ pipeline {
           steps {
             container('openjdk') {
               sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash'
-              sh 'source ~/.bashrc'
+              sh '. ~/.bashrc'
               sh 'nvm install 14'
               sh 'npm install -g ncu'
               sh './update-compile-front-end-packages.sh'

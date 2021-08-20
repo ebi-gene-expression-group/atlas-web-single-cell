@@ -100,12 +100,17 @@ pipeline {
           options {
             timeout (time: 5, unit: "MINUTES")
           }
-          when { anyOf {
-            branch 'develop'
-            branch 'main'
-          } }
+//          when { anyOf {
+//            branch 'develop'
+//            branch 'main'
+//          } }
           steps {
             container('openjdk') {
+              sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash'
+              sh 'source ~/.bashrc'
+              sh 'nvm install 14'
+              sh 'npm install -g ncu'
+              sh './update-compile-front-end-packages.sh'
               sh './gradlew :app:war'
               archiveArtifacts artifacts: 'webapps/gxa#sc.war', fingerprint: true
             }

@@ -98,8 +98,12 @@ pipeline {
 
         stage('Build WAR') {
           options {
-            timeout (time: 15, unit: "MINUTES")
+            timeout (time: 5, unit: "MINUTES")
           }
+          when { anyOf {
+            branch 'develop'
+            branch 'main'
+          } }
           steps {
             container('openjdk') {
               sh './gradlew :app:war'
@@ -110,6 +114,7 @@ pipeline {
       }
     }
   }
+
 
 
   post {

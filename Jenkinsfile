@@ -106,6 +106,10 @@ pipeline {
 //          } }
           steps {
             container('openjdk') {
+              // Required by node_modules/cwebp-bin
+              // /home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/node_modules/cwebp-bin/vendor/cwebp:
+              // error while loading shared libraries: libGL.so.1: cannot open shared object file: No such file or directory
+              sh 'apt update && apt install libglu1-mesa'
               sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash'
               sh '. ~/.bashrc && nvm install 14'
               sh '. ~/.bashrc && npm install -g ncu'

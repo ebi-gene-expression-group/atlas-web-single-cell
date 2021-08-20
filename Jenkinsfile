@@ -96,32 +96,50 @@ pipeline {
           }
         }
 
-        stage('Build WAR') {
+        stage('Build') {
           options {
-            timeout (time: 5, unit: "MINUTES")
+            timeout (time: 30, unit: "MINUTES")
           }
 //          when { anyOf {
 //            branch 'develop'
 //            branch 'main'
 //          } }
-          steps {
-            container('openjdk') {
-              // Required by node_modules/cwebp-bin
-              // /home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/node_modules/cwebp-bin/vendor/cwebp:
-              // error while loading shared libraries: libGL.so.1: cannot open shared object file: No such file or directory
-              //
-              //  ⚠ cwebp pre-build test failed
-              //  ℹ compiling from source
-              //  ✖ Error: Command failed: /bin/sh -c ./configure --disable-shared --prefix="/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/vendor" --bindir="/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/vendor"
-              // configure: error: in `/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/2525557b-9d4c-4886-93b3-8cbfa3b76a32':
-              // configure: error: no acceptable C compiler found in $PATH
-              sh 'apt update && apt install -y libglu1-mesa gcc'
-              sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash'
-              sh '. ~/.bashrc && nvm install 14'
-              sh '. ~/.bashrc && npm install -g ncu'
-              sh '. ~/.bashrc && ./update-compile-front-end-packages.sh'
-              sh './gradlew :app:war'
-              archiveArtifacts artifacts: 'webapps/gxa#sc.war', fingerprint: true
+          stages {
+            stage('Provision Node.js build environment') {
+              steps {
+                container('openjdk') {
+                  // Required by node_modules/cwebp-bin
+                  // /home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/node_modules/cwebp-bin/vendor/cwebp:
+                  // error while loading shared libraries: libGL.so.1: cannot open shared object file: No such file or directory
+                  //
+                  //  ⚠ cwebp pre-build test failed
+                  //  ℹ compiling from source
+                  //  ✖ Error: Command failed: /bin/sh -c ./configure --disable-shared --prefix="/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/vendor" --bindir="/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/vendor"
+                  // configure: error: in `/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/2525557b-9d4c-4886-93b3-8cbfa3b76a32':
+                  // configure: error: no acceptable C compiler found in $PATH
+                  sh 'apt update && apt install -y libglu1-mesa gcc'
+                  sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash'
+                  sh '. ~/.bashrc && nvm install 14'
+                  sh '. ~/.bashrc && npm install -g ncu'
+                }
+              }
+            }
+
+            stage('Update and build ES bundles') {
+              steps {
+                container('openjdk') {
+                  sh '. ~/.bashrc && ./update-compile-front-end-packages.sh'
+                }
+              }
+            }
+
+            stage('Assemble WAR file') {
+              steps {
+                container('openjdk') {
+                  sh './gradlew :app:war'
+                  archiveArtifacts artifacts: 'webapps/gxa#sc.war', fingerprint: true
+                }
+              }
             }
           }
         }

@@ -186,7 +186,7 @@ public class ExperimentPageContentService {
                         .values()
                         .stream()
                         .distinct()
-                        .count() >= 2)//we only need to show those metadata type which have more than 2 unique values
+                        .count() > 1)   // show only metadata types with more than 1 value
                 .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
                 .collect(Collectors.toSet())
                 .forEach(metadata -> metadataArray.add(GSON.toJsonTree(metadata)));

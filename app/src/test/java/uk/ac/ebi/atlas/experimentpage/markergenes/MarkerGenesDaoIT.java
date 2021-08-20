@@ -108,7 +108,7 @@ class MarkerGenesDaoIT {
     }
 
     private Stream<String> ksForExperimentWithMarkerGenes() {
-        return jdbcTestUtils.fetchKsFromCellClusters(EXPERIMENT_ACCESSION_WITH_MARKER_GENES)
+        return jdbcTestUtils.fetchKsFromCellGroups(EXPERIMENT_ACCESSION_WITH_MARKER_GENES)
                 .stream().map(Object::toString);
     }
 }

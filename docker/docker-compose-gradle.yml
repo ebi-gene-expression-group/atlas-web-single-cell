@@ -6,6 +6,8 @@ services:
     container_name: scxa-gradle
     networks:
       - scxa
+    ports:
+      - "5005:5005"
     working_dir: /root/project
     volumes:
       - ..:/root/project
@@ -14,23 +16,30 @@ services:
     depends_on:
       - scxa-solrcloud-1
       - scxa-solrcloud-2
-      - scxa-postgres
+      - scxa-flyway-test
+    environment:
+      POSTGRES_HOST: $POSTGRES_HOST
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     command:
-      - /bin/bash
+      - sh
       - -c
       - >
-        ./gradlew \
-          -PdataFilesLocation=/root/scxa/integration-test-data \
-          -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa \
-          -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB \
-          -PjdbcUsername=$POSTGRES_USER \
-          -PjdbcPassword=$POSTGRES_PASSWORD \
-          -PzkHost=scxa-zk-1 \
-          -PsolrHost=scxa-solrcloud-1 \
-          :app:clean :app:testClasses &&
-        ./gradlew :app:test --tests *Test &&
+        ./gradlew :app:clean &&
+        ./gradlew
+        -PdataFilesLocation=/root/scxa/integration-test-data
+        -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa
+        -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB
+        -PjdbcUsername=$POSTGRES_USER
+        -PjdbcPassword=$POSTGRES_PASSWORD
+        -PzkHost=scxa-zk-1
+        -PsolrHost=scxa-solrcloud-1
+        :app:testClasses &&
+        ./gradlew -PtestResultsPath=ut :app:test --tests *Test &&
         ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
-        ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT
+        ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT &&
+        ./gradlew :app:jacocoTestReport
 
 networks:
   scxa:

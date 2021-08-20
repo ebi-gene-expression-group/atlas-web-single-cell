@@ -33,23 +33,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = TestConfig.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+// ALL TESTS IGNORED BECAUSE THE SUBJECT IS GOING TO BE DEPRECATED
+//@ExtendWith(SpringExtension.class)
+//@WebAppConfiguration
+//@ContextConfiguration(classes = TestConfig.class)
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonTSnePlotControllerWIT {
-    @Inject
+    //@Inject
     private DataSource dataSource;
 
-    @Inject
+    //@Inject
     private JdbcUtils jdbcTestUtils;
 
-    @Autowired
+    //@Autowired
     private WebApplicationContext wac;
 
     private MockMvc mockMvc;
 
-    @BeforeAll
+    //@BeforeAll
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
@@ -62,7 +63,7 @@ class JsonTSnePlotControllerWIT {
         populator.execute(dataSource);
     }
 
-    @AfterAll
+    //@AfterAll
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
@@ -75,12 +76,12 @@ class JsonTSnePlotControllerWIT {
         populator.execute(dataSource);
     }
 
-    @BeforeEach
+    //@BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    @Test
+    //@Test
     void validJsonForExpressedGeneId() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var geneId = jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(experimentAccession);
@@ -103,7 +104,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series", hasSize(greaterThan(0))));
     }
 
-    @Test
+    //@Test
     void validJsonForInvalidGeneId() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
@@ -120,7 +121,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series..expressionLevel", everyItem(is(0.0))));
     }
 
-    @Test
+    //@Test
     void noExpressionForEmptyGeneId() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
@@ -136,7 +137,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series..expressionLevel", everyItem(is(0.0))));
     }
 
-    @Test
+    //@Test
     void validJsonForValidK() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
@@ -155,7 +156,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series[0].data").isNotEmpty());
     }
 
-    @Test
+    //@Test
     void validJsonForInvalidK() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
@@ -169,7 +170,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series", hasSize(1)));
     }
 
-    @Test
+    //@Test
     void defaultMethodInExpressionRequestsWithoutAGeneIdIsUmap() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var nNeighbors = jdbcTestUtils.fetchRandomNeighboursFromExperimentUmap(experimentAccession);

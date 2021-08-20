@@ -75,27 +75,25 @@ class ExperimentFileLocationServiceIT {
 
 	@BeforeAll
 	void populateDatabaseTables() {
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
 				new ClassPathResource("fixtures/experiment-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-fixture.sql"));
+				new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_gene_stats.sql"));
 		populator.execute(dataSource);
 	}
 
 	@AfterAll
 	void cleanDatabaseTables() {
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
-				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-				new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-				new ClassPathResource("fixtures/experiment-delete.sql"));
+				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_gene_stats-delete.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes-delete.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group_membership-delete.sql"),
+				new ClassPathResource("fixtures/202108/scxa_cell_group-delete.sql"),
+				new ClassPathResource("fixtures/202108/experiment-delete.sql"));
 		populator.execute(dataSource);
 	}
 
@@ -139,14 +137,14 @@ class ExperimentFileLocationServiceIT {
 						.map(template -> MessageFormat.format(template, experimentAccession))
 						.collect(Collectors.toList());
 
-		existingArchiveFilesOfType(experimentAccession,
-				ExperimentFileType.QUANTIFICATION_FILTERED, expectedFileNames, false);
+		existingArchiveFilesOfType(
+				experimentAccession, ExperimentFileType.QUANTIFICATION_FILTERED, expectedFileNames, false);
 	}
 
 	@Test
 	void existingNormalisedQuantificationFiles() {
-		String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-		List<String> expectedFileNames =
+		var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+		var expectedFileNames =
 				Stream.of(
 						SINGLE_CELL_MATRIX_MARKET_NORMALISED_AGGREGATED_COUNTS_FILE_PATH_TEMPLATE,
 						SINGLE_CELL_MATRIX_MARKET_NORMALISED_AGGREGATED_COUNTS_CELL_IDS_FILE_PATH_TEMPLATE,
@@ -154,14 +152,14 @@ class ExperimentFileLocationServiceIT {
 						.map(template -> MessageFormat.format(template, experimentAccession))
 						.collect(Collectors.toList());
 
-		existingArchiveFilesOfType(experimentAccession,
-				ExperimentFileType.NORMALISED, expectedFileNames, true);
+		existingArchiveFilesOfType(
+				experimentAccession, ExperimentFileType.NORMALISED, expectedFileNames, true);
 	}
 
 	@Test
 	void existingRawFilteredQuantificationFiles() {
-		String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-		List<String> expectedFileNames =
+		var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+		var expectedFileNames =
 				Stream.of(
 						SINGLE_CELL_MATRIX_MARKET_FILTERED_AGGREGATED_COUNTS_FILE_PATH_TEMPLATE,
 						SINGLE_CELL_MATRIX_MARKET_FILTERED_AGGREGATED_COUNTS_CELL_IDS_FILE_PATH_TEMPLATE,
@@ -169,16 +167,16 @@ class ExperimentFileLocationServiceIT {
 						.map(template -> MessageFormat.format(template, experimentAccession))
 						.collect(Collectors.toList());
 
-		existingArchiveFilesOfType(experimentAccession,
-				ExperimentFileType.QUANTIFICATION_RAW, expectedFileNames, true);
+		existingArchiveFilesOfType(
+				experimentAccession, ExperimentFileType.QUANTIFICATION_RAW, expectedFileNames, true);
 	}
 
 	@Test
 	void existingMarkerGeneFiles() {
-		String experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
-		List<Integer> ks = jdbcTestUtils.fetchKsFromCellClusters(experimentAccession);
+		var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
+		var ks = jdbcTestUtils.fetchKsFromCellGroups(experimentAccession);
 
-		List<String> expectedFileNames = ks
+		var expectedFileNames = ks
 				.stream()
 				.map(k -> MessageFormat.format(MARKER_GENES_FILE_NAME_TEMPLATE, experimentAccession, k))
 				.collect(Collectors.toList());
@@ -196,7 +194,7 @@ class ExperimentFileLocationServiceIT {
 
 	@Test
 	void invalidFileType() {
-		Path path = subject.getFilePath(jdbcTestUtils.fetchRandomExperimentAccession(),
+		var path = subject.getFilePath(jdbcTestUtils.fetchRandomExperimentAccession(),
 				ExperimentFileType.QUANTIFICATION_FILTERED);
 
 		assertThat(path).isNull();
@@ -205,41 +203,42 @@ class ExperimentFileLocationServiceIT {
 
 	@Test
 	void invalidArchiveFileType() {
-		List<Path> paths = subject.getFilePathsForArchive(jdbcTestUtils.fetchRandomExperimentAccession(),
-				ExperimentFileType.SDRF);
+		var paths =
+				subject.getFilePathsForArchive(
+						jdbcTestUtils.fetchRandomExperimentAccession(), ExperimentFileType.SDRF);
 
 		assertThat(paths).isNull();
 	}
 
 	@Test
 	void uriForValidNonArchiveFileType() {
-		String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+		var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
 
-		ExperimentFileType fileType = ExperimentFileType.EXPERIMENT_DESIGN;
-		URI uri = subject.getFileUri(experimentAccession, fileType, "");
+		var fileType = ExperimentFileType.EXPERIMENT_DESIGN;
+		var uri = subject.getFileUri(experimentAccession, fileType, "");
 
-		String expectedUrl = MessageFormat.format(EXPERIMENT_FILES_URI_TEMPLATE,
-				experimentAccession, fileType.getId(), "");
+		var expectedUrl =
+				MessageFormat.format(EXPERIMENT_FILES_URI_TEMPLATE, experimentAccession, fileType.getId(), "");
 
 		assertThat(uri.toString()).isEqualTo(expectedUrl);
 	}
 
 	@Test
 	void uriForValidArchiveFileType() {
-		String experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+		var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
 
-		ExperimentFileType fileType = ExperimentFileType.QUANTIFICATION_FILTERED;
-		URI uri = subject.getFileUri(experimentAccession, fileType, "");
+		var fileType = ExperimentFileType.QUANTIFICATION_FILTERED;
+		var uri = subject.getFileUri(experimentAccession, fileType, "");
 
-		String expectedUrl = MessageFormat.format(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE,
-				experimentAccession, fileType.getId(), "");
+		var expectedUrl =
+				MessageFormat.format(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE, experimentAccession, fileType.getId(), "");
 
 		assertThat(uri.toString()).isEqualTo(expectedUrl);
 	}
 
 	private void existingFileOfType(String experimentAccession, ExperimentFileType fileType, String fileNameTemplate) {
-		Path path = subject.getFilePath(experimentAccession, fileType);
-		File file = path.toFile();
+		var path = subject.getFilePath(experimentAccession, fileType);
+		var file = path.toFile();
 
 		assertThat(file).hasName(MessageFormat.format(fileNameTemplate, experimentAccession));
 		assertThat(file).exists();
@@ -250,19 +249,19 @@ class ExperimentFileLocationServiceIT {
 											ExperimentFileType fileType,
 											List<String> expectedFileNames,
 											Boolean isArchive) {
-		List<Path> paths = subject.getFilePathsForArchive(experimentAccession, fileType);
+		var paths = subject.getFilePathsForArchive(experimentAccession, fileType);
 
 		// Some paths, e.g. marker genes, might not be all in the DB
 		assertThat(paths.size()).isGreaterThanOrEqualTo(expectedFileNames.size());
 
-		for (Path path : paths) {
-			File file = path.toFile();
+		for (var path : paths) {
+			var file = path.toFile();
 
 			assertThat(file).exists();
 			assertThat(file).isFile();
 		}
 
-		List<String> fileNames = paths.stream()
+		var fileNames = paths.stream()
 				.map(Path::toFile)
 				.map(File::getName)
 				.map(entry -> isArchive ? experimentAccession + "/" + entry : entry)
@@ -272,5 +271,4 @@ class ExperimentFileLocationServiceIT {
 				.isNotEmpty()
 				.containsAnyElementsOf(fileNames);
 	}
-
 }

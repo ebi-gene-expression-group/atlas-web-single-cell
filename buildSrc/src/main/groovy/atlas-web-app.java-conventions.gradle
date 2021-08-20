@@ -92,8 +92,8 @@ dependencies {
 processTestResources {
   filesMatching('configuration.properties') {
     expand(
-            dataFilesLocation: project.hasProperty('dataFilesLocation') ? dataFilesLocation : "${System.env.ATLAS_DATA_PATH}",
-            experimentFilesLocation: project.hasProperty('experimentFilesLocation') ? experimentFilesLocation : "${System.env.ATLAS_DATA_PATH}/scxa",
+            dataFilesLocation: dataFilesLocation,
+            experimentFilesLocation: experimentFilesLocation,
             buildNumber: project.hasProperty('buildNumber') ? buildNumber : '42',
             buildBranch: project.hasProperty('buildBranch') ? buildBranch : 'dev',
             buildRevision: project.hasProperty('buildRevision') ? buildRevision : 'dev',
@@ -112,9 +112,9 @@ processTestResources {
 
   filesMatching('jdbc.properties') {
     expand(
-            jdbcUrl: project.hasProperty('jdbcUrl') ? jdbcUrl : 'jdbc:postgresql://localhost:5432/gxpscxadev',
-            jdbcUsername: project.hasProperty('jdbcUsername') ? jdbcUsername : 'atlasprd3',
-            jdbcPassword: project.hasProperty('jdbcPassword') ? jdbcPassword : 'atlasprd3'
+            jdbcUrl: jdbcUrl,
+            jdbcUsername: jdbcUsername,
+            jdbcPassword: jdbcPassword
     )
   }
 
@@ -127,17 +127,21 @@ processTestResources {
 }
 
 test {
-  if (project.hasProperty('testResultsPath')) {
-    reporting.baseDir = "${buildDir}/reports/" + project.property('testResultsPath')
-    testResultsDirName = "${buildDir}/test-results/" + project.property('testResultsPath')
-
-    jacoco {
-      destinationFile = file("${buildDir}/jacoco/${project.property('testResultsPath')}.exec")
-    }
+  if (project.hasProperty('remoteDebug')) {
+    jvmArgs '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005'
   }
 
   if (project.hasProperty('excludeTests')) {
     exclude project.property('excludeTests')
+  }
+
+  if (project.hasProperty('testResultsPath')) {
+    testReportDirName = project.property('testResultsPath')
+    testResultsDirName = project.property('testResultsPath')
+
+    jacoco {
+      destinationFile = file("${buildDir}/jacoco/${project.property('testResultsPath')}.exec")
+    }
   }
 
   testLogging {
@@ -152,8 +156,7 @@ test {
 
 jacocoTestReport {
   executionData.setFrom fileTree(dir: "${buildDir}/jacoco", include: '*.exec' )
-
   reports {
-    html.destination file("${buildDir}/jacoco/html")
+    html.outputLocation = layout.buildDirectory.dir("reports/jacoco")
   }
 }

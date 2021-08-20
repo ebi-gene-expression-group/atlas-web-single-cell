@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -53,33 +52,31 @@ class TSnePlotDaoIT {
     @BeforeAll
     void populateDatabaseTables() {
         populator.setScripts(
-                new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_coords-fixture.sql"));
+                new ClassPathResource("fixtures/202108/experiment.sql"),
+                new ClassPathResource("fixtures/202108/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/202108/scxa_coords.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"));
         populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
         populator.setScripts(
-                new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
+                new ClassPathResource("fixtures/202108/experiment-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_membership-delete.sql"));
         populator.execute(dataSource);
     }
 
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionAndPerplexityProvider")
-    void testExpression(String experimentAccession, String method, int perplexity) {
+    void testExpression(String experimentAccession, int perplexity) {
         var geneId = jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(experimentAccession);
 
-        assertThat(subject.fetchTSnePlotWithExpression(experimentAccession, method, perplexity, geneId))
+        assertThat(subject.fetchTSnePlotWithExpression(experimentAccession, "tsne", perplexity, geneId))
                 .isNotEmpty()
                 .doesNotHaveDuplicates()
                 .allMatch(tSnePointDto -> tSnePointDto.expressionLevel() >= 0.0)
@@ -87,9 +84,9 @@ class TSnePlotDaoIT {
                 .isSubsetOf(fetchCellIds(experimentAccession));
     }
 
-    @ParameterizedTest
-    @Ignore
-    @MethodSource("randomExperimentAccessionKAndPerplexityProvider")
+    // TODO Re-think this test with scxa_coords
+    // @ParameterizedTest
+    // @MethodSource("randomExperimentAccessionKAndPerplexityProvider")
     void testClustersForK(String experimentAccession, String plotType, int plotOption, int perplexity) {
         assertThat(subject.fetchTSnePlotWithClusters(experimentAccession, plotType, perplexity, String.valueOf(plotOption)))
                 .isNotEmpty()
@@ -120,12 +117,12 @@ class TSnePlotDaoIT {
     // In this test, we test the count of cells. To make a comprehensive test we count the lines of the local file to
     // match the return result by querying in the fixture.
     // If the fixture is a partition of the full dataset, then it will fail, so we load a full test dataset.
-    @ParameterizedTest
-    @Ignore // TODO Re-think this test with scxa_coords
-    @MethodSource("randomExperimentAccessionProvider")
+    // TODO Re-think this test with scxa_coords
+    // @ParameterizedTest
+    // @MethodSource("randomExperimentAccessionProvider")
     void testNumberOfCellsByExperimentAccession(String experimentAccession) {
         cleanDatabaseTables();
-        //populator.setScripts(new ClassPathResource("fixtures/scxa_tsne-full.sql"));
+        populator.setScripts(new ClassPathResource("fixtures/scxa_tsne-full.sql"));
         populator.execute(dataSource);
         var resource =
                 new DataFileHub(dataFilesPath.resolve("scxa")).getSingleCellExperimentFiles(experimentAccession).tSnePlotTsvs;
@@ -169,6 +166,7 @@ class TSnePlotDaoIT {
         return Stream.of(Arguments.of(experimentAccession, perplexity));
     }
 
+    // TODO Re-think this provider with scxa_coords
     private Stream<Arguments> randomExperimentAccessionKAndPerplexityProvider() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);

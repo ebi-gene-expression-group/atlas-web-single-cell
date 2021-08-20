@@ -64,20 +64,24 @@ class ExperimentPageContentServiceIT {
     @BeforeAll
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
-        populator.addScripts(
-                new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-fixture-alt.sql"),
-                new ClassPathResource("fixtures/scxa_coords-fixture.sql"));
+        populator.setScripts(
+                new ClassPathResource("fixtures/202108/experiment.sql"),
+                new ClassPathResource("fixtures/202108/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/202108/scxa_coords.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"));
         populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
-        populator.addScripts(
-                new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
+        populator.setScripts(
+                new ClassPathResource("fixtures/202108/experiment-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_membership-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -168,18 +172,16 @@ class ExperimentPageContentServiceIT {
                         .map(JsonElement::getAsInt)
                         .collect(toSet()))
                 .containsExactlyInAnyOrder(
-                        jdbcTestUtils.fetchKsFromCellClusters(experimentAccession).toArray(new Integer[0]));
+                        jdbcTestUtils.fetchKsFromCellGroups(experimentAccession).toArray(new Integer[0]));
 
         if (result.has("selectedK")) {
-            assertThat(jdbcTestUtils.fetchKsFromCellClusters(experimentAccession))
+            assertThat(jdbcTestUtils.fetchKsFromCellGroups(experimentAccession))
                     .contains(result.get("selectedK").getAsInt());
         }
 
-        assertThat(result.has("perplexities")).isTrue();
-        assertThat(result.get("perplexities").getAsJsonArray()).isNotEmpty();
-
         assertThat(result.has("plotTypesAndOptions")).isTrue();
-        assertThat(result.get("plotTypesAndOptions").getAsJsonArray()).isNotEmpty();
+        assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("tsne").getAsJsonArray()).isNotEmpty();
+        assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("umap").getAsJsonArray()).isNotEmpty();
 
         // Not all experiments have metadata, see E-GEOD-99058
         if (result.has("metadata")) {

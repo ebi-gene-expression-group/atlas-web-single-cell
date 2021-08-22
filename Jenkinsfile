@@ -66,6 +66,8 @@ pipeline {
           }
           steps {
             container('scxa-flyway') {
+              sh 'pwd'
+              sh 'whoami'
               sh 'flyway -url=jdbc:postgresql://localhost:5432/scxa -schemas=scxa -user=scxa -password=scxa -connectRetries=60 -locations=filesystem:./schemas/flyway/scxa migrate'
             }
             container('openjdk') {

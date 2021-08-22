@@ -65,12 +65,14 @@ pipeline {
             timeout (time: 5, unit: "MINUTES")
           }
           steps {
-            container('scxa-flyway') {
-              sh 'pwd'
-              sh 'whoami'
-              sh 'flyway -url=jdbc:postgresql://localhost:5432/scxa -schemas=scxa -user=scxa -password=scxa -connectRetries=60 -locations=filesystem:./schemas/flyway/scxa migrate'
-            }
             container('openjdk') {
+              sh './gradlew ' +
+                      '-Pflyway.url=jdbc:postgresql://localhost:5432/scxa ' +
+                      '-Pflyway.user=scxa ' +
+                      '-Pflyway.password=scxa ' +
+                      '-Pflyway.locations=filesystem:./schemas/flyway/scxa ' +
+                      '-Pflyway.schemas=scxa ' +
+                      'flywayMigrate'
               sh './gradlew ' +
                       '-PdataFilesLocation=/test-data ' +
                       '-PexperimentFilesLocation=/test-data/scxa ' +

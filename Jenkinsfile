@@ -7,13 +7,12 @@ pipeline {
 
 
   stages {
-    stage('Prepare environment') {
+    stage('Provision Gradle and start daemon') {
       options {
         timeout (time: 5, unit: "MINUTES")
       }
       steps {
         container('openjdk') {
-          sh 'echo Download Gradle and start daemon...'
           sh './gradlew'
         }
       }

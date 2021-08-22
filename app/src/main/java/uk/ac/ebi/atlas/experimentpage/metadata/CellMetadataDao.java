@@ -119,14 +119,14 @@ public class CellMetadataDao {
                 .stream()
                 .collect(
                         toImmutableMap(
-                                entry -> ((ArrayList<?>) entry.getOrDefault(FACTOR_NAME.name(),
-                                        entry.get(CHARACTERISTIC_NAME.name()))).get(0).toString(),
-                                // The factor fields in Solr are all multi-value fields, even though they technically
-                                // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
-                                // value. This was confirmed by curators in this Slack conversation:
-                                // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
-                                entry -> ((ArrayList<?>) entry.getOrDefault(FACTOR_VALUE.name(),
-                                        entry.get(CHARACTERISTIC_VALUE.name()))).get(0).toString(),
+                                entry ->
+                                        entry.getOrDefault(
+                                                FACTOR_NAME.name(),
+                                                entry.get(CHARACTERISTIC_NAME.name())).toString(),
+                                entry ->
+                                        entry.getOrDefault(
+                                                FACTOR_VALUE.name(),
+                                                entry.get(CHARACTERISTIC_VALUE.name())).toString(),
                                 // If encountering the same name as factor and characteristic the last one overwrites
                                 // any previous values
                                 (v1, v2) -> v2));

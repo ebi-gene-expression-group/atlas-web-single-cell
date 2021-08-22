@@ -88,7 +88,7 @@ pipeline {
           steps {
             container('openjdk') {
               sh './gradlew -PtestResultsPath=ut :app:test --tests *Test'
-              // sh './gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+              sh './gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
               // sh './gradlew -PtestResultsPath=e2e :app:test --tests *WIT'
               sh './gradlew :app:jacocoTestReport'
             }
@@ -97,7 +97,7 @@ pipeline {
 
         stage('Build') {
           options {
-            timeout (time: 45, unit: "MINUTES")
+            timeout (time: 15, unit: "MINUTES")
           }
 //          when { anyOf {
 //            branch 'develop'
@@ -155,7 +155,7 @@ pipeline {
         // junit 'atlas-web-core/build/it/**/*.xml'
 
         junit 'app/build/ut/**/*.xml'
-        // junit 'app/build/it/**/*.xml'
+        junit 'app/build/it/**/*.xml'
         // junit 'app/build/e2e/**/*.xml'
         archiveArtifacts artifacts: 'atlas-web-core/build/reports/**', fingerprint: true, allowEmptyArchive: true
         archiveArtifacts artifacts: 'app/build/reports/**', fingerprint: true, allowEmptyArchive: true

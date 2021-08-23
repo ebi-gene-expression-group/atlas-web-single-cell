@@ -16,7 +16,6 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.UniqueSt
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;

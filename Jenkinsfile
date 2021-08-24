@@ -48,7 +48,7 @@ pipeline {
           }
           steps {
             container('openjdk') {
-              // sh './gradlew -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
+              sh './gradlew -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
               // sh './gradlew -PtestResultsPath=it :atlas-web-core:test --tests *IT'
               // sh './gradlew :atlas-web-core:jacocoTestReport'
             }

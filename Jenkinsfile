@@ -134,7 +134,7 @@ pipeline {
             stage('Update and build ES bundles') {
               steps {
                 container('openjdk') {
-                  sh '. ~/.bashrc && ./update-compile-front-end-packages.sh'
+                  sh '. ~/.bashrc && ./update-compile-front-end-packages.sh ${env.BRANCH_NAME == "main" ? "-p" : "-d"}'
                 }
               }
             }

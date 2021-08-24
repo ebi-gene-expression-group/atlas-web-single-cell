@@ -112,6 +112,9 @@ pipeline {
 //          } }
           stages {
             stage('Provision Node.js build environment') {
+              options {
+                timeout (time: 5, unit: "MINUTES")
+              }
               steps {
                 container('openjdk') {
                   // Required by node_modules/cwebp-bin
@@ -132,6 +135,9 @@ pipeline {
             }
 
             stage('Update and build ES bundles') {
+              options {
+                timeout (time: 15, unit: "MINUTES")
+              }
               steps {
                 container('openjdk') {
                   sh '[[ env.BRANCH_NAME = main ]] && WEBPACK_OPTS=-p || WEBPACK_OPTS=-d && ' +
@@ -141,6 +147,9 @@ pipeline {
             }
 
             stage('Assemble WAR file') {
+              options {
+                timeout (time: 5, unit: "MINUTES")
+              }
               steps {
                 container('openjdk') {
                   sh './gradlew :app:war'

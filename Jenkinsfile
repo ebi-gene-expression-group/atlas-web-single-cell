@@ -103,13 +103,10 @@ pipeline {
         }
 
         stage('Build') {
-          options {
-            timeout (time: 15, unit: "MINUTES")
-          }
-//          when { anyOf {
-//            branch 'develop'
-//            branch 'main'
-//          } }
+          when { anyOf {
+            branch 'develop'
+            branch 'main'
+          } }
           stages {
             stage('Provision Node.js build environment') {
               options {

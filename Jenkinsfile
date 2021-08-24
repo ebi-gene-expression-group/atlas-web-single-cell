@@ -96,7 +96,7 @@ pipeline {
             container('openjdk') {
               sh './gradlew -PtestResultsPath=ut :app:test --tests *Test'
               sh './gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-              // sh './gradlew -PtestResultsPath=e2e :app:test --tests *WIT'
+              sh './gradlew -PtestResultsPath=e2e :app:test --tests *WIT'
               sh './gradlew :app:jacocoTestReport'
             }
           }
@@ -163,7 +163,7 @@ pipeline {
 
         junit 'app/build/ut/**/*.xml'
         junit 'app/build/it/**/*.xml'
-        // junit 'app/build/e2e/**/*.xml'
+        junit 'app/build/e2e/**/*.xml'
         archiveArtifacts artifacts: 'atlas-web-core/build/reports/**', fingerprint: true, allowEmptyArchive: true
         archiveArtifacts artifacts: 'app/build/reports/**', fingerprint: true, allowEmptyArchive: true
         archiveArtifacts artifacts: 'app/src/main/webapp/resources/js-bundles/report.html', fingerprint: true, allowEmptyArchive: true

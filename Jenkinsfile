@@ -165,7 +165,7 @@ pipeline {
   post {
     always {
       container('openjdk') {
-        // junit 'atlas-web-core/build/ut/**/*.xml'
+        junit 'atlas-web-core/build/ut/**/*.xml'
         // junit 'atlas-web-core/build/it/**/*.xml'
 
         junit 'app/build/ut/**/*.xml'

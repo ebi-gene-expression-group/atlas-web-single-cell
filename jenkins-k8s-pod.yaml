@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    some-label: some-label-value
+spec:
+  containers:
+    - name: openjdk
+      image: openjdk:11
+      volumeMounts:
+        - mountPath: /test-data/scxa
+          name: scxa-ci-data-claim
+        - mountPath: /root/.m2
+          name: scxa-ci-build-packages
+    - name: postgres
+      image: postgres-alpine:10
+      env:
+        - name: POSTGRES_DB
+          value: "scxa"
+        - name: POSTGRES_USER
+          value: "scxa"
+        - name: POSTGRES_PASSWORD
+          value: "scxa"
+  volumes:
+    - name: scxa-ci-data
+      persistenVolumeClaim:
+        claimName: scxa-ci-data-claim
+    - name: scxa-ci-build-packages
+      persistenVolumeClaim:
+        claimName: scxa-ci-build-packages-claim

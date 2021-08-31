@@ -27,8 +27,8 @@ spec:
           value: "scxa"
   volumes:
     - name: scxa-ci-data
-      persistenVolumeClaim:
+      persistentVolumeClaim:
         claimName: scxa-ci-data-claim
     - name: scxa-ci-build-packages
-      persistenVolumeClaim:
+      persistentVolumeClaim:
         claimName: scxa-ci-build-packages-claim

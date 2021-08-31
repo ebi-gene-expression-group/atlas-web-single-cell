@@ -13,7 +13,7 @@ spec:
         - mountPath: /root/.m2
           name: scxa-ci-build-packages
     - name: postgres
-      image: postgres-alpine:10
+      image: postgres:10-alpine
       env:
         - name: POSTGRES_DB
           value: "scxa"

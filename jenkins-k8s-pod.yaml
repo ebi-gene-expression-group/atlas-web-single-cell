@@ -7,6 +7,10 @@ spec:
   containers:
     - name: openjdk
       image: openjdk:11
+      command:
+      - sleep
+      args:
+      - 99d
       volumeMounts:
         - mountPath: /test-data/scxa
           name: scxa-ci-data

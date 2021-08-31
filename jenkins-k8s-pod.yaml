@@ -9,7 +9,7 @@ spec:
       image: openjdk:11
       volumeMounts:
         - mountPath: /test-data/scxa
-          name: scxa-ci-data-claim
+          name: scxa-ci-data
         - mountPath: /root/.m2
           name: scxa-ci-build-packages
     - name: postgres

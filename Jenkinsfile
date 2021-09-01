@@ -26,13 +26,13 @@ pipeline {
             timeout (time: 5, unit: "MINUTES")
           }
           steps {
-            sh './gradlew ' +
-                    '-Pflyway.url=jdbc:postgresql://localhost:5432/gxa ' +
-                    '-Pflyway.user=gxa ' +
-                    '-Pflyway.password=gxa ' +
-                    '-Pflyway.locations=filesystem:./schemas/flyway/gxa ' +
-                    '-Pflyway.schemas=gxa ' +
-                    'flywayMigrate'
+//            sh './gradlew ' +
+//                    '-Pflyway.url=jdbc:postgresql://localhost:5432/gxa ' +
+//                    '-Pflyway.user=gxa ' +
+//                    '-Pflyway.password=gxa ' +
+//                    '-Pflyway.locations=filesystem:./schemas/flyway/gxa ' +
+//                    '-Pflyway.schemas=gxa ' +
+//                    'flywayMigrate'
             sh './gradlew ' +
                     '-PdataFilesLocation=/gxa-test-data ' +
                     '-PexperimentFilesLocation=/gxa-test-data/gxa ' +

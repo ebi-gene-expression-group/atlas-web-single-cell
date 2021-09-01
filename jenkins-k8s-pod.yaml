@@ -14,6 +14,8 @@ spec:
       volumeMounts:
         - mountPath: /test-data/scxa
           name: scxa-ci-data
+        - mountPath: /test-data/bioentity_properties
+          name: bioentity-properties
         - mountPath: /root/.m2
           name: scxa-ci-build-packages
     - name: postgres
@@ -31,4 +33,7 @@ spec:
         claimName: scxa-ci-data-claim
     - name: scxa-ci-build-packages
       persistentVolumeClaim:
-        claimName: scxa-ci-build-packages-claim
+        claimName: scxa-ci-build-packages
+    - name: bioentity-properties
+      persistentVolumeClaim:
+        claimName: bioentity-properties-claim

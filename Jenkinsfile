@@ -14,7 +14,7 @@ pipeline {
         timeout (time: 5, unit: "MINUTES")
       }
       steps {
-        sh './gradlew'
+        sh './gradlew --no-watch-fs'
       }
     }
 
@@ -26,19 +26,19 @@ pipeline {
             timeout (time: 5, unit: "MINUTES")
           }
           steps {
-//            sh './gradlew ' +
-//                    '-Pflyway.url=jdbc:postgresql://localhost:5432/gxa ' +
-//                    '-Pflyway.user=gxa ' +
-//                    '-Pflyway.password=gxa ' +
-//                    '-Pflyway.locations=filesystem:./schemas/flyway/gxa ' +
-//                    '-Pflyway.schemas=gxa ' +
-//                    'flywayMigrate'
-            sh './gradlew ' +
+            sh './gradlew --no-watch-fs ' +
+                    '-Pflyway.url=jdbc:postgresql://localhost:5432/postgres ' +
+                    '-Pflyway.user=postgres ' +
+                    '-Pflyway.password=postgres ' +
+                    '-Pflyway.locations=filesystem:./schemas/flyway/gxa ' +
+                    '-Pflyway.schemas=gxa ' +
+                    'flywayMigrate'
+            sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/gxa-test-data ' +
                     '-PexperimentFilesLocation=/gxa-test-data/gxa ' +
-                    '-PjdbcUrl=jdbc:postgresql://localhost:5432/scxa ' +
-                    '-PjdbcUsername=scxa ' +
-                    '-PjdbcPassword=scxa ' +
+                    '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
+                    '-PjdbcUsername=postgres ' +
+                    '-PjdbcPassword=postgres ' +
                     '-PzkHost=scxa-zk-cs.scxa-test.svc.cluster.local ' +
                     '-PzkPort=2181 ' +
                     '-PsolrHost=scxa-solrcloud-cs.scxa-test.svc.cluster.local ' +
@@ -52,9 +52,9 @@ pipeline {
             timeout (time: 1, unit: "HOURS")
           }
           steps {
-            sh './gradlew -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
-            // sh './gradlew -PtestResultsPath=it :atlas-web-core:test --tests *IT'
-            sh './gradlew :atlas-web-core:jacocoTestReport'
+            sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
+            // sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
+            sh './gradlew --no-watch-fs :atlas-web-core:jacocoTestReport'
           }
         }
       }
@@ -68,19 +68,19 @@ pipeline {
             timeout (time: 5, unit: "MINUTES")
           }
           steps {
-            sh './gradlew ' +
-                    '-Pflyway.url=jdbc:postgresql://localhost:5432/scxa ' +
-                    '-Pflyway.user=scxa ' +
-                    '-Pflyway.password=scxa ' +
+            sh './gradlew --no-watch-fs ' +
+                    '-Pflyway.url=jdbc:postgresql://localhost:5432/postgres ' +
+                    '-Pflyway.user=postgres ' +
+                    '-Pflyway.password=postgres ' +
                     '-Pflyway.locations=filesystem:./schemas/flyway/scxa ' +
                     '-Pflyway.schemas=scxa ' +
                     'flywayMigrate'
-            sh './gradlew ' +
+            sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/test-data ' +
                     '-PexperimentFilesLocation=/test-data/scxa ' +
-                    '-PjdbcUrl=jdbc:postgresql://localhost:5432/scxa ' +
-                    '-PjdbcUsername=scxa ' +
-                    '-PjdbcPassword=scxa ' +
+                    '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
+                    '-PjdbcUsername=postgres ' +
+                    '-PjdbcPassword=postgres ' +
                     '-PzkHost=scxa-zk-hs.scxa-test.svc.cluster.local ' +
                     '-PzkPort=2181 ' +
                     '-PsolrHost=scxa-solrcloud-hs.scxa-test.svc.cluster.local ' +
@@ -94,10 +94,10 @@ pipeline {
             timeout (time: 1, unit: "HOURS")
           }
           steps {
-            sh './gradlew -PtestResultsPath=ut :app:test --tests *Test'
-            sh './gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-            sh './gradlew -PtestResultsPath=e2e :app:test --tests *WIT'
-            sh './gradlew :app:jacocoTestReport'
+            sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
+            sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+            sh './gradlew --no-watch-fs -PtestResultsPath=e2e :app:test --tests *WIT'
+            sh './gradlew --no-watch-fs :app:jacocoTestReport'
           }
         }
 
@@ -143,7 +143,7 @@ pipeline {
                 timeout (time: 5, unit: "MINUTES")
               }
               steps {
-                sh './gradlew :app:war'
+                sh './gradlew --no-watch-fs :app:war'
                 archiveArtifacts artifacts: 'webapps/gxa#sc.war', fingerprint: true
               }
             }

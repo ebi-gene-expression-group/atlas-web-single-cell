@@ -22,11 +22,11 @@ spec:
       image: postgres:10-alpine
       env:
         - name: POSTGRES_DB
-          value: "scxa"
+          value: "postgres"
         - name: POSTGRES_USER
-          value: "scxa"
+          value: "postgres"
         - name: POSTGRES_PASSWORD
-          value: "scxa"
+          value: "postgres"
   volumes:
     - name: scxa-ci-data
       persistentVolumeClaim:

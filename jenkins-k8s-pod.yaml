@@ -33,7 +33,7 @@ spec:
         claimName: scxa-ci-data-claim
     - name: scxa-ci-build-packages
       persistentVolumeClaim:
-        claimName: scxa-ci-build-packages
+        claimName: scxa-ci-build-packages-claim
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-claim

@@ -18,6 +18,8 @@ spec:
           name: bioentity-properties
         - mountPath: /root/.m2
           name: scxa-ci-build-packages
+        - mountPath: /root/.gradle
+          name: openjdk-root-gradle-claim
     - name: postgres
       image: postgres:10-alpine
       env:

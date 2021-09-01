@@ -39,6 +39,6 @@ spec:
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-claim
-    -name: openjdk-root-gradle
+    - name: openjdk-root-gradle
       persistentVolumeClaim:
         claimName: openjdk-root-gradle-claim

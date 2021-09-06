@@ -40,13 +40,7 @@ class JsonCellPlotControllerWIT {
     private DataSource dataSource;
 
     @Inject
-    private ExperimentTrader experimentTrader;
-
-    @Inject
     private JdbcUtils jdbcUtils;
-
-    @Inject
-    private ExperimentCrud experimentCrud;
 
     @Inject
     private TSnePlotSettingsService tSnePlotSettingsService;
@@ -90,10 +84,8 @@ class JsonCellPlotControllerWIT {
     @BeforeEach
     void setUp() {
         var experimentAccession = jdbcUtils.fetchRandomPublicExperimentAccession();
-        var experiment = experimentTrader.getPublicExperiment(experimentAccession);
-
-        experimentCrud.updateExperimentPrivate(experimentAccession, true);
-        accessKey = experiment.getAccessKey();
+        jdbcUtils.updatePublicExperimentAccessionToPrivate(experimentAccession);
+        accessKey = jdbcUtils.fetchExperimentAccessKey(experimentAccession);
 
         var k = tSnePlotSettingsService.getExpectedClusters(experimentAccession);
         endpoint_url = "/json/cell-plots/" + experimentAccession + "/clusters/k/" + k.get();

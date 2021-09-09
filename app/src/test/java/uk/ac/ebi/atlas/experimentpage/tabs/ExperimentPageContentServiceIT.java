@@ -159,41 +159,40 @@ import static org.assertj.core.api.Assertions.assertThat;
         }
     }
 
-//    @Test
-//    @Ignore
-//    void getValidTsnePlotDataJson() {
-//        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-//        var result = this.subject.getTsnePlotData(experimentAccession);
-//
-//        assertThat(result.has("suggesterEndpoint")).isTrue();
-//        assertThat(result.get("suggesterEndpoint").getAsString()).isEqualToIgnoringCase("json/suggestions");
-//
-//        assertThat(result.has("ks")).isTrue();
-//        assertThat(
-//                ImmutableSet.copyOf(result.get("ks").getAsJsonArray()).stream()
-//                        .map(JsonElement::getAsInt)
-//                        .collect(toSet()))
-//                .containsExactlyInAnyOrder(
-//                        jdbcTestUtils.fetchKsFromCellGroups(experimentAccession).toArray(new Integer[0]));
-//
-//        if (result.has("selectedK")) {
-//            assertThat(jdbcTestUtils.fetchKsFromCellGroups(experimentAccession))
-//                    .contains(result.get("selectedK").getAsInt());
-//        }
-//
-//        assertThat(result.has("plotTypesAndOptions")).isTrue();
-//        assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("tsne").getAsJsonArray()).isNotEmpty();
-//        assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("umap").getAsJsonArray()).isNotEmpty();
-//
-//        // Not all experiments have metadata, see E-GEOD-99058
-//        if (result.has("metadata")) {
-//            assertThat(result.get("metadata").getAsJsonArray())
-//                    .doesNotHaveDuplicates();
-//        }
-//
-//        assertThat(result.has("units")).isTrue();
-//        assertThat(result.get("units").getAsJsonArray()).isNotEmpty();
-//    }
+    @Test
+    void getValidTsnePlotDataJson() {
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var result = this.subject.getTsnePlotData(experimentAccession);
+
+        assertThat(result.has("suggesterEndpoint")).isTrue();
+        assertThat(result.get("suggesterEndpoint").getAsString()).isEqualToIgnoringCase("json/suggestions");
+
+        assertThat(result.has("ks")).isTrue();
+        assertThat(
+                ImmutableSet.copyOf(result.get("ks").getAsJsonArray()).stream()
+                        .map(JsonElement::getAsInt)
+                        .collect(toSet()))
+                .containsExactlyInAnyOrder(
+                        jdbcTestUtils.fetchKsFromCellGroups(experimentAccession).toArray(new Integer[0]));
+
+        if (result.has("selectedK")) {
+            assertThat(jdbcTestUtils.fetchKsFromCellGroups(experimentAccession))
+                    .contains(result.get("selectedK").getAsInt());
+        }
+
+        assertThat(result.has("plotTypesAndOptions")).isTrue();
+        assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("tsne").getAsJsonArray()).isNotEmpty();
+        assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("umap").getAsJsonArray()).isNotEmpty();
+
+        // Not all experiments have metadata, see E-GEOD-99058
+        if (result.has("metadata")) {
+            assertThat(result.get("metadata").getAsJsonArray())
+                    .doesNotHaveDuplicates();
+        }
+
+        assertThat(result.has("units")).isTrue();
+        assertThat(result.get("units").getAsJsonArray()).isNotEmpty();
+    }
 
     @Test
     void anatomogramExistsForValidExperiment() {

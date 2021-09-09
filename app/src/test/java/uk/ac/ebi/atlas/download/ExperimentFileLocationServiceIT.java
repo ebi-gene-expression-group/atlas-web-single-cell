@@ -18,7 +18,6 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.File;
-import java.net.URI;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
@@ -267,8 +266,8 @@ class ExperimentFileLocationServiceIT {
 				.map(entry -> isArchive ? experimentAccession + "/" + entry : entry)
 				.collect(Collectors.toList());
 
-//		assertThat(expectedFileNames)
-//				.isNotEmpty()
-//				.containsAnyElementsOf(fileNames);
+		assertThat(expectedFileNames)
+				.isNotEmpty()
+				.containsAnyElementsOf(fileNames);
 	}
 }

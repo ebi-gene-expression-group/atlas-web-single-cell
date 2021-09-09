@@ -22,7 +22,7 @@ public class SingleCellExperimentAdminController extends ExperimentAdminControll
     }
 
     @Caching(evict = {
-            @CacheEvict(cacheNames = "experimentAccessions", allEntries = true)})
+            @CacheEvict(cacheNames = "privateExperimentAccessions", allEntries = true)})
     @GetMapping(value = "/json/experiments/private/experimentAccessions/clearCache")
     public String fooBar() {
         return "";

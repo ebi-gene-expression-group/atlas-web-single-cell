@@ -11,7 +11,6 @@ services:
     working_dir: /root/project
     volumes:
       - ..:/root/project
-      - root-gradle-cache:/root/.gradle
       - ./packages:/root/.m2
       - $ATLAS_DATA_PATH:/root/scxa/integration-test-data
     depends_on:
@@ -41,10 +40,6 @@ services:
         ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
         ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT &&
         ./gradlew :app:jacocoTestReport
-
-volumes:
-  root-gradle-cache:
-    name: root-gradle-cache
 
 networks:
   scxa:

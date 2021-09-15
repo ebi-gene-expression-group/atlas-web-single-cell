@@ -315,7 +315,7 @@ TSnePlotViewRoute.propTypes = {
 }
 
 TSnePlotViewRoute.defaultProps = {
-  initialCellTypeValues: [`Inferred cell type - ontology labels`, `Inferred cell type - authors labels`, `Cell type`, `Progenitor cell type`]
+  initialCellTypeValues: [`Inferred cell type - ontology labels`, `Authors cell type - ontology labels`, `Inferred cell type - authors labels`, `Authors cell type`, `Cell type`, `Progenitor cell type`]
 }
 
 export default TSnePlotViewRoute

@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class ExperimentPageContentServiceIT {
+class ExperimentPageContentServiceIT {
     @Inject
     private DataSource dataSource;
 

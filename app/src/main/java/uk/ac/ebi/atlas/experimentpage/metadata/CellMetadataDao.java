@@ -16,7 +16,6 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.UniqueSt
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.solr.client.solrj.SolrQuery.ORDER.asc;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
@@ -119,14 +119,14 @@ public class CellMetadataDao {
                 .stream()
                 .collect(
                         toImmutableMap(
-                                entry -> ((ArrayList<?>) entry.getOrDefault(FACTOR_NAME.name(),
-                                        entry.get(CHARACTERISTIC_NAME.name()))).get(0).toString(),
-                                // The factor fields in Solr are all multi-value fields, even though they technically
-                                // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
-                                // value. This was confirmed by curators in this Slack conversation:
-                                // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
-                                entry -> ((ArrayList<?>) entry.getOrDefault(FACTOR_VALUE.name(),
-                                        entry.get(CHARACTERISTIC_VALUE.name()))).get(0).toString(),
+                                entry ->
+                                        entry.getOrDefault(
+                                                FACTOR_NAME.name(),
+                                                entry.get(CHARACTERISTIC_NAME.name())).toString(),
+                                entry ->
+                                        entry.getOrDefault(
+                                                FACTOR_VALUE.name(),
+                                                entry.get(CHARACTERISTIC_VALUE.name())).toString(),
                                 // If encountering the same name as factor and characteristic the last one overwrites
                                 // any previous values
                                 (v1, v2) -> v2));
@@ -164,10 +164,6 @@ public class CellMetadataDao {
                     .get()
                     .collect(toImmutableMap(
                             tuple -> tuple.getString(CELL_ID.name()),
-                            // The factor fields in Solr are all multi-value fields, even though they technically
-                            // shouldn't be. Apparently we don't expect any cell ID to have more than one factor
-                            // value. This was confirmed by curators in this Slack conversation:
-                            // https://ebi-fg.slack.com/archives/C800ZEPPS/p1529592962001046
                             // Missing values of a given metadata type is technically an invalid condensed SDRF file,
                             // but it’s a situation that we’ve encountered in the past and we want the web app to be
                             // somewhat lenient about it and show the experiment, rather than show a cryptic 400 error;
@@ -177,15 +173,14 @@ public class CellMetadataDao {
                             // https://ebi-fg.slack.com/archives/C800ZEPPS/p1624362599003900
                             // https://www.pivotaltracker.com/story/show/177533187
                             tuple -> {
-                                if (tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME) == null ||
-                                    tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME).isEmpty()) {
+                                if (isBlank(tuple.getString(METADATA_VALUE_TARGET_FIELD_NAME))) {
                                     LOGGER.error(
                                             "Missing metadata value for {} – {}",
                                             tuple.getString(CELL_ID.name()),
                                             metadataType);
                                     return "Not available";
                                 }
-                                return tuple.getStrings(METADATA_VALUE_TARGET_FIELD_NAME).get(0);
+                                return tuple.getString(METADATA_VALUE_TARGET_FIELD_NAME);
                             }));
         }
     }

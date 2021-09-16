@@ -1,6 +1,7 @@
 plugins {
     id 'atlas-web-app.java-conventions'
     id 'war'
+    id 'org.flywaydb.flyway' version '7.14.0'
 }
 
 version = '11.0.0'

@@ -333,7 +333,7 @@ backup operation with (set `SOLR_HOST` and `SOLR_COLLECTION` to the appropriate 
 docker exec -i ${SOLR_HOST} curl -s "http://localhost:8983/solr/${SOLR_COLLECTION}/replication?command=details"
 ```
 
-### I’m not getting any suggestions in Single Cell Expression Atlas
+### I’m not getting any suggestions in Single Cell Expression Atlas (tests in `uk.ac.ebi.atlas.search.suggester` fail)
 Read the important message after you run `scxa-solrlcoud-bootstrap`:
 > PLEASE READ!
 > Suggesters haven’t been built because it’s very likely to get a `java.net.SocketTimeoutException` due

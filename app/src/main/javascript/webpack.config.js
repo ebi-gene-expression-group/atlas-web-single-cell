@@ -1,6 +1,6 @@
 const path = require(`path`)
 const { CleanWebpackPlugin } = require(`clean-webpack-plugin`)
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const vendorsBundleName = `vendorCommons`
 
@@ -19,7 +19,9 @@ module.exports = {
 
   plugins: [
     new CleanWebpackPlugin(),
-    new BundleAnalyzerPlugin()
+    new BundleAnalyzerPlugin({
+      analyzerMode: `static`
+    })
   ],
 
   output: {

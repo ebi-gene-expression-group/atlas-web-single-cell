@@ -9,9 +9,9 @@ spec:
       image: openjdk:11
       resources:
         limits:
-          memory: "4Gi"
-        requests:
           memory: "2Gi"
+        requests:
+          memory: "1Gi"
       command:
       - sleep
       args:

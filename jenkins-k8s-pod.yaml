@@ -7,6 +7,11 @@ spec:
   containers:
     - name: openjdk
       image: openjdk:11
+      resources:
+        limits:
+          memory: "4Gi"
+        requests:
+          memory: "2Gi"
       command:
       - sleep
       args:
@@ -22,6 +27,11 @@ spec:
           name: openjdk-root-gradle
     - name: postgres
       image: postgres:10-alpine
+      resources:
+        limits:
+          memory: "500 Mi"
+        requests:
+          memory: "300 Mi"
       env:
         - name: POSTGRES_DB
           value: "postgres"

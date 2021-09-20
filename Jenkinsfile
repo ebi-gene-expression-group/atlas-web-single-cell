@@ -11,7 +11,7 @@ pipeline {
   stages {
     stage('Provision Gradle and start daemon') {
       options {
-        timeout (time: 5, unit: "MINUTES")
+        timeout (time: 10, unit: "MINUTES")
       }
       steps {
         sh './gradlew --no-watch-fs'

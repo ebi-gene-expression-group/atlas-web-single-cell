@@ -23,7 +23,7 @@ pipeline {
       stages {
         stage('Compile') {
           options {
-            timeout (time: 10, unit: "MINUTES")
+            timeout (time: 1, unit: "HOURS")
           }
           steps {
             sh './gradlew --no-watch-fs ' +
@@ -49,7 +49,7 @@ pipeline {
 
         stage('Test') {
           options {
-            timeout (time: 1, unit: "HOURS")
+            timeout (time: 2, unit: "HOURS")
           }
           steps {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
@@ -65,7 +65,7 @@ pipeline {
       stages {
         stage('Compile') {
           options {
-            timeout (time: 10, unit: "MINUTES")
+            timeout (time: 1, unit: "HOURS")
           }
           steps {
             sh './gradlew --no-watch-fs ' +
@@ -91,7 +91,7 @@ pipeline {
 
         stage('Test') {
           options {
-            timeout (time: 1, unit: "HOURS")
+            timeout (time: 2, unit: "HOURS")
           }
           steps {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
@@ -109,7 +109,7 @@ pipeline {
           stages {
             stage('Provision Node.js build environment') {
               options {
-                timeout (time: 20, unit: "MINUTES")
+                timeout (time: 1, unit: "HOURS")
               }
               steps {
                 // Required by node_modules/cwebp-bin
@@ -130,7 +130,7 @@ pipeline {
 
             stage('Update and build ES bundles') {
               options {
-                timeout (time: 15, unit: "MINUTES")
+                timeout (time: 1, unit: "HOURS")
               }
               steps {
                 sh '[[ env.BRANCH_NAME = main ]] && WEBPACK_OPTS=-p || WEBPACK_OPTS=-d && ' +
@@ -140,7 +140,7 @@ pipeline {
 
             stage('Assemble WAR file') {
               options {
-                timeout (time: 5, unit: "MINUTES")
+                timeout (time: 1, unit: "HOURS")
               }
               steps {
                 sh './gradlew --no-watch-fs :app:war'

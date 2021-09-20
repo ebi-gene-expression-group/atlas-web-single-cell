@@ -81,7 +81,7 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-hs.scxa-test ' +
+                    '-PzkHost=scxa-zk-cs.scxa-test ' +
                     '-PzkPort=2181 ' +
                     '-PsolrHost=scxa-solrcloud-hs.scxa-test ' +
                     '-PsolrPort=8983 ' +

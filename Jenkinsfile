@@ -11,7 +11,7 @@ pipeline {
   stages {
     stage('Provision Gradle and start daemon') {
       options {
-        timeout (time: 10, unit: "MINUTES")
+        timeout (time: 20, unit: "MINUTES")
       }
       steps {
         sh './gradlew --no-watch-fs'
@@ -23,7 +23,7 @@ pipeline {
       stages {
         stage('Compile') {
           options {
-            timeout (time: 5, unit: "MINUTES")
+            timeout (time: 10, unit: "MINUTES")
           }
           steps {
             sh './gradlew --no-watch-fs ' +
@@ -65,7 +65,7 @@ pipeline {
       stages {
         stage('Compile') {
           options {
-            timeout (time: 5, unit: "MINUTES")
+            timeout (time: 10, unit: "MINUTES")
           }
           steps {
             sh './gradlew --no-watch-fs ' +
@@ -109,7 +109,7 @@ pipeline {
           stages {
             stage('Provision Node.js build environment') {
               options {
-                timeout (time: 5, unit: "MINUTES")
+                timeout (time: 20, unit: "MINUTES")
               }
               steps {
                 // Required by node_modules/cwebp-bin

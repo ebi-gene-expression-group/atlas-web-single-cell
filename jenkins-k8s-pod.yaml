@@ -29,9 +29,9 @@ spec:
       image: postgres:10-alpine
       resources:
         limits:
-          memory: "500 Mi"
+          memory: "500Mi"
         requests:
-          memory: "300 Mi"
+          memory: "300Mi"
       env:
         - name: POSTGRES_DB
           value: "postgres"

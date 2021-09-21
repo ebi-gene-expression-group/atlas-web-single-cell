@@ -39,10 +39,10 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-cs.scxa-test ' +
+                    '-PzkHost=45.88.80.194 ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-cs.scxa-test ' +
-                    '-PsolrPort=8983 ' +
+                    '-PsolrHost=45.88.80.75 ' +
+                    '-PsolrPort=80 ' +
                     ':atlas-web-core:testClasses'
           }
         }
@@ -81,9 +81,9 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-cs.scxa-test ' +
+                    '-PzkHost=45.88.80.194 ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-hs.scxa-test ' +
+                    '-PsolrHost=45.88.80.75 ' +
                     '-PsolrPort=8983 ' +
                     ':app:testClasses'
           }
@@ -112,6 +112,11 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
+                // To avoid the unpleasant:
+                // Err:4 http://deb.debian.org/debian bullseye-updates InRelease
+                //   Connection timed out [IP: 199.232.174.132 80]
+                sh 'echo \'APT::Acquire::Retries "10";\' > /etc/apt/apt.conf.d/80-retries'
+                
                 // Required by node_modules/cwebp-bin
                 // /home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/node_modules/cwebp-bin/vendor/cwebp:
                 // error while loading shared libraries: libGL.so.1: cannot open shared object file: No such file or directory

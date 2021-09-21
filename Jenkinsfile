@@ -106,6 +106,7 @@ pipeline {
           when { anyOf {
             branch 'develop'
             branch 'main'
+            branch 'k8s-jenkins'
           } }
           stages {
             stage('Provision Node.js build environment') {

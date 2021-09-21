@@ -1,4 +1,8 @@
 pipeline {
+  options {
+    disableConcurrentBuilds()
+  }
+  
   agent {
     kubernetes {
       cloud 'atlas-analysis'

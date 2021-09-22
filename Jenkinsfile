@@ -89,7 +89,7 @@ pipeline {
                     '-PzkHost=45.88.80.194 ' +
                     '-PzkPort=2181 ' +
                     '-PsolrHost=45.88.80.75 ' +
-                    '-PsolrPort=8983 ' +
+                    '-PsolrPort=80 ' +
                     ':app:testClasses'
           }
         }

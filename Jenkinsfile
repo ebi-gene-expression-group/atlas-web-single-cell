@@ -47,7 +47,7 @@ pipeline {
                     '-PzkHost=scxa-zk-cs.scxa-test ' +
                     '-PzkPort=2181 ' +
                     '-PsolrHost=scxa-solrcloud-cs.scxa-test ' +
-                    '-PsolrPort=88983 ' +
+                    '-PsolrPort=8983 ' +
                     ':atlas-web-core:testClasses'
           }
         }

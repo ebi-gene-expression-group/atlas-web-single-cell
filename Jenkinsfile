@@ -11,8 +11,6 @@ pipeline {
     }
   }
 
-
-
   stages {
     stage('Provision Gradle and start daemon') {
       options {
@@ -44,10 +42,10 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-cs.scxa-test ' +
-                    '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-cs.scxa-test ' +
-                    '-PsolrPort=8983 ' +
+                    '-PzkHost=${SINGLE_CELL_TEST_ZK_HOST} ' +
+                    '-PzkPort=${SINGLE_CELL_TEST_ZK_PORT} ' +
+                    '-PsolrHost=${SINGLE_CELL_TEST_SOLR_HOST} ' +
+                    '-PsolrPort=${SINGLE_CELL_TEST_SOLR_PORT} ' +
                     ':atlas-web-core:testClasses'
           }
         }

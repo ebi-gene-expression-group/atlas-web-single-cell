@@ -5,7 +5,7 @@ pipeline {
   
   agent {
     kubernetes {
-      cloud 'atlas-analysis'
+      //cloud 'atlas-admin'
       defaultContainer 'openjdk'
       yamlFile 'jenkins-k8s-pod.yaml'
     }
@@ -44,10 +44,10 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=45.88.80.194 ' +
+                    '-PzkHost=scxa-zk-cs.scxa-test ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=45.88.80.75 ' +
-                    '-PsolrPort=80 ' +
+                    '-PsolrHost=scxa-solrcloud-cs.scxa-test ' +
+                    '-PsolrPort=88983 ' +
                     ':atlas-web-core:testClasses'
           }
         }
@@ -86,10 +86,10 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=45.88.80.194 ' +
+                    '-PzkHost=scxa-zk-cs.scxa-test ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=45.88.80.75 ' +
-                    '-PsolrPort=80 ' +
+                    '-PsolrHost=scxa-solrcloud-cs.scxa-test ' +
+                    '-PsolrPort=8983 ' +
                     ':app:testClasses'
           }
         }

@@ -46,7 +46,7 @@ pipeline {
                     '-PjdbcPassword=postgres ' +
                     '-PzkHost=scxa-zk-cs.scxa-test ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-cs.scxa-test ' +
+                    '-PsolrHost=scxa-solrcloud-hs.scxa-test ' +
                     '-PsolrPort=8983 ' +
                     ':atlas-web-core:testClasses'
           }
@@ -88,7 +88,7 @@ pipeline {
                     '-PjdbcPassword=postgres ' +
                     '-PzkHost=scxa-zk-cs.scxa-test ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-cs.scxa-test ' +
+                    '-PsolrHost=scxa-solrcloud-hs.scxa-test ' +
                     '-PsolrPort=8983 ' +
                     ':app:testClasses'
           }

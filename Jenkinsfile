@@ -37,6 +37,7 @@ pipeline {
                     '-Pflyway.schemas=gxa ' +
                     'flywayMigrate'
             sh './gradlew --no-watch-fs ' +
+                    '--parallel --max-workers=4 ' +
                     '-PdataFilesLocation=/gxa-test-data ' +
                     '-PexperimentFilesLocation=/gxa-test-data/gxa ' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
@@ -55,7 +56,7 @@ pipeline {
             timeout (time: 2, unit: "HOURS")
           }
           steps {
-            sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
+            sh './gradlew --no-watch-fs --parallel --max-workers=4 -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
             // sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
             sh './gradlew --no-watch-fs :atlas-web-core:jacocoTestReport'
           }
@@ -79,6 +80,7 @@ pipeline {
                     '-Pflyway.schemas=scxa ' +
                     'flywayMigrate'
             sh './gradlew --no-watch-fs ' +
+                    '--parallel --max-workers=4 ' +
                     '-PdataFilesLocation=/test-data ' +
                     '-PexperimentFilesLocation=/test-data/scxa ' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
@@ -98,8 +100,8 @@ pipeline {
           }
           steps {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
-            sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-            sh './gradlew --no-watch-fs -PtestResultsPath=e2e :app:test --tests *WIT'
+            sh './gradlew --no-watch-fs --parallel --max-workers=4 -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+            sh './gradlew --no-watch-fs --parallel --max-workers=4 -PtestResultsPath=e2e :app:test --tests *WIT'
             sh './gradlew --no-watch-fs :app:jacocoTestReport'
           }
         }

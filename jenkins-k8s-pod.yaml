@@ -9,9 +9,9 @@ spec:
       image: openjdk:11
       resources:
         requests:
-          memory: "2Gi"
+          memory: "1.5Gi"
         limits:
-          memory: "4Gi"
+          memory: "2Gi"
       command:
       - sleep
       args:
@@ -31,9 +31,9 @@ spec:
       image: postgres:10-alpine
       resources:
         requests:
-          memory: "500Mi"
+          memory: "100Mi"
         limits:
-          memory: "1Gi"
+          memory: "200Mi"
       env:
         - name: POSTGRES_DB
           value: "postgres"

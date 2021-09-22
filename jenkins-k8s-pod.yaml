@@ -23,8 +23,8 @@ spec:
           name: bioentity-properties
         - mountPath: /root/.m2
           name: scxa-ci-build-packages
-        - mountPath: /root/.gradle
-          name: openjdk-root-gradle
+#       - mountPath: /root/.gradle
+#         name: openjdk-root-gradle
     - name: postgres
       image: postgres:10-alpine
       resources:
@@ -49,6 +49,6 @@ spec:
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-claim
-    - name: openjdk-root-gradle
-      persistentVolumeClaim:
-        claimName: openjdk-root-gradle-claim
+#   - name: openjdk-root-gradle
+#     persistentVolumeClaim:
+#       claimName: openjdk-root-gradle-claim

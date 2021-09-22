@@ -5,7 +5,7 @@ pipeline {
   
   agent {
     kubernetes {
-      //cloud 'atlas-admin'
+      cloud 'kubernetes-amm'
       defaultContainer 'openjdk'
       yamlFile 'jenkins-k8s-pod.yaml'
     }

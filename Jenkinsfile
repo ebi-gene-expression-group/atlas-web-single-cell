@@ -14,12 +14,12 @@ pipeline {
 
 
   stages {
-    stage('Provision Gradle and start daemon') {
+    stage('Provision Gradle') {
       options {
         timeout (time: 20, unit: "MINUTES")
       }
       steps {
-        sh './gradlew --no-watch-fs'
+        sh './gradlew --no-daemon --no-watch-fs'
       }
     }
 
@@ -161,7 +161,12 @@ pipeline {
           }
         }
       }
-    }--no-daemon --no-watch-fs  {
+    }
+  }
+
+
+
+  post {
     always {
       junit 'atlas-web-core/build/ut/**/*.xml'
       // junit 'atlas-web-core/build/it/**/*.xml'

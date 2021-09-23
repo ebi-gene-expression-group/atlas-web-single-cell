@@ -101,7 +101,7 @@ pipeline {
           steps {
             sh './gradlew --no-daemon --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
             sh './gradlew --no-daemon --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-            sh './gradlew --no-daemon --no-watch-fs --stacktrace --debug -PtestResultsPath=e2e :app:test --tests *WIT'
+            sh './gradlew --no-daemon --no-watch-fs --stacktrace --debug -PexcludeTests=FileDownloadControllerWIT.class -PtestResultsPath=e2e :app:test --tests *WIT'
             sh './gradlew --no-daemon --no-watch-fs :app:jacocoTestReport'
           }
         }

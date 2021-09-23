@@ -7,6 +7,14 @@ spec:
   containers:
     - name: openjdk
       image: openjdk:11
+      resources:
+        requests:
+          memory: "1.5Gi"
+        limits:
+          memory: "2Gi"
+      env:
+      - name: GRADLE_OPTS
+        value: "-Dorg.gradle.daemon=false"
       command:
       - sleep
       args:
@@ -18,10 +26,17 @@ spec:
           name: bioentity-properties
         - mountPath: /root/.m2
           name: scxa-ci-build-packages
-        - mountPath: /root/.gradle
-          name: openjdk-root-gradle
+        - mountPath: /root/.gradle/caches
+          name: openjdk-root-gradle-caches
+        - mountPath: /root/.gradle/wrapper
+          name: openjdk-root-gradle-wrapper
     - name: postgres
       image: postgres:10-alpine
+      resources:
+        requests:
+          memory: "100Mi"
+        limits:
+          memory: "200Mi"
       env:
         - name: POSTGRES_DB
           value: "postgres"
@@ -39,6 +54,9 @@ spec:
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-claim
-    - name: openjdk-root-gradle
+    - name: openjdk-root-gradle-caches
       persistentVolumeClaim:
-        claimName: openjdk-root-gradle-claim
+        claimName: openjdk-root-gradle-caches-claim
+    - name: openjdk-root-gradle-wrapper
+      persistentVolumeClaim:
+        claimName: openjdk-root-gradle-wrapper-claim

@@ -102,7 +102,7 @@ pipeline {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
             sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
             sh './gradlew --no-watch-fs -PtestResultsPath=e2e :app:test --tests *WIT'
-            sh './gradlew --no-watch-fs :app:jacocoTestReport'
+            sh './gradlew --stacktrace --debug :app:jacocoTestReport'
           }
         }
 

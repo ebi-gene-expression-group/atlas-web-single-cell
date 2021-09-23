@@ -19,7 +19,7 @@ pipeline {
         timeout (time: 20, unit: "MINUTES")
       }
       steps {
-        sh './gradlew --no-daemon --no-watch-fs'
+        sh './gradlew --no-watch-fs'
       }
     }
 
@@ -31,14 +31,14 @@ pipeline {
             timeout (time: 1, unit: "HOURS")
           }
           steps {
-            sh './gradlew --no-daemon --no-watch-fs ' +
+            sh './gradlew --no-watch-fs ' +
                     '-Pflyway.url=jdbc:postgresql://localhost:5432/postgres ' +
                     '-Pflyway.user=postgres ' +
                     '-Pflyway.password=postgres ' +
                     '-Pflyway.locations=filesystem:./schemas/flyway/gxa ' +
                     '-Pflyway.schemas=gxa ' +
                     'flywayMigrate'
-            sh './gradlew --no-daemon --no-watch-fs ' +
+            sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/gxa-test-data ' +
                     '-PexperimentFilesLocation=/gxa-test-data/gxa ' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
@@ -57,9 +57,9 @@ pipeline {
             timeout (time: 2, unit: "HOURS")
           }
           steps {
-            sh './gradlew --no-daemon --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
+            sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
             // sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
-            sh './gradlew --no-daemon --no-watch-fs :atlas-web-core:jacocoTestReport'
+            sh './gradlew --no-watch-fs :atlas-web-core:jacocoTestReport'
           }
         }
       }
@@ -73,14 +73,14 @@ pipeline {
             timeout (time: 1, unit: "HOURS")
           }
           steps {
-            sh './gradlew --no-daemon --no-watch-fs ' +
+            sh './gradlew --no-watch-fs ' +
                     '-Pflyway.url=jdbc:postgresql://localhost:5432/postgres ' +
                     '-Pflyway.user=postgres ' +
                     '-Pflyway.password=postgres ' +
                     '-Pflyway.locations=filesystem:./schemas/flyway/scxa ' +
                     '-Pflyway.schemas=scxa ' +
                     'flywayMigrate'
-            sh './gradlew --no-daemon --no-watch-fs ' +
+            sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/test-data ' +
                     '-PexperimentFilesLocation=/test-data/scxa ' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
@@ -99,10 +99,10 @@ pipeline {
             timeout (time: 2, unit: "HOURS")
           }
           steps {
-            sh './gradlew --no-daemon --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
-            sh './gradlew --no-daemon --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-            sh './gradlew --no-daemon --no-watch-fs --stacktrace --debug -PexcludeTests=**/FileDownloadControllerWIT.class -PtestResultsPath=e2e :app:test --tests *WIT'
-            sh './gradlew --no-daemon --no-watch-fs :app:jacocoTestReport'
+            sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
+            sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+            sh './gradlew --no-watch-fs -PexcludeTests=**/FileDownloadControllerWIT.class -PtestResultsPath=e2e :app:test --tests *WIT'
+            sh './gradlew --no-watch-fs :app:jacocoTestReport'
           }
         }
 
@@ -154,7 +154,7 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh './gradlew --no-daemon --no-watch-fs :app:war'
+                sh './gradlew --no-watch-fs :app:war'
                 archiveArtifacts artifacts: 'webapps/gxa#sc.war', fingerprint: true
               }
             }

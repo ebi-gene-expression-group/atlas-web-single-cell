@@ -42,6 +42,7 @@ public class CacheConfig {
 
                 builder -> builder.name("hcaMetadata"),
                 builder -> builder.name("inferredCellTypesOntology"),
-                builder -> builder.name("inferredCellTypesAuthors"));
+                builder -> builder.name("inferredCellTypesAuthors"),
+                builder -> builder.name("privateExperimentAccessions"));
     }
 }

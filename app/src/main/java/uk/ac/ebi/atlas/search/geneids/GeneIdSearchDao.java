@@ -12,6 +12,7 @@ import uk.ac.ebi.atlas.solr.cloud.collections.Gene2ExperimentCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.IntersectStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
+import uk.ac.ebi.atlas.trader.ExperimentTraderDao;
 
 import java.util.Optional;
 
@@ -28,10 +29,13 @@ public class GeneIdSearchDao {
 
     private final BioentitiesCollectionProxy bioentitiesCollectionProxy;
     private final Gene2ExperimentCollectionProxy gene2ExperimentCollectionProxy;
+    private final ExperimentTraderDao experimentTraderDao;
 
-    public GeneIdSearchDao(SolrCloudCollectionProxyFactory collectionProxyFactory) {
+    public GeneIdSearchDao(SolrCloudCollectionProxyFactory collectionProxyFactory,
+                           ExperimentTraderDao experimentTraderDao) {
         bioentitiesCollectionProxy = collectionProxyFactory.create(BioentitiesCollectionProxy.class);
         gene2ExperimentCollectionProxy = collectionProxyFactory.create(Gene2ExperimentCollectionProxy.class);
+        this.experimentTraderDao = experimentTraderDao;
     }
 
     // This is one of the edge cases where an empty optional is semantically different than an empty collection. The
@@ -57,7 +61,6 @@ public class GeneIdSearchDao {
                         .addQueryFieldByTerm(PROPERTY_NAME, propertyName)
                         .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER)
                         .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
-
         return searchInTwoSteps(bioentitiesQueryBuilder);
     }
 
@@ -82,12 +85,18 @@ public class GeneIdSearchDao {
     // A set since we don’t care about the order, we might want a list if results are ranked somehow
     private ImmutableSet<String> searchWithinGeneIdsExpressedInExperiments(
             SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder) {
-
+        var privateExperimentAccessions = experimentTraderDao.fetchPrivateExperimentAccessions();
         var g2eQueryBuilder =
                 new SolrQueryBuilder<Gene2ExperimentCollectionProxy>()
                         .setFieldList(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER)
                         .sortBy(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc)
                         .setRows(SOLR_MAX_ROWS);
+
+        //Ignores(skip) negative filter if we don't have any private experiments
+        if(!privateExperimentAccessions.isEmpty()){
+            g2eQueryBuilder.addNegativeFilterFieldByTerm(Gene2ExperimentCollectionProxy.EXPERIMENT_ACCESSION,
+                    experimentTraderDao.fetchPrivateExperimentAccessions());
+        }
 
         var bioentitiesSearchBuilder = new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder);
         var g2eSearchBuilder = new SearchStreamBuilder<>(gene2ExperimentCollectionProxy, g2eQueryBuilder);

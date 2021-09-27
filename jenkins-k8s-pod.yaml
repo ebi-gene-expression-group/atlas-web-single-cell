@@ -15,6 +15,8 @@ spec:
       env:
       - name: GRADLE_OPTS
         value: "-Dorg.gradle.daemon=false"
+      - name: GRADLE_RO_DEP_CACHE
+        value: "/root/gradle-ro-dep-cache"
       command:
       - sleep
       args:
@@ -26,8 +28,9 @@ spec:
           name: bioentity-properties
         - mountPath: /root/.m2
           name: scxa-ci-build-packages
-        - mountPath: /root/.gradle/caches
-          name: openjdk-root-gradle-caches
+        - mountPath: /root/gradle-ro-dep-cache
+          name: gradle-ro-dep-cache
+          readOnly: true
         - mountPath: /root/.gradle/wrapper
           name: openjdk-root-gradle-wrapper
     - name: postgres
@@ -54,9 +57,9 @@ spec:
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-claim
-    - name: openjdk-root-gradle-caches
+    - name: gradle-ro-dep-cache
       persistentVolumeClaim:
-        claimName: openjdk-root-gradle-caches-claim
+        claimName: gradle-ro-dep-cache-claim
     - name: openjdk-root-gradle-wrapper
       persistentVolumeClaim:
         claimName: openjdk-root-gradle-wrapper-claim

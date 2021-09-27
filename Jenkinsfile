@@ -1,6 +1,7 @@
 pipeline {
   options {
     disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '5'))
   }
 
   agent {
@@ -122,7 +123,6 @@ pipeline {
                 // Err:4 http://deb.debian.org/debian bullseye-updates InRelease
                 //   Connection timed out [IP: 199.232.174.132 80]
                 sh 'echo \'APT::Acquire::Retries "10";\' > /etc/apt/apt.conf.d/80-retries'
-
                 // Required by node_modules/cwebp-bin
                 // /home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/node_modules/cwebp-bin/vendor/cwebp:
                 // error while loading shared libraries: libGL.so.1: cannot open shared object file: No such file or directory

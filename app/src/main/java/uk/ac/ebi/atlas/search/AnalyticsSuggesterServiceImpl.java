@@ -13,12 +13,15 @@ import uk.ac.ebi.atlas.species.SpeciesFactory;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsSuggesterServiceImpl.class);
 
+    // Remember that suggestions are distinct()’ed, so this value is an upper bound
+    public static final int DEFAULT_MAX_NUMBER_OF_SUGGESTIONS = 10;
     private final AnalyticsSuggesterDao analyticsSuggesterDao;
     private final SpeciesFactory speciesFactory;
     private static final Function<Suggestion, Map<String, String>> SUGGESTION_TO_MAP = suggestion -> ImmutableMap.of(
@@ -32,7 +35,7 @@ public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService 
     @Override
     public Stream<Map<String, String>> fetchOntologyAnnotationSuggestions(String query, String... species) {
         Species[] speciesArray = Arrays.stream(species).map(speciesFactory::create).toArray(Species[]::new);
-        var response = analyticsSuggesterDao.fetchOntologyAnnotationSuggestions(query, 100, speciesArray);
+        var response = analyticsSuggesterDao.fetchOntologyAnnotationSuggestions(query, DEFAULT_MAX_NUMBER_OF_SUGGESTIONS, speciesArray);
         return response.map(SUGGESTION_TO_MAP);
     }
 }

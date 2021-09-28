@@ -144,7 +144,7 @@ class ExperimentPageContentServiceTest {
                 .withTechnologyType(ImmutableList.of("Smart-Seq", "10xV1"))
                 .build();
 
-        when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION)).thenReturn(experiment);
+        when(experimentTraderMock.getExperiment(EXPERIMENT_ACCESSION,"")).thenReturn(experiment);
 
         var result = subject.getDownloads(EXPERIMENT_ACCESSION, "");
         assertThat(result)
@@ -167,7 +167,7 @@ class ExperimentPageContentServiceTest {
                 .withTechnologyType(ImmutableList.of("10xV1"))
                 .build();
 
-        when(experimentTraderMock.getPublicExperiment(EXPERIMENT_ACCESSION)).thenReturn(experiment);
+        when(experimentTraderMock.getExperiment(EXPERIMENT_ACCESSION,"")).thenReturn(experiment);
 
         var result = subject.getDownloads(EXPERIMENT_ACCESSION, "");
         assertThat(result)

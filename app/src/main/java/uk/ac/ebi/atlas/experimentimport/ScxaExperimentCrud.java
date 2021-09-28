@@ -45,7 +45,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true) })
+            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true),
+            @CacheEvict(cacheNames = "privateExperimentAccessions", allEntries = true)})
     public UUID createExperiment(String experimentAccession, boolean isPrivate) {
         var condensedSdrfParserOutput =
                 condensedSdrfParser.parse(experimentAccession, SINGLE_CELL_RNASEQ_MRNA_BASELINE);
@@ -82,7 +83,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "plotOptions", key = "#experimentAccession"),
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true) })
+            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true),
+            @CacheEvict(cacheNames = "privateExperimentAccessions", allEntries = true)})
     public void updateExperimentDesign(String experimentAccession) {
         var experimentDto =
                 readExperiment(experimentAccession)
@@ -110,7 +112,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true),
             @CacheEvict(cacheNames = "experiment2Collections", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true) })
+            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true),
+            @CacheEvict(cacheNames = "privateExperimentAccessions", allEntries = true)})
     public void deleteExperiment(String experimentAccession) {
         super.deleteExperiment(experimentAccession);
     }
@@ -129,7 +132,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
             @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true) })
+            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true),
+            @CacheEvict(cacheNames = "privateExperimentAccessions", allEntries = true)})
     public void updateExperimentPrivate(String experimentAccession, boolean isPrivate) {
         super.updateExperimentPrivate(experimentAccession, isPrivate);
     }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import uk.ac.ebi.atlas.search.suggester.AnalyticsSuggesterDao;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
-import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import uk.ac.ebi.atlas.species.Species;
 
 import java.io.IOException;

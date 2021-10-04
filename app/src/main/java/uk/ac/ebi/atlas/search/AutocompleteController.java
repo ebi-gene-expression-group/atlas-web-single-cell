@@ -80,10 +80,9 @@ public class AutocompleteController extends JsonExceptionHandlingController {
     @ResponseStatus(HttpStatus.OK)
     public String fetchMetaDataSuggestions( @RequestParam(value = "query") String query,
                                             @RequestParam(value = "species", required = false, defaultValue = "") String species){
-        return GSON.toJson(SolrSuggestionReactSelectAdapter.metaDataSerialize(
+      return GSON.toJson(SolrSuggestionReactSelectAdapter.metaDataSerialize(
                 analyticsSuggesterService.fetchOntologyAnnotationSuggestions(
-                query,species.split(",")))
-        );
+                query,species.split(","))));
     }
 
     private String getter() {

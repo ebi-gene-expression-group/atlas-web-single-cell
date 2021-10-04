@@ -1,0 +1,53 @@
+package uk.ac.ebi.atlas.search;
+
+import org.apache.solr.client.solrj.response.Suggestion;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import uk.ac.ebi.atlas.search.suggester.AnalyticsSuggesterDao;
+import uk.ac.ebi.atlas.search.suggester.AnalyticsSuggesterService;
+import uk.ac.ebi.atlas.species.SpeciesFactory;
+
+import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class AnalyticsSuggesterServiceTest {
+    @Mock
+    private AnalyticsSuggesterDao suggesterDaoMock;
+
+    @Mock
+    private SpeciesFactory speciesFactoryMock;
+
+    private AnalyticsSuggesterService subject;
+
+    @BeforeEach
+    void setUp() {
+        when(suggesterDaoMock.fetchOntologyAnnotationSuggestions(anyString(), anyInt(), any()))
+                .thenReturn(Stream.of(
+                        new Suggestion(randomAlphanumeric(10), 10, randomAlphabetic(10)),
+                        new Suggestion(randomAlphanumeric(10), 20, randomAlphabetic(10)),
+                        new Suggestion(randomAlphanumeric(10), 10, randomAlphabetic(10))));
+
+        subject = new AnalyticsSuggesterServiceImpl(suggesterDaoMock, speciesFactoryMock);
+    }
+
+    @Test
+    void fetchSuggestionsForAnyOrganismOrOrganismPartOrCellTypeOrDisease() {
+        assertThat(subject.fetchOntologyAnnotationSuggestions(randomAlphanumeric(3), "")).isNotEmpty();
+        verify(suggesterDaoMock).fetchOntologyAnnotationSuggestions(anyString(), anyInt(), any());
+    }
+
+    @Test
+    void mapSuggestionsAsConfigured() {
+        assertThat(subject.fetchOntologyAnnotationSuggestions(randomAlphanumeric(3), ""))
+                .allMatch(mappedSuggestion -> mappedSuggestion.containsKey("term") && mappedSuggestion.containsKey("category"));
+    }
+}

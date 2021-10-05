@@ -124,7 +124,6 @@ class AutocompleteControllerWIT {
                 .perform(get("/json/suggestions/meta_data")
                         .param("species", "").param("query", "skin"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$[*].label", hasSize(greaterThanOrEqualTo(1))));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 }

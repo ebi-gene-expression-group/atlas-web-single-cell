@@ -117,4 +117,14 @@ class AutocompleteControllerWIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.topSpecies", hasSize(AutocompleteController.FEATURED_SPECIES)));
     }
+
+    @Test
+    void canSeeSuggestionsForTheOrganismOrOrganismPartOrDiseaseAndCellType() throws Exception {
+        this.mockMvc
+                .perform(get("/json/suggestions/meta_data")
+                        .param("species", "").param("query", "skin"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$[*].label", hasSize(greaterThanOrEqualTo(1))));
+    }
 }

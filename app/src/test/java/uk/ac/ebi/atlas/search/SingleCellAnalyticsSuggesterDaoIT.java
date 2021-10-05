@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -36,8 +37,10 @@ class SingleCellAnalyticsSuggesterDaoIT {
 
     @Test
     void doesNotContainDuplicateSuggestions() {
-        var result = subject.fetchOntologyAnnotationSuggestions("B cell", 10, ArrayUtils.toArray());
-        assertThat(result.collect(Collectors.toList())).hasSameSizeAs(result.distinct().collect(toImmutableList()));
+        String query = randomAlphabetic(3, 4);
+        var result = subject.fetchOntologyAnnotationSuggestions(query.toLowerCase(), 10, ArrayUtils.toArray())
+                .collect(toImmutableList());;
+        assertThat(result).hasSameSizeAs(result.stream().distinct().collect(toImmutableList()));
     }
 
     @Test

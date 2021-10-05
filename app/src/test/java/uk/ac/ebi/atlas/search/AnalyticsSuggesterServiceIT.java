@@ -44,7 +44,7 @@ class AnalyticsSuggesterServiceIT {
     }
 
     @Test
-    void canFetchMetaDataSuggestionsForTheCellTypesAndDisease(){
+    void canFetchMetaDataSuggestionsForTheCellTypeOrDisease(){
         assertThat(subject.fetchOntologyAnnotationSuggestions("B cell", ArrayUtils.toArray()))
                 .isNotEmpty();
         assertThat(subject.fetchOntologyAnnotationSuggestions("cancer", ArrayUtils.toArray()))

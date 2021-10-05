@@ -47,28 +47,26 @@ public class SingleCellAnalyticsSuggesterDao implements AnalyticsSuggesterDao {
             return Stream.empty();
         }
 
-        Comparator<Suggestion> compareByWeightLengthAlphabetical = Comparator.comparingLong(Suggestion::getWeight).reversed()
+        var compareByWeightLengthAlphabetical = Comparator.comparingLong(Suggestion::getWeight).reversed()
                 .thenComparingInt(suggestion -> suggestion.getTerm().length())
                 .thenComparing(Suggestion::getTerm);
 
-        SolrQuery solrQuery = new SolrQuery();
+        var solrQuery = new SolrQuery();
         solrQuery.setRequestHandler("/suggest")
                 .setParam("suggest.dictionary", DICTIONARIES)
                 .setParam("suggest.q", query)
                 // We raise suggest.count to a high enough value to get exact matches (the default is 100)
                 .setParam("suggest.count", "750").setParam("suggest.cfq",
                 Arrays.stream(species).map(Species::getEnsemblName).collect(joining(" ")));
-
         return fetchAnalyticsSuggestions(solrQuery,compareByWeightLengthAlphabetical,limit);
     }
 
     private Stream<Suggestion> fetchAnalyticsSuggestions(SolrQuery solrQuery,Comparator<Suggestion> compareByWeightLengthAlphabetical,int limit){
         try {
-            Stream<Suggestion> suggestionStream = singleCellAnalyticsCollectionProxy.solrClient.query("scxa-analytics", solrQuery)
+            return singleCellAnalyticsCollectionProxy.solrClient.query("scxa-analytics", solrQuery)
                     .getSuggesterResponse()
                     .getSuggestions().values().stream().flatMap(List::stream)
                     .distinct().sorted(compareByWeightLengthAlphabetical).limit(limit);
-            return suggestionStream;
         } catch (SolrServerException | IOException e) {
             LOGGER.error(e.getMessage(), e);
             throw new SolrException(SolrException.ErrorCode.UNKNOWN, e);

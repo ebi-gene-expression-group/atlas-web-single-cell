@@ -42,9 +42,9 @@ class JsonMarkerGenesControllerWIT {
 
     private MockMvc mockMvc;
 
-    private static final String markerGeneClusterURL =
+    private static final String MARKER_GENES_CLUSTER_URL =
             "/json/experiments/{experimentAccession}/marker-genes/clusters";
-    private static final String markerGeneCellTypeURL =
+    private static final String MARKER_GENES_CELL_TYPES_URL =
             "/json/experiments/{experimentAccession}/marker-genes/cell-types";
 
     @BeforeAll
@@ -52,11 +52,11 @@ class JsonMarkerGenesControllerWIT {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/202108/experiment.sql"),
-                new ClassPathResource("fixtures/202108/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group_marker_gene_stats.sql"));
+                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 
@@ -82,12 +82,13 @@ class JsonMarkerGenesControllerWIT {
     void payloadIsValidJson() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
+
         this.mockMvc
-                .perform(get(markerGeneClusterURL, experimentAccession)
+                .perform(get(MARKER_GENES_CLUSTER_URL, experimentAccession)
                         .param("k", k))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                //.andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
+                .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
                 .andExpect(jsonPath("$[0].x", isA(Number.class)))
                 .andExpect(jsonPath("$[0].y", isA(Number.class)))
                 .andExpect(jsonPath("$[0].geneName", isA(String.class)))
@@ -98,7 +99,7 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void isMarkerGeneCellTypePayloadIsValidJson() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneCellTypeURL, "E-MTAB-5061")
+                .perform(get(MARKER_GENES_CELL_TYPES_URL, "E-MTAB-5061")
                         .param("organismPart", "http://purl.obolibrary.org/obo/UBERON_0001264"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -114,7 +115,7 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void isMarkerGeneCellTypePayloadIsValidJsonForMultipleOrganismParts() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneCellTypeURL, "E-MTAB-5061")
+                .perform(get(MARKER_GENES_CELL_TYPES_URL, "E-MTAB-5061")
                         .param("organismPart",
                                 "http://purl.obolibrary.org/obo/UBERON_0001264",
                                 "http://purl.obolibrary.org/obo/UBERON_0002107"))
@@ -132,7 +133,7 @@ class JsonMarkerGenesControllerWIT {
     @Test
     void invalidExperimentAccessionReturnsEmptyJson() throws Exception {
         this.mockMvc
-                .perform(get(markerGeneCellTypeURL, "FOO")
+                .perform(get(MARKER_GENES_CELL_TYPES_URL, "FOO")
                         .param("organismPart", "skin"))
                 .andExpect(status().is2xxSuccessful());
     }

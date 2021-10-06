@@ -23,8 +23,8 @@ spec:
       args:
       - 99d
       volumeMounts:
-        - mountPath: /root/scxa
-          name: scratch-ssd-volume
+#        - mountPath: /root/scxa
+#          name: scratch-ssd-volume
         - mountPath: /test-data/scxa
           name: scxa-ci-data
         - mountPath: /test-data/bioentity_properties

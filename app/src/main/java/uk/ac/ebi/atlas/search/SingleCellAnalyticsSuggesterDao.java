@@ -36,11 +36,11 @@ public class SingleCellAnalyticsSuggesterDao implements AnalyticsSuggesterDao {
     }
 
     @Override
-    public Stream<Suggestion> fetchOntologyAnnotationSuggestions(String query, int limit, Species... species) {
-        return fetchOntologySuggestions(query, limit, species);
+    public Stream<Suggestion> fetchMetaDataSuggestions(String query, int limit, Species... species) {
+        return fetchOntologyAnnoationSuggestions(query, limit, species);
     }
 
-    private Stream<Suggestion> fetchOntologySuggestions(String query, int limit, Species... species) {
+    private Stream<Suggestion> fetchOntologyAnnoationSuggestions(String query, int limit, Species... species) {
 
         // We want the user to go beyond one keystroke to get some suggestions
         if (query.length() < 2) {

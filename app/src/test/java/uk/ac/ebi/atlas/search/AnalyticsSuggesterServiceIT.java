@@ -37,17 +37,17 @@ class AnalyticsSuggesterServiceIT {
 
     @Test
     void canFetchMetaDataSuggestionsForTheOrganismPartOrOrganism() {
-        assertThat(subject.fetchOntologyAnnotationSuggestions("skin", ArrayUtils.toArray()))
+        assertThat(subject.fetchMetaDataSuggestions("skin", ArrayUtils.toArray()))
                 .isNotEmpty();
-        assertThat(subject.fetchOntologyAnnotationSuggestions("Homo", ArrayUtils.toArray()))
+        assertThat(subject.fetchMetaDataSuggestions("Homo", ArrayUtils.toArray()))
                 .isNotEmpty();
     }
 
     @Test
     void canFetchMetaDataSuggestionsForTheCellTypeOrDisease(){
-        assertThat(subject.fetchOntologyAnnotationSuggestions("B cell", ArrayUtils.toArray()))
+        assertThat(subject.fetchMetaDataSuggestions("B cell", ArrayUtils.toArray()))
                 .isNotEmpty();
-        assertThat(subject.fetchOntologyAnnotationSuggestions("cancer", ArrayUtils.toArray()))
+        assertThat(subject.fetchMetaDataSuggestions("cancer", ArrayUtils.toArray()))
                 .isNotEmpty();
     }
 }

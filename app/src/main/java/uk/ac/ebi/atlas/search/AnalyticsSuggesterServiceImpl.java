@@ -13,7 +13,6 @@ import uk.ac.ebi.atlas.species.SpeciesFactory;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -33,9 +32,9 @@ public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService 
     }
 
     @Override
-    public Stream<Map<String, String>> fetchOntologyAnnotationSuggestions(String query, String... species) {
+    public Stream<Map<String, String>> fetchMetaDataSuggestions(String query, String... species) {
         Species[] speciesArray = Arrays.stream(species).map(speciesFactory::create).toArray(Species[]::new);
-        var response = analyticsSuggesterDao.fetchOntologyAnnotationSuggestions(query, DEFAULT_MAX_NUMBER_OF_SUGGESTIONS, speciesArray);
+        var response = analyticsSuggesterDao.fetchMetaDataSuggestions(query, DEFAULT_MAX_NUMBER_OF_SUGGESTIONS, speciesArray);
         return response.map(SUGGESTION_TO_MAP);
     }
 }

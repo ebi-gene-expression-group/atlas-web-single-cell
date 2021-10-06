@@ -10,7 +10,6 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.search.suggester.AnalyticsSuggesterDao;
 
 import javax.inject.Inject;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -25,26 +24,26 @@ class SingleCellAnalyticsSuggesterDaoIT {
 
     @Test
     void canFetchSuggestionsForOrganismAndOrganismPrt() {
-        assertThat(subject.fetchOntologyAnnotationSuggestions("Homo", 10, ArrayUtils.toArray())).isNotEmpty();
-        assertThat(subject.fetchOntologyAnnotationSuggestions("skin", 10, ArrayUtils.toArray())).isNotEmpty();
+        assertThat(subject.fetchMetaDataSuggestions("Homo", 10, ArrayUtils.toArray())).isNotEmpty();
+        assertThat(subject.fetchMetaDataSuggestions("skin", 10, ArrayUtils.toArray())).isNotEmpty();
     }
 
     @Test
     void canFetchSuggestionsForCellTypeAndDisease() {
-        assertThat(subject.fetchOntologyAnnotationSuggestions("B cell", 10, ArrayUtils.toArray())).isNotEmpty();
-        assertThat(subject.fetchOntologyAnnotationSuggestions("cancer", 10, ArrayUtils.toArray())).isNotEmpty();
+        assertThat(subject.fetchMetaDataSuggestions("B cell", 10, ArrayUtils.toArray())).isNotEmpty();
+        assertThat(subject.fetchMetaDataSuggestions("cancer", 10, ArrayUtils.toArray())).isNotEmpty();
     }
 
     @Test
     void doesNotContainDuplicateSuggestions() {
         String query = randomAlphabetic(3, 4);
-        var result = subject.fetchOntologyAnnotationSuggestions(query.toLowerCase(), 10, ArrayUtils.toArray())
+        var result = subject.fetchMetaDataSuggestions(query.toLowerCase(), 10, ArrayUtils.toArray())
                 .collect(toImmutableList());;
         assertThat(result).hasSameSizeAs(result.stream().distinct().collect(toImmutableList()));
     }
 
     @Test
     void atLeastTwoCharactersRequiredToFetchSuggestions() {
-        assertThat(subject.fetchOntologyAnnotationSuggestions("a", 10, ArrayUtils.toArray())).isEmpty();
+        assertThat(subject.fetchMetaDataSuggestions("a", 10, ArrayUtils.toArray())).isEmpty();
     }
 }

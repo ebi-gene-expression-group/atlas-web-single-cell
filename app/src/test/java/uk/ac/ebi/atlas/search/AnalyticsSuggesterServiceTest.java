@@ -36,7 +36,7 @@ class AnalyticsSuggesterServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(suggesterDaoMock.fetchOntologyAnnotationSuggestions(anyString(), anyInt(), any()))
+        when(suggesterDaoMock.fetchMetaDataSuggestions(anyString(), anyInt(), any()))
                 .thenReturn(Stream.of(
                         new Suggestion(randomAlphanumeric(10), 10, randomAlphabetic(10)),
                         new Suggestion(randomAlphanumeric(10), 20, randomAlphabetic(10)),
@@ -47,13 +47,13 @@ class AnalyticsSuggesterServiceTest {
 
     @Test
     void fetchSuggestionsForAnyOrganismOrOrganismPartOrCellTypeOrDisease() {
-        assertThat(subject.fetchOntologyAnnotationSuggestions(randomAlphanumeric(3), "")).isNotEmpty();
-        verify(suggesterDaoMock).fetchOntologyAnnotationSuggestions(anyString(), anyInt(), any());
+        assertThat(subject.fetchMetaDataSuggestions(randomAlphanumeric(3), "")).isNotEmpty();
+        verify(suggesterDaoMock).fetchMetaDataSuggestions(anyString(), anyInt(), any());
     }
 
     @Test
     void mapSuggestionsAsConfigured() {
-        assertThat(subject.fetchOntologyAnnotationSuggestions(randomAlphanumeric(3), ""))
+        assertThat(subject.fetchMetaDataSuggestions(randomAlphanumeric(3), ""))
                 .allMatch(mappedSuggestion -> mappedSuggestion.containsKey("term") && mappedSuggestion.containsKey("category"));
     }
 }

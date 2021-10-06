@@ -12,7 +12,7 @@ spec:
           memory: "1.5Gi"
         limits:
           memory: "2Gi"
-#      workingDir: /root/scxa
+      workingDir: "/root/scxa"
       env:
       - name: GRADLE_OPTS
         value: "-Dorg.gradle.daemon=false"
@@ -23,7 +23,7 @@ spec:
       args:
       - 99d
       volumeMounts:
-        - mountPath: /root/scxa
+        - mountPath: /foobar
           name: scratch-ssd-volume
         - mountPath: /test-data/scxa
           name: scxa-ci-data

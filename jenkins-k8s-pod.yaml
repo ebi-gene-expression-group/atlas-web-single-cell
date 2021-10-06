@@ -12,23 +12,26 @@ spec:
           memory: "1.5Gi"
         limits:
           memory: "2Gi"
+      workingDir: /root/scxa
       env:
       - name: GRADLE_OPTS
         value: "-Dorg.gradle.daemon=false"
       - name: GRADLE_RO_DEP_CACHE
-        value: "/root/gradle-ro-dep-cache"
+        value: "/gradle-ro-dep-cache"
       command:
       - sleep
       args:
       - 99d
       volumeMounts:
+        - mountPath: /root/scxa
+          name: scratch-ssd-volume
         - mountPath: /test-data/scxa
           name: scxa-ci-data
         - mountPath: /test-data/bioentity_properties
           name: bioentity-properties
         - mountPath: /root/.m2
           name: scxa-ci-build-packages
-        - mountPath: /root/gradle-ro-dep-cache
+        - mountPath: /gradle-ro-dep-cache
           name: gradle-ro-dep-cache
           readOnly: true
         - mountPath: /root/.gradle/wrapper
@@ -48,6 +51,15 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "postgres"
   volumes:
+    - name: scratch-ssd-volume
+      ephemeral:
+        volumeClaimTemplate:
+          spec:
+            accessModes: [ "ReadWriteOnce" ]
+            storageClassName: "ssd-cinder"
+            resources:
+              requests:
+                storage: 5Gi
     - name: scxa-ci-data
       persistentVolumeClaim:
         claimName: scxa-ci-data-claim

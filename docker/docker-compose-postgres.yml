@@ -16,7 +16,6 @@ services:
       - "5432:5432"
     volumes:
       - scxa-pgdata:/var/lib/postgresql/data
-      - $ATLAS_DATA_PATH/postgresql:/var/backups/postgresql
 
   scxa-flyway:
     image: flyway/flyway

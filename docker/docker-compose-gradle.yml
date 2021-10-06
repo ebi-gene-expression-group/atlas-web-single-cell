@@ -12,7 +12,9 @@ services:
     volumes:
       - ..:/root/project
       - ./packages:/root/.m2
-      - $ATLAS_DATA_PATH/scxa/filesystem/scxa:/atlas-data/scxa
+      - /home/alf/gradle-ro-dep-cache:/gradle-ro-dep-cache
+      - /home/alf/.gradle/wrapper:/root/.gradle/wrapper
+      - $ATLAS_DATA_PATH/scxa:/atlas-data/scxa
       - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
 
     depends_on:
@@ -24,6 +26,7 @@ services:
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
     command:
       - sh
       - -c

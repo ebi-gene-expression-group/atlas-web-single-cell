@@ -23,7 +23,7 @@ spec:
       args:
       - 99d
       volumeMounts:
-        - mountPath: /foobar
+        - mountPath: /root/scxa
           name: scratch-ssd-volume
         - mountPath: /test-data/scxa
           name: scxa-ci-data

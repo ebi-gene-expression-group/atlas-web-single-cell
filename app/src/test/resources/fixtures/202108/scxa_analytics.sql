@@ -612,3 +612,9 @@ INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_le
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000236409', 'ERR1632617', 19.75961);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000139168', 'ERR1631394', 15.095646);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000113240', 'ERR1633008', 33.284355);
+INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000102755', 'ERR1630362', 0.65343505);
+INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000127920', 'ERR1631456', 27.720057);
+INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000275896', 'ERR1630319', 1.4108431);
+INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000265060', 'ERR1630539', 175.53897);
+INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000171532', 'ERR1630329', 5.460639);
+INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000128340', 'ERR1631826', 37.089924);

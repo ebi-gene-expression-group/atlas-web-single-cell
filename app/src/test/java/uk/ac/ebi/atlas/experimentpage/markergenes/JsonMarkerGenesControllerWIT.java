@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,11 +53,11 @@ class JsonMarkerGenesControllerWIT {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/202108/experiment.sql"),
-                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_cell_group_membership.sql"),
-                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_cell_group_marker_genes.sql"),
-                new ClassPathResource("fixtures/202108/inferred-cell-type/scxa_cell_group_marker_gene_stats.sql"));
+                new ClassPathResource("fixtures/202108/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/202108/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 
@@ -78,7 +79,7 @@ class JsonMarkerGenesControllerWIT {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    @Test
+    @RepeatedTest(10)
     void payloadIsValidJson() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);

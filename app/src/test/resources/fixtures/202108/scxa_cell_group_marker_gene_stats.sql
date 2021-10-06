@@ -6870,3 +6870,15 @@ INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id,
 INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSMUSG00000066278', 557, 55190, 1, 60.9278016404358, 2.20429831469629);
 INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSMUSG00000066278', 558, 55190, 0, 157.635694292251, 5.8888535);
 INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSMUSG00000066278', 558, 55190, 1, 84.3640567940366, 4.79975282355715);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000265060', 1613, 143339, 0, 0.0705174708108108, 0);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000265060', 1623, 143339, 0, 262.316797340101, 219.14742);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000265060', 1624, 143339, 0, 0, 0);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000275896', 1613, 142342, 0, 28791.507818, 19601.465);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000275896', 1623, 142342, 0, 10.9321513761835, 0);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000275896', 1624, 142342, 0, 15.6386667603704, 0);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000265060', 1613, 143339, 1, 0.117906583228346, 0);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000265060', 1623, 143339, 1, 430.72651658937, 401.996003554213);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000265060', 1624, 143339, 1, 0, 0);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000275896', 1613, 142342, 1, 35767.8739673089, 26693.2507544615);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000275896', 1623, 142342, 1, 15.3885926793015, 0);
+INSERT INTO scxa_cell_group_marker_gene_stats(gene_id, cell_group_id, marker_id, expression_type, mean_expression, median_expression) VALUES ('ENSG00000275896', 1624, 142342, 1, 25.5969042320574, 0);

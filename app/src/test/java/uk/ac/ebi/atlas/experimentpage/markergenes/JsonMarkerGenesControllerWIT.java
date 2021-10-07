@@ -3,7 +3,6 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,7 +78,7 @@ class JsonMarkerGenesControllerWIT {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    @RepeatedTest(10)
+    @Test
     void payloadIsValidJson() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
         var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);

@@ -33,8 +33,7 @@
     "url": "https://github.com/atlas-components.git"
   },
   "dependencies": {
-    "@ebi-gene-expression-group/scxa-cell-type-wheel": "^1.0.0-beta",
-    "@ebi-gene-expression-group/scxa-marker-gene-heatmap": "^2.1.0",
+    "@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap": "^1.1.0-beta",
     "highcharts": "^9.1.0",
     "highcharts-react-official": "^3.0.0",
     "lodash": "^4.17.21",

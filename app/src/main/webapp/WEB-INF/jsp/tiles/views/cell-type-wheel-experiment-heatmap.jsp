@@ -1,3 +1,5 @@
+<%--@elvariable id="cellTypeWheelSearchTerm" type="String"--%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <div id="cellTypeWheelHeatmap"></div>
@@ -10,7 +12,10 @@
     document.addEventListener('DOMContentLoaded', function (event) {
         cellTypeWheelHeatmap.render(
             {
-
+                //change it to 'http://localhost:8080/gxa/sc/' for local testing until its deployed on wwwdev
+                host: 'https://wwwdev.ebi.ac.uk/gxa/sc/',
+                resource: 'json/cell-type-wheel/${cellTypeWheelSearchTerm}',
+                cellTypeWheelSearchTerm: '${cellTypeWheelSearchTerm}'
             },
             'cellTypeWheelHeatmap');
     });

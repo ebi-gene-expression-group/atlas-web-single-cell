@@ -12,7 +12,7 @@ public class CellTypeWheelExperimentHeatmapController extends HtmlExceptionHandl
 
     @GetMapping(value = "/search/metadata/{term}", produces = "text/html;charset=UTF-8")
     public String getData (@PathVariable String term, Model model) {
-        model.addAttribute("term", term);
+        model.addAttribute("cellTypeWheelSearchTerm", term);
 
         return "cell-type-wheel-experiment-heatmap";
 

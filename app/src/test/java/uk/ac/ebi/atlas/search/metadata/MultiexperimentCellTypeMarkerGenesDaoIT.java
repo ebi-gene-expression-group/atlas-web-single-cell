@@ -52,8 +52,8 @@ class MultiexperimentCellTypeMarkerGenesDaoIT {
     }
 
     @Test
-    void foobar() {
-        // We have very few cell type marker genes in our fixtures, this is just one of them
+    void knownCellTypeReturnsResults() {
+        // We have a few cell type marker genes in our fixtures; this is one of them
         assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-CURD-4"), "root cortex; trichoblast 9"))
                 .isNotEmpty();
     }

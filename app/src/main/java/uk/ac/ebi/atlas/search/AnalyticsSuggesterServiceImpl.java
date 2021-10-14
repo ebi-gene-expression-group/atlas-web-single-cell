@@ -23,8 +23,14 @@ public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService 
     public static final int DEFAULT_MAX_NUMBER_OF_SUGGESTIONS = 10;
     private final AnalyticsSuggesterDao analyticsSuggesterDao;
     private final SpeciesFactory speciesFactory;
+
+    /**
+     *  suggestion.getPayload() ignoring at present as we are not using for the analytics suggestions,
+     *  Instead of suggestion payload adding static text 'metadata' as we need this to display at frontend side as
+     *  a label Ex: Meta Data: skin, skin cancel..etc as suggestions in the gene search box when we search for a 'skin'
+     */
     private static final Function<Suggestion, Map<String, String>> SUGGESTION_TO_MAP = suggestion -> ImmutableMap.of(
-            "term", suggestion.getTerm(), "category", suggestion.getPayload());
+            "term", suggestion.getTerm(), "category", "metadata");
 
     public AnalyticsSuggesterServiceImpl(AnalyticsSuggesterDao analyticsSuggesterDao, SpeciesFactory speciesFactory) {
         this.analyticsSuggesterDao = analyticsSuggesterDao;

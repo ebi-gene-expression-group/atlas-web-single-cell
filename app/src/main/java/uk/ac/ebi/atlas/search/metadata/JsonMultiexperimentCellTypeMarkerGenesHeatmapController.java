@@ -14,15 +14,15 @@ import java.util.Collection;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
-public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExceptionHandlingController {
+public class JsonMultiexperimentCellTypeMarkerGenesHeatmapController extends JsonExceptionHandlingController {
     private final HighchartsHeatmapAdapter highchartsHeatmapAdapter;
-    private final MultiexperimentCellTypeMarkerGenesService multiexperimentCellTypeMarkerGenesService;
+    private final MultiexperimentCellTypeMarkerGenesHeatmapService multiexperimentCellTypeMarkerGenesHeatmapService;
 
-    public JsonMultiexperimentCellTypeMarkerGenesController(
+    public JsonMultiexperimentCellTypeMarkerGenesHeatmapController(
             HighchartsHeatmapAdapter highchartsHeatmapAdapter,
-            MultiexperimentCellTypeMarkerGenesService multiexperimentCellTypeMarkerGenesService) {
+            MultiexperimentCellTypeMarkerGenesHeatmapService multiexperimentCellTypeMarkerGenesHeatmapService) {
         this.highchartsHeatmapAdapter = highchartsHeatmapAdapter;
-        this.multiexperimentCellTypeMarkerGenesService = multiexperimentCellTypeMarkerGenesService;
+        this.multiexperimentCellTypeMarkerGenesHeatmapService = multiexperimentCellTypeMarkerGenesHeatmapService;
     }
 
     @GetMapping(value = "/json/cell-type-marker-genes/{cellType}",
@@ -33,8 +33,8 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
         return GSON.toJson(
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
                         experimentAccessions == null ?
-                                multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(cellType) :
-                                multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
+                                multiexperimentCellTypeMarkerGenesHeatmapService.getCellTypeMarkerGeneProfile(cellType) :
+                                multiexperimentCellTypeMarkerGenesHeatmapService.getCellTypeMarkerGeneProfile(
                                         ImmutableSet.copyOf(experimentAccessions), cellType)));
     }
 }

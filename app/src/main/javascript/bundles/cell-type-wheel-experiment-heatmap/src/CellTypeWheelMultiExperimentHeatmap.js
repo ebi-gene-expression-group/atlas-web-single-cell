@@ -9,20 +9,22 @@ class CellTypeWheelMultiExperimentHeatmap extends React.Component {
   }
 
   render() {
-    const { cellTypeWheelData, cellTypeWheelSearchTerm } = this.props
+    const { atlasUrl, cellTypeWheelData, cellTypeWheelSearchTerm } = this.props
 
     return (
       <div className={`row-expanded`}>
-          <CellTypeWheelExperimentHeatmap
-              cellTypeWheelSearchTerm={cellTypeWheelSearchTerm}
-              cellTypeWheelData={cellTypeWheelData}
-          />
+        <CellTypeWheelExperimentHeatmap
+          atlasUrl={atlasUrl}
+          cellTypeWheelSearchTerm={cellTypeWheelSearchTerm}
+          cellTypeWheelData={cellTypeWheelData}
+        />
       </div>
     )
   }
 }
 
 CellTypeWheelMultiExperimentHeatmap.propTypes = {
+  atlasUrl: PropTypes.string.isRequired,
   cellTypeWheelSearchTerm: PropTypes.string.isRequired,
   cellTypeWheelData: PropTypes.arrayOf(
     PropTypes.shape({

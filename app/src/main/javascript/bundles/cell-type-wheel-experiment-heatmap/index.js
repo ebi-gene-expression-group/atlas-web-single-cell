@@ -7,14 +7,13 @@ import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-lo
 const CellTypeWheelMultiExperimentHeatmapFetchLoader = withFetchLoader(CellTypeWheelMultiExperimentHeatmap)
 
 const render = (options, target) => {
-    ReactDOM.render(
-        <CellTypeWheelMultiExperimentHeatmapFetchLoader
-            {...options}
-            fulfilledPayloadProvider={ data => ({
-                    cellTypeWheelData: data
-                })}
-        />,
-        document.getElementById(target))
+  ReactDOM.render(
+    <CellTypeWheelMultiExperimentHeatmapFetchLoader
+      {...options}
+      atlasUrl={options.host}
+      fulfilledPayloadProvider={ data => ({ cellTypeWheelData: data }) }
+    />,
+    document.getElementById(target))
 }
 
 export { render }

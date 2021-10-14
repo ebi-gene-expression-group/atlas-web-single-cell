@@ -3,9 +3,9 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -17,18 +17,12 @@ import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +46,7 @@ class CellPlotServiceTest {
         subject = new CellPlotService(cellPlotDaoMock, cellMetadataDaoMock);
     }
 
-    @Test
+    @RepeatedTest(50)
     void clusterPlotWithK() {
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
         var cellCount = RNG.nextInt(MAX_CELL_COUNT) + 1;
@@ -86,7 +80,7 @@ class CellPlotServiceTest {
                         .collect(toImmutableList());
         var metadataMapping = points.stream()
                 .collect(toImmutableMap(
-                        point -> point.name(),
+                        TSnePoint.Dto::name,
                         __ -> metadataValues.get(RNG.nextInt(metadataValues.size()))));
         when(cellMetadataDaoMock.getMetadataValues(experimentAccession, metadataCategory))
                 .thenReturn(metadataMapping);

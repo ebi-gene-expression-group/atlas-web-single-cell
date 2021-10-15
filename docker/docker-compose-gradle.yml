@@ -10,6 +10,8 @@ services:
       - "5005:5005"
     working_dir: /root/project
     volumes:
+      - root-gradle-wrapper:/root/.gradle/wrapper
+      - root-gradle-caches:/root/.gradle/caches
       - ..:/root/project
       - ./packages:/root/.m2
       - /home/alf/gradle-ro-dep-cache:/gradle-ro-dep-cache
@@ -45,6 +47,10 @@ services:
         ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
         ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT &&
         ./gradlew :app:jacocoTestReport
+
+volumes:
+  root-gradle-wrapper:
+  root-gradle-caches:
 
 networks:
   scxa:

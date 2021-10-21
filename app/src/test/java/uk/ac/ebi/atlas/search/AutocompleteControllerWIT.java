@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.ID_PROPERTY_NAMES;
+import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -94,7 +94,7 @@ class AutocompleteControllerWIT {
                 .andExpect(
                         jsonPath(
                                 "$[*].label",
-                                everyItem(in(ID_PROPERTY_NAMES.stream().map(p -> p.label).collect(toList())))))
+                                everyItem(in(BIOENTITY_PROPERTY_NAMES.stream().map(p -> p.label).collect(toList())))))
                 .andExpect(jsonPath("$[*].options", everyItem(hasSize(greaterThanOrEqualTo(1)))))
                 .andExpect(jsonPath("$[*].options.label", everyItem(not(empty()))))
                 .andExpect(jsonPath("$[*].options.value", everyItem(not(empty()))));

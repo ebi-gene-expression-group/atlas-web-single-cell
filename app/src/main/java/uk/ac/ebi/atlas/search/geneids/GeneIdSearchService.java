@@ -64,7 +64,7 @@ public class GeneIdSearchService {
     private Optional<ImmutableSet<String>> searchIds(Function<String, Optional<ImmutableSet<String>>> idSearcher) {
         boolean queryMatchesKnownIds = false;
 
-        for (BioentityPropertyName propertyName : BioentitiesCollectionProxy.ID_PROPERTY_NAMES) {
+        for (BioentityPropertyName propertyName : BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES) {
             Optional<ImmutableSet<String>> matchingGeneIds = idSearcher.apply(propertyName.name);
 
             if (matchingGeneIds.isPresent()) {

@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.search.metadata.CellTypeWheelDao;
 import uk.ac.ebi.atlas.search.metadata.CellTypeWheelService;
 
@@ -50,9 +49,7 @@ class CellTypeWheelServiceTest {
 
     @Test
     void returnsCellTypeWheelValuesPerSearch() {
-        String experimentAccession1 = generateRandomExperimentAccession();
-        String experimentAccession2 = generateRandomExperimentAccession();
-        String experimentAccession3 = generateRandomExperimentAccession();
+        String experimentAccession = generateRandomExperimentAccession();
 
         ImmutableList<ImmutableList<String>> leukocyteWheel =
                 ImmutableList.of(
@@ -60,19 +57,19 @@ class CellTypeWheelServiceTest {
                             "Homo sapiens",
                             "bone marrow",
                             "native thymus-derived CD4-positive, alpha-beta T cell",
-                            experimentAccession1
+                            experimentAccession
                         ),
                         ImmutableList.of(
                             "Homo sapiens",
                             "bone marrow",
                             "helper T cell",
-                            experimentAccession2
+                            experimentAccession
                         ),
                         ImmutableList.of(
                             "Homo sapiens",
                             "bone marrow",
                             "native B cell",
-                            experimentAccession3
+                            experimentAccession
                         )
                 );
 
@@ -83,25 +80,35 @@ class CellTypeWheelServiceTest {
         assertThat(result)
                 .contains(
                         ImmutablePair.of(
+                                ImmutableList.of(experimentAccession),
+                                experimentAccession))
+                .contains(
+                        ImmutablePair.of(
                                 ImmutableList.of(
-                                    "Homo sapiens",
-                                    "bone marrow",
-                                    "native thymus-derived CD4-positive, alpha-beta T cell"),
-                                experimentAccession1))
+                                        "Homo sapiens",
+                                        "bone marrow"),
+                                experimentAccession))
+                .contains(
+                        ImmutablePair.of(
+                                ImmutableList.of(
+                                        "Homo sapiens",
+                                        "bone marrow",
+                                        "native thymus-derived CD4-positive, alpha-beta T cell"),
+                                experimentAccession))
                 .contains(
                         ImmutablePair.of(
                                 ImmutableList.of(
                                         "Homo sapiens",
                                         "bone marrow",
                                         "helper T cell"),
-                                experimentAccession2))
+                                experimentAccession))
                 .contains(
                         ImmutablePair.of(
                                 ImmutableList.of(
                                         "Homo sapiens",
                                         "bone marrow",
                                         "native B cell"),
-                                experimentAccession3));
+                                experimentAccession));
     }
 
 }

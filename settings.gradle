@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'atlas-web-single-cell'
-include 'atlas-web-core', 'app'
+include 'atlas-web-core', 'app', 'openapi'

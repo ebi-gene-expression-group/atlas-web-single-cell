@@ -1,6 +1,11 @@
 package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableMap;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,6 +65,51 @@ JsonCellPlotController extends JsonExceptionHandlingController {
 
     @GetMapping(value = "/clusters/k/{k}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Operation(
+            operationId = "clustersCellPlot",
+            description = "Retrieve cells from a dataset as a 2D projection bucketed by clusters as predicted by " +
+                    "[Scanpy](https://scanpy.readthedocs.io); each point represents a cell in the experiment. Data " +
+                    "are returned in the [Highcharts scatter plot format]" +
+                    "(https://api.highcharts.com/highcharts/series.scatter.data). Each series represents a " +
+                    "different cluster value. There will be as many clusters/series as `k` (see below).",
+            parameters = {
+                    @Parameter(
+                            name = "experimentAccession",
+                            in = ParameterIn.PATH,
+                            description = "experiment accession of dataset",
+                            example = "E-MTAB-5061"),
+                    @Parameter(
+                            name = "k",
+                            in = ParameterIn.PATH,
+                            description = "number of clusters in which the cells should be split",
+                            schema = @Schema(
+                                    type = "integer",
+                                    example = "9"
+                            )),
+                    @Parameter(
+                            name = "plotMethod",
+                            in = ParameterIn.QUERY,
+                            description = "2D projection method",
+                            schema = @Schema(
+                                    defaultValue = "umap",
+                                    allowableValues = {"umap", "tsne"})),
+                    @Parameter(
+                            name = "n_neighbors",
+                            in = ParameterIn.QUERY,
+                            description = "number of neighbours for the UMAP projection (ignored in t-SNE plots)",
+                            required = true,
+                            schema = @Schema(
+                                    type = "integer",
+                                    example = "20")),
+                    @Parameter(
+                            name = "perplexity",
+                            in = ParameterIn.QUERY,
+                            description = "perplexity value for the t-SNE projection (ignored in UMAP plots)",
+                            required = true,
+                            schema = @Schema(
+                                    type = "integer",
+                                    example = "35"))
+            })
     public String clusterPlotK(@PathVariable String experimentAccession,
                                @PathVariable int k,
                                @RequestParam String plotMethod,
@@ -74,6 +124,47 @@ JsonCellPlotController extends JsonExceptionHandlingController {
 
     @GetMapping(value = "/clusters/metadata/{metadata}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Operation(
+            operationId = "metadataCellPlot",
+            description = "Retrieve cells from a dataset as a 2D projection bucketed by a metadata field; each " +
+                    "point represents a cell in the experiment. Data are returned in the [Highcharts scatter plot " +
+                    "format](https://api.highcharts.com/highcharts/series.scatter.data). Each series represents a " +
+                    "value of the cell plots that share it for the specifed metadata field.",
+            parameters = {
+                    @Parameter(
+                            name = "experimentAccession",
+                            in = ParameterIn.PATH,
+                            description = "experiment accession of dataset",
+                            example = "E-MTAB-5061"),
+                    @Parameter(
+                            name = "metadata",
+                            in = ParameterIn.PATH,
+                            description = "metadata field name over which cells should be bucketed",
+                            example = "inferred cell type - ontology labels"),
+                    @Parameter(
+                            name = "plotMethod",
+                            in = ParameterIn.QUERY,
+                            description = "2D projection method",
+                            schema = @Schema(
+                                    defaultValue = "umap",
+                                    allowableValues = {"umap", "tsne" })),
+                    @Parameter(
+                            name = "n_neighbors",
+                            in = ParameterIn.QUERY,
+                            description = "number of neighbours for the UMAP projection (ignored in t-SNE plots)",
+                            required = true,
+                            schema = @Schema(
+                                    type = "integer",
+                                    example = "20")),
+                    @Parameter(
+                            name = "perplexity",
+                            in = ParameterIn.QUERY,
+                            description = "perplexity value for the t-SNE projection (ignored in UMAP plots)",
+                            required = true,
+                            schema = @Schema(
+                                    type = "integer",
+                                    example = "35"))
+            })
     public String clusterPlotMetadata(@PathVariable String experimentAccession,
                                       @PathVariable String metadata,
                                       @RequestParam String plotMethod,
@@ -86,6 +177,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 requestParams.getOrDefault("accessKey", ""));
     }
 
+    @Hidden
     @GetMapping(value = "/expression",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String expressionPlot(@PathVariable String experimentAccession,
@@ -103,6 +195,48 @@ JsonCellPlotController extends JsonExceptionHandlingController {
     // See also JsonBioentityInformationController.java
     @GetMapping(value = "/expression/{geneId:.+}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Operation(
+            operationId = "expressionCellPlot",
+            description = "Retrieve expression of a specified gene ID from a dataset as a 2D projection; each " +
+                    "point represents a cell in the experiment. The data is returned in the [Highcharts scatter " +
+                    "plot](https://api.highcharts.com/highcharts/series.scatter.data) format in a single series.",
+            parameters = {
+                    @Parameter(
+                            name = "experimentAccession",
+                            in = ParameterIn.PATH,
+                            description = "experiment accession of dataset",
+                            example = "E-MTAB-5061"),
+                    @Parameter(
+                            name = "geneId",
+                            in = ParameterIn.PATH,
+                            description = "[Ensembl](https://www.ensembl.org) gene ID to show expression of (may " +
+                                    "be empty, in which case plot   will show no expression in all cells)",
+                            example = "ENSG00000125798"),
+                    @Parameter(
+                            name = "plotMethod",
+                            in = ParameterIn.QUERY,
+                            description = "2D projection method",
+                            schema = @Schema(
+                                    type = "string",
+                                    defaultValue = "umap",
+                                    allowableValues = {"umap", "tsne"})),
+                    @Parameter(
+                            name = "n_neighbors",
+                            in = ParameterIn.QUERY,
+                            description = "number of neighbours for the UMAP projection (ignored in t-SNE plots)",
+                            required = true,
+                            schema = @Schema(
+                                    type = "integer",
+                                    example = "20")),
+                    @Parameter(
+                            name = "perplexity",
+                            in = ParameterIn.QUERY,
+                            description = "perplexity value for the t-SNE projection (ignored in UMAP plots)",
+                            required = true,
+                            schema = @Schema(
+                                    type = "integer",
+                                    example = "35"))
+            })
     public String expressionPlot(@PathVariable String experimentAccession,
                                  @PathVariable String geneId,
                                  @RequestParam String plotMethod,

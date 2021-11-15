@@ -22,6 +22,8 @@ repositories {
 }
 
 dependencies {
+  implementation 'io.swagger.core.v3:swagger-core:2.1.11'
+
   implementation 'javax.inject:javax.inject:1'
   implementation 'javax.annotation:javax.annotation-api:1.3.2'
   // Needs to match Tomcat version https://tomcat.apache.org/whichversion.html

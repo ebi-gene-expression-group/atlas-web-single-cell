@@ -1,0 +1,51 @@
+version: "3.6"
+
+services:
+  scxa-gradle:
+    image: openjdk:11
+    container_name: scxa-gradle
+    networks:
+      - scxa
+    ports:
+      - "8081:8081"
+    working_dir: /root/project
+    volumes:
+      - root-gradle-wrapper:/root/.gradle/wrapper
+      - root-gradle-caches:/root/.gradle/caches
+      - ..:/root/project
+      - ./packages:/root/.m2
+      - /home/alf/gradle-ro-dep-cache:/gradle-ro-dep-cache
+      - /home/alf/.gradle/wrapper:/root/.gradle/wrapper
+      - $ATLAS_DATA_PATH/scxa:/atlas-data/scxa
+      - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
+
+    depends_on:
+      - scxa-postgres
+      - scxa-solrcloud-1
+      - scxa-solrcloud-2
+    environment:
+      POSTGRES_HOST: $POSTGRES_HOST
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    command:
+      - sh
+      - -c
+      - >
+        ./gradlew
+        -PdataFilesLocation=/atlas-data
+        -PexperimentFilesLocation=/atlas-data/scxa
+        -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB
+        -PjdbcUsername=$POSTGRES_USER
+        -PjdbcPassword=$POSTGRES_PASSWORD
+        -PzkHost=scxa-zk-1
+        -PsolrHost=scxa-solrcloud-1
+        clean :openapi:bootRun
+
+volumes:
+  root-gradle-wrapper:
+  root-gradle-caches:
+
+networks:
+  scxa:
+    name: scxa

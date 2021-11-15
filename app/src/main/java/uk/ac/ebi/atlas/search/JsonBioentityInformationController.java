@@ -15,7 +15,7 @@ import uk.ac.ebi.atlas.species.SpeciesInferrer;
 import javax.inject.Inject;
 
 import static uk.ac.ebi.atlas.bioentity.properties.BioEntityCardProperties.BIOENTITY_PROPERTY_NAMES;
-import static uk.ac.ebi.atlas.solr.BioentityPropertyName.SYMBOL;
+import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.SYMBOL;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController

@@ -16,8 +16,8 @@ services:
       - ./packages:/root/.m2
       - /home/alf/gradle-ro-dep-cache:/gradle-ro-dep-cache
       - /home/alf/.gradle/wrapper:/root/.gradle/wrapper
-      - $ATLAS_DATA_PATH/scxa:/atlas-data/scxa
-      - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
+      - $ATLAS_EXPERIMENTS_PATH:/atlas-data/scxa
+      - $ATLAS_BIOENTITY_PROPERTIES_PATH:/atlas-data/bioentity_properties
 
     depends_on:
       - scxa-postgres

@@ -35,7 +35,7 @@ processResources {
 				experimentFilesLocation:
 						project.hasProperty('experimentFilesLocation') ?
 								experimentFilesLocation :
-								"${System.env.ATLAS_DATA_PATH}/scxa",
+								"${System.env.ATLAS_EXPERIMENTS_PATH}",
 		)
 	}
 

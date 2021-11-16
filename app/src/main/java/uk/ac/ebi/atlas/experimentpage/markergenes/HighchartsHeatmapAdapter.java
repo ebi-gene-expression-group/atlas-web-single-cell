@@ -16,6 +16,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.groupingBy;
 
 @Component
 public class HighchartsHeatmapAdapter {
@@ -49,7 +50,7 @@ public class HighchartsHeatmapAdapter {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
-        var sortedMarkerGenes = markerGenes.stream()
+        var sortedMarkerGenes = mergeSameGeneIdIntoSingleGroup(markerGenes).stream()
                 .parallel()
                 .sorted(CELL_GROUP_VALUE_WHERE_MARKER_LEXICOGRAPHICAL)
                 .collect(toImmutableList());
@@ -75,7 +76,7 @@ public class HighchartsHeatmapAdapter {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
-        var sortedMarkerGenes = markerGenes.stream()
+        var sortedMarkerGenes = mergeSameGeneIdIntoSingleGroup(markerGenes).stream()
                 .parallel()
                 .sorted(CELL_GROUP_VALUE_WHERE_MARKER_NUMERICAL)
                 .collect(toImmutableList());
@@ -118,6 +119,33 @@ public class HighchartsHeatmapAdapter {
                                 .put("cellGroupValueWhereMarker", markerGene.cellGroupValueWhereMarker())
                                 .put("pValue", markerGene.pValue())
                                 .build())
+                .collect(toImmutableList());
+    }
+
+    // When the same marker gene occurs in different groups, we want to see it only once in the heatmap
+    private ImmutableList<MarkerGene> mergeSameGeneIdIntoSingleGroup(Collection<MarkerGene> cellTypeMarkerGenes) {
+        return cellTypeMarkerGenes.stream()
+                .collect(groupingBy(MarkerGene::geneId))
+                .values().stream()
+                .flatMap(sameGeneIdMarkerGenesAcrossAllGroups -> {
+                    // From all the occurrences of the same gene ID across groups, we choose the group in which it has
+                    // the lowest p-value
+                    var referenceMarkerGene =
+                            sameGeneIdMarkerGenesAcrossAllGroups.stream()
+                                    .min(Comparator.comparingDouble(MarkerGene::pValue))
+                                    // This should never happen, every gene ID must have at least one entry
+                                    .orElseThrow(IllegalArgumentException::new);
+                    return sameGeneIdMarkerGenesAcrossAllGroups.stream()
+                            .map(sameGeneIdMarkerGene ->
+                                    MarkerGene.create(
+                                            sameGeneIdMarkerGene.geneId(),
+                                            sameGeneIdMarkerGene.cellGroupType(),
+                                            referenceMarkerGene.cellGroupValueWhereMarker(),
+                                            referenceMarkerGene.pValue(),
+                                            sameGeneIdMarkerGene.cellGroupValue(),
+                                            sameGeneIdMarkerGene.medianExpression(),
+                                            sameGeneIdMarkerGene.meanExpression()));
+                })
                 .collect(toImmutableList());
     }
 }

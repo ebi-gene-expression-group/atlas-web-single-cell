@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
-import uk.ac.ebi.atlas.solr.BioentityPropertyName;
+import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.ID_PROPERTY_NAMES;
+import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Controller
@@ -24,7 +24,7 @@ public class SearchController extends HtmlExceptionHandlingController {
     private static final List<String> VALID_REQUEST_PARAMS =
             ImmutableList.<String>builder()
                     .add("q")
-                    .addAll(ID_PROPERTY_NAMES.stream().map(BioentityPropertyName::name).collect(toList()))
+                    .addAll(BIOENTITY_PROPERTY_NAMES.stream().map(BioentityPropertyName::name).collect(toList()))
                     .build();
 
     private static final String SEARCH_ENDPOINT = "/search";

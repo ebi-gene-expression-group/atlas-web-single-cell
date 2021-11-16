@@ -1,7 +1,7 @@
 package uk.ac.ebi.atlas.search.geneids;
 
 import com.google.auto.value.AutoValue;
-import uk.ac.ebi.atlas.solr.BioentityPropertyName;
+import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 import uk.ac.ebi.atlas.species.Species;
 
 import java.util.Optional;

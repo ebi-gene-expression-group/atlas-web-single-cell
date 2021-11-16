@@ -14,8 +14,10 @@ services:
     volumes:
       - ../webapps:/usr/local/tomcat/webapps
       - ./atlas-properties:/atlas-properties
-      - $ATLAS_DATA_PATH/filesystem:/atlas-data
       - scxa-tomcat-conf:/usr/local/tomcat/conf
+      - $ATLAS_EXPERIMENTS_PATH:/sc-experiments
+      - $ATLAS_BIOENTITY_PROPERTIES_PATH:/atlas-data/bioentity_properties
+
     depends_on:
       - scxa-postgres
       - scxa-solrcloud-1
@@ -29,3 +31,4 @@ volumes:
 networks:
   scxa:
     name: scxa
+

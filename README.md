@@ -5,17 +5,15 @@
 - Docker Compose v1.25+
 - 60 GB of available storage (experiment files, PostgreSQL and Solr backup snapshots and Docker volumes)
 
-Notice that PostgreSQL and Solr snapshots are [`bind` mounted](https://docs.docker.com/storage/bind-mounts/) in order
-to move data back and forth from the containers. Actual files managed by either Solr or PostgreSQL are kept in volumes
-which will be reused even if the containers are removed or brought down by Docker Compose. If you want to start afresh
-delete the old volume (e.g. for Postgres `docker volume rm scxa-pgdata`) and re-run the necessary step to return to the
-initial state.
+Notice that Solr snapshots are [`bind` mounted](https://docs.docker.com/storage/bind-mounts/) in order to move data 
+from/to the containers and the development host machine. The files Solr uses to store date are kept in volumes which 
+will be reused even if the containers are removed or brought down by Docker Compose. If you want to start afresh 
+delete the old volume (e.g. for Postgres `docker volume rm scxa-solrcloud-1-data scxa-solrcloud-2-data`) and re-run 
+the necessary steps to return to the initial state.
 
 ## Code
-Clone the repositories of both Atlas Web Core (common business logic for bulk Expression Atlas and Single Cell
-Expression Atlas) and Single Cell Expression Atlas proper:
+Clone the repository with all its submodules::
 ```bash
-git clone --recurse-submodules https://github.com/ebi-gene-expression-group/atlas-web-core.git && \
 git clone --recurse-submodules https://github.com/ebi-gene-expression-group/atlas-web-single-cell.git
 ```
 
@@ -24,8 +22,9 @@ If you have already cloned the project ensure it’s up-to-date:
   git pull
   git submodule update --remote
 ```
+
 ## Data
-Choose a suitable location for the experiment files, database and Solr backup data. Set the path in the variable
+Choose a suitable location for the experiment files and Solr backup data. Set the path in the variable
 `ATLAS_DATA_PATH`.
 
 To download the data you can use `rsync` if you’re connected to the EBI network (over VPN or from campus):
@@ -36,7 +35,7 @@ rsync -ravz ebi-cli:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/* $AT
 
 Alternatively you can use `wget` and connect to EBI’s FTP server over HTTP:
 ```bash
-wget -P $ATLAS_DATA_PATH -c --reject="index.html*" --recursive -np -nc -nH --cut-dirs=7 --random-wait --wait 1 -e robots=off http://ftp.ebi.ac.uk/pub/databases/microarray/data/atlas/test/scxa/
+wget -P $ATLAS_DATA_PATH -c --reject="index.html*" --recursive -np -nc -nH --cut-dirs=7 --random-wait --wait 1 -e robots=off https://ftp.ebi.ac.uk/pub/databases/microarray/data/atlas/test/scxa/
 ```
 
 Notice that either way `ATLAS_DATA_PATH` will be created for you if the directory doesn’t exist.
@@ -45,12 +44,17 @@ This task will take a variable amount of time that depends on your connection sp
 three new folders under `ATLAS_DATA_PATH`: `filesystem`, `solrcloud` and `postgressql`.
 
 ## Bring up the environment
-Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace
-`ATLAS_DATA_PATH` value to the directory you set up in the first step.
+Remember to set the `ATLAS_DATA_PATH` variable to the directory used in the first step.
 
-In the `atlas-web-single-cell/docker` directory run the following:
+You also need to set some variables for the Postgres container. Use the recommended settings below.
+
+In the `atlas-web-single-cell/docker` directory run the following (by default `ATLAS_BIOENTITY_PROPERTIES` is at
+`${ATLAS_DATA_PATH}/filesystem/bioentity-properties`, and `ATLAS_EXPERIMENTS_PATH` is at 
+`${ATLAS_DATA_PATH}/filesystem/scxa-experiments`, but feel free to move the directories as it fits you best):
 ```bash
-ATLAS_DATA_PATH=/path/to/sc/atlas/data \ 
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+ATLAS_BIOENTITY_PROPERTIES_PATH=/path/to/atlas/bioentity_properties \
+ATLAS_EXPERIMENTS_PATH=/path/to/sc/atlas/experiments \ 
 POSTGRES_HOST=scxa-postgres \
 POSTGRES_DB=gxpatlasloc \
 POSTGRES_USER=atlas3dev \
@@ -70,15 +74,9 @@ scxa-tomcat    | 18-Dec-2020 13:40:58.907 INFO [main] org.apache.catalina.startu
 Now let’s populate both the Postgres database and the SolrCloud collections.
 
 ### Postgres
-Run the  following command to restore Postgres data from the provided `pg-dump.bin` file:
-```bash
-docker exec -it scxa-postgres bash -c 'pg_restore -d $POSTGRES_DB -h localhost -p 5432 -U $POSTGRES_USER --clean /var/backups/postgresql/pg-dump.bin'
-```
-
-You’ll see some errors due to the way `pg_dump` and `pg_restore` deal with partitioned tables (`scxa_analytics` in our
-case). This is normal; they can be safely ignored.
-
-A few minutes later your Postgres database will be ready.
+With the experiment files in `${ATLAS_DATA_PATH}/filesystem/scxa-experiments/magetab`, use the 
+[Single Cell Expression Atlas database scripts](https://github.com/ebi-gene-expression-group/db-scxa) to populate
+Postgres. There is also [an SOP you can follow](https://www.ebi.ac.uk/seqdb/confluence/x/GLbtC) if you prefer.
 
 ### SolrCloud
 Use the provided `Dockerfile` to bootstrap SolrCloud:
@@ -110,12 +108,12 @@ scxa-tomcat    | 12-Jan-2021 14:58:51.969 INFO [Catalina-utility-2] org.apache.c
 Run the Gradle task `war` in the `atlas-web-single-cell` directory:
 ```bash
 cd atlas-web-single-cell
-./gradlew -PbuildProfile=docker war
+./gradlew :app:war
 ```
 
 You should now have the file `build/libs/gxa#sc.war` which by default Tomcat’s naming conventions will be served at
 `gxa/sc`. Tomcat should automatically load the application after a few seconds. You should be seeing something like
-this in your logs:
+this in your container logs:
 ```
 scxa-tomcat    | 12-Jan-2021 14:59:47.566 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/usr/local/tomcat/webapps/gxa#sc.war] has finished in [5,510] ms
 ```
@@ -125,15 +123,17 @@ Point your browser at `http://localhost:8080/gxa/sc` and voilà!
 Every time you re-run the `war` task the web app will be automatically re-deployed by Tomcat.
 
 If you get any `war` redeploy issues or want to start again freshly, stop all the containers using this:
-
 ```bash
 ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+ATLAS_BIOENTITY_PROPERTIES_PATH=/path/to/sc/atlas/bioentity_properties \
+ATLAS_EXPERIMENTS_PATH=/path/to/sc/atlas/experiments \ 
 POSTGRES_HOST=scxa-postgres \
 POSTGRES_DB=gxpatlasloc \
 POSTGRES_USER=atlas3dev \
 POSTGRES_PASSWORD=atlas3dev \
 docker-compose -f docker-compose-solrcloud.yml -f docker-compose-postgres.yml -f docker-compose-tomcat.yml down
 ```
+
 If you get any `java.net.UnknownHostException: Invalid hostname for server: local` exceptions while running application.
 Go to `profile-docker. gradle` file and check these attribute values `ext.zkHost` & `ext.solrHost` and compare with running container names.
 If they are different, update them.These should be ZooKeeper and Solr container names.
@@ -174,7 +174,7 @@ done
 Remember to update the file and any new experiments added to the `filesystem` directory by syncing your
 `ATLAS_DATA_PATH` with `/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa`:
 ```bash
-rsync -ravz $ATLAS_DATA_PATH/* ebi-cli:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/
+rsync -ravz $ATLAS_DATA_PATH/filesystem noah-login:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/filesystem
 ```
 
 ## Testing
@@ -216,7 +216,8 @@ services to run unit tests, integration tests and end-to-end tests. It splits th
 
 Bring it up like this (the Postgres variables can take any values, remember that the container will be removed):
 ```bash
-ATLAS_DATA_PATH=/path/to/your/scxa/data \
+ATLAS_BIOENTITY_PROPERTIES_PATH=/path/to/sc/atlas/bioentity_properties \
+ATLAS_EXPERIMENTS_PATH=/path/to/sc/atlas/experiments \ 
 POSTGRES_HOST=scxa-postgres-test \
 POSTGRES_DB=gxpscxatest \
 POSTGRES_USER=scxa \
@@ -243,7 +244,9 @@ docker rm scxa-solrcloud-1 scxa-solrcloud-2 scxa-zk-1 scxa-zk-2 scxa-zk-3 scxa-p
 
 If you prefer, here’s a `docker-compose run` command to execute the tests:
 ```bash
-ATLAS_DATA_PATH=/path/to/your/scxa/data \
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+ATLAS_BIOENTITY_PROPERTIES_PATH=/path/to/sc/atlas/bioentity_properties \
+ATLAS_EXPERIMENTS_PATH=/path/to/sc/atlas/experiments \ 
 POSTGRES_HOST=scxa-postgres-test \
 POSTGRES_DB=gxpscxatest \
 POSTGRES_USER=scxa \
@@ -274,7 +277,9 @@ impractical. In such situations you can use
 [Gradle’s continuous build execution](https://blog.gradle.org/introducing-continuous-build). See the example below for
 e.g. `ExperimentFileLocationServiceIT.java`:
 ```bash
-ATLAS_DATA_PATH=/path/to/your/scxa/data \
+ATLAS_DATA_PATH=/path/to/sc/atlas/data \
+ATLAS_BIOENTITY_PROPERTIES_PATH=/path/to/sc/atlas/bioentity_properties \
+ATLAS_EXPERIMENTS_PATH=/path/to/sc/atlas/experiments \ 
 POSTGRES_HOST=scxa-postgres-test \
 POSTGRES_DB=gxpscxatest \
 POSTGRES_USER=scxa \

@@ -12,9 +12,12 @@ services:
     volumes:
       - root-gradle-wrapper:/root/.gradle/wrapper
       - root-gradle-caches:/root/.gradle/caches
-      - ..:/root/project
+      - $GRADLE_RO_DEP_CACHE:/gradle-ro-dep-cache
+      - $ATLAS_EXPERIMENTS_PATH:/sc-experiments
+      - $ATLAS_BIOENTITY_PROPERTIES_PATH:/atlas-data/bioentity_properties
       - ./packages:/root/.m2
-      - $ATLAS_DATA_PATH:/root/scxa/integration-test-data
+      - ..:/root/project
+
     depends_on:
       - scxa-solrcloud-1
       - scxa-solrcloud-2
@@ -24,14 +27,15 @@ services:
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
     command:
       - sh
       - -c
       - >
         ./gradlew :app:clean &&
         ./gradlew
-        -PdataFilesLocation=/root/scxa/integration-test-data
-        -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa
+        -PdataFilesLocation=/atlas-data
+        -PexperimentFilesLocation=/sc-experiments
         -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB
         -PjdbcUsername=$POSTGRES_USER
         -PjdbcPassword=$POSTGRES_PASSWORD

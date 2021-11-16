@@ -30,7 +30,7 @@ import javax.sql.DataSource;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.ac.ebi.atlas.solr.BioentityPropertyName.ENSGENE;
+import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.ENSGENE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_VALUE;

@@ -14,9 +14,8 @@ services:
       - root-gradle-caches:/root/.gradle/caches
       - ..:/root/project
       - ./packages:/root/.m2
-      - /home/alf/gradle-ro-dep-cache:/gradle-ro-dep-cache
-      - /home/alf/.gradle/wrapper:/root/.gradle/wrapper
-      - $ATLAS_EXPERIMENTS_PATH:/atlas-data/scxa
+      - $GRADLE_RO_DEP_CACHE:/gradle-ro-dep-cache
+      - $ATLAS_EXPERIMENTS_PATH:/sc-experiments
       - $ATLAS_BIOENTITY_PROPERTIES_PATH:/atlas-data/bioentity_properties
 
     depends_on:
@@ -28,13 +27,14 @@ services:
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
     command:
       - sh
       - -c
       - >
         ./gradlew
         -PdataFilesLocation=/atlas-data
-        -PexperimentFilesLocation=/atlas-data/scxa
+        -PexperimentFilesLocation=/sc-experiments
         -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB
         -PjdbcUsername=$POSTGRES_USER
         -PjdbcPassword=$POSTGRES_PASSWORD

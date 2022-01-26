@@ -13,7 +13,7 @@ repositories {
   mavenCentral()
   mavenLocal()
   maven {
-    url "http://193.62.54.19:30007/artifactory/maven-local/"
+    url "http://45.88.81.176/artifactory/maven-local/"
     allowInsecureProtocol true
   }
   // For patched version of SolrJ (see dependencies below) and ae-efo-loader

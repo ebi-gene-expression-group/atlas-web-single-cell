@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public class MarkerGenesDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-	private static final String CELL_GROUP_TYPE = "inferred cell type - ontology labels";
 
 	public MarkerGenesDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -77,12 +76,12 @@ public class MarkerGenesDao {
                     "m.marker_probability < 0.05 and g.variable = :variable and " +
                     "g.value IN (:values) and expression_type = 0 order by m.marker_probability ";
 
-	public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, ImmutableSet<String> cellGroupValues) {
+	public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, String cellGroupType, ImmutableSet<String> cellGroupValues) {
 
 		var namedParameters =
 				ImmutableMap.of(
 						"experiment_accession", experiment_accession,
-						"variable", CELL_GROUP_TYPE,
+						"variable", cellGroupType,
 						"values", cellGroupValues.isEmpty() ? "" : cellGroupValues);
 
 		return namedParameterJdbcTemplate.query(

@@ -11,6 +11,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 public class MarkerGeneService {
     private final MarkerGenesDao markerGenesDao;
     private final CellTypeSearchDao cellTypeSearchDao;
+    private static final String CELL_GROUP_TYPE = "inferred cell type - ontology labels";
 
     public MarkerGeneService(MarkerGenesDao markerGenesDao, CellTypeSearchDao cellTypeSearchDao) {
         this.markerGenesDao = markerGenesDao;
@@ -29,9 +30,9 @@ public class MarkerGeneService {
         var ontologyLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
 
         var cellTypeMarkerGenes = ontologyLabelsCellTypeValues.isEmpty() ?
-                markerGenesDao.getCellTypeMarkerGenes(experimentAccession,
+                markerGenesDao.getCellTypeMarkerGenes(experimentAccession, CELL_GROUP_TYPE,
                         cellTypeSearchDao.getInferredCellTypeAuthorsLabels(experimentAccession, organismPart)) :
-                markerGenesDao.getCellTypeMarkerGenes(experimentAccession, ontologyLabelsCellTypeValues);
+                markerGenesDao.getCellTypeMarkerGenes(experimentAccession, CELL_GROUP_TYPE, ontologyLabelsCellTypeValues);
 
         return cellTypeMarkerGenes.stream()
                 .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))
@@ -39,6 +40,16 @@ public class MarkerGeneService {
                 .collect(toImmutableList());
     }
 
+    public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmap(String experimentAccession, String cellGroupType, ImmutableSet<String> cellType) {
+
+
+        var cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellGroupType, cellType);
+
+        return cellTypeMarkerGenes.stream()
+                .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))
+                .filter(markerGene -> !markerGene.cellGroupValueWhereMarker().equalsIgnoreCase("Not available"))
+                .collect(toImmutableList());
+    }
     /**
      * @param experimentAccession - Id of the experiment
      * @param k                   - no of clusters

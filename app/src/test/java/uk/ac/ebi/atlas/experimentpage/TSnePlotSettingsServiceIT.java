@@ -18,6 +18,7 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
+import uk.ac.ebi.atlas.experiments.ExperimentCellCountDao;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
@@ -54,6 +55,9 @@ class TSnePlotSettingsServiceIT {
     private TSnePlotDao tSnePlotDao;
 
     @Inject
+    private ExperimentCellCountDao experimentCellCountDao;
+
+    @Inject
     private MarkerGenesDao markerGenesDao;
 
     private TSnePlotSettingsService subject;
@@ -88,7 +92,7 @@ class TSnePlotSettingsServiceIT {
 
     @BeforeEach
     void setUp() {
-        this.subject = new TSnePlotSettingsService(dataFileHub, idfParser, tSnePlotDao, markerGenesDao);
+        this.subject = new TSnePlotSettingsService(dataFileHub, idfParser, tSnePlotDao, markerGenesDao, experimentCellCountDao);
     }
 
     @Test
@@ -113,6 +117,16 @@ class TSnePlotSettingsServiceIT {
         assertThat(result)
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
+    }
+
+    @Test
+    void getCellCountForValidAccession() {
+        Integer result =
+                subject.getCellCount(jdbcTestUtils.fetchRandomExperimentAccession());
+
+        assertThat(result)
+                .isNotZero()
+                .isGreaterThan(50);
     }
 
     // This is not a good test: the JVM may do things in the background we’re not aware of, or manage sockets or TCP

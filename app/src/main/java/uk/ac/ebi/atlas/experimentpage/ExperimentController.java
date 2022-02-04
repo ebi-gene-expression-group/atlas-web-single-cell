@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentSerializer;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 @Controller
@@ -15,13 +16,16 @@ public class ExperimentController extends HtmlExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private final ExperimentPageContentSerializer experimentPageContentSerializer;
     private final ExperimentAttributesService experimentAttributesService;
+    private final TSnePlotSettingsService tSnePlotSettingsService;
 
     public ExperimentController(ExperimentTrader experimentTrader,
                                 ExperimentPageContentSerializer experimentPageContentSerializer,
-                                ExperimentAttributesService experimentAttributesService) {
+                                ExperimentAttributesService experimentAttributesService,
+                                TSnePlotSettingsService tSnePlotSettingsService) {
         this.experimentTrader = experimentTrader;
         this.experimentPageContentSerializer = experimentPageContentSerializer;
         this.experimentAttributesService = experimentAttributesService;
+        this.tSnePlotSettingsService = tSnePlotSettingsService;
     }
 
     @RequestMapping(value = {"/experiments/{experimentAccession}", "/experiments/{experimentAccession}/**"},
@@ -37,7 +41,7 @@ public class ExperimentController extends HtmlExceptionHandlingController {
                 experimentPageContentSerializer.experimentPageContentForExperiment(experimentAccession, accessKey));
         model.addAttribute(
                 "numberOfCells",
-                experiment.getAnalysedAssays().size());
+                tSnePlotSettingsService.getCellCount(experimentAccession));
 
         return "experiment-page";
     }

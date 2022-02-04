@@ -7,6 +7,7 @@ import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
+import uk.ac.ebi.atlas.experiments.ExperimentCellCountDao;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 
 import java.util.List;
@@ -20,15 +21,18 @@ public class TSnePlotSettingsService {
     private final IdfParser idfParser;
     private final TSnePlotDao tSnePlotDao;
     private final MarkerGenesDao markerGenesDao;
+    private final ExperimentCellCountDao experimentCellCountDao;
 
     public TSnePlotSettingsService(DataFileHub dataFileHub,
                                    IdfParser idfParser,
                                    TSnePlotDao tSnePlotDao,
-                                   MarkerGenesDao markerGenesDao) {
+                                   MarkerGenesDao markerGenesDao,
+                                   ExperimentCellCountDao experimentCellCountDao) {
         this.dataFileHub = dataFileHub;
         this.idfParser = idfParser;
         this.tSnePlotDao = tSnePlotDao;
         this.markerGenesDao = markerGenesDao;
+        this.experimentCellCountDao = experimentCellCountDao;
     }
 
     public List<Integer> getAvailableKs(String experimentAccession) {
@@ -67,6 +71,11 @@ public class TSnePlotSettingsService {
                         .findFirst();
             }
         }
+    }
+
+    @Cacheable("cellCounts")
+    public int getCellCount(String experimentAccession) {
+        return experimentCellCountDao.fetchNumberOfCellsByExperimentAccession(experimentAccession);
     }
 
     @Cacheable("plotOptions")

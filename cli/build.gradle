@@ -1,0 +1,49 @@
+plugins {
+    id 'atlas-web-app.java-conventions'
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+version = '1.0.0'
+
+bootJar {
+    archiveFileName = 'atlas-cli-sc.jar'
+}
+
+dependencies {
+    implementation project(':atlas-web-single-cell')
+    implementation project(':app')
+
+    runtimeOnly 'javax.servlet.jsp:jsp-api:2.2'
+
+    implementation 'info.picocli:picocli:4.6.1'
+    implementation 'info.picocli:picocli-spring-boot-starter:4.6.1'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+processResources {
+    filesMatching('configuration.properties') {
+        expand(
+                dataFilesLocation: project.hasProperty('dataFilesLocation') ? dataFilesLocation : "${System.env.ATLAS_DATA_PATH}",
+                experimentFilesLocation: project.hasProperty('experimentFilesLocation') ? experimentFilesLocation : "${System.env.ATLAS_DATA_PATH}/scxa",
+        )
+    }
+
+    filesMatching('jdbc.properties') {
+        expand(
+                jdbcUrl: project.hasProperty('jdbcUrl') ? jdbcUrl : "jdbc:postgresql://${System.env.ATLAS_POSTGRES_HOST}:5432/${System.env.ATLAS_POSTGRES_DB}",
+                jdbcUsername: project.hasProperty('jdbcUsername') ? jdbcUsername : "${System.env.ATLAS_POSTGRES_USER}",
+                jdbcPassword: project.hasProperty('jdbcPassword') ? jdbcPassword : "${System.env.ATLAS_POSTGRES_PASSWORD}"
+        )
+    }
+
+    filesMatching('solr.properties') {
+        expand(
+                zkHost: project.hasProperty('zkHost') ? zkHost : "${System.env.ATLAS_ZK_HOST}",
+                zkPort: project.hasProperty('zkPort') ? zkPort : '2181',
+                solrHost: project.hasProperty('solrHost') ? solrHost : "${System.env.ATLAS_SOLR_HOST}",
+                solrPort: project.hasProperty('solrPort') ? solrPort : '8983'
+        )
+    }
+}

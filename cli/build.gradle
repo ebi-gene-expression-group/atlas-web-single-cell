@@ -11,7 +11,7 @@ bootJar {
 }
 
 dependencies {
-    implementation project(':atlas-web-single-cell')
+    implementation project(':atlas-web-core')
     implementation project(':app')
 
     runtimeOnly 'javax.servlet.jsp:jsp-api:2.2'

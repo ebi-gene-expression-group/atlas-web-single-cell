@@ -1,5 +1,5 @@
 # Expression Atlas CLI Bulk
-A minimal Spring Boot wrapper to run (bulk) Expression Atlas tasks from the command line.
+A minimal Spring Boot wrapper to run Single Cell Expression Atlas tasks from the command line.
 
 ## Requirements
 - Java 11

@@ -27,7 +27,7 @@ public class ExperimentDesignCommand extends AbstractPerAccessionCommand impleme
     public Integer call() {
 
         LOGGER.info("Starting update experiment designs for accessions.");
-        List<String> failedAccessions = new ArrayList<>();
+        var failedAccessions = new ArrayList<String>();
         for(String accession : experimentAccessions) {
             try {
                 experimentCrud.updateExperimentDesign(accession);

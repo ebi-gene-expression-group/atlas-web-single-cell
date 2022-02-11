@@ -18,7 +18,7 @@ public abstract class AbstractPerAccessionCommand {
     protected List<String> experimentAccessions;
 
     protected int handleFailedAccessions(Collection<String> failedAccessions) {
-        int status = 0;
+        var status = 0;
         if (!failedAccessions.isEmpty()) {
             status = 1;
             LOGGER.warning(String.format("%s experiments failed", failedAccessions.size()));

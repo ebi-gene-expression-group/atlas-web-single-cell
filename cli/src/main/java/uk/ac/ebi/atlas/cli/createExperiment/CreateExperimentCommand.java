@@ -39,7 +39,8 @@ public class CreateExperimentCommand extends AbstractPerAccessionCommand impleme
         for (var accession : accessions) {
             LOGGER.info(String.format("Loading %s", accession));
             try {
-                experimentCrud.createExperiment(accession, privateExperimentAccessions.contains(accession));
+                var accessKeyUUID = experimentCrud.createExperiment(accession, privateExperimentAccessions.contains(accession));
+                LOGGER.info("success, access key UUID: " + accessKeyUUID);
             } catch (RuntimeException e) {
                 LOGGER.severe(String.format("Could not load %s due to %s", accession, e.getMessage()));
                 failedAccessions.add(accession);

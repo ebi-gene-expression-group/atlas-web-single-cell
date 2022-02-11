@@ -15,12 +15,12 @@ import java.util.stream.Stream;
 
 @Component
 @Command(
-        name = "update-experiment-design",
-        description = "Update experiment design for a set of accessions")
+        name = "create-update-experiment",
+        description = "Creates or updates an experiment")
 public class CreateExperimentCommand extends AbstractPerAccessionCommand implements Callable<Integer> {
     private static final Logger LOGGER = Logger.getLogger(CreateExperimentCommand.class.getName());
 
-    @Option(names = {"-p", "--private-experiment"}, split = ",", description = "one or more experiment accessions to be loaded as private", required = true)
+    @Option(names = {"-p", "--private-experiment"}, split = ",", description = "one or more experiment accessions to be loaded/updated as private")
     private List<String> privateExperimentAccessions;
 
     private final ScxaExperimentCrud experimentCrud;
@@ -32,7 +32,7 @@ public class CreateExperimentCommand extends AbstractPerAccessionCommand impleme
     @Override
     public Integer call() {
 
-        LOGGER.info("Starting loading experiments:");
+        LOGGER.info("Starting loading/updating experiments:");
         var accessions = Stream.concat(experimentAccessions.stream(), privateExperimentAccessions.stream())
                 .collect(Collectors.toList());
         var failedAccessions = new ArrayList<String>();

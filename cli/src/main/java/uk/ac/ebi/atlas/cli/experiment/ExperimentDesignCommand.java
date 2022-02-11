@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.cli.experimentDesign;
+package uk.ac.ebi.atlas.cli.experiment;
 
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;

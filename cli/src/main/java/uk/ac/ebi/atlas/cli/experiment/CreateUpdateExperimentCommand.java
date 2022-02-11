@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.cli.createExperiment;
+package uk.ac.ebi.atlas.cli.experiment;
 
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
@@ -17,15 +17,15 @@ import java.util.stream.Stream;
 @Command(
         name = "create-update-experiment",
         description = "Creates or updates an experiment")
-public class CreateExperimentCommand extends AbstractPerAccessionCommand implements Callable<Integer> {
-    private static final Logger LOGGER = Logger.getLogger(CreateExperimentCommand.class.getName());
+public class CreateUpdateExperimentCommand extends AbstractPerAccessionCommand implements Callable<Integer> {
+    private static final Logger LOGGER = Logger.getLogger(CreateUpdateExperimentCommand.class.getName());
 
     @Option(names = {"-p", "--private-experiment"}, split = ",", description = "one or more experiment accessions to be loaded/updated as private")
     private List<String> privateExperimentAccessions;
 
     private final ScxaExperimentCrud experimentCrud;
 
-    public CreateExperimentCommand(ScxaExperimentCrud scxaExperimentCrud) {
+    public CreateUpdateExperimentCommand(ScxaExperimentCrud scxaExperimentCrud) {
         this.experimentCrud = scxaExperimentCrud;
     }
 

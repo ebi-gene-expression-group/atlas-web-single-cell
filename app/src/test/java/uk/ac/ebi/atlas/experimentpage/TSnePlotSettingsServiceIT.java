@@ -121,7 +121,7 @@ class TSnePlotSettingsServiceIT {
 
     @Test
     void getCellCountForValidAccession() {
-        Integer result =
+        var result =
                 subject.getCellCount(jdbcTestUtils.fetchRandomExperimentAccession());
 
         assertThat(result)

@@ -221,7 +221,7 @@ class TSnePlotSettingsServiceTest {
     @Test
     @DisplayName("Valid cell count from database")
     void validCellCount() {
-        Integer expectedCellCount = 100;
+        var expectedCellCount = 100;
         when(experimentCellCountDaoMock.fetchNumberOfCellsByExperimentAccession(EXPERIMENT_ACCESSION))
                 .thenReturn(expectedCellCount);
 

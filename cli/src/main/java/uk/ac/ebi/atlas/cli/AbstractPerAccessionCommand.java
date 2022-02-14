@@ -11,10 +11,10 @@ public abstract class AbstractPerAccessionCommand {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractPerAccessionCommand.class.getName());;
 
-    @CommandLine.Option(names = {"-f", "--failed-accessions-path"}, description = "File to write failed accessions to.", required = false)
+    @CommandLine.Option(names = {"-f", "--failed-accessions-path"}, description = "File to write failed accessions to.")
     protected String failedOutputPath;
 
-    @CommandLine.Option(names = {"-e", "--experiment"}, split = ",", description = "one or more experiment accessions", required = true)
+    @CommandLine.Option(names = {"-e", "--experiment"}, split = ",", description = "one or more experiment accessions")
     protected List<String> experimentAccessions;
 
     protected int handleFailedAccessions(Collection<String> failedAccessions) {

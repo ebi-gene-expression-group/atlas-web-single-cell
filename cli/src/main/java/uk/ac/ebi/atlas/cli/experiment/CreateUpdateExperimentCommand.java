@@ -20,7 +20,8 @@ import java.util.stream.Stream;
 public class CreateUpdateExperimentCommand extends AbstractPerAccessionCommand implements Callable<Integer> {
     private static final Logger LOGGER = Logger.getLogger(CreateUpdateExperimentCommand.class.getName());
 
-    @Option(names = {"-p", "--private-experiment"}, split = ",", description = "one or more experiment accessions to be loaded/updated as private")
+    @Option(names = {"-p", "--private-experiment"}, split = ",", description = "one or more experiment accessions to be " +
+            "loaded/updated as private.")
     private List<String> privateExperimentAccessions;
 
     private final ScxaExperimentCrud experimentCrud;
@@ -32,9 +33,13 @@ public class CreateUpdateExperimentCommand extends AbstractPerAccessionCommand i
     @Override
     public Integer call() {
 
+        if (experimentAccessions.isEmpty() && privateExperimentAccessions.isEmpty()) {
+            LOGGER.severe("At least either one experiment (-e) or private experiment (-p) needs to be supplied");
+            return 1;
+        }
         LOGGER.info("Starting loading/updating experiments:");
         var accessions = Stream.concat(experimentAccessions.stream(), privateExperimentAccessions.stream())
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         var failedAccessions = new ArrayList<String>();
         for (var accession : accessions) {
             LOGGER.info(String.format("Loading %s", accession));

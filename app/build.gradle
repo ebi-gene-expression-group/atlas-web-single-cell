@@ -44,8 +44,4 @@ dependencies {
     runtimeOnly 'jstl:jstl:1.2'
 
     testImplementation 'com.zaxxer:HikariCP:3.3.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
-    testImplementation 'junit:junit:4.12'
-    testImplementation'org.junit.vintage:junit-vintage-engine:5.4.1'
 }

@@ -26,6 +26,9 @@ dependencies {
     //implementation 'javax.validation:validation-api:2.0.1.Final'
     runtimeOnly 'javax.validation:validation-api:2.0.1.Final'
 
+    implementation 'org.springframework:spring-context:5.1.5.RELEASE'
+    implementation 'org.springframework:spring-web:5.1.5.RELEASE'
+
     implementation "org.cache2k:cache2k-api:${cache2kVersion}"
     runtimeOnly "org.cache2k:cache2k-core:${cache2kVersion}"
     implementation "org.cache2k:cache2k-spring:${cache2kVersion}"

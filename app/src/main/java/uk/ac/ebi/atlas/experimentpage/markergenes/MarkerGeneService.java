@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
+import java.util.List;
+
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 @Service
@@ -38,6 +40,10 @@ public class MarkerGeneService {
                 .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))
                 .filter(markerGene -> !markerGene.cellGroupValueWhereMarker().equalsIgnoreCase("Not available"))
                 .collect(toImmutableList());
+    }
+
+    public List<String> getCellTypesWithMarkerGenes(String experimentAccession, String cellGroupType) {
+        return markerGenesDao.getCellTypesWithMarkerGenes(experimentAccession, cellGroupType);
     }
 
     public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmap(String experimentAccession, String cellGroupType, ImmutableSet<String> cellType) {

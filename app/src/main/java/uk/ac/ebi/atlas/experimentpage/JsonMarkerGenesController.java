@@ -53,4 +53,13 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
                 markerGeneService.getCellTypeMarkerGeneHeatmap(experimentAccession, cellGroupType, ImmutableSet.copyOf(cellType))
         ));
     }
+
+    @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes-heatmap/cellTypeGroups",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String getCellTypeGroupsMarkerGenesHeatmap(@PathVariable String experimentAccession,
+                                                      @RequestParam String cellGroupType) {
+        return GSON.toJson(
+                markerGeneService.getCellTypesWithMarkerGenes(experimentAccession, cellGroupType)
+        );
+    }
 }

@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.cli;
 import picocli.CommandLine;
 import uk.ac.ebi.atlas.cli.utils.AccessionsWriter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
@@ -15,7 +16,7 @@ public abstract class AbstractPerAccessionCommand {
     protected String failedOutputPath;
 
     @CommandLine.Option(names = {"-e", "--experiment"}, split = ",", description = "one or more experiment accessions")
-    protected List<String> experimentAccessions;
+    protected List<String> experimentAccessions = new ArrayList<>();
 
     protected int handleFailedAccessions(Collection<String> failedAccessions) {
         var status = 0;

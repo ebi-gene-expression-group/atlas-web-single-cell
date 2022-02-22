@@ -22,7 +22,7 @@ public class CreateUpdateExperimentCommand extends AbstractPerAccessionCommand i
 
     @Option(names = {"-p", "--private-experiment"}, split = ",", description = "one or more experiment accessions to be " +
             "loaded/updated as private.")
-    private List<String> privateExperimentAccessions;
+    private List<String> privateExperimentAccessions = new ArrayList<>();
 
     private final ScxaExperimentCrud experimentCrud;
 

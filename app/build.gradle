@@ -22,27 +22,26 @@ def cache2kVersion = '1.2.4.Final'
 dependencies {
     implementation project(':atlas-web-core')
 
+    implementation 'org.springframework:spring-context:5.1.5.RELEASE'
+    implementation 'org.springframework:spring-web:5.1.5.RELEASE'
+    implementation 'org.springframework:spring-jdbc:5.1.5.RELEASE'
+    implementation 'org.springframework:spring-webmvc:5.1.5.RELEASE'
+
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    // Jackson BOM is included in 'atlas-web-app.java-conventions' so no need to specify version
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
-    //implementation 'javax.validation:validation-api:2.0.1.Final'
-    runtimeOnly 'javax.validation:validation-api:2.0.1.Final'
 
     implementation "org.cache2k:cache2k-api:${cache2kVersion}"
     runtimeOnly "org.cache2k:cache2k-core:${cache2kVersion}"
     implementation "org.cache2k:cache2k-spring:${cache2kVersion}"
 
-    //implementation 'org.apache.tiles:tiles-extras:3.0.8'
     runtimeOnly 'org.apache.tiles:tiles-extras:3.0.8'
-    implementation 'javax.servlet.jsp:jsp-api:2.2'
-
     // For URL rewrite (see WEB-INF/web.xml), or your Filter will fail with the most confusing error messages
-    //implementation 'org.tuckey:urlrewritefilter:4.0.3'
     runtimeOnly 'org.tuckey:urlrewritefilter:4.0.3'
-    // implementation 'jstl:jstl:1.2'
     runtimeOnly 'jstl:jstl:1.2'
 
+    testImplementation 'commons-beanutils:commons-beanutils:1.9.3'
+    testImplementation 'javax.servlet.jsp:jsp-api:2.2'
+
     testImplementation 'com.zaxxer:HikariCP:3.3.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
-    testImplementation 'junit:junit:4.12'
-    testImplementation'org.junit.vintage:junit-vintage-engine:5.4.1'
 }

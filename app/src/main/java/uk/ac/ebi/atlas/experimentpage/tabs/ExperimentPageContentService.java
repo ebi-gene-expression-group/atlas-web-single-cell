@@ -107,7 +107,7 @@ public class ExperimentPageContentService {
 
     public JsonArray getDownloads(String experimentAccession, String accessKey) {
         var result = new JsonArray();
-        var experiment = experimentTrader.getPublicExperiment(experimentAccession);
+        var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
         var technologyType = experiment.getTechnologyType();
 
         var metadataFiles =

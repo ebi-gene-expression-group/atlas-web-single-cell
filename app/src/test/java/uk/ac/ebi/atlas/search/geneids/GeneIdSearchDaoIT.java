@@ -23,13 +23,14 @@ import uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
+import uk.ac.ebi.atlas.trader.ExperimentTraderDao;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.ac.ebi.atlas.solr.BioentityPropertyName.ENSGENE;
+import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.ENSGENE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_VALUE;
@@ -51,6 +52,9 @@ class GeneIdSearchDaoIT {
 
     private BioentitiesCollectionProxy bioentitiesCollectionProxy;
 
+    @Inject
+    private ExperimentTraderDao experimentTraderDao;
+
     private GeneIdSearchDao subject;
 
     @BeforeAll
@@ -71,7 +75,7 @@ class GeneIdSearchDaoIT {
 
     @BeforeEach
     void setUp() {
-        subject = new GeneIdSearchDao(collectionProxyFactory);
+        subject = new GeneIdSearchDao(collectionProxyFactory, experimentTraderDao);
         bioentitiesCollectionProxy = collectionProxyFactory.create(BioentitiesCollectionProxy.class);
     }
 

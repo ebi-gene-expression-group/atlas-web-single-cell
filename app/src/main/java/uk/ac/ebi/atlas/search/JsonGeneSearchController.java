@@ -16,7 +16,7 @@ import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
-import uk.ac.ebi.atlas.solr.BioentityPropertyName;
+import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
@@ -32,7 +32,7 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.ebi.atlas.search.FacetGroupName.MARKER_GENE;
 import static uk.ac.ebi.atlas.search.FacetGroupName.ORGANISM;
-import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.ID_PROPERTY_NAMES;
+import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
@@ -41,7 +41,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             ImmutableSet.<String>builder()
                     .add("q")
                     .addAll(
-                            ID_PROPERTY_NAMES.stream()
+                            BIOENTITY_PROPERTY_NAMES.stream()
                                     .map(propertyName -> propertyName.name)
                                     .collect(toImmutableSet()))
                     .build();

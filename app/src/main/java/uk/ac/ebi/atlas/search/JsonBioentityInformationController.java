@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.search;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,9 +16,10 @@ import uk.ac.ebi.atlas.species.SpeciesInferrer;
 import javax.inject.Inject;
 
 import static uk.ac.ebi.atlas.bioentity.properties.BioEntityCardProperties.BIOENTITY_PROPERTY_NAMES;
-import static uk.ac.ebi.atlas.solr.BioentityPropertyName.SYMBOL;
+import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.SYMBOL;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
+@Profile("!cli")
 @RestController
 public class JsonBioentityInformationController extends JsonExceptionHandlingController {
     private final BioEntityPropertyDao bioEntityPropertyDao;

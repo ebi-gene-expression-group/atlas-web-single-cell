@@ -37,6 +37,11 @@ public class AppConfig {
             public HashSet<String> getBioentityIdsFromExperiment(String experimentAccession) {
                 return new HashSet<>();
             }
+
+            @Override
+            public HashSet<String> getBioentityIdsFromExperiment(String experimentAccession, boolean throwError) {
+                return new HashSet<>();
+            }
         };
     }
 

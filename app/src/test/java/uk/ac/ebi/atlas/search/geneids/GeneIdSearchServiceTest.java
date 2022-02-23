@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.ac.ebi.atlas.solr.BioentityPropertyName;
+import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 import uk.ac.ebi.atlas.species.Species;
 import uk.ac.ebi.atlas.species.SpeciesProperties;
 
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.ID_PROPERTY_NAMES;
+import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES_OVERRIDE_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomKnownBioentityPropertyName;
 
@@ -52,10 +52,10 @@ class GeneIdSearchServiceTest {
         subject.search(GeneQuery.create("foobar"));
         subject.search(GeneQuery.create("foobar", HUMAN));
 
-        ID_PROPERTY_NAMES.forEach(propertyName ->
+        BIOENTITY_PROPERTY_NAMES.forEach(propertyName ->
                 inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", propertyName.name));
 
-        ID_PROPERTY_NAMES.forEach(propertyName ->
+        BIOENTITY_PROPERTY_NAMES.forEach(propertyName ->
                 inOrder.verify(geneIdSearchDaoMock).searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()));
     }
 
@@ -95,7 +95,7 @@ class GeneIdSearchServiceTest {
             randomIdPropertyName = generateRandomKnownBioentityPropertyName();
         }
 
-        ID_PROPERTY_NAMES.forEach(propertyName -> {
+        BIOENTITY_PROPERTY_NAMES.forEach(propertyName -> {
             when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()))
                     .thenReturn(Optional.empty());
             when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name))
@@ -116,16 +116,16 @@ class GeneIdSearchServiceTest {
     @Test
     void resultsOfFirstIdThatMatchesAreReturned() {
         BioentityPropertyName randomIdPropertyName = generateRandomKnownBioentityPropertyName();
-        while (!ID_PROPERTY_NAMES.contains(randomIdPropertyName)) {
+        while (!BIOENTITY_PROPERTY_NAMES.contains(randomIdPropertyName)) {
             randomIdPropertyName = generateRandomKnownBioentityPropertyName();
         }
 
         ImmutableList<BioentityPropertyName> idPropertyNamesBefore =
-                ID_PROPERTY_NAMES.subList(0, ID_PROPERTY_NAMES.indexOf(randomIdPropertyName));
+                BIOENTITY_PROPERTY_NAMES.subList(0, BIOENTITY_PROPERTY_NAMES.indexOf(randomIdPropertyName));
 
         ImmutableList<BioentityPropertyName> idPropertyNamesAfter =
-                ID_PROPERTY_NAMES.subList(
-                        ID_PROPERTY_NAMES.indexOf(randomIdPropertyName) + 1, ID_PROPERTY_NAMES.size());
+                BIOENTITY_PROPERTY_NAMES.subList(
+                        BIOENTITY_PROPERTY_NAMES.indexOf(randomIdPropertyName) + 1, BIOENTITY_PROPERTY_NAMES.size());
 
         idPropertyNamesBefore.forEach(propertyName -> {
             when(geneIdSearchDaoMock.searchGeneIds("foobar", propertyName.name, HUMAN.getEnsemblName()))

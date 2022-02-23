@@ -5,12 +5,14 @@ import com.google.common.collect.ImmutableMap;
 import io.atlassian.util.concurrent.LazyReference;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
+import uk.ac.ebi.atlas.search.suggester.AnalyticsSuggesterService;
 import uk.ac.ebi.atlas.search.suggester.SolrSuggestionReactSelectAdapter;
 import uk.ac.ebi.atlas.search.suggester.SuggesterService;
 
@@ -24,6 +26,7 @@ public class AutocompleteController extends JsonExceptionHandlingController {
 
     private final SuggesterService suggesterService;
     private final FeaturedSpeciesService featuredSpeciesService;
+    private final AnalyticsSuggesterService analyticsSuggesterService;
 
     private final LazyReference<String> speciesSelectJson = new LazyReference<>() {
         @Override
@@ -32,10 +35,11 @@ public class AutocompleteController extends JsonExceptionHandlingController {
         }
     };
 
-    public AutocompleteController(SuggesterService suggesterService,
-                                  FeaturedSpeciesService featuredSpeciesService) {
+    public AutocompleteController(SuggesterService suggesterService, FeaturedSpeciesService featuredSpeciesService,
+                                  AnalyticsSuggesterService analyticsSuggesterService) {
         this.suggesterService = suggesterService;
         this.featuredSpeciesService = featuredSpeciesService;
+        this.analyticsSuggesterService = analyticsSuggesterService;
     }
 
     @RequestMapping(value = "/json/suggestions",
@@ -69,6 +73,16 @@ public class AutocompleteController extends JsonExceptionHandlingController {
     @ResponseStatus(HttpStatus.OK)
     public String fetchTopSuggestions() {
         return speciesSelectJson.get();
+    }
+
+    @GetMapping(value = "/json/suggestions/meta_data",
+            produces = "application/json;charset=UTF-8")
+    @ResponseStatus(HttpStatus.OK)
+    public String fetchMetaDataSuggestions( @RequestParam(value = "query") String query,
+                                            @RequestParam(value = "species", required = false, defaultValue = "") String species){
+      return GSON.toJson(SolrSuggestionReactSelectAdapter.serialize(
+                analyticsSuggesterService.fetchMetaDataSuggestions(
+                query,species.split(","))));
     }
 
     private String getter() {

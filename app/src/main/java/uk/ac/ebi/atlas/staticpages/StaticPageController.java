@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.staticpages;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+@Profile("!cli")
 @Controller
 public class StaticPageController extends HtmlExceptionHandlingController {
     private final ServletContextResourceLoader servletContextResourceLoader;

@@ -43,6 +43,7 @@ class TSnePlotViewRoute extends React.Component {
      ]
 
     const cellTypeValue = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
+    const search = URI(this.props.location.search).search(true)
 
     this.state = {
       selectedPlotType: plotTypeDropdown[0].plotType.toLowerCase(),
@@ -53,14 +54,14 @@ class TSnePlotViewRoute extends React.Component {
       selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: cellTypeValue ? `metadata` : `clusters`
+      selectedColourByCategory: !isNaN(search.colourBy) ? `clusters` : cellTypeValue ? `metadata` : `clusters`
     }
   }
 
   render() {
     const { location, match, history } = this.props
     const { atlasUrl, suggesterEndpoint, initialCellTypeValues } = this.props
-    const { species, experimentAccession, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
+    const { species, experimentAccession, accessKey, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
 
       const plotTypeDropdown =  [
@@ -95,6 +96,7 @@ class TSnePlotViewRoute extends React.Component {
           expressionPlotClassName={`small-12 large-6 columns`}
           speciesName={species}
           experimentAccession={experimentAccession}
+          accessKey={accessKey}
           selectedPlotOption={search.plotOption || this.state.selectedPlotOption}
           selectedPlotType={search.plotType || this.state.selectedPlotType}
           ks={ks}
@@ -301,6 +303,7 @@ TSnePlotViewRoute.propTypes = {
   atlasUrl: PropTypes.string.isRequired,
   resourcesUrl: PropTypes.string,
   experimentAccession: PropTypes.string.isRequired,
+  accessKey: PropTypes.string,
   ks: PropTypes.arrayOf(PropTypes.number).isRequired,
   ksWithMarkerGenes: PropTypes.arrayOf(PropTypes.number).isRequired,
   suggesterEndpoint: PropTypes.string.isRequired,

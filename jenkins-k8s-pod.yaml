@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    some-label: some-label-value
+spec:
+  containers:
+    - name: openjdk
+      image: openjdk:11
+      resources:
+        requests:
+          memory: "1.5Gi"
+        limits:
+          memory: "2Gi"
+      env:
+      - name: GRADLE_OPTS
+        value: "-Dorg.gradle.daemon=false"
+      - name: GRADLE_RO_DEP_CACHE
+        value: "/root/gradle-ro-dep-cache"
+      command:
+      - sleep
+      args:
+      - 99d
+      volumeMounts:
+        - mountPath: /test-data/scxa
+          name: scxa-ci-data
+        - mountPath: /test-data/bioentity_properties
+          name: bioentity-properties
+        - mountPath: /root/.m2
+          name: scxa-ci-build-packages
+        - mountPath: /root/gradle-ro-dep-cache
+          name: gradle-ro-dep-cache
+          readOnly: true
+        - mountPath: /root/.gradle/wrapper
+          name: openjdk-root-gradle-wrapper
+    - name: postgres
+      image: postgres:10-alpine
+      resources:
+        requests:
+          memory: "100Mi"
+        limits:
+          memory: "200Mi"
+      env:
+        - name: POSTGRES_DB
+          value: "postgres"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+  volumes:
+    - name: scxa-ci-data
+      persistentVolumeClaim:
+        claimName: scxa-ci-data-claim
+    - name: scxa-ci-build-packages
+      persistentVolumeClaim:
+        claimName: scxa-ci-build-packages-claim
+    - name: bioentity-properties
+      persistentVolumeClaim:
+        claimName: bioentity-properties-claim
+    - name: gradle-ro-dep-cache
+      persistentVolumeClaim:
+        claimName: gradle-ro-dep-cache-claim
+    - name: openjdk-root-gradle-wrapper
+      persistentVolumeClaim:
+        claimName: openjdk-root-gradle-wrapper-claim

@@ -4,8 +4,6 @@ plugins {
     id 'org.flywaydb.flyway' version '7.14.0'
 }
 
-version = '11.0.0'
-
 war {
     // Let’s clean the exploded WAR if it’s there
     def destinationPath = '../webapps'

@@ -52,7 +52,6 @@ public class ScxaExperimentRepository implements ExperimentRepository {
                   experimentDesignParser.parse(experimentDto.getExperimentAccession()),
                   idfParser.parse(experimentDto.getExperimentAccession()),
                   sdrfParser.parseSingleCellTechnologyType(experimentDto.getExperimentAccession()));
-
             default:
                 throw new IllegalArgumentException("Unable to build experiment " +
                   experimentDto.getExperimentAccession() +

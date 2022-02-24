@@ -14,7 +14,7 @@ services:
     volumes:
       - ../webapps:/usr/local/tomcat/webapps
       - ./atlas-properties:/atlas-properties
-      - $ATLAS_DATA_PATH/filesystem:/atlas-data
+      - $ATLAS_DATA_PATH:/atlas-data
       - scxa-tomcat-conf:/usr/local/tomcat/conf
     depends_on:
       - scxa-postgres

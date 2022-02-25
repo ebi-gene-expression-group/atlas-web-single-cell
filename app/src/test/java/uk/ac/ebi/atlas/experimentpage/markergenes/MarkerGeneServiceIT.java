@@ -107,4 +107,18 @@ class MarkerGeneServiceIT {
 		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", ImmutableSet.of("skin")))
 				.isEmpty();
 	}
+
+	@Test
+	void getCellTypesWithMarkerGenesForValidExperimentAccession() {
+		var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
+		assertThat(subject.getCellTypesWithMarkerGenes(experimentAccession, "Inferred cell type - ontology labels"))
+				.isNotEmpty();
+	}
+
+	@Test
+	void getCellTypeMarkerGeneHeatmapForValidExperimentAccesion() {
+		var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
+		assertThat(subject.getCellTypeMarkerGeneHeatmap(experimentAccession, "Inferred cell type - ontology labels", ImmutableSet.of("mast cell")))
+				.isNotEmpty();
+	}
 }

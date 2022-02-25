@@ -109,4 +109,18 @@ class MarkerGenesDaoIT {
         return jdbcTestUtils.fetchKsFromCellGroups(EXPERIMENT_ACCESSION_WITH_MARKER_GENES)
                 .stream().map(Object::toString);
     }
+
+    @Test
+    void shouldGetCellTypesWithMarkerGenes() {
+        var cellTypesWithMarkerGenes = subject.getCellTypesWithMarkerGenes("E-MTAB-5061", "Inferred cell type - ontology labels");
+        assertThat(cellTypesWithMarkerGenes).isNotEmpty();
+
+    }
+
+    @Test
+    void shoulGgetCellTypeMarkerGenes() {
+        var cellTypeMarkerGenes = subject.getCellTypeMarkerGenes("E-MTAB-5061", "Inferred cell type - ontology labels", ImmutableSet.of("mast cell"));
+        assertThat(cellTypeMarkerGenes).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
+
+    }
 }

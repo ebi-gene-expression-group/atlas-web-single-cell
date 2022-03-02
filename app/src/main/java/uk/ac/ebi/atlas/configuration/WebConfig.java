@@ -2,8 +2,12 @@ package uk.ac.ebi.atlas.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.CacheControl;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
@@ -13,6 +17,7 @@ import uk.ac.ebi.atlas.web.interceptors.TimingInterceptor;
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
+@Profile("!cli")
 @Configuration
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {

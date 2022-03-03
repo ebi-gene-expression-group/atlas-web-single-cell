@@ -14,10 +14,8 @@ import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
-import uk.ac.ebi.atlas.experiments.ExperimentCellCountDao;
 import uk.ac.ebi.atlas.testutils.MockDataFileHub;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,9 +35,6 @@ class TSnePlotSettingsServiceTest {
 
     @Mock
     private MarkerGenesDao markerGenesDaoMock;
-
-    @Mock
-    private ExperimentCellCountDao experimentCellCountDaoMock;
 
     private static MockDataFileHub dataFileHubMock;
 
@@ -77,7 +72,7 @@ class TSnePlotSettingsServiceTest {
     @BeforeEach
     void setUp() {
         dataFileHubMock = MockDataFileHub.create();
-        subject = new TSnePlotSettingsService(dataFileHubMock, idfParserMock, tSnePlotDaoMock, markerGenesDaoMock, experimentCellCountDaoMock);
+        subject = new TSnePlotSettingsService(dataFileHubMock, idfParserMock, tSnePlotDaoMock, markerGenesDaoMock);
     }
 
     @Test
@@ -216,17 +211,6 @@ class TSnePlotSettingsServiceTest {
         when(tSnePlotDaoMock.fetchPerplexities(EXPERIMENT_ACCESSION)).thenReturn(Collections.emptyList());
 
         assertThat(subject.getAvailablePerplexities(EXPERIMENT_ACCESSION)).isEmpty();
-    }
-
-    @Test
-    @DisplayName("Valid cell count from database")
-    void validCellCount() {
-        var expectedCellCount = 100;
-        when(experimentCellCountDaoMock.fetchNumberOfCellsByExperimentAccession(EXPERIMENT_ACCESSION))
-                .thenReturn(expectedCellCount);
-
-        assertThat(subject.getCellCount(EXPERIMENT_ACCESSION))
-                .isEqualTo(expectedCellCount);
     }
 
     @Test

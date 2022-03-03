@@ -60,6 +60,9 @@ public class ExperimentFileLocationService {
                         .stream()
                         .map(AtlasResource::getPath)
                         .collect(Collectors.toList());
+            case HDF5:
+                return ImmutableList.of(
+                                dataFileHub.getSingleCellExperimentFiles(experimentAccession).projectHdf5.getPath());
             case QUANTIFICATION_RAW:
                 return
                         ImmutableList.of(

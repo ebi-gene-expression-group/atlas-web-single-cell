@@ -47,8 +47,6 @@ public class MarkerGeneService {
     }
 
     public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmap(String experimentAccession, String cellGroupType, ImmutableSet<String> cellType) {
-
-
         var cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellGroupType, cellType);
 
         return cellTypeMarkerGenes.stream()

@@ -97,13 +97,13 @@ public class MarkerGenesDao {
                     "m.marker_probability < 0.05 and g.variable = :variable and " +
                     "g.value IN (:values) and expression_type = 0 order by m.marker_probability ";
 
-	public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, String cellGroupType, ImmutableSet<String> cellGroupValues) {
+	public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, String cellGroupType, ImmutableSet<String> cellTypeValues) {
 
 		var namedParameters =
 				ImmutableMap.of(
 						"experiment_accession", experiment_accession,
 						"variable", cellGroupType,
-						"values", cellGroupValues.isEmpty() ? "" : cellGroupValues);
+						"values", cellTypeValues.isEmpty() ? "" : cellTypeValues);
 
 		return namedParameterJdbcTemplate.query(
 				SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,

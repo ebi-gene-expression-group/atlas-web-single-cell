@@ -104,10 +104,12 @@
   window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
   ga('create', 'UA-37676851-3', 'auto');
   ga('send', 'pageview');
-  informationBanner.render({}, 'information-banner');
 </script>
 <script async src="https://www.google-analytics.com/analytics.js"></script>
 <!-- End Google Analytics -->
+
+<!-- Display an optional informative message for our users -->
+<script>informationBanner.render({}, 'information-banner');</script>
 
 </body>
 </html>

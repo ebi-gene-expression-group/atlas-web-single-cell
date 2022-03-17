@@ -28,8 +28,8 @@ spec:
         - mountPath: /root/gradle-ro-dep-cache
           name: gradle-ro-dep-cache
           readOnly: true
-#        - mountPath: /root/.gradle/wrapper
-#          name: openjdk-root-gradle-wrapper
+        - mountPath: /root/.gradle/wrapper
+          name: openjdk-root-gradle-wrapper
     - name: postgres
       image: postgres:10-alpine
       resources:
@@ -54,6 +54,6 @@ spec:
     - name: gradle-ro-dep-cache
       persistentVolumeClaim:
         claimName: gradle-ro-dep-cache-claim
-#    - name: openjdk-root-gradle-wrapper
-#      persistentVolumeClaim:
-#        claimName: openjdk-root-gradle-wrapper-claim
+    - name: openjdk-root-gradle-wrapper
+      persistentVolumeClaim:
+        claimName: openjdk-root-gradle-wrapper-claim

@@ -9,9 +9,12 @@ pipeline {
       cloud 'atlas-analysis-3'
       defaultContainer 'openjdk'
       yamlFile 'jenkins-k8s-pod.yaml'
-    }
-    options {
-      podTemplate(workspaceVolume: dynamicPVC(storageClassName: 'ssd-cinder'))
+      podTemplate {
+        name 'ssd-workspace'
+        dynamicPVC {
+          storageClassName 'ssd-cinder'
+        }
+      }
     }
   }
 

@@ -7,10 +7,12 @@ pipeline {
   agent {
     kubernetes {
       cloud 'atlas-analysis-3'
+      inheritFrom 'workspace-ssd'
       defaultContainer 'openjdk'
       yamlFile 'jenkins-k8s-pod.yaml'
     }
   }
+
 
 
   stages {
@@ -18,15 +20,8 @@ pipeline {
       options {
         timeout (time: 20, unit: "MINUTES")
       }
-      podTemplate(
-              namespace: "jenkins-ci-scxa",
-              workspaceVolume: dynamicPVC(storageClassName: 'ssd-cinder')
-      ) {
-        node(POD_LABEL) {
-          steps {
-            sh './gradlew --no-watch-fs'
-          }
-        }
+      steps {
+        sh './gradlew --no-watch-fs'
       }
     }
 

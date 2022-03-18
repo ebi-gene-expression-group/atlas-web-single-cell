@@ -7,7 +7,7 @@ pipeline {
   agent {
     kubernetes {
       cloud 'atlas-analysis-3'
-      inheritFrom 'workspace-ssd'
+      workspaceVolume dynamicPVC(storageClassNames: 'ssd-cinder')
       defaultContainer 'openjdk'
       yamlFile 'jenkins-k8s-pod.yaml'
     }

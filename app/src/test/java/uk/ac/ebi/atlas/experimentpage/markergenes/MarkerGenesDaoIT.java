@@ -111,14 +111,14 @@ class MarkerGenesDaoIT {
     }
 
     @Test
-    void shouldGetCellTypesWithMarkerGenesGivenCellGroup() {
+    void shouldGetCellTypesWithMarkerGenesGivenCellTypeGroup() {
         var cellTypesWithMarkerGenes = subject.getCellTypesWithMarkerGenes("E-MTAB-5061", "Inferred cell type - ontology labels");
         assertThat(cellTypesWithMarkerGenes).isNotEmpty();
 
     }
 
     @Test
-    void shouldGetCellTypeMarkerGenesHeatmapData() {
+    void shouldGetMarkerGenesHeatmapDataForTheGivenCellGroupAndCellType() {
         var cellTypeMarkerGenes = subject.getCellTypeMarkerGenes("E-MTAB-5061", "Inferred cell type - ontology labels", ImmutableSet.of("mast cell"));
         assertThat(cellTypeMarkerGenes).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
 

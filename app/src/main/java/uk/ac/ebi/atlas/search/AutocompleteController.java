@@ -86,6 +86,15 @@ public class AutocompleteController extends JsonExceptionHandlingController {
                 query,species.split(","))));
     }
 
+    @GetMapping(value = "/json/suggestions/gene_search",
+      produces = "application/json;charset=UTF-8")
+    public String fetchGeneSearchSuggestions(
+                                            @RequestParam(value = "query") String query,
+                                            @RequestParam(value = "species", required = false, defaultValue = "") String species){
+        return GSON.toJson(SolrSuggestionReactSelectAdapter.serialize(
+          suggesterService.mergeMetaDataAndBioentitySuggestions(query, species.split(","))));
+    }
+
     private String getter() {
         ImmutableList<String> topSpeciesNames = featuredSpeciesService.getSpeciesNamesSortedByExperimentCount();
 

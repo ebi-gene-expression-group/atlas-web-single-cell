@@ -13,61 +13,56 @@ pipeline {
   }
 
 
-  stages {
-    podTemplate(
-      workspaceVolume {
-        dynamicPVC {
-          storageClassName 'ssd-cinder'
+  podTemplate(
+          namespace: "jenkins-ci-scxa",
+          workspaceVolume: dynamicPVC(storageClassName: 'ssd-cinder')
+  ) {
+    node(POD_LABEL) {
+      stage('Provision Gradle') {
+        options {
+          timeout(time: 20, unit: "MINUTES")
+        }
+        steps {
+          sh './gradlew --no-watch-fs'
         }
       }
-    ) {
-      node(POD_LABEL) {
-        stage('Provision Gradle') {
-          options {
-            timeout (time: 20, unit: "MINUTES")
-          }
-          steps {
-            sh './gradlew --no-watch-fs'
-          }
-        }
 
-        stage('Core lib') {
-          stages {
-            stage('Compile') {
-              options {
-                timeout (time: 1, unit: "HOURS")
-              }
-              steps {
-                sh './gradlew --no-watch-fs ' +
-                        '-Pflyway.url=jdbc:postgresql://localhost:5432/postgres ' +
-                        '-Pflyway.user=postgres ' +
-                        '-Pflyway.password=postgres ' +
-                        '-Pflyway.locations=filesystem:./schemas/flyway/gxa ' +
-                        '-Pflyway.schemas=gxa ' +
-                        'flywayMigrate'
-                sh './gradlew --no-watch-fs ' +
-                        '-PdataFilesLocation=/gxa-test-data ' +
-                        '-PexperimentFilesLocation=/gxa-test-data/gxa ' +
-                        '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
-                        '-PjdbcUsername=postgres ' +
-                        '-PjdbcPassword=postgres ' +
-                        '-PzkHost=zk-cs.jenkins-ci-scxa ' +
-                        '-PzkPort=2181 ' +
-                        '-PsolrHost=solrcloud-hs.jenkins-ci-scxa ' +
-                        '-PsolrPort=8983 ' +
-                        ':atlas-web-core:testClasses'
-              }
+      stage('Core lib') {
+        stages {
+          stage('Compile') {
+            options {
+              timeout (time: 1, unit: "HOURS")
             }
+            steps {
+              sh './gradlew --no-watch-fs ' +
+                      '-Pflyway.url=jdbc:postgresql://localhost:5432/postgres ' +
+                      '-Pflyway.user=postgres ' +
+                      '-Pflyway.password=postgres ' +
+                      '-Pflyway.locations=filesystem:./schemas/flyway/gxa ' +
+                      '-Pflyway.schemas=gxa ' +
+                      'flywayMigrate'
+              sh './gradlew --no-watch-fs ' +
+                      '-PdataFilesLocation=/gxa-test-data ' +
+                      '-PexperimentFilesLocation=/gxa-test-data/gxa ' +
+                      '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
+                      '-PjdbcUsername=postgres ' +
+                      '-PjdbcPassword=postgres ' +
+                      '-PzkHost=zk-cs.jenkins-ci-scxa ' +
+                      '-PzkPort=2181 ' +
+                      '-PsolrHost=solrcloud-hs.jenkins-ci-scxa ' +
+                      '-PsolrPort=8983 ' +
+                      ':atlas-web-core:testClasses'
+            }
+          }
 
-            stage('Test') {
-              options {
-                timeout (time: 2, unit: "HOURS")
-              }
-              steps {
-                sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
-                // sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
-                sh './gradlew --no-watch-fs :atlas-web-core:jacocoTestReport'
-              }
+          stage('Test') {
+            options {
+              timeout (time: 2, unit: "HOURS")
+            }
+            steps {
+              sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
+              // sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
+              sh './gradlew --no-watch-fs :atlas-web-core:jacocoTestReport'
             }
           }
         }
@@ -171,8 +166,6 @@ pipeline {
       }
     }
   }
-
-
 
   post {
     always {

@@ -30,6 +30,8 @@ spec:
           readOnly: true
         - mountPath: /root/.gradle/wrapper
           name: openjdk-root-gradle-wrapper
+        - mountPath: /root
+          name: root-home
     - name: postgres
       image: postgres:10-alpine
       resources:
@@ -45,6 +47,10 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "postgres"
   volumes:
+    - name: root-home
+      storageClassName: ssd-cinder
+      csi:
+        driver: cinder.csi.openstack.org
     - name: scxa-ci-data
       persistentVolumeClaim:
         claimName: sc-test-experiments-claim

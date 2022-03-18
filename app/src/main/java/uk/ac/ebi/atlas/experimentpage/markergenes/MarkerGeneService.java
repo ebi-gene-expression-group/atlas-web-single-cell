@@ -46,8 +46,8 @@ public class MarkerGeneService {
         return markerGenesDao.getCellTypesWithMarkerGenes(experimentAccession, cellGroupType);
     }
 
-    public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmap(String experimentAccession, String cellGroupType, ImmutableSet<String> cellType) {
-        var cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellGroupType, cellType);
+    public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmapData(String experimentAccession, String cellGroupType, ImmutableSet<String> cellTypes) {
+        var cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellGroupType, cellTypes);
 
         return cellTypeMarkerGenes.stream()
                 .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))

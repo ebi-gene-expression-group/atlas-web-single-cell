@@ -59,7 +59,7 @@ class GeneIdSearchDaoIT {
 
     @BeforeAll
     void populateDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
         populator.execute(dataSource);
@@ -67,7 +67,7 @@ class GeneIdSearchDaoIT {
 
     @AfterAll
     void cleanDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
         populator.execute(dataSource);
@@ -87,17 +87,17 @@ class GeneIdSearchDaoIT {
 
     @Test
     void ifNoDocumentsAreFoundInTheIntersectionReturnEmptySet() {
-        String speciesNotCovered = "Oryza_sativa";
+        var speciesNotCovered = "Oryza_sativa";
 
-        SolrQueryBuilder<BioentitiesCollectionProxy> queryBuilder = new SolrQueryBuilder<>();
+        var queryBuilder = new SolrQueryBuilder<BioentitiesCollectionProxy>();
         queryBuilder
                 .addQueryFieldByTerm(SPECIES, speciesNotCovered)
                 .sortBy(BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc)
                 .setFieldList(BIOENTITY_IDENTIFIER);
 
-        try (TupleStreamer tupleStreamer =
+        try (var tupleStreamer =
                      TupleStreamer.of(new SearchStreamBuilder<>(bioentitiesCollectionProxy, queryBuilder).build())) {
-            String geneId =
+            var geneId =
                     tupleStreamer.get()
                             .findAny()
                             .map(tuples -> tuples.getString(BIOENTITY_IDENTIFIER.name()))
@@ -119,17 +119,17 @@ class GeneIdSearchDaoIT {
     @ParameterizedTest
     @MethodSource("randomGeneIdProvider")
     void geneIdIsFoundSearchingItsOwnProperties(String geneId) {
-        SolrQueryBuilder<BioentitiesCollectionProxy> queryBuilder = new SolrQueryBuilder<>();
+        var queryBuilder = new SolrQueryBuilder<BioentitiesCollectionProxy>();
         queryBuilder
                 .addQueryFieldByTerm(BIOENTITY_IDENTIFIER, geneId)
                 .sortBy(PROPERTY_NAME, SolrQuery.ORDER.asc)
                 .setFieldList(ImmutableSet.of(PROPERTY_VALUE, PROPERTY_NAME));
 
-        try (TupleStreamer tupleStreamer =
+        try (var tupleStreamer =
                      TupleStreamer.of(new SearchStreamBuilder<>(bioentitiesCollectionProxy, queryBuilder).build())) {
 
             // We pick a random property, otherwise we risk flooding Solr with a pile of requests and getting a timeout
-            Pair<String, String> anyProperty =
+            var anyProperty =
                     tupleStreamer.get()
                             .map(tuple ->
                                     Pair.of(tuple.getString(PROPERTY_VALUE.name()),
@@ -145,16 +145,16 @@ class GeneIdSearchDaoIT {
 
     @Test
     void filterBySpecies() {
-        String multiSpeciesPropertyValue = "GO:0005622";
-        String propertyName = "go";
+        var multiSpeciesPropertyValue = "GO:0005622";
+        var propertyName = "go";
 
         assertThat(subject.searchGeneIds(multiSpeciesPropertyValue, propertyName, "Homo_sapiens"))
                 .hasValueSatisfying(results ->
                         assertThat(results).allMatch(geneId -> geneId.matches("ENSG\\d+")));
 
-        assertThat(subject.searchGeneIds(multiSpeciesPropertyValue, propertyName, "Arabidopsis_thaliana"))
+        assertThat(subject.searchGeneIds(multiSpeciesPropertyValue, propertyName, "Glycine_max"))
                 .hasValueSatisfying(results ->
-                            assertThat(results).allMatch(geneId -> geneId.matches("AT.{7}")));
+                            assertThat(results).allMatch(geneId -> geneId.matches("GLYMA_.{9}")));
     }
 
     private Stream<String> randomGeneIdProvider() {

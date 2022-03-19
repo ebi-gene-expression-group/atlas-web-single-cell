@@ -3,6 +3,11 @@ kind: Pod
 metadata:
   namespace: jenkins-ci-scxa
 spec:
+  # If we set workspaceVolume dynamicPVC() or workspaceVolume persistentVolumeClaimWorkspaceVolume() we need to add a
+  # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise we get the following exception in the
+  # jnlp container:
+  # Exception in thread "main" java.io.IOException: The specified working directory should be fully accessible to the remoting executable (RWX): /home/jenkins/agent
+  # The securityContext in the pod is inherited, as it becomes the default pod template
   securityContext:
     fsGroup: 1000
   containers:

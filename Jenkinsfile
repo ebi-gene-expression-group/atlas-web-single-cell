@@ -112,7 +112,7 @@ pipeline {
           when { anyOf {
             branch 'develop'
             branch 'main'
-            branch 'k8s-jenkins'
+            branch 'chore/180247430-179834268-jenkins-ci'
           } }
           stages {
             stage('Provision Node.js build environment') {

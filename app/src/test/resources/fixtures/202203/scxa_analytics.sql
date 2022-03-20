@@ -5,6 +5,13 @@ CREATE TABLE scxa_analytics_e_geod_81547 (LIKE scxa_analytics) WITH (autovacuum_
 CREATE TABLE scxa_analytics_e_geod_99058 (LIKE scxa_analytics) WITH (autovacuum_enabled = false, toast.autovacuum_enabled = false);
 CREATE TABLE scxa_analytics_e_mtab_5061 (LIKE scxa_analytics) WITH (autovacuum_enabled = false, toast.autovacuum_enabled = false);
 
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_curd_4 FOR VALUES IN ('E-CURD-4');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_ehca_2 FOR VALUES IN ('E-EHCA-2');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_71585 FOR VALUES IN ('E-GEOD-71585');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_81547 FOR VALUES IN ('E-GEOD-81547');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_99058 FOR VALUES IN ('E-GEOD-99058');
+ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_mtab_5061 FOR VALUES IN ('E-MTAB-5061');
+
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT3G04370', 'SRR8206655-TAGCATCAGGAT', 54.460297);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT1G14315', 'SRR8206659-ACAGATTCGTGG', 503.77835);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT4G34770', 'SRR8206656-AACACCCTACAG', 117.536446);
@@ -605,10 +612,3 @@ INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_le
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000173237', 'ERR1631404', 13.621196);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000215065', 'ERR1630280', 15.814779);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-MTAB-5061', 'ENSG00000137975', 'ERR1630033', 516.52893);
-
-ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_curd_4 FOR VALUES IN ('E-CURD-4');
-ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_ehca_2 FOR VALUES IN ('E-EHCA-2');
-ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_71585 FOR VALUES IN ('E-GEOD-71585');
-ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_81547 FOR VALUES IN ('E-GEOD-81547');
-ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_99058 FOR VALUES IN ('E-GEOD-99058');
-ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_mtab_5061 FOR VALUES IN ('E-MTAB-5061');

@@ -67,10 +67,10 @@ class ExperimentPageContentServiceIT {
         var populator = new ResourceDatabasePopulator();
         populator.setScripts(
                 new ClassPathResource("fixtures/202108/experiment.sql"),
-                new ClassPathResource("fixtures/202108/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/202108/scxa_coords.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"));
+                new ClassPathResource("fixtures/202203/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/202203/scxa_coords.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group_membership.sql"));
         populator.execute(dataSource);
     }
 

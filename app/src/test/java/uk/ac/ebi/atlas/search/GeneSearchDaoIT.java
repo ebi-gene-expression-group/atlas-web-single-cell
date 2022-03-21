@@ -92,7 +92,7 @@ class GeneSearchDaoIT {
 
     // Any gene with marker_probability < 0.05
     @ParameterizedTest
-    @ValueSource(strings = {"AT1G11740"})
+    @ValueSource(strings = {"AT2G23910"})
     void validGeneIdReturnsExperimentAccessions(String geneId) {
         var result = subject.fetchExperimentAccessionsWhereGeneIsMarker(geneId);
 
@@ -113,7 +113,7 @@ class GeneSearchDaoIT {
     // Look for the cell group IDs that match an experiment and its preferred K variable, then find a gene in that cell
     // group that has marker_probability < 0.05
     @ParameterizedTest
-    @CsvSource({"'ENSG00000001626', 'E-GEOD-81547', 25"})
+    @CsvSource({"'ENSG00000231202', 'E-GEOD-81547', 28"})
     void validExperimentAccessionReturnsClusterIDsWithPreferredKAndMinP(String geneId,
                                                                         String experimentAccession,
                                                                         Integer preferredK) {
@@ -131,7 +131,7 @@ class GeneSearchDaoIT {
     }
 
     @ParameterizedTest
-    @CsvSource({"'ENSMUSG00000028565', 'E-EHCA-2', 24"})
+    @CsvSource({"'ENSMUSG00000019873', 'E-EHCA-2', 24"})
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
                                                                                   Integer preferredK) {

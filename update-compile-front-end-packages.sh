@@ -16,7 +16,7 @@ for MODULE_DIR in `ls`
 do
   pushd .
   cd $MODULE_DIR
-  ncu /@ebi-gene-expression-group/ -u
+  #ncu /@ebi-gene-expression-group/ -u
   npm install
   npm audit fix
   npm run prepare
@@ -31,7 +31,7 @@ for BUNDLE_DIR in `ls`
 do
   pushd .
   cd $BUNDLE_DIR
-  ncu /@ebi-gene-expression-group/ -u
+  #ncu /@ebi-gene-expression-group/ -u
   npm install
   npm audit fix
   popd
@@ -41,7 +41,7 @@ popd
 
 WEBPACK_OPTS=${1:-"-d"}
 
-ncu /@ebi-gene-expression-group/ -u
+#ncu /@ebi-gene-expression-group/ -u
 npm install
 npm audit fix
 npx webpack $WEBPACK_OPTS

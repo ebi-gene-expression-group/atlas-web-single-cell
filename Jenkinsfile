@@ -112,7 +112,6 @@ pipeline {
           when { anyOf {
             branch 'develop'
             branch 'main'
-            branch 'chore\\/180247430-179834268-jenkins-ci'
           } }
           stages {
             stage('Provision Node.js build environment') {
@@ -147,7 +146,7 @@ pipeline {
               }
               steps {
                 sh '[[ env.BRANCH_NAME = main ]] && WEBPACK_OPTS=-p || WEBPACK_OPTS=-d && ' +
-                        '. ~/.bashrc && ./update-compile-front-end-packages.sh ${WEBPACK_OPTS}'
+                        '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }
 

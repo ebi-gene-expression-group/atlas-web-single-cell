@@ -62,8 +62,8 @@ class CellMetadataServiceIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/202203/experiment-delete.sql"),
-                new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"));
+                new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/202203/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 

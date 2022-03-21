@@ -81,7 +81,7 @@ class FileDownloadControllerWIT {
     @AfterAll
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/202203/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 

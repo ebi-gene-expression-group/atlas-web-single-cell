@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static uk.ac.ebi.atlas.model.experiment.ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
@@ -28,6 +29,7 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 @Sql("/fixtures/202203/experiment.sql")
+@Sql(value = "/fixtures/202203/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
 class ScxaExperimentRepositoryIT {
     @Inject
     private JdbcUtils jdbcUtils;

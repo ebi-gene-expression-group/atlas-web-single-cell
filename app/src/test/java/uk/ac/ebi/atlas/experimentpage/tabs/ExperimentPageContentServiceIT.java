@@ -78,11 +78,11 @@ class ExperimentPageContentServiceIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.setScripts(
-                new ClassPathResource("fixtures/202203/experiment-delete.sql"),
-                new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/202203/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/202203/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/202203/scxa_cell_group_membership-delete.sql"));
+                new ClassPathResource("fixtures/202203/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/202203/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 

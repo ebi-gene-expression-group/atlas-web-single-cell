@@ -56,11 +56,11 @@ class MarkerGeneServiceIT {
 	void cleanDatabaseTables() {
 		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
-				new ClassPathResource("fixtures/202203/experiment-delete.sql"),
-				new ClassPathResource("fixtures/202203/scxa_cell_group-delete.sql"),
-				new ClassPathResource("fixtures/202203/scxa_cell_group_membership-delete.sql"),
+				new ClassPathResource("fixtures/202203/scxa_cell_group_marker_gene_stats-delete.sql"),
 				new ClassPathResource("fixtures/202203/scxa_cell_group_marker_genes-delete.sql"),
-				new ClassPathResource("fixtures/202203/scxa_cell_group_marker_gene_stats-delete.sql"));
+				new ClassPathResource("fixtures/202203/scxa_cell_group_membership-delete.sql"),
+				new ClassPathResource("fixtures/202203/scxa_cell_group-delete.sql"),
+				new ClassPathResource("fixtures/202203/experiment-delete.sql"));
 		populator.execute(dataSource);
 	}
 

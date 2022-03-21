@@ -47,13 +47,12 @@ class MarkerGenesDaoIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-fixture.sql"));
+                new ClassPathResource("fixtures/202203/experiment.sql"),
+                new ClassPathResource("fixtures/202203/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 
@@ -61,13 +60,12 @@ class MarkerGenesDaoIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_clusters-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
+                new ClassPathResource("fixtures/202203/experiment-delete.sql"),
+                new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group_marker_genes-delete.sql"),
+                new ClassPathResource("fixtures/202203/scxa_cell_group_marker_gene_stats-delete.sql"));
         populator.execute(dataSource);
     }
 

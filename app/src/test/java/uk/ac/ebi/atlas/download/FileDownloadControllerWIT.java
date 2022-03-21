@@ -74,7 +74,7 @@ class FileDownloadControllerWIT {
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/experiment-fixture.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/202203/experiment.sql"));
         populator.execute(dataSource);
     }
 

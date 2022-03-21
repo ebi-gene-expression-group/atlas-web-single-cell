@@ -27,7 +27,7 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
-@Sql("/fixtures/experiment-fixture.sql")
+@Sql("/fixtures/202203/experiment.sql")
 class ScxaExperimentRepositoryIT {
     @Inject
     private JdbcUtils jdbcUtils;

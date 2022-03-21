@@ -28,8 +28,8 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @Transactional
-@Sql("/fixtures/experiment-fixture.sql")
-@Sql(scripts = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
+@Sql("/fixtures/202203/experiment.sql")
+@Sql(scripts = "/fixtures/202203/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
 class ScxaExperimentCrudIT {
     private static final Random RNG = ThreadLocalRandom.current();
 

@@ -27,8 +27,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
-@Sql({"/fixtures/experiment-fixture.sql"})
-@Sql(scripts = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
+@Sql({"/fixtures/202203/experiment.sql"})
+@Sql(scripts = "/fixtures/202203/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
 class JsonSpeciesSummaryControllerWIT {
     @Inject
     private SpeciesPropertiesTrader speciesPropertiesTrader;

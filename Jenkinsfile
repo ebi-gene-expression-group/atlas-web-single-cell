@@ -136,7 +136,7 @@ pipeline {
                 sh 'apt update && apt install -y libglu1-mesa gcc'
                 sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash'
                 sh '. ~/.bashrc && nvm install 14 --lts'
-                sh '. ~/.bashrc && npm install -g ncu'
+                sh '. ~/.bashrc && npm install -g npm-check-updates'
               }
             }
 

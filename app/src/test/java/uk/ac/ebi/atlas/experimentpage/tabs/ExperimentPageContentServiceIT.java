@@ -66,11 +66,11 @@ class ExperimentPageContentServiceIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.setScripts(
-                new ClassPathResource("fixtures/202203/experiment.sql"),
-                new ClassPathResource("fixtures/202203/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/202203/scxa_coords.sql"),
-                new ClassPathResource("fixtures/202203/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/202203/scxa_cell_group_membership.sql"));
+                new ClassPathResource("fixtures/experiment.sql"),
+                new ClassPathResource("fixtures/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/scxa_coords.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"));
         populator.execute(dataSource);
     }
 
@@ -78,11 +78,11 @@ class ExperimentPageContentServiceIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.setScripts(
-                new ClassPathResource("fixtures/202203/scxa_cell_group_membership-delete.sql"),
-                new ClassPathResource("fixtures/202203/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/202203/scxa_coords-delete.sql"),
-                new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/202203/experiment-delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 

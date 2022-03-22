@@ -40,14 +40,14 @@ class SdrfParserIT {
     @BeforeAll
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/202203/experiment.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
         populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/202203/experiment-delete.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 

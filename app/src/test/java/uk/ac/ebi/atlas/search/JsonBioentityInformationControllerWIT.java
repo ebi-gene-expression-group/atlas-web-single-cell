@@ -58,14 +58,14 @@ class JsonBioentityInformationControllerWIT {
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/202203/scxa_analytics.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/scxa_analytics.sql"));
         populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
         populator.execute(dataSource);
     }
 

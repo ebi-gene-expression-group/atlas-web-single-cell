@@ -53,8 +53,8 @@ class CellMetadataServiceIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/202203/experiment.sql"),
-                new ClassPathResource("fixtures/202203/scxa_analytics.sql"));
+                new ClassPathResource("fixtures/experiment.sql"),
+                new ClassPathResource("fixtures/scxa_analytics.sql"));
         populator.execute(dataSource);
     }
 
@@ -62,8 +62,8 @@ class CellMetadataServiceIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/202203/experiment-delete.sql"));
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 

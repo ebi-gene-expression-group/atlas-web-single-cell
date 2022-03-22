@@ -61,7 +61,7 @@ class GeneIdSearchDaoIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/202203/scxa_analytics.sql"));
+                new ClassPathResource("fixtures/scxa_analytics.sql"));
         populator.execute(dataSource);
     }
 
@@ -69,7 +69,7 @@ class GeneIdSearchDaoIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/202203/scxa_analytics-delete.sql"));
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"));
         populator.execute(dataSource);
     }
 

@@ -28,8 +28,8 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
-@Sql("/fixtures/202203/experiment.sql")
-@Sql(value = "/fixtures/202203/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
+@Sql("/fixtures/experiment.sql")
+@Sql(value = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
 class ScxaExperimentRepositoryIT {
     @Inject
     private JdbcUtils jdbcUtils;

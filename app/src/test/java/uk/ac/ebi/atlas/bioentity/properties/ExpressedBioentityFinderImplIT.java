@@ -29,8 +29,7 @@ class ExpressedBioentityFinderImplIT {
 
     @Test
     void unknownGeneIdIsNotExpressed() {
-        assertThat(subject.bioentityIsExpressedInAtLeastOneExperiment(generateRandomEnsemblGeneId()))
-                .isFalse();
+        assertThat(subject.bioentityIsExpressedInAtLeastOneExperiment(generateRandomEnsemblGeneId())).isFalse();
     }
 
     @Test

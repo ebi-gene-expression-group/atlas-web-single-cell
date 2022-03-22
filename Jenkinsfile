@@ -26,7 +26,7 @@ pipeline {
     }
 
 
-    stage('Core lib') {
+    stage('–– Core lib ––') {
       stages {
         stage('Compile') {
           options {
@@ -68,7 +68,7 @@ pipeline {
     }
 
 
-    stage('Web app') {
+    stage('–– Web app ––') {
       stages {
         stage('Compile') {
           options {
@@ -108,11 +108,11 @@ pipeline {
           }
         }
 
-        stage('Build') {
-//          when { anyOf {
-//            branch 'develop'
-//            branch 'main'
-//          } }
+        stage('–– Build ––') {
+          when { anyOf {
+            branch 'develop'
+            branch 'main'
+          } }
           stages {
             stage('Provision Node.js build environment') {
               options {

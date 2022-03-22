@@ -58,7 +58,7 @@ class JsonBioentityInformationControllerWIT {
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/scxa_analytics-fixture.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/scxa_analytics.sql"));
         populator.execute(dataSource);
     }
 

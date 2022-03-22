@@ -38,7 +38,7 @@ class IdfParserIT {
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator bulkPopulator = new ResourceDatabasePopulator();
-        bulkPopulator.addScripts(new ClassPathResource("fixtures/experiment-fixture.sql"));
+        bulkPopulator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
         bulkPopulator.execute(dataSource);
     }
 

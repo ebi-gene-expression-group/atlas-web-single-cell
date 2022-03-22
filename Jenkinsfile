@@ -134,8 +134,8 @@ pipeline {
                 // configure: error: in `/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/2525557b-9d4c-4886-93b3-8cbfa3b76a32':
                 // configure: error: no acceptable C compiler found in $PATH
                 sh 'apt update && apt install -y libglu1-mesa gcc'
-                sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash'
-                sh '. ~/.bashrc && nvm install 14'
+                sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash'
+                sh '. ~/.bashrc && nvm install 14 --lts'
                 sh '. ~/.bashrc && npm install -g ncu'
               }
             }

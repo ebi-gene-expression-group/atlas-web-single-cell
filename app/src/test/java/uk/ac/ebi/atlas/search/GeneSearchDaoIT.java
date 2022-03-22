@@ -131,7 +131,7 @@ class GeneSearchDaoIT {
     }
 
     @ParameterizedTest
-    @CsvSource({"'ENSMUSG00000019873', 'E-EHCA-2', 24"})
+    @CsvSource({"'ENSMUSG00000042129', 'E-EHCA-2', 31"})
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
                                                                                   Integer preferredK) {
@@ -143,7 +143,7 @@ class GeneSearchDaoIT {
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                24, ImmutableList.of(11)));
+                                31, ImmutableList.of(13, 17)));
     }
 
     @ParameterizedTest

@@ -18,8 +18,8 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemb
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
-@Sql("/fixtures/scxa_analytics-fixture.sql")
-@Sql(value = "/fixtures/scxa_analytics-delete.sql", executionPhase = AFTER_TEST_METHOD)
+@Sql("/fixtures/202203/scxa_analytics.sql")
+@Sql(value = "/fixtures/202203/scxa_analytics-delete.sql", executionPhase = AFTER_TEST_METHOD)
 class ExpressedBioentityFinderImplIT {
     @Inject
     JdbcUtils jdbcUtils;

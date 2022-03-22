@@ -113,7 +113,7 @@ class GeneSearchDaoIT {
     // Look for the cell group IDs that match an experiment and its preferred K variable, then find a gene in that cell
     // group that has marker_probability < 0.05
     @ParameterizedTest
-    @CsvSource({"'ENSG00000231202', 'E-GEOD-81547', 28"})
+    @CsvSource({"'ENSG00000176170', 'E-GEOD-81547', 24"})
     void validExperimentAccessionReturnsClusterIDsWithPreferredKAndMinP(String geneId,
                                                                         String experimentAccession,
                                                                         Integer preferredK) {
@@ -127,7 +127,7 @@ class GeneSearchDaoIT {
                 .containsAllEntriesOf(
                         ImmutableMap.of(
                                 // Hard-coded values depending on the gene,experiment we use for this test
-                                25, ImmutableList.of(12, 14, 22, 8)));
+                                24, ImmutableList.of(10, 14)));
     }
 
     @ParameterizedTest

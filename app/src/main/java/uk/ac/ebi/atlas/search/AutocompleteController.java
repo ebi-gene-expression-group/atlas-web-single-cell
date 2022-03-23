@@ -65,7 +65,7 @@ public class AutocompleteController extends JsonExceptionHandlingController {
 
         return GSON.toJson(
           SolrSuggestionReactSelectAdapter.serialize(
-            suggesterService.mergeMetaDataAndBioentitySuggestions(query, species.split(","))));
+            suggesterService.aggregateGeneIdAndMetadataSuggestions(query, species.split(","))));
     }
 
     @RequestMapping(value = "/json/suggestions/species",
@@ -88,11 +88,11 @@ public class AutocompleteController extends JsonExceptionHandlingController {
 
     @GetMapping(value = "/json/suggestions/gene_search",
       produces = "application/json;charset=UTF-8")
-    public String fetchGeneSearchSuggestions(
+    public String fetchGeneIdAndMetadataSuggestions(
                                             @RequestParam(value = "query") String query,
                                             @RequestParam(value = "species", required = false, defaultValue = "") String species){
         return GSON.toJson(SolrSuggestionReactSelectAdapter.serialize(
-          suggesterService.mergeMetaDataAndBioentitySuggestions(query, species.split(","))));
+          suggesterService.aggregateGeneIdAndMetadataSuggestions(query, species.split(","))));
     }
 
     private String getter() {

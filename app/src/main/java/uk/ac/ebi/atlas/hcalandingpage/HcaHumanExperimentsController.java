@@ -27,7 +27,7 @@ public class HcaHumanExperimentsController {
 
     //Used by anatomogram experiments table in HCA Landing page
     @GetMapping(value = "/json/experiments/hca/human",
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+                produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getOrganismPartExperimentsList(@RequestParam(defaultValue = "") Set<String> organismPart) {
         return GSON.toJson(
                 hcaHumanExperimentService

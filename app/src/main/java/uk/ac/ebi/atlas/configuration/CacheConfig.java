@@ -41,6 +41,8 @@ public class CacheConfig {
                 builder -> builder.name("jsonCellPlotWithK"),
                 builder -> builder.name("jsonCellPlotWithMetadata"),
 
+                builder -> builder.name("publicHumanExperiments"),
+
                 builder -> builder.name("hcaMetadata"),
                 builder -> builder.name("inferredCellTypesOntology"),
                 builder -> builder.name("inferredCellTypesAuthors"),

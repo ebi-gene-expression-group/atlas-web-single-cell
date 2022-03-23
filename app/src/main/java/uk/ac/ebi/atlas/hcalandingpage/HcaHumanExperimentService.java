@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.hcalandingpage;
 
 import com.google.common.collect.ImmutableSet;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
@@ -20,6 +21,7 @@ public class HcaHumanExperimentService {
         this.hcaHumanExperimentDao = hcaHumanExperimentDao;
     }
 
+    @Cacheable("publicHumanExperiments")
     public ImmutableSet<Experiment> getPublicHumanExperiments(String characteristicName,
                                                               Set<String> characteristicValues) {
         return hcaHumanExperimentDao.fetchExperimentAccessions(characteristicName,

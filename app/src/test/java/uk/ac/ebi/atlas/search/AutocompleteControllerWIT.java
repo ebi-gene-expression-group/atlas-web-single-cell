@@ -56,7 +56,7 @@ class AutocompleteControllerWIT {
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/experiment-fixture.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
         populator.execute(dataSource);
     }
 

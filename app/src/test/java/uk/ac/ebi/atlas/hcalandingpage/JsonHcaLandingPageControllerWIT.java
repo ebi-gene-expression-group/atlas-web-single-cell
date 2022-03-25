@@ -47,7 +47,7 @@ public class JsonHcaLandingPageControllerWIT {
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-fixture.sql"));
+                new ClassPathResource("fixtures/experiment.sql"));
         populator.execute(dataSource);
     }
 

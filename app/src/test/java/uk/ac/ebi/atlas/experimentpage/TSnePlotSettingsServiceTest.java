@@ -16,7 +16,6 @@ import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.testutils.MockDataFileHub;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

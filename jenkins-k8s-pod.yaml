@@ -1,9 +1,15 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  labels:
-    some-label: some-label-value
+  namespace: jenkins-ci-scxa
 spec:
+  # If we set workspaceVolume dynamicPVC() or workspaceVolume persistentVolumeClaimWorkspaceVolume() we need to add a
+  # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise we get the following exception in the
+  # jnlp container:
+  # Exception in thread "main" java.io.IOException: The specified working directory should be fully accessible to the remoting executable (RWX): /home/jenkins/agent
+  # The securityContext in the pod is inherited, as it becomes the default pod template
+  securityContext:
+    fsGroup: 1000
   containers:
     - name: openjdk
       image: openjdk:11
@@ -26,8 +32,6 @@ spec:
           name: scxa-ci-data
         - mountPath: /test-data/bioentity_properties
           name: bioentity-properties
-        - mountPath: /root/.m2
-          name: scxa-ci-build-packages
         - mountPath: /root/gradle-ro-dep-cache
           name: gradle-ro-dep-cache
           readOnly: true
@@ -48,12 +52,10 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "postgres"
   volumes:
+
     - name: scxa-ci-data
       persistentVolumeClaim:
-        claimName: scxa-ci-data-claim
-    - name: scxa-ci-build-packages
-      persistentVolumeClaim:
-        claimName: scxa-ci-build-packages-claim
+        claimName: sc-test-experiments-claim
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-claim

@@ -17,23 +17,23 @@
             a short summary about data that you can download.
         </p>
 
-        <h4>Metadata Files</h4>
+        <h4>Metadata files</h4>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="idf and sdrf file" align="bottom" class="icon"/>
-            Experiment Metadata: SDRF and IDF files containing information about the experiment.
+            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="IDF and SDRF file" align="bottom" class="icon"/>
+            Experiment metadata: SDRF and IDF files containing information about the experiment.
         </p>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-experiment-design.png" alt="experiment design file" align="bottom" class="icon"/>
-            Experiment Design file: Information about assays within the experiment.
+            <img src="/gxa/sc/resources/images/download/download-experiment-design.png" alt="Experiment design file" align="bottom" class="icon"/>
+            Experiment design file: Information about assays within the experiment.
         </p>
 
         <h4>Results Files</h4>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="clustering file" align="bottom" class="icon"/>
+            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="Clustering file" align="bottom" class="icon"/>
             Clustering file: Results of unsupervised louvain clustering at a range of resolution values.
         </p>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="marker gene file" align="bottom" class="icon"/>
+            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="Marker gene file" align="bottom" class="icon"/>
             Marker gene files: Results of marker gene detection, as calculated by Scanpy using the Wilcoxon rank-sum method.
         </p>
         <p>
@@ -41,7 +41,7 @@
             Normalised counts files: Untransformed expression values, normalised to counts per million.
         </p>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="raw counts file" align="bottom" class="icon"/>
+            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="Raw counts file" align="bottom" class="icon"/>
             Raw counts files: Raw counts values before filtering and normalisation.
         </p>
     </div>

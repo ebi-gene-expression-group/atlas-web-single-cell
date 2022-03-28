@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
-@Sql("/fixtures/experiment-fixture.sql")
+@Sql("/fixtures/experiment.sql")
 @Sql(value = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
 class JsonExperimentsSummaryControllerWIT {
     @Autowired

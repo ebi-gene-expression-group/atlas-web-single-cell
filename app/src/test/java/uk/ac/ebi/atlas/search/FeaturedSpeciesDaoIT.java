@@ -53,7 +53,7 @@ class FeaturedSpeciesDaoIT {
     @Test
     void sortsSpeciesNamesByNumberOfExperiments() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/experiment-fixture.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
         populator.execute(dataSource);
 
         assertThat(subject.fetchSpeciesSortedByExperimentCount())

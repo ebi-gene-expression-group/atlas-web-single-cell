@@ -87,6 +87,7 @@
 <script src="${pageContext.request.contextPath}/resources/js/lib/url-search-params-polyfill.min.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/lib/append-polyfill.min.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js-bundles/vendorCommons.bundle.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js-bundles/informationBanner.bundle.js"></script>
 
 <!-- JavaScript -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -106,6 +107,9 @@
 </script>
 <script async src="https://www.google-analytics.com/analytics.js"></script>
 <!-- End Google Analytics -->
+
+<!-- Display an optional informative message for our users -->
+<script>informationBanner.render({}, 'information-banner');</script>
 
 </body>
 </html>

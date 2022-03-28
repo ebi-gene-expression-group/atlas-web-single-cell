@@ -43,9 +43,9 @@ class GeneSearchServiceIT {
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-fixture.sql"));
+                new ClassPathResource("fixtures/experiment.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"));
         populator.execute(dataSource);
     }
 
@@ -53,9 +53,9 @@ class GeneSearchServiceIT {
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"));
+                new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 

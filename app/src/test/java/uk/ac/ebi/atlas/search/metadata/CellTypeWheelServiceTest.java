@@ -61,8 +61,7 @@ class CellTypeWheelServiceTest {
                 .containsExactlyInAnyOrder(
                         ImmutablePair.of(
                                 ImmutableList.of(
-                                        "Homo sapiens",
-                                        experimentAccession),
+                                        "Homo sapiens"),
                                 experimentAccession),
                         ImmutablePair.of(
                                 ImmutableList.of(

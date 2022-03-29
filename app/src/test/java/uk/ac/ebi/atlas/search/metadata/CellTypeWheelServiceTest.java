@@ -1,9 +1,7 @@
-package uk.ac.ebi.atlas.search;
+package uk.ac.ebi.atlas.search.metadata;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,27 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.ac.ebi.atlas.search.metadata.CellTypeWheelDao;
-import uk.ac.ebi.atlas.search.metadata.CellTypeWheelService;
-
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemblGeneId;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,10 +28,10 @@ class CellTypeWheelServiceTest {
     }
 
     @Test
-    void returnsCellTypeWheelValuesPerSearch() {
-        String experimentAccession = generateRandomExperimentAccession();
+    void returnsCellTypeWheelValuesWithExperimentAccessions() {
+        var experimentAccession = generateRandomExperimentAccession();
 
-        ImmutableList<ImmutableList<String>> leukocyteWheel =
+        var leukocyteWheel =
                 ImmutableList.of(
                         ImmutableList.of(
                             "Homo sapiens",
@@ -75,34 +55,32 @@ class CellTypeWheelServiceTest {
 
         when(cellTypeWheelDaoMock.facetSearchCtwFields("leukocyte")).thenReturn(leukocyteWheel);
 
-        ImmutableSet<ImmutablePair<ImmutableList<String>, String>> result = subject.search("leukocyte");
+        var result = subject.search("leukocyte");
 
         assertThat(result)
-                .contains(
+                .containsExactlyInAnyOrder(
                         ImmutablePair.of(
-                                ImmutableList.of(experimentAccession),
-                                experimentAccession))
-                .contains(
+                                ImmutableList.of(
+                                        "Homo sapiens",
+                                        experimentAccession),
+                                experimentAccession),
                         ImmutablePair.of(
                                 ImmutableList.of(
                                         "Homo sapiens",
                                         "bone marrow"),
-                                experimentAccession))
-                .contains(
+                                experimentAccession),
                         ImmutablePair.of(
                                 ImmutableList.of(
                                         "Homo sapiens",
                                         "bone marrow",
                                         "native thymus-derived CD4-positive, alpha-beta T cell"),
-                                experimentAccession))
-                .contains(
+                                experimentAccession),
                         ImmutablePair.of(
                                 ImmutableList.of(
                                         "Homo sapiens",
                                         "bone marrow",
                                         "helper T cell"),
-                                experimentAccession))
-                .contains(
+                                experimentAccession),
                         ImmutablePair.of(
                                 ImmutableList.of(
                                         "Homo sapiens",
@@ -110,5 +88,4 @@ class CellTypeWheelServiceTest {
                                         "native B cell"),
                                 experimentAccession));
     }
-
 }

@@ -8,7 +8,7 @@
         <h3>Via FTP</h3>
         <p>
             You can download data for every dataset individually in Expression Atlas through our
-            <a href="http://ftp.ebi.ac.uk/pub/databases/microarray/data/atlas/experiments/" target="_blank">FTP site</a>.
+            <a href="http://ftp.ebi.ac.uk/pub/databases/microarray/data/atlas/sc_experiments/" target="_blank">FTP site</a>.
         </p>
 
         <h3>From experiment pages</h3>

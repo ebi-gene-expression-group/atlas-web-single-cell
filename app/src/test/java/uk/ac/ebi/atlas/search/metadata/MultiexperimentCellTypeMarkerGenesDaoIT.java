@@ -54,7 +54,7 @@ class MultiexperimentCellTypeMarkerGenesDaoIT {
     @Test
     void knownCellTypeReturnsResults() {
         // We have a few cell type marker genes in our fixtures; this is one of them
-        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-CURD-4"), "root cortex; trichoblast 10"))
+        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-CURD-4"), "columella root cap cell 6"))
                 .isNotEmpty();
     }
 
@@ -66,7 +66,7 @@ class MultiexperimentCellTypeMarkerGenesDaoIT {
 
     @Test
     void unknownExperimentAccessionReturnsEmpty() {
-        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-FOOBAR"), "root cortex; trichoblast 10"))
+        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-FOOBAR"), "columella root cap cell 6"))
                 .isEmpty();
     }
 }

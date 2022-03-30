@@ -33,7 +33,7 @@ public class MarkerGeneServiceTest {
     @Test
     @DisplayName("Fetch marker gene profile expression from ontology label cell types")
     void getMarkerGeneProfileWhenOntologyLabelsHasCellTypes() {
-        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
+        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", "Inferred cell type - ontology labels", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006")))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));
@@ -44,7 +44,7 @@ public class MarkerGeneServiceTest {
     @Test
     @DisplayName("Fetch marker gene profile expression from authors label cell types")
     void getMarkerGeneProfileWhenAuthorsLabelsHasCellTypes() {
-        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
+        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", "Inferred cell type - ontology labels", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006")))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));

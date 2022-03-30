@@ -30,6 +30,8 @@ public class ExperimentFileLocationService {
     @Nullable
     public Path getFilePath(String experimentAccession, ExperimentFileType fileType) {
         switch (fileType) {
+            case HDF5:
+                return dataFileHub.getSingleCellExperimentFiles(experimentAccession).projectHdf5.getPath();
             case EXPERIMENT_DESIGN:
                 return dataFileHub
                         .getSingleCellExperimentFiles(experimentAccession)
@@ -60,9 +62,7 @@ public class ExperimentFileLocationService {
                         .stream()
                         .map(AtlasResource::getPath)
                         .collect(Collectors.toList());
-            case HDF5:
-                return ImmutableList.of(
-                                dataFileHub.getSingleCellExperimentFiles(experimentAccession).projectHdf5.getPath());
+
             case QUANTIFICATION_RAW:
                 return
                         ImmutableList.of(

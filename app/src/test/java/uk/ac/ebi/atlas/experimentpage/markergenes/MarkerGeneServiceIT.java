@@ -110,14 +110,14 @@ class MarkerGeneServiceIT {
 
 	@Test
 	void getCellTypesWithMarkerGenesForValidExperimentAccession() {
-		var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
+		var experimentAccession = "E-MTAB-5061";
 		assertThat(subject.getCellTypesWithMarkerGenes(experimentAccession, "inferred cell type - ontology labels"))
 				.isNotEmpty();
 	}
 
 	@Test
 	void getCellTypeMarkerGeneHeatmapForValidExperimentAccesion() {
-		var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
+		var experimentAccession = "E-MTAB-5061";
 		assertThat(subject.getCellTypeMarkerGeneHeatmapData(experimentAccession, "inferred cell type - ontology labels", ImmutableSet.of("mast cell")))
 				.isNotEmpty();
 	}

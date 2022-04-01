@@ -25,7 +25,6 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -93,8 +92,6 @@ class AutocompleteControllerWIT {
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andExpect(jsonPath("$[*].label", hasSize(greaterThanOrEqualTo(1))))
-          .andExpect(jsonPath("$[*].label", everyItem(in(BIOENTITY_PROPERTY_NAMES.stream().map(p -> p.label).collect(toList())))))
-          .andExpect(jsonPath("$[*].options", everyItem(hasSize(greaterThanOrEqualTo(1)))))
           .andExpect(jsonPath("$[*].options.label", everyItem(not(empty()))))
           .andExpect(jsonPath("$[*].options.value", everyItem(not(empty()))));
     }
@@ -145,9 +142,7 @@ class AutocompleteControllerWIT {
           .param("query", "cancer"))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-          .andExpect(jsonPath("$[*].label", equalToIgnoringCase("MetaData")))
           .andExpect(jsonPath("$[*].options", everyItem(hasSize(greaterThanOrEqualTo(1)))))
-          .andExpect(jsonPath("$[*].options.label", everyItem(not(empty()))))
           .andExpect(jsonPath("$[*].options.value", everyItem(not(empty()))));
     }
 }

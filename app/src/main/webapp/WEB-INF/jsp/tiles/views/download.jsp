@@ -19,29 +19,29 @@
 
         <h4>Metadata files</h4>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="IDF and SDRF file" align="bottom" class="icon"/>
+            <i class="icon icon-common icon-download"/>
             Experiment metadata: SDRF and IDF files containing information about the experiment.
         </p>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-experiment-design.png" alt="Experiment design file" align="bottom" class="icon"/>
+            <i class="icon icon-fileformats icon-TSV"/>
             Experiment design file: Information about assays within the experiment.
         </p>
 
         <h4>Results Files</h4>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="Clustering file" align="bottom" class="icon"/>
+            <i class="icon icon-fileformats icon-TSV"/>
             Clustering file: Results of unsupervised louvain clustering at a range of resolution values.
         </p>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="Marker gene file" align="bottom" class="icon"/>
+            <i class="icon icon-fileformats icon-TSV"/>
             Marker gene files: Results of marker gene detection, as calculated by Scanpy using the Wilcoxon rank-sum method.
         </p>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="Normalised counts file" align="bottom" class="icon"/>
+            <i class="icon icon-common icon-download"/>
             Normalised counts files: Untransformed expression values, normalised to counts per million.
         </p>
         <p>
-            <img src="/gxa/sc/resources/images/download/download-tsv-file.png" alt="Raw counts file" align="bottom" class="icon"/>
+            <i class="icon icon-common icon-download"/>
             Raw counts files: Raw counts values before filtering and normalisation.
         </p>
     </div>

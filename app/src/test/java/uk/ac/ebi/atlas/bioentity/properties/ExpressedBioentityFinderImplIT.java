@@ -18,7 +18,7 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemb
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
-@Sql("/fixtures/scxa_analytics-fixture.sql")
+@Sql("/fixtures/scxa_analytics.sql")
 @Sql(value = "/fixtures/scxa_analytics-delete.sql", executionPhase = AFTER_TEST_METHOD)
 class ExpressedBioentityFinderImplIT {
     @Inject
@@ -29,8 +29,7 @@ class ExpressedBioentityFinderImplIT {
 
     @Test
     void unknownGeneIdIsNotExpressed() {
-        assertThat(subject.bioentityIsExpressedInAtLeastOneExperiment(generateRandomEnsemblGeneId()))
-                .isFalse();
+        assertThat(subject.bioentityIsExpressedInAtLeastOneExperiment(generateRandomEnsemblGeneId())).isFalse();
     }
 
     @Test

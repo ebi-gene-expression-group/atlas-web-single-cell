@@ -6,7 +6,8 @@ pipeline {
   
   agent {
     kubernetes {
-      cloud 'kubernetes-amm'
+      cloud 'atlas-analysis-3'
+      workspaceVolume dynamicPVC(storageClassNames: 'ssd-cinder', accessModes: 'ReadWriteOnce')
       defaultContainer 'openjdk'
       yamlFile 'jenkins-k8s-pod.yaml'
     }
@@ -25,7 +26,7 @@ pipeline {
     }
 
 
-    stage('Core lib') {
+    stage('–– Core lib ––') {
       stages {
         stage('Compile') {
           options {
@@ -45,9 +46,9 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-cs.scxa-test ' +
+                    '-PzkHost=zk-cs.jenkins-ci-scxa ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-hs.scxa-test ' +
+                    '-PsolrHost=solrcloud-hs.jenkins-ci-scxa ' +
                     '-PsolrPort=8983 ' +
                     ':atlas-web-core:testClasses'
           }
@@ -67,7 +68,7 @@ pipeline {
     }
 
 
-    stage('Web app') {
+    stage('–– Web app ––') {
       stages {
         stage('Compile') {
           options {
@@ -87,9 +88,9 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-cs.scxa-test ' +
+                    '-PzkHost=zk-cs.jenkins-ci-scxa ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-hs.scxa-test ' +
+                    '-PsolrHost=solrcloud-hs.jenkins-ci-scxa ' +
                     '-PsolrPort=8983 ' +
                     ':app:testClasses'
           }
@@ -107,11 +108,10 @@ pipeline {
           }
         }
 
-        stage('Build') {
+        stage('–– Build ––') {
           when { anyOf {
             branch 'develop'
             branch 'main'
-            branch 'k8s-jenkins'
           } }
           stages {
             stage('Provision Node.js build environment') {
@@ -123,7 +123,7 @@ pipeline {
                 // Err:4 http://deb.debian.org/debian bullseye-updates InRelease
                 //   Connection timed out [IP: 199.232.174.132 80]
                 sh 'echo \'APT::Acquire::Retries "10";\' > /etc/apt/apt.conf.d/80-retries'
-                
+
                 // Required by node_modules/cwebp-bin
                 // /home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/node_modules/cwebp-bin/vendor/cwebp:
                 // error while loading shared libraries: libGL.so.1: cannot open shared object file: No such file or directory
@@ -134,9 +134,9 @@ pipeline {
                 // configure: error: in `/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/2525557b-9d4c-4886-93b3-8cbfa3b76a32':
                 // configure: error: no acceptable C compiler found in $PATH
                 sh 'apt update && apt install -y libglu1-mesa gcc'
-                sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash'
-                sh '. ~/.bashrc && nvm install 14'
-                sh '. ~/.bashrc && npm install -g ncu'
+                sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash'
+                sh '. ~/.bashrc && nvm install 14 --lts'
+                sh '. ~/.bashrc && npm install -g npm-check-updates'
               }
             }
 
@@ -145,8 +145,8 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh '[[ env.BRANCH_NAME = main ]] && WEBPACK_OPTS=-p || WEBPACK_OPTS=-d && ' +
-                        '. ~/.bashrc && ./update-compile-front-end-packages.sh ${WEBPACK_OPTS}'
+                sh 'if [ env.BRANCH_NAME = main ]; then WEBPACK_OPTS=-p; else WEBPACK_OPTS=-d; fi; ' +
+                        '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }
 

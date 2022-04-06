@@ -58,11 +58,11 @@ class GeneSearchDaoIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/202108/experiment.sql"),
-                new ClassPathResource("fixtures/202108/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes.sql"));
+                new ClassPathResource("fixtures/experiment.sql"),
+                new ClassPathResource("fixtures/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"));
         populator.execute(dataSource);
     }
 
@@ -70,11 +70,11 @@ class GeneSearchDaoIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes-delete.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group_membership-delete.sql"),
-                new ClassPathResource("fixtures/202108/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/202108/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/202108/experiment-delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -92,7 +92,7 @@ class GeneSearchDaoIT {
 
     // Any gene with marker_probability < 0.05
     @ParameterizedTest
-    @ValueSource(strings = {"AT1G11740"})
+    @ValueSource(strings = {"AT2G23910"})
     void validGeneIdReturnsExperimentAccessions(String geneId) {
         var result = subject.fetchExperimentAccessionsWhereGeneIsMarker(geneId);
 
@@ -113,7 +113,7 @@ class GeneSearchDaoIT {
     // Look for the cell group IDs that match an experiment and its preferred K variable, then find a gene in that cell
     // group that has marker_probability < 0.05
     @ParameterizedTest
-    @CsvSource({"'ENSG00000001626', 'E-GEOD-81547', 25"})
+    @CsvSource({"'ENSG00000176170', 'E-GEOD-81547', 24"})
     void validExperimentAccessionReturnsClusterIDsWithPreferredKAndMinP(String geneId,
                                                                         String experimentAccession,
                                                                         Integer preferredK) {
@@ -127,11 +127,11 @@ class GeneSearchDaoIT {
                 .containsAllEntriesOf(
                         ImmutableMap.of(
                                 // Hard-coded values depending on the gene,experiment we use for this test
-                                25, ImmutableList.of(12, 14, 22, 8)));
+                                24, ImmutableList.of(10, 14)));
     }
 
     @ParameterizedTest
-    @CsvSource({"'ENSMUSG00000028565', 'E-EHCA-2', 24"})
+    @CsvSource({"'ENSMUSG00000042129', 'E-EHCA-2', 31"})
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
                                                                                   Integer preferredK) {
@@ -143,7 +143,7 @@ class GeneSearchDaoIT {
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                24, ImmutableList.of(11)));
+                                31, ImmutableList.of(13, 17)));
     }
 
     @ParameterizedTest

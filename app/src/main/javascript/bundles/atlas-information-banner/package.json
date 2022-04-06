@@ -1,0 +1,9 @@
+{
+  "main": "index.js",
+  "dependencies": {
+    "@ebi-gene-expression-group/atlas-information-banner": "^2.0.0",
+    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.8.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}

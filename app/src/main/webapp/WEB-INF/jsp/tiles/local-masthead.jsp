@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<div class="row-expanded callout-background">
+    <div id="information-banner" class="columns small-8 small-centered margin-bottom-none text-large"></div>
+</div>
 
 <div data-sticky-container>
     <header id="masthead" class="masthead" data-sticky data-sticky-on="large" data-top-anchor="content:top" data-btm-anchor="content:bottom">

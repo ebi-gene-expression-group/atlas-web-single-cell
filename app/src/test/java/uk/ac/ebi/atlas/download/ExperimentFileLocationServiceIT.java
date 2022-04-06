@@ -76,11 +76,11 @@ class ExperimentFileLocationServiceIT {
 	void populateDatabaseTables() {
 		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
-				new ClassPathResource("fixtures/experiment-fixture.sql"),
-				new ClassPathResource("fixtures/202108/scxa_cell_group.sql"),
-				new ClassPathResource("fixtures/202108/scxa_cell_group_membership.sql"),
-				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes.sql"),
-				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_gene_stats.sql"));
+				new ClassPathResource("fixtures/experiment.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
 		populator.execute(dataSource);
 	}
 
@@ -88,11 +88,11 @@ class ExperimentFileLocationServiceIT {
 	void cleanDatabaseTables() {
 		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
-				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_gene_stats-delete.sql"),
-				new ClassPathResource("fixtures/202108/scxa_cell_group_marker_genes-delete.sql"),
-				new ClassPathResource("fixtures/202108/scxa_cell_group_membership-delete.sql"),
-				new ClassPathResource("fixtures/202108/scxa_cell_group-delete.sql"),
-				new ClassPathResource("fixtures/202108/experiment-delete.sql"));
+				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+				new ClassPathResource("fixtures/experiment-delete.sql"));
 		populator.execute(dataSource);
 	}
 

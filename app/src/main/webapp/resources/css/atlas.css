@@ -145,3 +145,7 @@ img.experiment-thumbnail {
 #publication-list .icon, #tools .icon {
     color: #5688B3;
 }
+
+.callout-background {
+    background: #eaeaea;
+}

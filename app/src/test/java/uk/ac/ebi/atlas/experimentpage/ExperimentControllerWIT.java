@@ -51,7 +51,7 @@ class ExperimentControllerWIT {
     @BeforeAll
     void populateDatabaseTables(WebApplicationContext wac) {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(new ClassPathResource("fixtures/experiment-fixture.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
         populator.execute(dataSource);
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();

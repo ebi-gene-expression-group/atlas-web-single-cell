@@ -1368,7 +1368,6 @@ INSERT INTO scxa_cell_group_marker_genes(id, gene_id, cell_group_id, marker_prob
 INSERT INTO scxa_cell_group_marker_genes(id, gene_id, cell_group_id, marker_probability) VALUES (123990, 'Solyc05g013620.2', 1649, 0.998558385357643);
 INSERT INTO scxa_cell_group_marker_genes(id, gene_id, cell_group_id, marker_probability) VALUES (124015, 'Solyc08g075880.3', 1649, 0.998558385357643);
 INSERT INTO scxa_cell_group_marker_genes(id, gene_id, cell_group_id, marker_probability) VALUES (126156, 'Solyc03g093550.1', 1676, 0.000142811303092492);
-INSERT INTO scxa_cell_group_marker_genes(id, gene_id, cell_group_id, marker_probability) VALUES (126875, 'Solyc10g055200.1', 1683, 0.999945231290739);
 INSERT INTO scxa_cell_group_marker_genes(id, gene_id, cell_group_id, marker_probability) VALUES (127056, 'Solyc07g017730.3', 1685, 0.99960658389055);
 INSERT INTO scxa_cell_group_marker_genes(id, gene_id, cell_group_id, marker_probability) VALUES (127131, 'Solyc05g013620.2', 1686, 0.999236446332544);
 INSERT INTO scxa_cell_group_marker_genes(id, gene_id, cell_group_id, marker_probability) VALUES (127360, 'Solyc09g091390.3', 1688, 0.998635816212091);

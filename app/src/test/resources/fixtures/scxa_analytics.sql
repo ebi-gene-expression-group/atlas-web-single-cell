@@ -4,7 +4,6 @@ CREATE TABLE scxa_analytics_e_geod_71585 (LIKE scxa_analytics) WITH (autovacuum_
 CREATE TABLE scxa_analytics_e_geod_81547 (LIKE scxa_analytics) WITH (autovacuum_enabled = false, toast.autovacuum_enabled = false);
 CREATE TABLE scxa_analytics_e_geod_99058 (LIKE scxa_analytics) WITH (autovacuum_enabled = false, toast.autovacuum_enabled = false);
 CREATE TABLE scxa_analytics_e_mtab_5061 (LIKE scxa_analytics) WITH (autovacuum_enabled = false, toast.autovacuum_enabled = false);
-CREATE TABLE scxa_analytics_e_enad_53 (LIKE scxa_analytics) WITH (autovacuum_enabled = false, toast.autovacuum_enabled = false);
 
 ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_curd_4 FOR VALUES IN ('E-CURD-4');
 ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_ehca_2 FOR VALUES IN ('E-EHCA-2');
@@ -12,7 +11,6 @@ ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_71585 FOR VALU
 ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_81547 FOR VALUES IN ('E-GEOD-81547');
 ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_geod_99058 FOR VALUES IN ('E-GEOD-99058');
 ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_mtab_5061 FOR VALUES IN ('E-MTAB-5061');
-ALTER TABLE scxa_analytics ATTACH PARTITION scxa_analytics_e_enad_53 FOR VALUES IN ('E-ENAD-53');
 
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT2G37610', 'SRR8206656-GGCTGATTTCGA', 291.8856);
 INSERT INTO scxa_analytics(experiment_accession, gene_id, cell_id, expression_level) VALUES ('E-CURD-4', 'AT3G46470', 'SRR8206655-GCGTTTGCCCTC', 10.9687605);

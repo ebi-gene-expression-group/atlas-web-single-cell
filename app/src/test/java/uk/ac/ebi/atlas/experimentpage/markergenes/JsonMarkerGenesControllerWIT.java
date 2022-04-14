@@ -52,7 +52,7 @@ class JsonMarkerGenesControllerWIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-fixture.sql"),
+                new ClassPathResource("fixtures/experiment.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_clusters-fixture.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-fixture.sql"),

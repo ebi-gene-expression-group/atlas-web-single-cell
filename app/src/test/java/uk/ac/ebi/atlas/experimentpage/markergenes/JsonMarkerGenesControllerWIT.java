@@ -136,8 +136,8 @@ class JsonMarkerGenesControllerWIT {
     void isCellTypeMarkerGenesHeatmapDataIsValidJsonForCellTypesAndCellGroup() throws Exception {
         this.mockMvc
                 .perform(get(cellTypeMarkerGenesHeatmapDataURL, "E-MTAB-5061")
-                        .param("cellType", ImmutableSet.of("mast cell"))
-                        .param("cellGroupType", "inferred cell type -ontology labels ")
+                        .param("cellType", "mast cell", "mast cell")
+                        .param("cellGroupType", "inferred cell type -ontology labels"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
@@ -153,9 +153,9 @@ class JsonMarkerGenesControllerWIT {
     void isCellTypesMarkerGenesHeatmapDataIsValidJsonForCellTypeGroup() throws Exception {
         this.mockMvc
                 .perform(get(cellTypesMarkerGenesHeatmapURL, "E-MTAB-5061")
-                        .param("cellGroupType", "inferred cell type -ontology labels ")
+                        .param("cellGroupType", "inferred cell type -ontology labels"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
     @Test

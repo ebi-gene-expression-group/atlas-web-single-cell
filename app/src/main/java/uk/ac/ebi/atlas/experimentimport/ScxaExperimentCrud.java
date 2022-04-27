@@ -1,37 +1,29 @@
 package uk.ac.ebi.atlas.experimentimport;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 import uk.ac.ebi.atlas.experimentimport.condensedSdrf.CondensedSdrfParser;
-import uk.ac.ebi.atlas.experimentimport.condensedSdrf.CondensedSdrfParserOutput;
 import uk.ac.ebi.atlas.experimentimport.experimentdesign.ExperimentDesignFileWriterService;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
-import uk.ac.ebi.atlas.model.experiment.ExperimentConfiguration;
-import uk.ac.ebi.atlas.trader.ConfigurationTrader;
 
 import java.util.UUID;
+
+import static uk.ac.ebi.atlas.model.experiment.ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE;
 
 @Component
 public class ScxaExperimentCrud extends ExperimentCrud {
     private final CondensedSdrfParser condensedSdrfParser;
     private final IdfParser idfParser;
-    private final ConfigurationTrader configurationTrader;
-    private final ExperimentChecker experimentChecker;
 
     public ScxaExperimentCrud(ExperimentCrudDao experimentCrudDao,
                               ExperimentDesignFileWriterService experimentDesignFileWriterService,
                               CondensedSdrfParser condensedSdrfParser,
-                              IdfParser idfParser,
-                              ConfigurationTrader configurationTrader,
-                              ExperimentChecker experimentChecker) {
+                              IdfParser idfParser) {
         super(experimentCrudDao, experimentDesignFileWriterService);
         this.condensedSdrfParser = condensedSdrfParser;
         this.idfParser = idfParser;
-        this.configurationTrader = configurationTrader;
-        this.experimentChecker = experimentChecker;
     }
 
     // Evicting all entries in jsonCellMetadata, jsonTSnePlotWithClusters and jsonTSnePlotWithMetadata is really a
@@ -57,8 +49,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true),
             @CacheEvict(cacheNames = "privateExperimentAccessions", allEntries = true)})
     public UUID createExperiment(String experimentAccession, boolean isPrivate) {
-        var files = loadAndValidateFiles(experimentAccession);
-        var condensedSdrfParserOutput = files.getRight();
+        var condensedSdrfParserOutput =
+                condensedSdrfParser.parse(experimentAccession, SINGLE_CELL_RNASEQ_MRNA_BASELINE);
         var idfParserOutput = idfParser.parse(experimentAccession);
         var accessKey = readExperiment(experimentAccession).map(ExperimentDto::getAccessKey);
 
@@ -103,9 +95,8 @@ public class ScxaExperimentCrud extends ExperimentCrud {
                                         "Experiment " + experimentAccession + " could not be found"));
 
         updateExperimentDesign(
-                    condensedSdrfParser.parse(experimentAccession, experimentDto.getExperimentType())
-                    .getExperimentDesign(),
-                    experimentDto);
+                condensedSdrfParser.parse(experimentAccession, SINGLE_CELL_RNASEQ_MRNA_BASELINE).getExperimentDesign(),
+                experimentDto);
     }
 
     @Override
@@ -149,17 +140,5 @@ public class ScxaExperimentCrud extends ExperimentCrud {
             @CacheEvict(cacheNames = "privateExperimentAccessions", allEntries = true)})
     public void updateExperimentPrivate(String experimentAccession, boolean isPrivate) {
         super.updateExperimentPrivate(experimentAccession, isPrivate);
-    }
-
-    private Pair<ExperimentConfiguration, CondensedSdrfParserOutput> loadAndValidateFiles(String experimentAccession) {
-        var experimentConfiguration = configurationTrader.getExperimentConfiguration(experimentAccession);
-        experimentChecker.checkAllFiles(experimentAccession, experimentConfiguration.getExperimentType());
-
-        var condensedSdrfParserOutput = condensedSdrfParser.parse(experimentAccession,
-          experimentConfiguration.getExperimentType());
-
-        new ExperimentFilesCrossValidator(experimentConfiguration, condensedSdrfParserOutput.getExperimentDesign()).validate();
-
-        return Pair.of(experimentConfiguration, condensedSdrfParserOutput);
     }
 }

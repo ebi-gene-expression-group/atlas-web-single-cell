@@ -76,9 +76,11 @@ class ExperimentControllerWIT {
                 .andExpect(model().attributeExists("numberOfCells"))
                 .andExpect(model().attributeExists("content"));
 
-        var experimentType = (ExperimentType) mockMvc.perform(get(URL, experimentAccession)).andReturn()
-                                .getModelAndView().getModel().get("type");
-        assertThat(experimentType).matches(ExperimentType::isSingleCell);
+        var experimentTypeHumanDescription = (ExperimentType) mockMvc.perform(get(URL, experimentAccession))
+                .andReturn().getModelAndView().getModel().get("type");
+        assertThat(experimentTypeHumanDescription)
+                .isIn(ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE.getHumanDescription(),
+                        ExperimentType.SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE.getHumanDescription());
     }
 
     @Test

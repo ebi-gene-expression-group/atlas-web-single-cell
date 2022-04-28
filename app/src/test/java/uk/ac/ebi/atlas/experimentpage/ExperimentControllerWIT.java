@@ -23,6 +23,7 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,13 +69,16 @@ class ExperimentControllerWIT {
     @MethodSource("publicExperimentsProvider")
     void validExperimentAccession(String experimentAccession) throws Exception {
         mockMvc.perform(get(URL, experimentAccession))
-                    .andExpect(status().isOk())
-                    .andExpect(view().name("experiment-page"))
-                    .andExpect(model().attribute("experimentAccession", experimentAccession))
-                    .andExpect(model().attribute(
-                            "type", ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE.getHumanDescription()))
-                    .andExpect(model().attributeExists("numberOfCells"))
-                    .andExpect(model().attributeExists("content"));
+                .andExpect(status().isOk())
+                .andExpect(view().name("experiment-page"))
+                .andExpect(model().attribute("experimentAccession", experimentAccession))
+                .andExpect(model().attributeExists("type"))
+                .andExpect(model().attributeExists("numberOfCells"))
+                .andExpect(model().attributeExists("content"));
+
+        var experimentType = (ExperimentType) mockMvc.perform(get(URL, experimentAccession)).andReturn()
+                                .getModelAndView().getModel().get("type");
+        assertThat(experimentType).matches(ExperimentType::isSingleCell);
     }
 
     @Test

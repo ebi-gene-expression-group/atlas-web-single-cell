@@ -73,22 +73,6 @@ public class ScxaExperimentCrud extends ExperimentCrud {
         return UUID.fromString(experimentDto.getAccessKey());
     }
 
-    @Caching(evict = {
-            @CacheEvict(cacheNames = "experiment", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "experimentAttributes", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "experiment2Collections", key="#experimentAccession"),
-            @CacheEvict(cacheNames = "speciesSummary", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}"),
-            @CacheEvict(cacheNames = "jsonExperimentPageTabs", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "expectedClusters", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "minimumMarkerProbability", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "cellCounts", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "plotOptions", key = "#experimentAccession"),
-            @CacheEvict(cacheNames = "jsonCellMetadata", allEntries = true),
-            @CacheEvict(cacheNames = "jsonTSnePlotWithClusters", allEntries = true),
-            @CacheEvict(cacheNames = "jsonTSnePlotWithMetadata", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentsList", allEntries = true),
-            @CacheEvict(cacheNames = "privateExperimentAccessions", allEntries = true)})
     public UUID createExperiment(String experimentAccession, boolean isPrivate, ExperimentType experimentType) {
         var condensedSdrfParserOutput =
                 condensedSdrfParser.parse(experimentAccession, experimentType);

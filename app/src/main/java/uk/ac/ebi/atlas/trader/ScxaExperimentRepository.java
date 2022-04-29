@@ -9,7 +9,6 @@ import uk.ac.ebi.atlas.experimentimport.ExperimentCrudDao;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.sdrf.SdrfParser;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
-import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
 
 @Repository
@@ -44,8 +43,7 @@ public class ScxaExperimentRepository implements ExperimentRepository {
                     "Experiment with accession " + experimentAccession + " could not be found");
         }
 
-        if (experimentDto.getExperimentType() != ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE &&
-                experimentDto.getExperimentType() != ExperimentType.SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE) {
+        if (!experimentDto.getExperimentType().isSingleCell()) {
             throw new IllegalArgumentException(
                     "Unable to build experiment " + experimentDto.getExperimentAccession()
                             + ": experiment type " + experimentDto.getExperimentType() + " is not supported");

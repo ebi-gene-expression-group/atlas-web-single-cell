@@ -22,6 +22,8 @@ public enum ExperimentFileType {
             "normalised", "Normalised counts files (MatrixMarket archive)", IconType.TSV, true),
     MARKER_GENES(
             "marker-genes", "Marker gene files (TSV files archive)", IconType.TSV, true),
+    HDF5(
+            "hdf5", "HDF5", IconType.HDF5, false),
     EXPERIMENT_METADATA(
             "experiment-metadata", "Experiment metadata (SDRF and IDF files archive)", IconType.TSV, true);
 

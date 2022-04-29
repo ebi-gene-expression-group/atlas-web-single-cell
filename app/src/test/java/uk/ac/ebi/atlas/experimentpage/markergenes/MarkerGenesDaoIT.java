@@ -95,18 +95,32 @@ class MarkerGenesDaoIT {
 
     @Test
     void shouldFetchAllMarkerGenesBelowThreshold() {
-        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("skin"));
+        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", "inferred cell type - ontology labels", ImmutableSet.of("skin"));
         assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.pValue() < 0.05);
     }
 
     @Test
     void shouldFetchOnlyInferredCellTypeMarkerGenes() {
-        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("skin"));
+        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", "inferred cell type - ontology labels", ImmutableSet.of("skin"));
         assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
     }
 
     private Stream<String> ksForExperimentWithMarkerGenes() {
         return jdbcTestUtils.fetchKsFromCellGroups(EXPERIMENT_ACCESSION_WITH_MARKER_GENES)
                 .stream().map(Object::toString);
+    }
+
+    @Test
+    void shouldGetCellTypesWithMarkerGenesGivenCellTypeGroup() {
+        var cellTypesWithMarkerGenes = subject.getCellTypesWithMarkerGenes("E-MTAB-5061", "inferred cell type - ontology labels");
+        assertThat(cellTypesWithMarkerGenes).isNotEmpty();
+
+    }
+
+    @Test
+    void shouldGetMarkerGenesHeatmapDataForTheGivenCellGroupAndCellType() {
+        var cellTypeMarkerGenes = subject.getCellTypeMarkerGenes("E-MTAB-5061", "inferred cell type - ontology labels", ImmutableSet.of("mast cell"));
+        assertThat(cellTypeMarkerGenes).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
+
     }
 }

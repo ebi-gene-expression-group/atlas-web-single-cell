@@ -9,6 +9,7 @@ import uk.ac.ebi.atlas.experimentimport.ExperimentCrudDao;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.sdrf.SdrfParser;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
+import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
 
 @Repository
@@ -39,23 +40,23 @@ public class ScxaExperimentRepository implements ExperimentRepository {
         var experimentDto = experimentCrudDao.readExperiment(experimentAccession);
 
         if (experimentDto == null) {
-            throw new ResourceNotFoundException("Experiment with accession " +
-              experimentAccession + " could not be found");
+            throw new ResourceNotFoundException(
+                    "Experiment with accession " + experimentAccession + " could not be found");
+        }
+
+        if (experimentDto.getExperimentType() != ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE &&
+                experimentDto.getExperimentType() != ExperimentType.SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE) {
+            throw new IllegalArgumentException(
+                    "Unable to build experiment " + experimentDto.getExperimentAccession()
+                            + ": experiment type " + experimentDto.getExperimentType() + " is not supported");
         }
 
         LOGGER.info("Building experiment {}...", experimentAccession);
 
-        switch (experimentDto.getExperimentType()) {
-            case SINGLE_CELL_RNASEQ_MRNA_BASELINE:
-            case SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE:
-                return singleCellBaselineExperimentFactory.create(experimentDto,
-                  experimentDesignParser.parse(experimentDto.getExperimentAccession()),
-                  idfParser.parse(experimentDto.getExperimentAccession()),
-                  sdrfParser.parseSingleCellTechnologyType(experimentDto.getExperimentAccession()));
-            default:
-                throw new IllegalArgumentException("Unable to build experiment " +
-                  experimentDto.getExperimentAccession() +
-                  ": experiment type " + experimentDto.getExperimentType() + " is not supported");
-        }
+        return singleCellBaselineExperimentFactory.create(
+                experimentDto,
+                experimentDesignParser.parse(experimentDto.getExperimentAccession()),
+                idfParser.parse(experimentDto.getExperimentAccession()),
+                sdrfParser.parseSingleCellTechnologyType(experimentDto.getExperimentAccession()));
     }
 }

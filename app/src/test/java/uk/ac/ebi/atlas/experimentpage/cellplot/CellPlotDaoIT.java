@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -71,13 +72,9 @@ class CellPlotDaoIT {
         populator.execute(dataSource);
     }
 
-    @ParameterizedTest
-    @MethodSource("randomExperimentAccessionPlotWithKProvider")
-    void fetchCellPlotWithK(String experimentAccession,
-                            int k,
-                            String plotMethod,
-                            Map<String, Integer> parameterisation) {
-        assertThat(subject.fetchCellPlotWithK(experimentAccession, k, plotMethod, parameterisation))
+    @Test
+    void fetchCellPlotWithK() {
+        assertThat(subject.fetchCellPlotWithK("E-ENAD-53", 38, "umap", Map.of("n_neighbors",50)))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }

@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public class MarkerGenesDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-	private static final String CELL_GROUP_TYPE = "inferred cell type - ontology labels";
 
 	public MarkerGenesDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -63,6 +62,27 @@ public class MarkerGenesDao {
                 String.class);
     }
 
+	private static final String SELECT_DISTINCT_CELL_TYPES_WITH_MARKER_GENES =
+			"SELECT DISTINCT h.value as cell_group_value_where_marker " +
+			"FROM " +
+					"scxa_cell_group_marker_gene_stats s, scxa_cell_group_marker_genes m, " +
+					"scxa_cell_group g, scxa_cell_group h " +
+			"WHERE " +
+					"s.cell_group_id = g.id and s.marker_id = m.id and " +
+					"m.cell_group_id = h.id and g.experiment_accession = :experiment_accession and " +
+					"m.marker_probability < 0.05 and g.variable = :variable " +
+			"ORDER BY cell_group_value_where_marker ASC";
+	public List<String> getCellTypesWithMarkerGenes(String experimentAccession, String cellGroupType) {
+		var namedParameters =
+				ImmutableMap.of(
+						"experiment_accession", experimentAccession,
+						"variable", cellGroupType);
+		return namedParameterJdbcTemplate.queryForList(
+				SELECT_DISTINCT_CELL_TYPES_WITH_MARKER_GENES,
+				namedParameters,
+				String.class);
+	}
+
     private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP =
             "SELECT " +
                     "g.experiment_accession, m.gene_id, g.variable as cell_group_type, " +
@@ -77,13 +97,13 @@ public class MarkerGenesDao {
                     "m.marker_probability < 0.05 and g.variable = :variable and " +
                     "g.value IN (:values) and expression_type = 0 order by m.marker_probability ";
 
-	public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, ImmutableSet<String> cellGroupValues) {
+	public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, String cellGroupType, ImmutableSet<String> cellTypeValues) {
 
 		var namedParameters =
 				ImmutableMap.of(
 						"experiment_accession", experiment_accession,
-						"variable", CELL_GROUP_TYPE,
-						"values", cellGroupValues.isEmpty() ? "" : cellGroupValues);
+						"variable", cellGroupType,
+						"values", cellTypeValues.isEmpty() ? "" : cellTypeValues);
 
 		return namedParameterJdbcTemplate.query(
 				SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,

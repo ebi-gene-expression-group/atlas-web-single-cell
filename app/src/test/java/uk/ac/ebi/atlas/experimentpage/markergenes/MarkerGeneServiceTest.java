@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class MarkerGeneServiceTest {
     @Mock
     private CellTypeSearchDao cellTypeSearchDaoMock;
@@ -33,7 +36,7 @@ public class MarkerGeneServiceTest {
     @Test
     @DisplayName("Fetch marker gene profile expression from ontology label cell types")
     void getMarkerGeneProfileWhenOntologyLabelsHasCellTypes() {
-        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
+        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", "inferred cell type - ontology labels", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006")))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));
@@ -44,7 +47,7 @@ public class MarkerGeneServiceTest {
     @Test
     @DisplayName("Fetch marker gene profile expression from authors label cell types")
     void getMarkerGeneProfileWhenAuthorsLabelsHasCellTypes() {
-        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
+        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", "inferred cell type - ontology labels", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006")))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));

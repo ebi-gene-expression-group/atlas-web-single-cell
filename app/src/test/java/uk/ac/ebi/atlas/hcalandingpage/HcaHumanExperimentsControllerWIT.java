@@ -45,7 +45,6 @@ class HcaHumanExperimentsControllerWIT {
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
-        populator.addScripts(new ClassPathResource("fixtures/experiment-E-ENAD-53.sql"));
         populator.execute(dataSource);
     }
 

@@ -1494,3 +1494,10 @@ INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (2
 INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (2147, 'E-MTAB-5061', 'inferred cell type - ontology labels', 'pancreatic stellate cell');
 INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (2148, 'E-MTAB-5061', 'inferred cell type - ontology labels', 'professional antigen presenting cell');
 INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (2149, 'E-MTAB-5061', 'inferred cell type - ontology labels', 'type B pancreatic cell');
+
+INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (1609, 'E-ENAD-53', '12', '2');
+INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (1629, 'E-ENAD-53', '14', '8');
+INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (1642, 'E-ENAD-53', '26', '2');
+INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (1644, 'E-ENAD-53', '26', '21');
+INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (1659, 'E-ENAD-53', '38', '11');
+INSERT INTO scxa_cell_group(id, experiment_accession, variable, value) VALUES (1663, 'E-ENAD-53', '38', '15');

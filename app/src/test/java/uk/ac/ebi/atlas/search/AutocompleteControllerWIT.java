@@ -73,9 +73,9 @@ class AutocompleteControllerWIT {
 
     @Test
     void supportsMultipleSpecies() throws Exception {
-        this.mockMvc
-                .perform(
-                        get("/json/suggestions").param("species", "Homo sapiens,Mus musculus").param("query", "ASPM"))
+        this.mockMvc.perform(get("/json/suggestions")
+                .param("species", "Homo sapiens,Mus musculus")
+                .param("query", "ASPM"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$..value", everyItem(containsStringIgnoringCase("ASPM"))))
@@ -86,24 +86,19 @@ class AutocompleteControllerWIT {
 
     @Test
     void geneIdSuggestions() throws Exception {
-        this.mockMvc
-                .perform(get("/json/suggestions/gene_ids").param("species", "Homo sapiens").param("query", "asp"))
+        this.mockMvc.perform(get("/json/suggestions/gene_ids")
+                .param("species", "Homo sapiens")
+                .param("query", "asp"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[*].label", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(
-                        jsonPath(
-                                "$[*].label",
-                                everyItem(in(BIOENTITY_PROPERTY_NAMES.stream().map(p -> p.label).collect(toList())))))
-                .andExpect(jsonPath("$[*].options", everyItem(hasSize(greaterThanOrEqualTo(1)))))
                 .andExpect(jsonPath("$[*].options.label", everyItem(not(empty()))))
                 .andExpect(jsonPath("$[*].options.value", everyItem(not(empty()))));
     }
 
     @Test
     void atLeastHumanAndMouseAreSuggested() throws Exception {
-        this.mockMvc
-                .perform(get("/json/suggestions/species"))
+        this.mockMvc.perform(get("/json/suggestions/species"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.allSpecies", hasItems("Homo sapiens", "Mus musculus")));
@@ -111,8 +106,7 @@ class AutocompleteControllerWIT {
 
     @Test
     void hasAsManyTopSpeciesAsSpecified() throws Exception {
-        this.mockMvc
-                .perform(get("/json/suggestions/species"))
+        this.mockMvc.perform(get("/json/suggestions/species"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.topSpecies", hasSize(AutocompleteController.FEATURED_SPECIES)));
@@ -120,10 +114,35 @@ class AutocompleteControllerWIT {
 
     @Test
     void canSeeSuggestionsForTheOrganismOrOrganismPartOrDiseaseAndCellType() throws Exception {
-        this.mockMvc
-                .perform(get("/json/suggestions/meta_data")
-                        .param("species", "").param("query", "skin"))
+        this.mockMvc.perform(get("/json/suggestions/meta_data")
+                .param("species", "")
+                .param("query", "skin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+    }
+
+    @Test
+    void canSeeSuggestionsForTheGeneId() throws Exception {
+        this.mockMvc.perform(get("/json/suggestions/gene_search")
+                .param("species", "")
+                .param("query", "asp"))
+                .andExpect(status().isOk()).andExpect(content()
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$[*].label", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$[*].label", everyItem(in(BIOENTITY_PROPERTY_NAMES.stream().map(p -> p.label).collect(toList())))))
+                .andExpect(jsonPath("$[*].options", everyItem(hasSize(greaterThanOrEqualTo(1)))))
+                .andExpect(jsonPath("$[*].options.label", everyItem(not(empty()))))
+                .andExpect(jsonPath("$[*].options.value", everyItem(not(empty()))));
+    }
+
+    @Test
+    void canSeeSuggestionsForTheMetaData() throws Exception {
+        this.mockMvc.perform(get("/json/suggestions/gene_search")
+                .param("species", "")
+                .param("query", "cancer"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$[*].options", everyItem(hasSize(greaterThanOrEqualTo(1)))))
+                .andExpect(jsonPath("$[*].options.value", everyItem(not(empty()))));
     }
 }

@@ -49,6 +49,11 @@ public class JsonExperimentsSummaryController extends JsonExceptionHandlingContr
                         ImmutableList.of()),
                 CardModel.create(
                         IMAGE,
+                        getExperimentsSummaryImageUrl("fly-cell-atlas"),
+                        getExperimentCollectionLink("Fly Cell Atlas", "Fly Cell Atlas"),
+                        ImmutableList.of()),
+                CardModel.create(
+                        IMAGE,
                         getExperimentsSummaryImageUrl("cz-biohub"),
                         getExperimentCollectionLink("Chan Zuckerberg Biohub", "Chan Zuckerberg Biohub"),
                         ImmutableList.of()),

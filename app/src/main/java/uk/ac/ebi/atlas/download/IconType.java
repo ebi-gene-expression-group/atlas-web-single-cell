@@ -1,7 +1,7 @@
 package uk.ac.ebi.atlas.download;
 
 public enum IconType {
-
+    HDF5("icon-hdf5"),
     TSV("icon-tsv"),
     ARRAY_EXPRESS("icon-ae"),
     REACTOME("icon-gsea-reactome"),

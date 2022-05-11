@@ -7,6 +7,7 @@ import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 import uk.ac.ebi.atlas.experimentimport.condensedSdrf.CondensedSdrfParser;
 import uk.ac.ebi.atlas.experimentimport.experimentdesign.ExperimentDesignFileWriterService;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
+import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 
 import java.util.UUID;
 
@@ -51,6 +52,30 @@ public class ScxaExperimentCrud extends ExperimentCrud {
     public UUID createExperiment(String experimentAccession, boolean isPrivate) {
         var condensedSdrfParserOutput =
                 condensedSdrfParser.parse(experimentAccession, SINGLE_CELL_RNASEQ_MRNA_BASELINE);
+        var idfParserOutput = idfParser.parse(experimentAccession);
+        var accessKey = readExperiment(experimentAccession).map(ExperimentDto::getAccessKey);
+
+        var experimentDto = new ExperimentDto(
+                condensedSdrfParserOutput.getExperimentAccession(),
+                condensedSdrfParserOutput.getExperimentType(),
+                condensedSdrfParserOutput.getSpecies(),
+                idfParserOutput.getPubmedIds(),
+                idfParserOutput.getDois(),
+                isPrivate,
+                accessKey.orElseGet(() -> UUID.randomUUID().toString()));
+
+        if (accessKey.isPresent()) {
+            experimentCrudDao.updateExperiment(experimentDto);
+        } else {
+            experimentCrudDao.createExperiment(experimentDto);
+            updateExperimentDesign(condensedSdrfParserOutput.getExperimentDesign(), experimentDto);
+        }
+        return UUID.fromString(experimentDto.getAccessKey());
+    }
+
+    public UUID createExperiment(String experimentAccession, boolean isPrivate, ExperimentType experimentType) {
+        var condensedSdrfParserOutput =
+                condensedSdrfParser.parse(experimentAccession, experimentType);
         var idfParserOutput = idfParser.parse(experimentAccession);
         var accessKey = readExperiment(experimentAccession).map(ExperimentDto::getAccessKey);
 

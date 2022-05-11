@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static uk.ac.ebi.atlas.model.experiment.ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE;
+import static uk.ac.ebi.atlas.model.experiment.ExperimentType.SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(SpringExtension.class)
@@ -52,5 +53,12 @@ class ScxaExperimentRepositoryIT {
         assertThat(subject.getExperiment(jdbcUtils.fetchRandomExperimentAccession(SINGLE_CELL_RNASEQ_MRNA_BASELINE)))
                 .isInstanceOf(SingleCellBaselineExperiment.class)
                 .hasNoNullFieldsOrProperties();
+    }
+
+    @Test
+    void singleNucleusBaselineRnaSeqExperiments() {
+        assertThat(subject.getExperiment(jdbcUtils.fetchRandomExperimentAccession(SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE)))
+          .isInstanceOf(SingleCellBaselineExperiment.class)
+          .hasNoNullFieldsOrProperties();
     }
 }

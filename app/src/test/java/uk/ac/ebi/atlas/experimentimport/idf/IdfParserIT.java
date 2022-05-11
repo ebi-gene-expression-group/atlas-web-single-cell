@@ -57,7 +57,6 @@ class IdfParserIT {
 
         assertThat(result.getExpectedClusters()).isGreaterThanOrEqualTo(0);
         assertThat(result.getTitle()).isNotEmpty();
-        assertThat(result.getExperimentDescription()).isNotEmpty();
         assertThat(result.getPublications()).isNotNull();
     }
 

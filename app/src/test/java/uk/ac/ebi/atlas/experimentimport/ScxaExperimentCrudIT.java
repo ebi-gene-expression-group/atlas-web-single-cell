@@ -9,6 +9,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
+import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
@@ -47,6 +48,32 @@ class ScxaExperimentCrudIT {
                 .isEmpty();
 
         subject.createExperiment(experimentAccession, RNG.nextBoolean());
+        assertThat(subject.readExperiment(experimentAccession))
+                .isPresent()
+                .get().hasNoNullFieldsOrProperties();
+    }
+
+    @Test
+    void createExperimentWithSingleNucleusRNASeqAsExperimentType() {
+        var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
+        subject.deleteExperiment(experimentAccession);
+        assertThat(subject.readExperiment(experimentAccession))
+                .isEmpty();
+
+        subject.createExperiment(experimentAccession, RNG.nextBoolean(), ExperimentType.SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE);
+        assertThat(subject.readExperiment(experimentAccession))
+                .isPresent()
+                .get().hasNoNullFieldsOrProperties();
+    }
+
+    @Test
+    void createExperimentWithSingleCellRNASeqAsExperimentType() {
+        var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
+        subject.deleteExperiment(experimentAccession);
+        assertThat(subject.readExperiment(experimentAccession))
+                .isEmpty();
+
+        subject.createExperiment(experimentAccession, RNG.nextBoolean(), ExperimentType.SINGLE_CELL_RNASEQ_MRNA_BASELINE);
         assertThat(subject.readExperiment(experimentAccession))
                 .isPresent()
                 .get().hasNoNullFieldsOrProperties();

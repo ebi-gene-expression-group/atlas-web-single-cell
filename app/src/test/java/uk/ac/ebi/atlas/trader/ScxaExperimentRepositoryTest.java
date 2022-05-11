@@ -11,6 +11,7 @@ import uk.ac.ebi.atlas.experimentimport.ExperimentCrudDao;
 import uk.ac.ebi.atlas.experimentimport.ExperimentDto;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.sdrf.SdrfParser;
+import uk.ac.ebi.atlas.experiments.ExperimentBuilder;
 import uk.ac.ebi.atlas.model.experiment.ExperimentType;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
 
@@ -21,6 +22,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomDoi;
@@ -80,7 +82,42 @@ class ScxaExperimentRepositoryTest {
                 .isThrownBy(() -> subject.getExperiment(experimentAccession));
     }
 
+    @ParameterizedTest
+    @MethodSource("singleCellExperimentTypeProvider")
+    void shouldBuildOnlySingleCellExperiments(ExperimentType experimentType) {
+        var experimentAccession = generateRandomExperimentAccession();
+
+       var testDto = new ExperimentDto(
+          experimentAccession,
+          experimentType,
+          generateRandomSpecies().getName(),
+          ImmutableList.of(generateRandomPubmedId()),
+          ImmutableList.of(generateRandomDoi()),
+          new Timestamp(new Date().getTime()),
+          new Timestamp(new Date().getTime()),
+          RNG.nextBoolean(),
+          UUID.randomUUID().toString());
+
+        when(experimentCrudDaoMock.readExperiment(experimentAccession)).thenReturn(testDto);
+
+        when(experimentFactoryMock.create(testDto,
+          experimentDesignParserMock.parse(testDto.getExperimentAccession()),
+          idfParserMock.parse(testDto.getExperimentAccession()),
+          sdrfParserMock.parseSingleCellTechnologyType(testDto.getExperimentAccession())))
+          .thenReturn(new ExperimentBuilder.SingleCellBaselineExperimentBuilder()
+            .withExperimentAccession(testDto.getExperimentAccession())
+            .build());
+
+        var result = subject.getExperiment(experimentAccession);
+        assertThat(result.getType().isSingleCell()).isTrue();
+        assertThat(result.getType().name()).startsWith("SINGLE");
+    }
+
     private static Stream<ExperimentType> bulkExperimentTypeProvider() {
         return Stream.of(ExperimentType.values()).filter(type -> !type.isSingleCell());
+    }
+
+    private static Stream<ExperimentType> singleCellExperimentTypeProvider() {
+        return Stream.of(ExperimentType.values()).filter(type -> type.isSingleCell());
     }
 }

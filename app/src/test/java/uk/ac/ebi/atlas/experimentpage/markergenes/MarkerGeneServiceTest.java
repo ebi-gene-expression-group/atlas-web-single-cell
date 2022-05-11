@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +35,7 @@ public class MarkerGeneServiceTest {
     @Test
     @DisplayName("Fetch marker gene profile expression from ontology label cell types")
     void getMarkerGeneProfileWhenOntologyLabelsHasCellTypes() {
-        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", "inferred cell type - ontology labels", ImmutableSet.of("T cell", "B cell")))
+        when(markerGenesDaoMock.getCellTypeMarkerGenesOntologyLabels("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeOntologyLabels("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006")))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));
@@ -47,7 +46,7 @@ public class MarkerGeneServiceTest {
     @Test
     @DisplayName("Fetch marker gene profile expression from authors label cell types")
     void getMarkerGeneProfileWhenAuthorsLabelsHasCellTypes() {
-        when(markerGenesDaoMock.getCellTypeMarkerGenes("E-EHCA-2", "inferred cell type - ontology labels", ImmutableSet.of("T cell", "B cell")))
+        when(markerGenesDaoMock.getCellTypeMarkerGenesOntologyLabels("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006")))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));

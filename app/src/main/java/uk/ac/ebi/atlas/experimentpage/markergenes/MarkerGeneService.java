@@ -5,15 +5,12 @@ import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.search.CellTypeSearchDao;
 
-import java.util.List;
-
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 @Service
 public class MarkerGeneService {
     private final MarkerGenesDao markerGenesDao;
     private final CellTypeSearchDao cellTypeSearchDao;
-    private static final String CELL_GROUP_TYPE = "inferred cell type - ontology labels";
 
     public MarkerGeneService(MarkerGenesDao markerGenesDao, CellTypeSearchDao cellTypeSearchDao) {
         this.markerGenesDao = markerGenesDao;
@@ -29,12 +26,16 @@ public class MarkerGeneService {
      */
     public ImmutableList<MarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, ImmutableSet<String> organismPart) {
 
-        var ontologyLabelsCellTypeValues = cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
+        var ontologyLabelsCellTypeValues =
+                cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
 
         var cellTypeMarkerGenes = ontologyLabelsCellTypeValues.isEmpty() ?
-                markerGenesDao.getCellTypeMarkerGenes(experimentAccession, CELL_GROUP_TYPE,
+                markerGenesDao.getCellTypeMarkerGenesAuthorsLabels(
+                        experimentAccession,
                         cellTypeSearchDao.getInferredCellTypeAuthorsLabels(experimentAccession, organismPart)) :
-                markerGenesDao.getCellTypeMarkerGenes(experimentAccession, CELL_GROUP_TYPE, ontologyLabelsCellTypeValues);
+                markerGenesDao.getCellTypeMarkerGenesOntologyLabels(
+                        experimentAccession,
+                        ontologyLabelsCellTypeValues);
 
         return cellTypeMarkerGenes.stream()
                 .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))
@@ -42,12 +43,19 @@ public class MarkerGeneService {
                 .collect(toImmutableList());
     }
 
-    public List<String> getCellTypesWithMarkerGenes(String experimentAccession, String cellGroupType) {
-        return markerGenesDao.getCellTypesWithMarkerGenes(experimentAccession, cellGroupType);
+    public ImmutableList<String> getCellTypesWithMarkerGenes(String experimentAccession, String cellGroupType) {
+        return markerGenesDao.getCellTypeMarkerGenesOntologyLabels(experimentAccession, ImmutableSet.of(cellGroupType))
+                .stream()
+                .map(MarkerGene::cellGroupType)
+                .collect(toImmutableList());
     }
 
     public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmapData(String experimentAccession, String cellGroupType, ImmutableSet<String> cellTypes) {
-        var cellTypeMarkerGenes = markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellGroupType, cellTypes);
+        var cellTypeMarkerGenes =
+                markerGenesDao
+                        .getCellTypeMarkerGenesOntologyLabels(
+                                experimentAccession,
+                                ImmutableSet.<String>builder().add(cellGroupType).addAll(cellTypes).build());
 
         return cellTypeMarkerGenes.stream()
                 .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))

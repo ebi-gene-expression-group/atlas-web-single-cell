@@ -10,7 +10,8 @@ import java.util.List;
 @Repository
 public class MarkerGenesDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private static final String CELL_GROUP_TYPE = "inferred cell type - ontology labels";
+    private static final String CELL_TYPE_ONTOLOGY_LABELS = "inferred cell type - ontology labels";
+    private static final String CELL_TYPE_AUTHOR_LABELS = "inferred cell type - authors labels";
 
     public MarkerGenesDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -103,11 +104,23 @@ public class MarkerGenesDao {
             "ORDER BY " +
                     "m.marker_probability ";
 
-    public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession, ImmutableSet<String> cellGroupValues) {
+    public List<MarkerGene> getCellTypeMarkerGenesOntologyLabels(String experimentAccession,
+                                                                 ImmutableSet<String> cellGroupValues) {
+        return getCellTypeMarkerGenes(experimentAccession, CELL_TYPE_ONTOLOGY_LABELS, cellGroupValues);
+    }
+
+    public List<MarkerGene> getCellTypeMarkerGenesAuthorsLabels(String experimentAccession,
+                                                                ImmutableSet<String> cellGroupValues) {
+        return getCellTypeMarkerGenes(experimentAccession, CELL_TYPE_AUTHOR_LABELS, cellGroupValues);
+    }
+
+    private List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession,
+                                                    String cellTypeVariable,
+                                                    ImmutableSet<String> cellGroupValues) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,
-                        "variable", CELL_GROUP_TYPE,
+                        "variable", cellTypeVariable,
                         "values", cellGroupValues.isEmpty() ? "" : cellGroupValues);
 
         return namedParameterJdbcTemplate.query(

@@ -95,14 +95,18 @@ class MarkerGenesDaoIT {
 
     @Test
     void shouldFetchAllMarkerGenesBelowThreshold() {
-        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", "inferred cell type - ontology labels", ImmutableSet.of("skin"));
-        assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.pValue() < 0.05);
+        var markerGenesWithAveragesPerCellGroup =
+                subject.getCellTypeMarkerGenesOntologyLabels("E-EHCA-2", ImmutableSet.of("skin"));
+        assertThat(markerGenesWithAveragesPerCellGroup)
+                .allMatch(markerGene -> markerGene.pValue() < 0.05);
     }
 
     @Test
     void shouldFetchOnlyInferredCellTypeMarkerGenes() {
-        var markerGenesWithAveragesPerCellGroup = subject.getCellTypeMarkerGenes("E-EHCA-2", "inferred cell type - ontology labels", ImmutableSet.of("skin"));
-        assertThat(markerGenesWithAveragesPerCellGroup).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
+        var markerGenesWithAveragesPerCellGroup =
+                subject.getCellTypeMarkerGenesOntologyLabels("E-EHCA-2", ImmutableSet.of("skin"));
+        assertThat(markerGenesWithAveragesPerCellGroup)
+                .allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
     }
 
     private Stream<String> ksForExperimentWithMarkerGenes() {
@@ -112,15 +116,19 @@ class MarkerGenesDaoIT {
 
     @Test
     void shouldGetCellTypesWithMarkerGenesGivenCellTypeGroup() {
-        var cellTypesWithMarkerGenes = subject.getCellTypesWithMarkerGenes("E-MTAB-5061", "inferred cell type - ontology labels");
+        var cellTypesWithMarkerGenes =
+                subject.getCellTypeMarkerGenesOntologyLabels("E-MTAB-5061", ImmutableSet.of("inferred cell type - ontology labels"));
         assertThat(cellTypesWithMarkerGenes).isNotEmpty();
 
     }
 
     @Test
     void shouldGetMarkerGenesHeatmapDataForTheGivenCellGroupAndCellType() {
-        var cellTypeMarkerGenes = subject.getCellTypeMarkerGenes("E-MTAB-5061", "inferred cell type - ontology labels", ImmutableSet.of("mast cell"));
-        assertThat(cellTypeMarkerGenes).allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
+        var cellTypeMarkerGenes =
+                subject.getCellTypeMarkerGenesOntologyLabels(
+                        "E-MTAB-5061", ImmutableSet.of("mast cell"));
+        assertThat(cellTypeMarkerGenes)
+                .allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
 
     }
 }

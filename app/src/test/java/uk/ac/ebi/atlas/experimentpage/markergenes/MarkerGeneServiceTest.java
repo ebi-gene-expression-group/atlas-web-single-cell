@@ -46,7 +46,7 @@ public class MarkerGeneServiceTest {
     @Test
     @DisplayName("Fetch marker gene profile expression from authors label cell types")
     void getMarkerGeneProfileWhenAuthorsLabelsHasCellTypes() {
-        when(markerGenesDaoMock.getCellTypeMarkerGenesOntologyLabels("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
+        when(markerGenesDaoMock.getCellTypeMarkerGenesAuthorsLabels("E-EHCA-2", ImmutableSet.of("T cell", "B cell")))
                 .thenReturn(mockTestData());
         when(cellTypeSearchDaoMock.getInferredCellTypeAuthorsLabels("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000006")))
                 .thenReturn(ImmutableSet.of("T cell", "B cell"));

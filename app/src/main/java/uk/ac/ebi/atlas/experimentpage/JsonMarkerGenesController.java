@@ -45,7 +45,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     }
 
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes-heatmap/cell-types",
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+                produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getCellTypeMarkerGenesHeatmapData(@PathVariable String experimentAccession,
                                                 @RequestParam String cellGroupType,
                                                 @RequestParam Set<String> cellType) {
@@ -55,7 +55,7 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     }
 
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes-heatmap/cellTypeGroups",
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+                produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getCellTypesMarkerGenesHeatmap(@PathVariable String experimentAccession,
                                                  @RequestParam String cellGroupType) {
         return GSON.toJson(

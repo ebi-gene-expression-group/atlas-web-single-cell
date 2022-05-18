@@ -48,11 +48,11 @@ class MarkerGenesDaoIT {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
-                new ClassPathResource("fixtures/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
+                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 

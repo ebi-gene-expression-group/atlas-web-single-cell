@@ -88,13 +88,18 @@ class MarkerGeneServiceIT {
 	}
 
 	@Test
-	void getCellTypeMarkerGenesForTheMultipleOrganismParts(){
-		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000061","http://purl.obolibrary.org/obo/UBERON_0001987")))
+	void getCellTypeMarkerGenesForMultipleOrganismParts(){
+		assertThat(
+				subject.getCellTypeMarkerGeneProfile(
+						"FOO",
+						ImmutableSet.of(
+								"http://purl.obolibrary.org/obo/UBERON_0000061",
+								"http://purl.obolibrary.org/obo/UBERON_0001987")))
 				.isEmpty();
 	}
 
 	@Test
-	void getClusterMarkerGeneForTheValidExperimentAccession() {
+	void getClusterMarkerGeneForValidExperimentAccession() {
 		var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
 		var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
 		assertThat(subject.getMarkerGenesPerCluster(experimentAccession, k))
@@ -102,7 +107,7 @@ class MarkerGeneServiceIT {
 	}
 
 	@Test
-	void getEmptyCellTypeMarkerGenesForTheInvalidExperimentAccession() {
+	void getCellTypeMarkerGenesForInvalidExperimentAccession() {
 		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", ImmutableSet.of("skin")))
 				.isEmpty();
 	}

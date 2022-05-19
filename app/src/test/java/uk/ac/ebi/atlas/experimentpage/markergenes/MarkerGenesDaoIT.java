@@ -117,7 +117,7 @@ class MarkerGenesDaoIT {
     @Test
     void shouldGetCellTypesWithMarkerGenesGivenCellTypeGroup() {
         var cellTypesWithMarkerGenes =
-                subject.getCellTypeMarkerGenesOntologyLabels("E-MTAB-5061", ImmutableSet.of("inferred cell type - ontology labels"));
+                subject.getCellTypeMarkerGenesOntologyLabels("E-MTAB-5061", ImmutableSet.of("pancreatic A cell", "co-expression cell"));
         assertThat(cellTypesWithMarkerGenes).isNotEmpty();
 
     }

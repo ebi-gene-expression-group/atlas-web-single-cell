@@ -54,7 +54,7 @@ class MultiexperimentCellTypeMarkerGenesDaoIT {
     @Test
     void knownCellTypeReturnsResults() {
         // We have a few cell type marker genes in our fixtures; this is one of them
-        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-GEOD-81547"), "inferred cell type - ontology labels"))
+        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-GEOD-81547"), "pancreatic A cell"))
                 .isNotEmpty();
     }
 

@@ -117,6 +117,10 @@ public class MarkerGenesDao {
     public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession,
                                                    String cellTypeVariable,
                                                    ImmutableCollection<String> cellGroupValues) {
+        if (cellGroupValues.isEmpty()) {
+            return getCellTypeMarkerGenes(experiment_accession, cellTypeVariable);
+        }
+
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,
@@ -146,12 +150,12 @@ public class MarkerGenesDao {
                     "m.marker_probability AS marker_p_value, " +
                     "s.mean_expression, " +
                     "s.median_expression " +
-                    "FROM " +
+            "FROM " +
                     "scxa_cell_group_marker_gene_stats s, " +
                     "scxa_cell_group_marker_genes m, " +
                     "scxa_cell_group g, " +
                     "scxa_cell_group h " +
-                    "WHERE " +
+            "WHERE " +
                     "s.cell_group_id = g.id AND " +
                     "s.marker_id = m.id AND " +
                     "m.cell_group_id = h.id AND " +
@@ -159,7 +163,7 @@ public class MarkerGenesDao {
                     "m.marker_probability < 0.05 AND " +
                     "g.variable = :variable AND " +
                     "expression_type = 0 " +
-                    "ORDER BY " +
+            "ORDER BY " +
                     "m.marker_probability ";
     public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession,
                                                    String cellTypeVariable) {

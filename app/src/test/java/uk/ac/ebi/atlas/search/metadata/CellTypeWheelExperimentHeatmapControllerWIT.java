@@ -6,6 +6,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -13,6 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -20,6 +22,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
+@Sql({
+        "/fixtures/experiment.sql",
+        "/fixtures/inferred-cell-types-marker-genes/scxa_analytics.sql",
+        "/fixtures/inferred-cell-types-marker-genes/scxa_coords.sql",
+        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql",
+        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_membership.sql",
+        "/fixtures/inferred-cell-types-marker-genes/scxa_marker_genes.sql",
+        "/fixtures/inferred-cell-types-marker-genes/scxa_marker_gene_stats.sql"
+})
+@Sql(scripts = {
+        "/fixtures/scxa_marker_gene_stats-delete.sql",
+        "/fixtures/scxa_marker_genes-delete.sql",
+        "/fixtures/scxa_cell_group_membership-delete.sql",
+        "/fixtures/scxa_cell_group-delete.sql",
+        "/fixtures/scxa_coords-delete.sql",
+        "/fixtures/scxa_analytics-delete.sql",
+        "/fixtures/experiment-delete.sql"
+}, executionPhase = AFTER_TEST_METHOD)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CellTypeWheelExperimentHeatmapControllerWIT {
 
@@ -39,5 +59,4 @@ class CellTypeWheelExperimentHeatmapControllerWIT {
                 .andExpect(status().isOk())
                 .andExpect(view().name("cell-type-wheel-experiment-heatmap"));
     }
-
 }

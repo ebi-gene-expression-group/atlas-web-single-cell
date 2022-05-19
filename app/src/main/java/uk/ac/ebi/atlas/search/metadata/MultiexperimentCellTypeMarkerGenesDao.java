@@ -27,12 +27,12 @@ public class MultiexperimentCellTypeMarkerGenesDao {
 					"m.marker_probability AS marker_p_value, " +
 					"s.mean_expression, " +
 					"s.median_expression " +
-					"FROM " +
+			"FROM " +
 					"scxa_cell_group_marker_gene_stats s, " +
 					"scxa_cell_group_marker_genes m, " +
 					"scxa_cell_group g, " +
 					"scxa_cell_group h " +
-					"WHERE " +
+			"WHERE " +
 					"s.cell_group_id = g.id AND " +
 					"s.marker_id = m.id AND " +
 					"m.cell_group_id = h.id AND " +
@@ -40,7 +40,7 @@ public class MultiexperimentCellTypeMarkerGenesDao {
 					"h.value = :cell_type AND " +
 					"g.value = :cell_type AND " +
 					"expression_type = 0 " +
-					"ORDER BY " +
+			"ORDER BY " +
 					"experiment_accession, " +
 					"marker_p_value";
 

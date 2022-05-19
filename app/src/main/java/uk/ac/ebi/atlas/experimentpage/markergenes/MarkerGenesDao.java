@@ -1,7 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,8 +10,8 @@ import java.util.List;
 @Repository
 public class MarkerGenesDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private static final String CELL_TYPE_ONTOLOGY_LABELS = "inferred cell type - ontology labels";
-    private static final String CELL_TYPE_AUTHOR_LABELS = "inferred cell type - authors labels";
+    static final String CELL_TYPE_ONTOLOGY_LABELS = "inferred cell type - ontology labels";
+    static final String CELL_TYPE_AUTHOR_LABELS = "inferred cell type - authors labels";
 
     public MarkerGenesDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -105,18 +105,18 @@ public class MarkerGenesDao {
                     "m.marker_probability ";
 
     public List<MarkerGene> getCellTypeMarkerGenesOntologyLabels(String experimentAccession,
-                                                                 ImmutableSet<String> cellGroupValues) {
+                                                                 ImmutableCollection<String> cellGroupValues) {
         return getCellTypeMarkerGenes(experimentAccession, CELL_TYPE_ONTOLOGY_LABELS, cellGroupValues);
     }
 
     public List<MarkerGene> getCellTypeMarkerGenesAuthorsLabels(String experimentAccession,
-                                                                ImmutableSet<String> cellGroupValues) {
+                                                                ImmutableCollection<String> cellGroupValues) {
         return getCellTypeMarkerGenes(experimentAccession, CELL_TYPE_AUTHOR_LABELS, cellGroupValues);
     }
 
-    private List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession,
-                                                    String cellTypeVariable,
-                                                    ImmutableSet<String> cellGroupValues) {
+    public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession,
+                                                   String cellTypeVariable,
+                                                   ImmutableCollection<String> cellGroupValues) {
         var namedParameters =
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,

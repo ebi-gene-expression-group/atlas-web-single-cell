@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,8 @@ public class MarkerGeneService {
      * @param experimentAccession
      * @return ImmutableList of CellTypeMarkerGene Objects
      */
-    public ImmutableList<MarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession, ImmutableSet<String> organismPart) {
-
+    public ImmutableList<MarkerGene> getCellTypeMarkerGeneProfile(String experimentAccession,
+                                                                  ImmutableSet<String> organismPart) {
         var ontologyLabelsCellTypeValues =
                 cellTypeSearchDao.getInferredCellTypeOntologyLabels(experimentAccession, organismPart);
 
@@ -44,13 +45,15 @@ public class MarkerGeneService {
     }
 
     public ImmutableList<String> getCellTypesWithMarkerGenes(String experimentAccession, String cellGroupType) {
-        return markerGenesDao.getCellTypeMarkerGenesOntologyLabels(experimentAccession, ImmutableSet.of(cellGroupType))
+        return markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellGroupType, ImmutableSet.of())
                 .stream()
                 .map(MarkerGene::cellGroupType)
                 .collect(toImmutableList());
     }
 
-    public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmapData(String experimentAccession, String cellGroupType, ImmutableSet<String> cellTypes) {
+    public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmapData(String experimentAccession,
+                                                                      String cellGroupType,
+                                                                      ImmutableCollection<String> cellTypes) {
         var cellTypeMarkerGenes =
                 markerGenesDao
                         .getCellTypeMarkerGenesOntologyLabels(

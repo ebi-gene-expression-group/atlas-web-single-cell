@@ -30,12 +30,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "/fixtures/inferred-cell-types-marker-genes/scxa_coords.sql",
         "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql",
         "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_membership.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_marker_genes.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_marker_gene_stats.sql"
+        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_genes.sql",
+        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_gene_stats.sql"
 })
 @Sql(scripts = {
-        "/fixtures/scxa_marker_gene_stats-delete.sql",
-        "/fixtures/scxa_marker_genes-delete.sql",
+        "/fixtures/scxa_cell_group_marker_gene_stats-delete.sql",
+        "/fixtures/scxa_cell_group_marker_genes-delete.sql",
         "/fixtures/scxa_cell_group_membership-delete.sql",
         "/fixtures/scxa_cell_group-delete.sql",
         "/fixtures/scxa_coords-delete.sql",

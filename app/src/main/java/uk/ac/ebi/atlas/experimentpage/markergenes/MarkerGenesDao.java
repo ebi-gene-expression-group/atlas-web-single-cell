@@ -121,10 +121,55 @@ public class MarkerGenesDao {
                 ImmutableMap.of(
                         "experiment_accession", experiment_accession,
                         "variable", cellTypeVariable,
-                        "values", cellGroupValues.isEmpty() ? "" : cellGroupValues);
+                        "values", cellGroupValues);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP,
+                namedParameters,
+                (resultSet, rowNumber) -> MarkerGene.create(
+                        resultSet.getString("gene_id"),
+                        resultSet.getString("cell_group_type"),
+                        resultSet.getString("cell_group_value_where_marker"),
+                        resultSet.getDouble("marker_p_value"),
+                        resultSet.getString("cell_group_value"),
+                        resultSet.getDouble("median_expression"),
+                        resultSet.getDouble("mean_expression")));
+    }
+
+    private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP_ALL =
+            "SELECT " +
+                    "g.experiment_accession, " +
+                    "m.gene_id, " +
+                    "g.variable AS cell_group_type, " +
+                    "h.value AS cell_group_value_where_marker, " +
+                    "g.value AS cell_group_value, " +
+                    "m.marker_probability AS marker_p_value, " +
+                    "s.mean_expression, " +
+                    "s.median_expression " +
+                    "FROM " +
+                    "scxa_cell_group_marker_gene_stats s, " +
+                    "scxa_cell_group_marker_genes m, " +
+                    "scxa_cell_group g, " +
+                    "scxa_cell_group h " +
+                    "WHERE " +
+                    "s.cell_group_id = g.id AND " +
+                    "s.marker_id = m.id AND " +
+                    "m.cell_group_id = h.id AND " +
+                    "g.experiment_accession = :experiment_accession AND " +
+                    "m.marker_probability < 0.05 AND " +
+                    "g.variable = :variable AND " +
+                    "expression_type = 0 " +
+                    "ORDER BY " +
+                    "m.marker_probability ";
+    public List<MarkerGene> getCellTypeMarkerGenes(String experiment_accession,
+                                                   String cellTypeVariable) {
+        var namedParameters =
+                ImmutableMap.of(
+                        "experiment_accession", experiment_accession,
+                        "variable", cellTypeVariable);
+
+        return namedParameterJdbcTemplate.query(
+                SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP_ALL,
                 namedParameters,
                 (resultSet, rowNumber) -> MarkerGene.create(
                         resultSet.getString("gene_id"),

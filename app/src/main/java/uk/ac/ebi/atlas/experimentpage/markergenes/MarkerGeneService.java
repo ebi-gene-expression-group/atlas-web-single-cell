@@ -45,7 +45,7 @@ public class MarkerGeneService {
     }
 
     public ImmutableList<String> getCellTypesWithMarkerGenes(String experimentAccession, String cellGroupType) {
-        return markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellGroupType, ImmutableSet.of())
+        return markerGenesDao.getCellTypeMarkerGenes(experimentAccession, cellGroupType)
                 .stream()
                 .map(MarkerGene::cellGroupType)
                 .collect(toImmutableList());

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
+import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
@@ -21,12 +22,20 @@ import static java.util.stream.Collectors.toList;
 public class CellPlotService {
     static final String MISSING_METADATA_VALUE_PLACEHOLDER = "not available";
 
-    private final CellPlotDao cellPlotDao;
+    private static CellPlotDao cellPlotDao;
     private final CellMetadataDao cellMetadataDao;
 
     public CellPlotService(CellPlotDao cellPlotDao, CellMetadataDao cellMetadataDao) {
         this.cellPlotDao = cellPlotDao;
         this.cellMetadataDao = cellMetadataDao;
+    }
+
+    public List<String> cellPlotMethods(String experimentAccession) {
+        return cellPlotDao.fetchCellPlotMethods(experimentAccession);
+    }
+
+    public static ImmutableSet<String> cellPlotParameter(String experimentAccession, String method) {
+        return (ImmutableSet<String>) cellPlotDao.fetchCellPlotParameter(experimentAccession, method);
     }
 
     public ImmutableMap<String, ImmutableSet<TSnePoint>> clusterPlotWithK(String experimentAccession,

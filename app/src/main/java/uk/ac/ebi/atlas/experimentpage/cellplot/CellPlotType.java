@@ -1,19 +1,18 @@
 package uk.ac.ebi.atlas.experimentpage.cellplot;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-
 import java.util.Optional;
 
 public class CellPlotType {
-    private final static ImmutableMap<String, ImmutableSet<String>> PLOT_OPTIONS =
-            ImmutableMap.of(
-                    "tsne", ImmutableSet.of("perplexity"),
-                    "umap", ImmutableSet.of("n_neighbors"));
+    private final CellPlotService cellPlotService;
+
+    public CellPlotType(CellPlotService cellPlotService) {
+        this.cellPlotService = cellPlotService;
+    }
 
     public final static String DEFAULT_PLOT_METHOD = "umap";
 
-    public static Optional<ImmutableSet<String>> getParameters(String plotType) {
-        return Optional.ofNullable(PLOT_OPTIONS.get(plotType));
+    public static Optional<ImmutableSet<String>> getParameters(String experimentAccession, String plotType) {
+        return Optional.ofNullable(CellPlotService.cellPlotParameter(experimentAccession, plotType));
     }
 }

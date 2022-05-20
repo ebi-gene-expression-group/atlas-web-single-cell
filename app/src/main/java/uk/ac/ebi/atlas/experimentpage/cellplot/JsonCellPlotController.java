@@ -25,11 +25,11 @@ JsonCellPlotController extends JsonExceptionHandlingController {
     }
 
     // Our only assumption is that plot parameters are all integers, but we can further generalise if needed
-    private ImmutableMap<String, Integer> parsePlotParametersFromRequestParameters(String plotMethod,
+    private ImmutableMap<String, Integer> parsePlotParametersFromRequestParameters(String experimentAccession, String plotMethod,
                                                                                    Map<String, String> requestParams) {
         var requiredParameters =
                 CellPlotType
-                        .getParameters(plotMethod)
+                        .getParameters(experimentAccession, plotMethod)
                         .orElseThrow(() -> new IllegalArgumentException("Unknown plot type " + plotMethod));
 
         // Check that no param is missing
@@ -62,7 +62,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 experimentAccession,
                 k,
                 plotMethod,
-                parsePlotParametersFromRequestParameters(plotMethod, requestParams),
+                parsePlotParametersFromRequestParameters(experimentAccession, plotMethod, requestParams),
                 requestParams.getOrDefault("accessKey", ""));
     }
 
@@ -76,7 +76,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 experimentAccession,
                 metadata.replaceAll(" ", "_"),
                 plotMethod,
-                parsePlotParametersFromRequestParameters(plotMethod, requestParams),
+                parsePlotParametersFromRequestParameters(experimentAccession, plotMethod, requestParams),
                 requestParams.getOrDefault("accessKey", ""));
     }
 
@@ -89,7 +89,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 experimentAccession,
                 "",
                 plotMethod,
-                parsePlotParametersFromRequestParameters(plotMethod, requestParams),
+                parsePlotParametersFromRequestParameters(experimentAccession, plotMethod, requestParams),
                 requestParams.getOrDefault("accessKey", ""));
     }
 
@@ -104,7 +104,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 experimentAccession,
                 geneId,
                 plotMethod,
-                parsePlotParametersFromRequestParameters(plotMethod, requestParams),
+                parsePlotParametersFromRequestParameters(experimentAccession, plotMethod, requestParams),
                 requestParams.getOrDefault("accessKey", ""));
     }
 }

@@ -37,7 +37,7 @@ public class SingleCellExperimentAdminController extends ExperimentAdminControll
     }
 
     @GetMapping(value = "/{experimentAccession}")
-    public void updateSingleCellExperiment(
+    public void createOrUpdateSingleCellExperiment(
             @PathVariable String experimentAccession,
             @RequestParam(value = "isPrivate") Boolean isPrivate,
             ScxaExperimentCrud scxaExperimentCrud) {

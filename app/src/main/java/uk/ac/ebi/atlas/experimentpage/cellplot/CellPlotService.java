@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -34,8 +35,8 @@ public class CellPlotService {
         return cellPlotDao.fetchCellPlotMethods(experimentAccession);
     }
 
-    public static ImmutableSet<String> cellPlotParameter(String experimentAccession, String method) {
-        return (ImmutableSet<String>) cellPlotDao.fetchCellPlotParameter(experimentAccession, method);
+    public static ImmutableSet<ArrayList> cellPlotParameter(String experimentAccession, String method) {
+        return (ImmutableSet<ArrayList>) cellPlotDao.fetchCellPlotParameter(experimentAccession, method);
     }
 
     public ImmutableMap<String, ImmutableSet<TSnePoint>> clusterPlotWithK(String experimentAccession,

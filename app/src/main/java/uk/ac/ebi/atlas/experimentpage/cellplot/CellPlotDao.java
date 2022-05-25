@@ -145,13 +145,13 @@ public class CellPlotDao {
                     "WHERE method=:method " +
                     "AND experiment_accession=:experiment_accession";
 
-    public List<String> fetchCellPlotParameter(String experimentAccession, String method) {
+    public List<ArrayList> fetchCellPlotParameter(String experimentAccession, String method) {
         var namedParameters = ImmutableMap.of(
                 "experiment_accession", experimentAccession,
                 "method", method);
 
         return namedParameterJdbcTemplate.queryForList(SELECT_DISTINCT_PLOT_TYPE_STATEMENT, namedParameters,
-                String.class);
+                ArrayList.class);
     }
 
 }

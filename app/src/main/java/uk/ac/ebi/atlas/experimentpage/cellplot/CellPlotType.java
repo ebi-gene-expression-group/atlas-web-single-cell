@@ -1,6 +1,8 @@
 package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableSet;
+
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class CellPlotType {
@@ -12,7 +14,7 @@ public class CellPlotType {
 
     public final static String DEFAULT_PLOT_METHOD = "umap";
 
-    public static Optional<ImmutableSet<String>> getParameters(String experimentAccession, String plotType) {
+    public static Optional<ImmutableSet<ArrayList>> getParameters(String experimentAccession, String plotType) {
         return Optional.ofNullable(CellPlotService.cellPlotParameter(experimentAccession, plotType));
     }
 }

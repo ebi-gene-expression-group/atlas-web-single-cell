@@ -6,7 +6,6 @@ services:
     container_name: $POSTGRES_HOST
     networks:
       - scxa
-    restart: always
     command: -c max_wal_size=2GB
     environment:
       POSTGRES_USER: $POSTGRES_USER

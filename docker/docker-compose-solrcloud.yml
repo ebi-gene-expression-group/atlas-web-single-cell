@@ -8,7 +8,6 @@ services:
       - scxa
     ports:
       - "2181:2181"
-    restart: always
     volumes:
       - scxa-zk-1-data:/data
       - scxa-zk-1-datalog:/datalog
@@ -23,7 +22,6 @@ services:
       - scxa
     ports:
       - "2182:2181"
-    restart: always
     volumes:
       - scxa-zk-2-data:/data
       - scxa-zk-2-datalog:/datalog
@@ -38,7 +36,6 @@ services:
       - scxa
     ports:
       - "2183:2181"
-    restart: always
     volumes:
       - scxa-zk-3-data:/data
       - scxa-zk-3-datalog:/datalog

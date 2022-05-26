@@ -14,8 +14,7 @@ services:
       - root-gradle-caches:/root/.gradle/caches
       - ..:/root/project
       - ./packages:/root/.m2
-      - /home/alf/gradle-ro-dep-cache:/gradle-ro-dep-cache
-      - /home/alf/.gradle/wrapper:/root/.gradle/wrapper
+      - gradle-ro-dep-cache:/gradle-ro-dep-cache
       - $ATLAS_DATA_PATH/scxa:/atlas-data/scxa
       - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
 
@@ -51,6 +50,7 @@ services:
 volumes:
   root-gradle-wrapper:
   root-gradle-caches:
+  gradle-ro-dep-cache:
 
 networks:
   scxa:

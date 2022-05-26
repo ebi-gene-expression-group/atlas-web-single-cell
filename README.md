@@ -286,7 +286,7 @@ docker-compose \
 run --rm --service-ports \
 scxa-gradle bash -c '
 ./gradlew :app:clean &&
-./gradlew -PdataFilesLocation=/root/scxa/integration-test-data -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB -PjdbcUsername=$POSTGRES_USER -PjdbcPassword=$POSTGRES_PASSWORD -PzkHost=scxa-zk-1 -PsolrHost=scxa-solrcloud-1 app:testClasses &&
+./gradlew -PdataFilesLocation=/atlas-data -PexperimentFilesLocation=/atlas-data/scxa -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB -PjdbcUsername=$POSTGRES_USER -PjdbcPassword=$POSTGRES_PASSWORD -PzkHost=scxa-zk-1 -PsolrHost=scxa-solrcloud-1 app:testClasses &&
 ./gradlew --continuous :app:test --tests ExperimentFileLocationServiceIT
 '
 ```

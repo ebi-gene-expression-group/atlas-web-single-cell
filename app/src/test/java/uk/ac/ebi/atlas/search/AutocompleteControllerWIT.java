@@ -136,7 +136,7 @@ class AutocompleteControllerWIT {
     }
 
     @Test
-    void canSeeSuggestionsForTheMetaData() throws Exception {
+    void canSeeSuggestionsForMetadata() throws Exception {
         this.mockMvc.perform(get("/json/suggestions/gene_search")
                 .param("species", "")
                 .param("query", "cancer"))

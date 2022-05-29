@@ -36,18 +36,18 @@ class AnalyticsSuggesterServiceIT {
     }
 
     @Test
-    void canFetchMetaDataSuggestionsForTheOrganismPartOrOrganism() {
-        assertThat(subject.fetchMetaDataSuggestions("skin", ArrayUtils.toArray()))
+    void canFetchMetadataSuggestionsForTheOrganismPartOrOrganism() {
+        assertThat(subject.fetchMetadataSuggestions("skin", ArrayUtils.toArray()))
                 .isNotEmpty();
-        assertThat(subject.fetchMetaDataSuggestions("Homo", ArrayUtils.toArray()))
+        assertThat(subject.fetchMetadataSuggestions("Homo", ArrayUtils.toArray()))
                 .isNotEmpty();
     }
 
     @Test
-    void canFetchMetaDataSuggestionsForTheCellTypeOrDisease(){
-        assertThat(subject.fetchMetaDataSuggestions("B cell", ArrayUtils.toArray()))
+    void canFetchMetadataSuggestionsForTheCellTypeOrDisease(){
+        assertThat(subject.fetchMetadataSuggestions("B cell", ArrayUtils.toArray()))
                 .isNotEmpty();
-        assertThat(subject.fetchMetaDataSuggestions("cancer", ArrayUtils.toArray()))
+        assertThat(subject.fetchMetadataSuggestions("cancer", ArrayUtils.toArray()))
                 .isNotEmpty();
     }
 }

@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+
 @Service
 public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsSuggesterServiceImpl.class);
@@ -23,14 +25,9 @@ public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService 
     public static final int DEFAULT_MAX_NUMBER_OF_SUGGESTIONS = 10;
     private final AnalyticsSuggesterDao analyticsSuggesterDao;
     private final SpeciesFactory speciesFactory;
-
-    /**
-     *  suggestion.getPayload() ignoring at present as we are not using for the analytics suggestions,
-     *  Instead of suggestion payload adding static text 'metadata' as we need this to display at frontend side as
-     *  a label Ex: Meta Data: skin, skin cancel..etc as suggestions in the gene search box when we search for a 'skin'
-     */
-    private static final Function<Suggestion, Map<String, String>> SUGGESTION_TO_MAP = suggestion -> ImmutableMap.of(
-            "term", suggestion.getTerm(), "category", "metadata");
+    
+    private static final Function<Suggestion, Map<String, String>> SUGGESTION_TO_MAP =
+            suggestion -> ImmutableMap.of("term", suggestion.getTerm(), "category", "metadata");
 
     public AnalyticsSuggesterServiceImpl(AnalyticsSuggesterDao analyticsSuggesterDao, SpeciesFactory speciesFactory) {
         this.analyticsSuggesterDao = analyticsSuggesterDao;
@@ -38,9 +35,15 @@ public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService 
     }
 
     @Override
-    public Stream<Map<String, String>> fetchMetaDataSuggestions(String query, String... species) {
-        Species[] speciesArray = Arrays.stream(species).map(speciesFactory::create).toArray(Species[]::new);
-        var response = analyticsSuggesterDao.fetchMetaDataSuggestions(query, DEFAULT_MAX_NUMBER_OF_SUGGESTIONS, speciesArray);
-        return response.map(SUGGESTION_TO_MAP);
+    public Stream<Map<String, String>> fetchMetadataSuggestions(String query, String... species) {
+        var speciesNames =
+                Arrays.stream(species)
+                        .map(speciesFactory::create)
+                        .map(Species::getName)
+                        .collect(toImmutableSet());
+        var response = analyticsSuggesterDao.fetchMetadataSuggestions(query, DEFAULT_MAX_NUMBER_OF_SUGGESTIONS);
+        return response
+                .filter(suggestion -> speciesNames.contains(suggestion.getPayload()))
+                .map(SUGGESTION_TO_MAP);
     }
 }

@@ -10,15 +10,11 @@ import org.springframework.stereotype.Repository;
 import uk.ac.ebi.atlas.search.suggester.AnalyticsSuggesterDao;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
-import uk.ac.ebi.atlas.species.Species;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.joining;
 
 @Repository
 public class SingleCellAnalyticsSuggesterDao implements AnalyticsSuggesterDao {
@@ -26,9 +22,9 @@ public class SingleCellAnalyticsSuggesterDao implements AnalyticsSuggesterDao {
 
     private SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
-    private static final String[] DICTIONARIES = {"ontologyAnnotationSuggester", "ontologyAnnotationAncestorSuggester",
-                    "ontologyAnnotationParentSuggester", "ontologyAnnotationSynonymSuggester",
-                    "ontologyAnnotationChildSuggester"};
+    private static final String[] DICTIONARIES = {
+            "ontologyAnnotationSuggester", "ontologyAnnotationAncestorSuggester",
+            "ontologyAnnotationParentSuggester", "ontologyAnnotationSynonymSuggester"};
 
     public SingleCellAnalyticsSuggesterDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
         this.singleCellAnalyticsCollectionProxy =

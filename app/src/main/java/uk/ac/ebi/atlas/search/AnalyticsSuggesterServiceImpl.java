@@ -25,7 +25,7 @@ public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService 
     public static final int DEFAULT_MAX_NUMBER_OF_SUGGESTIONS = 10;
     private final AnalyticsSuggesterDao analyticsSuggesterDao;
     private final SpeciesFactory speciesFactory;
-    
+
     private static final Function<Suggestion, Map<String, String>> SUGGESTION_TO_MAP =
             suggestion -> ImmutableMap.of("term", suggestion.getTerm(), "category", "metadata");
 
@@ -42,8 +42,9 @@ public class AnalyticsSuggesterServiceImpl implements AnalyticsSuggesterService 
                         .map(Species::getName)
                         .collect(toImmutableSet());
         var response = analyticsSuggesterDao.fetchMetadataSuggestions(query, DEFAULT_MAX_NUMBER_OF_SUGGESTIONS);
+
         return response
-                .filter(suggestion -> speciesNames.contains(suggestion.getPayload()))
+                .filter(suggestion -> speciesNames.isEmpty() || speciesNames.contains(suggestion.getPayload()))
                 .map(SUGGESTION_TO_MAP);
     }
 }

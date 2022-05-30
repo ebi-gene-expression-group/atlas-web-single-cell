@@ -5,7 +5,7 @@ services:
     image: zookeeper:3.4.14
     container_name: scxa-zk-1
     networks:
-      - scxa
+      - atlas-test-net
     ports:
       - "2181:2181"
     volumes:
@@ -19,7 +19,7 @@ services:
     image: zookeeper:3.4.14
     container_name: scxa-zk-2
     networks:
-      - scxa
+      - atlas-test-net
     ports:
       - "2182:2181"
     volumes:
@@ -33,7 +33,7 @@ services:
     image: zookeeper:3.4.14
     container_name: scxa-zk-3
     networks:
-      - scxa
+      - atlas-test-net
     ports:
       - "2183:2181"
     volumes:
@@ -47,7 +47,7 @@ services:
     image: solr:7.1.0
     container_name: scxa-solrcloud-1
     networks:
-      - scxa
+      - atlas-test-net
     ports:
       - "8983:8983"
     volumes:
@@ -66,7 +66,7 @@ services:
     image: solr:7.1.0
     container_name: scxa-solrcloud-2
     networks:
-      - scxa
+      - atlas-test-net
     ports:
       - "8984:8983"
     volumes:
@@ -100,5 +100,5 @@ volumes:
     name: scxa-solrcloud-2-data
 
 networks:
-  scxa:
-    name: scxa
+  atlas-test-net:
+    name: atlas-test-net

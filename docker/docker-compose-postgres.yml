@@ -5,7 +5,7 @@ services:
     image: postgres:10-alpine
     container_name: $POSTGRES_HOST
     networks:
-      - scxa
+      - atlas-test-net
     command: -c max_wal_size=2GB
     environment:
       POSTGRES_USER: $POSTGRES_USER
@@ -20,7 +20,7 @@ services:
     image: flyway/flyway
     container_name: scxa-flyway
     networks:
-      - scxa
+      - atlas-test-net
     command: -url=jdbc:postgresql://$POSTGRES_HOST/$POSTGRES_DB -schemas=$POSTGRES_USER -user=$POSTGRES_USER -password=$POSTGRES_PASSWORD -connectRetries=60 migrate
     volumes:
       - ../schemas/flyway/scxa/:/flyway/sql
@@ -32,5 +32,5 @@ volumes:
       name: scxa-pgdata
 
 networks:
-    scxa:
-      name: scxa
+  atlas-test-net:
+      name: atlas-test-net

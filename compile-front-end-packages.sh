@@ -4,7 +4,7 @@
 for APP in npm ncu
 do
   if ! which $APP; then
-    echo "$APP is not installed." && exit 1
+    echo "$APP is not installed. Install Node and then run \`npm install -g npm-check-updates\`." && exit 1
   fi
 done
 

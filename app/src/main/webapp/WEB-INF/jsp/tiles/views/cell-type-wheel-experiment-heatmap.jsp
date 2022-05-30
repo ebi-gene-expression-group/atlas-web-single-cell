@@ -12,8 +12,7 @@
     document.addEventListener('DOMContentLoaded', function (event) {
         cellTypeWheelHeatmap.render(
             {
-                //change it to 'http://localhost:8080/gxa/sc/' for local testing until its deployed on wwwdev
-                host: 'https://wwwdev.ebi.ac.uk/gxa/sc/',
+                host: '${pageContext.request.contextPath}/',
                 resource: 'json/cell-type-wheel/${cellTypeWheelSearchTerm}',
                 cellTypeWheelSearchTerm: '${cellTypeWheelSearchTerm}'
             },

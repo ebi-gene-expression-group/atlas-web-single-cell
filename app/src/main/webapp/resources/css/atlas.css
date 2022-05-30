@@ -122,6 +122,10 @@ https://jsfiddle.net/amunoz/pgho7jL0/59/ */
     border-bottom: none;
 }
 
+img.icon {
+    height: 28px;
+}
+
 /* Featured experiments landing page icon */
 img.experiment-thumbnail {
     height: 100px;

@@ -56,7 +56,7 @@ class SearchControllerWIT {
 
     @Test
     void invalidGeneQueryJsonReturnsError() throws Exception {
-        String randomString = randomAlphanumeric(10);
+        var randomString = randomAlphanumeric(10);
 
         this.mockMvc.perform(post("/search").param("geneQuery", randomString))
                 .andExpect(status().is4xxClientError());
@@ -64,8 +64,8 @@ class SearchControllerWIT {
 
     @Test
     void geneQueryJsonWithoutTermOrCategoryReturnsError() throws Exception {
-        String term = randomAlphanumeric(10);
-        String category = randomAlphanumeric(10);
+        var term = randomAlphanumeric(10);
+        var category = randomAlphanumeric(10);
 
         this.mockMvc.perform(post("/search").param("geneQuery", GSON.toJson(ImmutableMap.of("term", term))))
                 .andExpect(status().is4xxClientError());
@@ -75,8 +75,8 @@ class SearchControllerWIT {
 
     @Test
     void postRequestIsRedirectedToGetRequest() throws Exception {
-        String term = randomAlphanumeric(10);
-        String category = randomAlphanumeric(10);
+        var term = randomAlphanumeric(10);
+        var category = randomAlphanumeric(10);
 
         this.mockMvc.perform(
                 post("/search")
@@ -87,9 +87,9 @@ class SearchControllerWIT {
 
     @Test
     void geneQueryAndSpeciesParamsAreParsedAndAddedToGetRequest() throws Exception {
-        String term = randomAlphanumeric(10);
-        String category = randomAlphanumeric(10);
-        String species = randomAlphanumeric(4) + " " + randomAlphanumeric(6);
+        var term = randomAlphanumeric(10);
+        var category = randomAlphanumeric(10);
+        var species = randomAlphanumeric(4) + " " + randomAlphanumeric(6);
 
         this.mockMvc.perform(
                 post("/search")
@@ -101,11 +101,11 @@ class SearchControllerWIT {
 
     @Test
     void otherRequestParamsAreIgnored() throws Exception {
-        String term = randomAlphanumeric(10);
-        String category = randomAlphanumeric(10);
-        String species = randomAlphanumeric(4) + " " + randomAlphanumeric(6);
-        String otherRequestParam = randomAlphanumeric(10);
-        String otherRequestParamValue = randomAlphanumeric(10);
+        var term = randomAlphanumeric(10);
+        var category = randomAlphanumeric(10);
+        var species = randomAlphanumeric(4) + " " + randomAlphanumeric(6);
+        var otherRequestParam = randomAlphanumeric(10);
+        var otherRequestParamValue = randomAlphanumeric(10);
 
         this.mockMvc.perform(
                 post("/search")
@@ -118,8 +118,8 @@ class SearchControllerWIT {
 
     @Test
     void getSearchPassesAllRequestParamsToEndpoint() throws Exception {
-        String requestParam = randomAlphanumeric(10);
-        String requestParamValue = randomAlphanumeric(10);
+        var requestParam = randomAlphanumeric(10);
+        var requestParamValue = randomAlphanumeric(10);
 
         this.mockMvc.perform(get("/search").param(requestParam, requestParamValue))
             .andExpect(model().attribute("endpoint", is("json/search?" + requestParam + "=" + requestParamValue)));
@@ -150,5 +150,20 @@ class SearchControllerWIT {
                         .param("species", randomAlphanumeric(10)))
                 .andExpect(model().attribute("geneQueryTerm", is(randomString)))
                 .andExpect(model().attribute("geneQueryCategory", is("q")));
+    }
+
+    @Test
+    void metadataTermIsRedirectedToMetadataCellTypeWheelPage() throws Exception {
+        var term = randomAlphanumeric(10);
+        var category = "metadata";
+        var otherRequestParam = randomAlphanumeric(10);
+        var otherRequestParamValue = randomAlphanumeric(10);
+
+        this.mockMvc.perform(
+                        post("/search")
+                                .param("geneQuery", GSON.toJson(ImmutableMap.of("term", term, "category", category)))
+                                .param(otherRequestParam, otherRequestParamValue))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/search/metadata/" + term));
     }
 }

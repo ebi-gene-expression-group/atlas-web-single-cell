@@ -29,20 +29,20 @@ public class SearchController extends HtmlExceptionHandlingController {
 
     @RequestMapping(value = SEARCH_ENDPOINT, method = RequestMethod.POST)
     public String parseJsonAsRequestParamsAndRedirect(
-            @RequestParam(value = "geneQuery") String geneQuery,
+            @RequestParam(value = "geneQuery") String query,
             @RequestParam(value = "species", defaultValue = "") String species) {
-        var geneQueryObject = GSON.fromJson(geneQuery, JsonObject.class);
+        var queryObject = GSON.fromJson(query, JsonObject.class);
 
         var searchUrlBuilder = UriComponentsBuilder
                 .newInstance()
                 .path(SEARCH_ENDPOINT);
 
-        if (geneQueryObject.get("category").getAsString().equals("metadata")) {
+        if (queryObject.get("category").getAsString().equals("metadata")) {
             searchUrlBuilder
-                    .pathSegment("metadata", geneQueryObject.get("term").getAsString());
+                    .pathSegment("metadata", queryObject.get("term").getAsString());
         } else {
             searchUrlBuilder
-                    .queryParam(geneQueryObject.get("category").getAsString(), geneQueryObject.get("term").getAsString())
+                    .queryParam(queryObject.get("category").getAsString(), queryObject.get("term").getAsString())
                     .queryParam("species", species);
         }
 

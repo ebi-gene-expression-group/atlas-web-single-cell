@@ -11,7 +11,7 @@
                         <h3><span class="icon icon-conceptual" data-icon="l"></span></h3>
                     </div>
                     <div class="media-object-section middle">
-                        <p>Expression Atlas update: from tissues to single cells <br/><i>Nucleic Acids Research</i>, 30 October 2019.</p>
+                        <p>Expression Atlas update: gene and protein expression in<br/> multiple species <i>Nucleic Acids Research</i>, 24 November 2021.</p>
                     </div>
                 </div>
             </a>

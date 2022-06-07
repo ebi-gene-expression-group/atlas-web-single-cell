@@ -22,7 +22,7 @@
                         <h3><span class="icon icon-conceptual" data-icon="l"></span></h3>
                     </div>
                     <div class="media-object-section middle">
-                        <p>User-friendly, scalable tools and workflows for<br/> single-cell RNA-seq analysis, 29 March 2021.</p>
+                        <p>User-friendly, scalable tools and workflows for<br/> single-cell RNA-seq analysis, <i>Nature Methods</i>, 29 March 2021.</p>
                     </div>
                 </div>
             </a>

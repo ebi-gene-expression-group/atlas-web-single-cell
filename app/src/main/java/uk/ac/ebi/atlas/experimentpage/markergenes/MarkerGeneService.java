@@ -52,13 +52,12 @@ public class MarkerGeneService {
     }
 
     public ImmutableList<MarkerGene> getCellTypeMarkerGeneHeatmapData(String experimentAccession,
-                                                                      String cellGroupType,
-                                                                      ImmutableCollection<String> cellTypes) {
+                                                                      String cellGroupType) {
         var cellTypeMarkerGenes =
                 markerGenesDao
-                        .getCellTypeMarkerGenesOntologyLabels(
+                        .getCellTypeMarkerGenes(
                                 experimentAccession,
-                                ImmutableSet.<String>builder().add(cellGroupType).addAll(cellTypes).build());
+                                cellGroupType);
 
         return cellTypeMarkerGenes.stream()
                 .filter(markerGene -> !markerGene.cellGroupValue().equalsIgnoreCase("Not available"))

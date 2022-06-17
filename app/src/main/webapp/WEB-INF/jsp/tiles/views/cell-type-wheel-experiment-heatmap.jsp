@@ -9,13 +9,12 @@
 <script defer src="${pageContext.request.contextPath}/resources/js-bundles/cellTypeWheelHeatmap.bundle.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function (event) {
-        cellTypeWheelHeatmap.render(
-            {
-                host: '${pageContext.request.contextPath}/',
-                resource: 'json/cell-type-wheel/${cellTypeWheelSearchTerm}',
-                cellTypeWheelSearchTerm: '${cellTypeWheelSearchTerm}'
-            },
-            'cellTypeWheelHeatmap');
-    });
+  document.addEventListener('DOMContentLoaded', function (event) {
+    cellTypeWheelHeatmap.render(
+      {
+        host: '${pageContext.request.contextPath}/',
+        searchTerm: '${cellTypeWheelSearchTerm}'
+      },
+      'cellTypeWheelHeatmap');
+  });
 </script>

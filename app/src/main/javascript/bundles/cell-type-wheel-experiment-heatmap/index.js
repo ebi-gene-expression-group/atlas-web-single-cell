@@ -1,19 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import CellTypeWheelMultiExperimentHeatmap from './src/CellTypeWheelMultiExperimentHeatmap'
-import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
-
-const CellTypeWheelMultiExperimentHeatmapFetchLoader = withFetchLoader(CellTypeWheelMultiExperimentHeatmap)
+import CellTypeWheelMultiExperimentHeatmap from '@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap'
 
 const render = (options, target) => {
     ReactDOM.render(
-        <CellTypeWheelMultiExperimentHeatmapFetchLoader
-            {...options}
-            fulfilledPayloadProvider={ data => ({
-                    cellTypeWheelData: data
-                })}
-        />,
+        <CellTypeWheelMultiExperimentHeatmap {...options} />,
         document.getElementById(target))
 }
 

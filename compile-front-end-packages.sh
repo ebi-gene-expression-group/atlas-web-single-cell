@@ -17,6 +17,7 @@ do
   pushd .
   cd $MODULE_DIR
   #ncu /@ebi-gene-expression-group/ -u
+  #rm -rf node_modules package-lock.json
   npm install
   npm audit fix
   npm run prepare
@@ -32,6 +33,7 @@ do
   pushd .
   cd $BUNDLE_DIR
   #ncu /@ebi-gene-expression-group/ -u
+  #rm -rf node_modules package-lock.json
   npm install
   npm audit fix
   popd
@@ -39,9 +41,10 @@ done
 
 popd
 
-WEBPACK_OPTS=${1:-"-d"}
+WEBPACK_OPTS=${1:-"--mode development --devtool source-map"}
 
-#ncu /@ebi-gene-expression-group/ -u
+ncu /@ebi-gene-expression-group/ -u
+#rm -rf node_modules package-lock.json
 npm install
 npm audit fix
 npx webpack $WEBPACK_OPTS

@@ -1,5 +1,4 @@
 const path = require(`path`)
-const { CleanWebpackPlugin } = require(`clean-webpack-plugin`)
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const vendorsBundleName = `vendorCommons`
@@ -17,10 +16,10 @@ module.exports = {
     experimentTable: `./bundles/experiment-table`,
     informationBanner: `./bundles/atlas-information-banner`,
     cellTypeWheelHeatmap: `./bundles/cell-type-wheel-experiment-heatmap`
+    //cellTypeWheelHeatmap: `@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap`
   },
 
   plugins: [
-    new CleanWebpackPlugin(),
     new BundleAnalyzerPlugin({
       analyzerMode: `static`
     })
@@ -31,7 +30,8 @@ module.exports = {
     filename: `[name].bundle.js`,
     publicPath: `/gxa/sc/resources/js-bundles/`,
     path: path.resolve(__dirname, `../webapp/resources/js-bundles`),
-    devtoolNamespace: `firefox`
+    devtoolNamespace: `webpack`,
+    clean:true
   },
 
   resolve: {

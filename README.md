@@ -42,7 +42,13 @@ wget -P $ATLAS_DATA_PATH -c --reject="index.html*" --recursive -np -nc -nH --cut
 Notice that either way `ATLAS_DATA_PATH` will be created for you if the directory doesn’t exist.
 
 This task will take a variable amount of time that depends on your connection speed. After its completion you will see
-three new folders under `ATLAS_DATA_PATH`: `filesystem`, `solrcloud` and `postgressql`.
+2 new folders under `ATLAS_DATA_PATH`: `bioentity-properties` and `scxa-experiments`.
+
+Do the following steps:
+1. Please create a new folder named `scxa` under the `ATLAS_DATA_PATH` folder.
+2. Copy the contents of `scxa-experiments` folder (`expdesign`, `magetab`, `release-metadata.json` and `species-properties.json`) into the newly created folder.
+3. Delete the empty `scxa-experiments` folder.
+4. Rename the folder `bioentity-properties` to `bioentity_properties`.
 
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace

@@ -48,6 +48,18 @@
           {
             text: 'FBgn0004647 (FlyBase ID)',
             url: '${pageContext.request.contextPath}/search?flybase_gene_id=FBgn0004647'
+          },
+          {
+            text: 'keratinocyte (cell type)',
+            url: '${pageContext.request.contextPath}/search/metadata/keratinocyte'
+          },
+          {
+            text: 'liver (organ/organism part)',
+            url: '${pageContext.request.contextPath}/search/metadata/liver'
+          },
+          {
+            text: 'lung cancer (disease/condition)',
+            url: '${pageContext.request.contextPath}/search/metadata/lung cancer'
           }
         ]
       }, 'search-form')

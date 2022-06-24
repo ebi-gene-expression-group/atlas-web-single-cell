@@ -50,6 +50,19 @@ Do the following steps:
 3. Delete the empty `scxa-experiments` folder.
 4. Rename the folder `bioentity-properties` to `bioentity_properties`.
 
+## Build the web application
+
+1. Set up the user credentials for Postgres DB:
+```bash
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev
+```
+
+2. Edit `jdbc.properties` file under `/docker/atlas-properties` folder.
+3. Set the `jdbc.username` to the same value that POSTGRES_USER env variable contains.
+4. Set the `jdbc.password` to the same value that POSTGRES_PASSWORD env variable contains.
+5. Execute the following Gradle task to build the web application: `war`.
+
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace
 `ATLAS_DATA_PATH` value to the directory you set up in the first step.

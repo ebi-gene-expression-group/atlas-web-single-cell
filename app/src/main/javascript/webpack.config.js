@@ -15,7 +15,7 @@ module.exports = {
     homepageCards: `./bundles/homepage-cards`,
     experimentTable: `./bundles/experiment-table`,
     informationBanner: `./bundles/atlas-information-banner`,
-    cellTypeWheelHeatmap: `./bundles/cell-type-wheel-experiment-heatmap`
+    cellTypeWheelHeatmap: `./bundles/cell-type-wheel-heatmap`
     //cellTypeWheelHeatmap: `@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap`
   },
 

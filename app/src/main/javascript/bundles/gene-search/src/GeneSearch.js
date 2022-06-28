@@ -55,13 +55,11 @@ const GeneSearch = ({atlasUrl, history}) => {
         firstMatchingRequestParam &&
         <FacetedSearchResultsWithFetchLoader
           host={atlasUrl}
-          resource={
-            `json/search?` +
-            URI.buildQuery({
-              [geneQuery.category]: geneQuery.term,
-              species: requestParams.species
-            })
-          }
+          resource={`json/search`}
+          query={{
+            [geneQuery.category]: geneQuery.term,
+            species: requestParams.species
+          }}
           fulfilledPayloadProvider={data => ({
             resultsMessage: data ?
               (data.results && data.results.length > 0) ?

@@ -1,0 +1,24 @@
+{
+  "name": "@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap",
+  "version": "1.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Wrapper for the cell type wheel + experiment heatmap component",
+  "main": "index.js",
+  "author": "Expression Atlas developers <arrayexpress-atlas@ebi.ac.uk>",
+  "collaborators": [
+    "Haider Iqbal <haideri@ebi.ac.uk>",
+    "Alfonso Muñoz-Pomer Fuentes <amunoz@ebi.ac.uk>"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap": "^1.2.0-beta3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@ebi-gene-expression-group/eslint-config": "^3.3.0",
+    "eslint": "^8.17.0"
+  }
+}

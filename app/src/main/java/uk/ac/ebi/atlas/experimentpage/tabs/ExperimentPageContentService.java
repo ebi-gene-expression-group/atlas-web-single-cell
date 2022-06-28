@@ -178,6 +178,7 @@ public class ExperimentPageContentService {
 
     public JsonArray getMetadata(String experimentAccession) {
         var metadataArray = new JsonArray();
+
         cellMetadataService
                 .getMetadataTypes(experimentAccession)
                 .stream()

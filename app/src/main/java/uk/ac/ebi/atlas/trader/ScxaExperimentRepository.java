@@ -53,7 +53,7 @@ public class ScxaExperimentRepository implements ExperimentRepository {
 
         return singleCellBaselineExperimentFactory.create(
                 experimentDto,
-                experimentDesignParser.parse(experimentDto.getExperimentAccession()),
+                null, //experimentDesignParser.parse(experimentDto.getExperimentAccession()),
                 idfParser.parse(experimentDto.getExperimentAccession()),
                 sdrfParser.parseSingleCellTechnologyType(experimentDto.getExperimentAccession()));
     }

@@ -166,7 +166,8 @@ class CellPlotDaoIT {
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionPlotWithGeneIdProvider")
     void fetchCellPlotParameter(String experimentAccession) {
-        assertThat(subject.fetchCellPlotParameter(experimentAccession))
+        var method = "umap";
+        assertThat(subject.fetchCellPlotParameter(experimentAccession, method))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }

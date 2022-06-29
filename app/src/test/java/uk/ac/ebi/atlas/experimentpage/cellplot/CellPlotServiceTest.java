@@ -107,4 +107,19 @@ class CellPlotServiceTest {
         assertThat(result)
                 .hasSize(points.size());
     }
+
+    @Test
+    void getCellPlotParameter() {
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        var method = "umap";
+        var parameters = ImmutableList.copyOf("celltype1", "celltype2");
+
+        when(cellPlotDaoMock.fetchCellPlotWithExpression(experimentAccession, method))
+                .thenReturn(parameters);
+
+        var result = subject.expressionPlot(experimentAccession, method);
+
+        assertThat(result)
+                .hasSize(parameters.size());
+    }
 }

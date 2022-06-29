@@ -56,6 +56,7 @@ class CellPlotDaoIT {
                 new ClassPathResource("fixtures/scxa_coords.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership.sql"));
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql");
         populator.execute(dataSource);
     }
 
@@ -69,6 +70,7 @@ class CellPlotDaoIT {
                 new ClassPathResource("fixtures/scxa_coords-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/experiment-delete.sql"));
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql");
         populator.execute(dataSource);
     }
 
@@ -149,6 +151,22 @@ class CellPlotDaoIT {
                              String plotMethod,
                              Map<String, Integer> parameterisation) {
         assertThat(subject.fetchCellPlotWithExpression(experimentAccession, geneId, plotMethod, parameterisation))
+                .isNotEmpty()
+                .doesNotHaveDuplicates();
+    }
+
+    @ParameterizedTest
+    @MethodSource("randomExperimentAccessionPlotWithGeneIdProvider")
+    void fetchCellPlotMethods(String experimentAccession) {
+        assertThat(subject.fetchCellPlotMethods(experimentAccession))
+                .isNotEmpty()
+                .doesNotHaveDuplicates();
+    }
+
+    @ParameterizedTest
+    @MethodSource("randomExperimentAccessionPlotWithGeneIdProvider")
+    void fetchCellPlotParameter(String experimentAccession) {
+        assertThat(subject.fetchCellPlotParameter(experimentAccession))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }

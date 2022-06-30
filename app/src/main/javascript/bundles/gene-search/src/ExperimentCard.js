@@ -1,10 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import formatNumber from 'format-number'
+import format from 'format-number'
 import EbiSpeciesIcon from '@ebi-gene-expression-group/react-ebi-species'
-
-const _formatNumber = formatNumber()
 
 const CardContainerDiv = styled.div`
   height: 100%;
@@ -93,7 +91,7 @@ class ExperimentCard extends React.Component {
             {factors.map(factor => <li key={`factor-${factor}`}> {factor} </li>)}
           </ul>
         </VariableDiv>
-        <CountDiv> {_formatNumber(numberOfAssays)} </CountDiv>
+        <CountDiv> {format(numberOfAssays)} </CountDiv>
       </CardContainerDiv>
     )
   }

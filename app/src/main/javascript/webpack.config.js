@@ -15,8 +15,7 @@ module.exports = {
     homepageCards: `./bundles/homepage-cards`,
     experimentTable: `./bundles/experiment-table`,
     informationBanner: `./bundles/atlas-information-banner`,
-    cellTypeWheelHeatmap: `./bundles/cell-type-wheel-experiment-heatmap`
-    //cellTypeWheelHeatmap: `@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap`
+    cellTypeWheelHeatmap: `./bundles/cell-type-wheel-heatmap`
   },
 
   plugins: [
@@ -30,7 +29,6 @@ module.exports = {
     filename: `[name].bundle.js`,
     publicPath: `/gxa/sc/resources/js-bundles/`,
     path: path.resolve(__dirname, `../webapp/resources/js-bundles`),
-    devtoolNamespace: `webpack`,
     clean:true
   },
 

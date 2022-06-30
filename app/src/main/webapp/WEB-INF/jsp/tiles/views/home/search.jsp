@@ -1,5 +1,7 @@
 <%--@elvariable id="resourcesVersion" type="String"--%>
 <%--@elvariable id="geneId" type="String"--%>
+<%--@elvariable id="resourcesVersion" type="String"--%>
+<%--@elvariable id="geneId" type="String"--%>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
@@ -15,41 +17,54 @@
 
 <script defer src="${pageContext.request.contextPath}/resources/js-bundles/geneSearchForm.bundle.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function(event) {
-      geneSearchForm.render({
-        host: '${pageContext.request.contextPath}/',
-        resource: 'json/suggestions/species',
-        wrapperClassName: 'row expanded',
-        actionEndpoint: 'search',
+    document.addEventListener("DOMContentLoaded", function (event) {
+        geneSearchForm.render({
+            host: '${pageContext.request.contextPath}/',
+            resource: 'json/suggestions/species',
+            wrapperClassName: 'row expanded',
+            actionEndpoint: 'search',
 
-        autocompleteClassName: 'small-12 medium-8 columns',
-        suggesterEndpoint: 'json/suggestions/gene_ids',
+            autocompleteClassName: 'small-12 medium-8 columns',
+            suggesterEndpoint: 'json/suggestions/gene_ids',
 
-        enableSpeciesSelect: true,
-        speciesSelectClassName: 'small-12 medium-4 columns',
+            enableSpeciesSelect: true,
+            speciesSelectClassName: 'small-12 medium-4 columns',
 
-        searchExamples: [
-          {
-            text: 'CFTR (gene symbol)',
-            url: '${pageContext.request.contextPath}/search?symbol=CFTR'
-          },
-          {
-            text: 'ENSG00000115904 (Ensembl ID)',
-            url: '${pageContext.request.contextPath}/search?ensgene=ENSG00000115904'
-          },
-          {
-            text: '657 (Entrez ID)',
-            url: '${pageContext.request.contextPath}/search?entrezgene=657'
-          },
-          {
-            text: 'MGI:98354 (MGI ID)',
-            url: '${pageContext.request.contextPath}/search?mgi_id=MGI:98354'
-          },
-          {
-            text: 'FBgn0004647 (FlyBase ID)',
-            url: '${pageContext.request.contextPath}/search?flybase_gene_id=FBgn0004647'
-          }
-        ]
-      }, 'search-form')
+            autocompleteLabel: ``,
+            searchExamples: [
+                {
+                    text: 'CFTR (gene symbol)',
+                    url: '${pageContext.request.contextPath}/search?symbol=CFTR'
+                },
+                {
+                    text: 'ENSG00000115904 (Ensembl ID)',
+                    url: '${pageContext.request.contextPath}/search?ensgene=ENSG00000115904'
+                },
+                {
+                    text: '657 (Entrez ID)',
+                    url: '${pageContext.request.contextPath}/search?entrezgene=657'
+                },
+                {
+                    text: 'MGI:98354 (MGI ID)',
+                    url: '${pageContext.request.contextPath}/search?mgi_id=MGI:98354'
+                },
+                {
+                    text: 'FBgn0004647 (FlyBase ID)',
+                    url: '${pageContext.request.contextPath}/search?flybase_gene_id=FBgn0004647'
+                },
+                {
+                    text: 'keratinocyte (cell type)',
+                    url: '${pageContext.request.contextPath}/search/metadata/keratinocyte'
+                },
+                {
+                    text: 'liver (organ/organism part)',
+                    url: '${pageContext.request.contextPath}/search/metadata/liver'
+                },
+                {
+                    text: 'lung cancer (disease/condition)',
+                    url: '${pageContext.request.contextPath}/search/metadata/lung cancer'
+                }
+            ]
+        }, 'search-form')
     });
 </script>

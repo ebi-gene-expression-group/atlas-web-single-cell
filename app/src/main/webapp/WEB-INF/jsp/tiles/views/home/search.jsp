@@ -1,7 +1,5 @@
 <%--@elvariable id="resourcesVersion" type="String"--%>
 <%--@elvariable id="geneId" type="String"--%>
-<%--@elvariable id="resourcesVersion" type="String"--%>
-<%--@elvariable id="geneId" type="String"--%>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
@@ -30,7 +28,7 @@
             enableSpeciesSelect: true,
             speciesSelectClassName: 'small-12 medium-4 columns',
 
-            autocompleteLabel: ``,
+            autocompleteLabel: '',
             searchExamples: [
                 {
                     text: 'CFTR (gene symbol)',

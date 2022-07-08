@@ -10,21 +10,24 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.util.LinkedMultiValueMap;
 import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 import uk.ac.ebi.atlas.species.Species;
+import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.species.SpeciesProperties;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.*;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES_OVERRIDE_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomKnownBioentityPropertyName;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomSpecies;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -37,13 +40,16 @@ class GeneIdSearchServiceTest {
     @Mock
     private GeneIdSearchDao geneIdSearchDaoMock;
 
+    @Mock
+    private SpeciesFactory speciesFactory;
+
     private InOrder inOrder;
 
     private GeneIdSearchService subject;
 
     @BeforeEach
     void setUp() {
-        subject = new GeneIdSearchService(geneIdSearchDaoMock);
+        subject = new GeneIdSearchService(geneIdSearchDaoMock, speciesFactory);
         inOrder = inOrder(geneIdSearchDaoMock);
     }
 
@@ -176,5 +182,48 @@ class GeneIdSearchServiceTest {
         verify(geneIdSearchDaoMock).searchGeneIds(searchString, "mgi_symbol");
         verify(geneIdSearchDaoMock).searchGeneIds(searchString, "flybase_gene_id");
         verify(geneIdSearchDaoMock).searchGeneIds(searchString, "wbpsgene");
+    }
+
+    @Test
+    void whenRequestParamsEmptyThenThrowRuntimeException() {
+        var requestParams = new LinkedMultiValueMap<String, LinkedList<String>>();
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
+    }
+
+    @Test
+    void whenRequestParamsHasGenericQueryFieldThenGotProperGeneQuery() {
+        var symbols = new LinkedList<>(List.of("CFTR"));
+        var species = new LinkedList<>(List.of(""));
+        var requestParams = new LinkedMultiValueMap<String, LinkedList<String>>();
+        requestParams.add("q", symbols);
+        requestParams.add("species", species);
+
+        GeneQuery expectedGeneQuery = GeneQuery.create("CFTR");
+
+        GeneQuery geneQuery = subject.getGeneQueryByRequestParams(requestParams);
+
+        assertThat(geneQuery).isEqualTo(expectedGeneQuery);
+    }
+
+    @Test
+    void whenRequestParamsHasValidQueryFieldThenGotProperGeneQuery() {
+        var symbols = new LinkedList<>(List.of("CFTR"));
+        var species = new LinkedList<>(List.of("Homo sapiens"));
+        var requestParams = new LinkedMultiValueMap<String, LinkedList<String>>();
+        requestParams.add("symbol", symbols);
+        requestParams.add("species", species);
+
+        final Species randomSpecies = generateRandomSpecies();
+
+        GeneQuery expectedGeneQuery = GeneQuery.create(
+                "CFTR", BioentityPropertyName.getByName("symbol"), randomSpecies);
+
+        when(speciesFactory.create("Homo sapiens")).thenReturn(randomSpecies);
+
+        GeneQuery geneQuery = subject.getGeneQueryByRequestParams(requestParams);
+
+        assertThat(geneQuery).isEqualTo(expectedGeneQuery);
     }
 }

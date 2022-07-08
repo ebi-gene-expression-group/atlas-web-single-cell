@@ -2,14 +2,16 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math.util.MathUtils;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.function.Function.identity;
@@ -90,4 +92,9 @@ public class CellPlotService {
                                         pointDto.name()))
                 .collect(toImmutableSet());
     }
+
+    public ImmutableMap<String,JsonObject> fetchDefaultPlotTypeWithPlotOption(String experimentAccession) {
+        return cellPlotDao.fetchDefaultPlotTypeWithPlotOption(experimentAccession);
+    }
+
 }

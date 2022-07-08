@@ -112,4 +112,10 @@ public class CellPlotJsonSerializer {
                                                                            Set<TSnePoint> points) {
         return ImmutableList.of(ImmutableMap.of("name", seriesName, "data", points));
     }
+
+    public String fetchDefaultPlotTypeWithPlotOption(String experimentAccession) {
+        return GSON.toJson(
+                Optional.ofNullable(
+                        cellPlotService.fetchDefaultPlotTypeWithPlotOption(experimentAccession)));
+    }
 }

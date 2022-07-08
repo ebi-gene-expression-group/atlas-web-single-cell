@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -124,5 +123,37 @@ public class CellPlotDao {
                                 rs.getDouble("y"),
                                 rs.getDouble("expression_level"),
                                 rs.getString("cell_id")));
+    }
+
+    private static final String SELECT_DEFAULT_PLOT_TYPE_AND_PARAMETERISATION =
+
+            "SELECT sr.id, sr.method,sr.priority, " +
+                    "sr.parameterisation,sr.experiment_accession " +
+                    "FROM scxa_dimension_reduction sr " +
+                        "JOIN (SELECT method,  max(priority) as prt FROM scxa_dimension_reduction " +
+                        "WHERE  priority<>0 AND experiment_accession=:experiment_accession" +
+                        "GROUP BY method) fi " +
+                    "ON sr.method = fi.method " +
+                    "AND sr.priority = fi.prt";
+
+    public Map<String, List<JsonObject>> fetchDefaultPlotTypeWithParameterisation(String experimentAccession) {
+        var namedParameters =
+                ImmutableMap.of("experiment_accession", experimentAccession);
+
+        return namedParameterJdbcTemplate.query(
+                SELECT_DEFAULT_PLOT_TYPE_AND_PARAMETERISATION,
+                namedParameters,
+                (ResultSet resultSet) -> {
+                    Map<String, List<JsonObject>> plotTypeAndOptions = new HashMap<>();
+                    while (resultSet.next()) {
+                        var projectionMethod = resultSet.getString("method");
+                        var plotOption = resultSet.getString("option");
+                        var plotOptionObject = new Gson().fromJson(plotOption, JsonObject.class);
+                        var plotOptions = plotTypeAndOptions.getOrDefault(projectionMethod, new ArrayList<>());
+                        plotOptions.add(plotOptionObject);
+                        plotTypeAndOptions.put(projectionMethod, plotOptions);
+                    }
+                    return plotTypeAndOptions;
+                });
     }
 }

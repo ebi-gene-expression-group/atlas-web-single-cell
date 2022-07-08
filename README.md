@@ -3,6 +3,8 @@
 ## Requirements
 - Docker v19+
 - Docker Compose v1.25+
+- Node.js v16
+- You need `npm-check-updates` installed globally: [https://www.npmjs.com/package/npm-check-updates](https://www.npmjs.com/package/npm-check-updates)
 - 60 GB of available storage (experiment files, PostgreSQL and Solr backup snapshots and Docker volumes)
 
 Notice that PostgreSQL and Solr snapshots are [`bind` mounted](https://docs.docker.com/storage/bind-mounts/) in order
@@ -61,7 +63,8 @@ POSTGRES_PASSWORD=atlas3dev
 2. Edit `jdbc.properties` file under `/docker/atlas-properties` folder.
 3. Set the `jdbc.username` to the same value that POSTGRES_USER env variable contains.
 4. Set the `jdbc.password` to the same value that POSTGRES_PASSWORD env variable contains.
-5. Execute the following Gradle task to build the web application: `war`.
+6. Build the JavaScript bundles with the `compile-front-end-packages.sh` command line script.
+7. Execute the following Gradle task to build the web application: `war`.
 
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace

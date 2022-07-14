@@ -179,6 +179,12 @@ class CellPlotDaoIT {
                 .containsValues("{\"perplexity\": 15}");
     }
 
+    @Test
+    void canFetchEmptyResultsIfExperimentDoesNotHaveDefaultPlotTypeWithOption(){
+        assertThat(subject.fetchDefaultPlotTypeWithPlotOption("E-ANND-1"))
+                .isEmpty();
+    }
+
     private Stream<Arguments> randomExperimentAccessionPlotWithKProvider() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var k = 0;

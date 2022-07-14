@@ -2,8 +2,6 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,34 +123,29 @@ public class CellPlotDao {
 
     private static final String SELECT_DEFAULT_PLOT_TYPE_AND_PARAMETERISATION =
 
-            "SELECT sr.id, sr.method,sr.priority, " +
-                    "sr.parameterisation,sr.experiment_accession " +
-                    "FROM scxa_dimension_reduction sr " +
+            "SELECT dr.method, jsonb_array_elements(dr.parameterisation) parameterisation " +
+                    "FROM scxa_dimension_reduction dr " +
                     "JOIN (SELECT method,  max(priority) as prt " +
                         "FROM scxa_dimension_reduction " +
-                        "WHERE  priority<>0 AND experiment_accession=:experiment_accession" +
+                        "WHERE  priority<>0 AND experiment_accession=:experiment_accession " +
                         " GROUP BY method) fi " +
-                    "ON sr.method = fi.method " +
-                    "AND sr.priority = fi.prt";
+                    "ON dr.method = fi.method " +
+                    "AND dr.priority = fi.prt";
 
-    public ImmutableMap<String, JsonObject> fetchDefaultPlotTypeWithPlotOption(String experimentAccession) {
-        var namedParameters =
-                ImmutableMap.of("experiment_accession", experimentAccession);
+    public ImmutableMap<String, String> fetchDefaultPlotTypeWithPlotOption(String experimentAccession) {
+        var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_DEFAULT_PLOT_TYPE_AND_PARAMETERISATION,
                 namedParameters,
                 (ResultSet resultSet) -> {
-                    ImmutableMap.Builder<String, JsonObject> plotTypeAndOptions = new ImmutableMap.Builder<>();
+                    ImmutableMap.Builder<String, String> plotTypeAndOption = new ImmutableMap.Builder<>();
                     while (resultSet.next()) {
                         var plotType = resultSet.getString("method");
-                        var plotOption = resultSet.getString("option");
-                        System.out.println("Before json object, plot option: "+plotOption);
-                        var plotOptionObject = new Gson().fromJson(plotOption, JsonObject.class);
-                        System.out.println("Json Object: "+plotOptionObject.toString());
-                        plotTypeAndOptions.put(plotType,plotOptionObject);
+                        var plotOption = resultSet.getString("parameterisation");
+                        plotTypeAndOption.put(plotType,plotOption);
                     }
-                    return plotTypeAndOptions.build();
+                    return plotTypeAndOption.build();
                 });
     }
 }

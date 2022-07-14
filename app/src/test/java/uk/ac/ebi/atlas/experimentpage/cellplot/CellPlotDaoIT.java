@@ -55,7 +55,8 @@ class CellPlotDaoIT {
                 new ClassPathResource("fixtures/scxa_analytics.sql"),
                 new ClassPathResource("fixtures/scxa_coords.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"));
         populator.execute(dataSource);
     }
 
@@ -68,7 +69,8 @@ class CellPlotDaoIT {
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_coords-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/experiment-delete.sql"));
+                new ClassPathResource("fixtures/experiment-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -166,6 +168,15 @@ class CellPlotDaoIT {
                         plotMethod,
                         parameterisation))
                 .allSatisfy(dto -> assertThat(dto).hasFieldOrPropertyWithValue("expressionLevel", 0.0));
+    }
+
+    @Test
+    void canFetchDefaultPlotTypeAndOptionPerExperiment(){
+        assertThat(subject.fetchDefaultPlotTypeWithPlotOption("E-CURD-4"))
+                .containsKeys("UMAP","t-SNE")
+                .doesNotContainKey("scanvi")
+                .containsValues("{\"n_neighbors\": 15}")
+                .containsValues("{\"perplexity\": 15}");
     }
 
     private Stream<Arguments> randomExperimentAccessionPlotWithKProvider() {

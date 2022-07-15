@@ -11,9 +11,7 @@ public class CellPlotType {
     public CellPlotType(CellPlotService cellPlotService) {
         this.cellPlotService = cellPlotService;
     }
-
-    public final static String DEFAULT_PLOT_METHOD = "umap";
-
+    
     public static Optional<ImmutableSet<ArrayList>> getParameters(String experimentAccession, String plotType) {
         return Optional.ofNullable(CellPlotService.cellPlotParameter(experimentAccession, plotType));
     }

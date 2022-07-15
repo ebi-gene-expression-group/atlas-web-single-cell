@@ -107,4 +107,23 @@ class CellPlotServiceTest {
         assertThat(result)
                 .hasSize(points.size());
     }
+
+    @Test
+    void canFetchDefaultPlotTypeWithPlotOption(){
+        when(cellPlotDaoMock.fetchDefaultPlotTypeWithPlotOption("E-CURD-4"))
+                .thenReturn(ImmutableMap.of("UMAP","{\"n_neighbors\": 15}"));
+
+        assertThat(subject.fetchDefaultPlotTypeWithPlotOption("E-CURD-4"))
+                .containsKeys("UMAP")
+                .containsValues("{\"n_neighbors\": 15}");
+    }
+
+    @Test
+    void canReturnEmptyResultIfThereIsNoDefaultPlotTypeAndOption(){
+        when(cellPlotDaoMock.fetchDefaultPlotTypeWithPlotOption("fooBar"))
+                .thenReturn(ImmutableMap.of());
+
+        assertThat(subject.fetchDefaultPlotTypeWithPlotOption("fooBar"))
+                .isEmpty();
+    }
 }

@@ -12,7 +12,6 @@ import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 
 import java.util.Map;
 
-import static uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotType.DEFAULT_PLOT_METHOD;
 
 @RestController
 @RequestMapping(value="/json/cell-plots/{experimentAccession}", method= RequestMethod.GET)
@@ -56,7 +55,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String clusterPlotK(@PathVariable String experimentAccession,
                                @PathVariable int k,
-                               @RequestParam(defaultValue = DEFAULT_PLOT_METHOD) String plotMethod,
+                               @RequestParam String plotMethod,
                                @RequestParam Map<String,String> requestParams) {
         return cellPlotJsonSerializer.clusterPlotWithK(
                 experimentAccession,
@@ -70,7 +69,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String clusterPlotMetadata(@PathVariable String experimentAccession,
                                       @PathVariable String metadata,
-                                      @RequestParam(defaultValue = DEFAULT_PLOT_METHOD) String plotMethod,
+                                      @RequestParam String plotMethod,
                                       @RequestParam Map<String,String> requestParams) {
         return cellPlotJsonSerializer.clusterPlotWithMetadata(
                 experimentAccession,
@@ -83,7 +82,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
     @GetMapping(value = "/expression",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String expressionPlot(@PathVariable String experimentAccession,
-                                 @RequestParam(defaultValue = DEFAULT_PLOT_METHOD) String plotMethod,
+                                 @RequestParam String plotMethod,
                                  @RequestParam Map<String,String> requestParams) {
         return cellPlotJsonSerializer.expressionPlot(
                 experimentAccession,
@@ -98,7 +97,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String expressionPlot(@PathVariable String experimentAccession,
                                  @PathVariable String geneId,
-                                 @RequestParam(defaultValue = DEFAULT_PLOT_METHOD) String plotMethod,
+                                 @RequestParam String plotMethod,
                                  @RequestParam Map<String,String> requestParams) {
         return cellPlotJsonSerializer.expressionPlot(
                 experimentAccession,

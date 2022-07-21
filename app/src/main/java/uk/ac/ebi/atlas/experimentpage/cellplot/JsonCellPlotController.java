@@ -24,7 +24,8 @@ JsonCellPlotController extends JsonExceptionHandlingController {
     }
 
     // Our only assumption is that plot parameters are all integers, but we can further generalise if needed
-    private ImmutableMap<String, Integer> parsePlotParametersFromRequestParameters(String experimentAccession, String plotMethod,
+    private ImmutableMap<String, Integer> parsePlotParametersFromRequestParameters(String experimentAccession,
+                                                                                   String plotMethod,
                                                                                    Map<String, String> requestParams) {
         var requiredParameters =
                 CellPlotType

@@ -42,6 +42,6 @@ public class SingleCellExperimentAdminController extends ExperimentAdminControll
             @RequestParam(value = "isPrivate") Boolean isPrivate,
             ScxaExperimentCrud scxaExperimentCrud) {
         UUID accessKeyUUID = scxaExperimentCrud.createExperiment(experimentAccession, isPrivate);
-        LOGGER.info("Import experiment successfully, accessKeyUUID: {}", accessKeyUUID.toString());
+        LOGGER.info("Imported/updated experiment successfully, accessKeyUUID: {}", accessKeyUUID.toString());
     }
 }

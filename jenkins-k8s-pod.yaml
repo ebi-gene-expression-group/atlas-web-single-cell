@@ -27,16 +27,6 @@ spec:
       - sleep
       args:
       - 99d
-      volumeMounts:
-        - mountPath: /test-data/scxa
-          name: scxa-ci-data
-        - mountPath: /test-data/bioentity_properties
-          name: bioentity-properties
-        - mountPath: /root/gradle-ro-dep-cache
-          name: gradle-ro-dep-cache
-          readOnly: true
-        - mountPath: /root/.gradle/wrapper
-          name: openjdk-root-gradle-wrapper
     - name: postgres
       image: postgres:10-alpine
       resources:
@@ -51,17 +41,3 @@ spec:
           value: "postgres"
         - name: POSTGRES_PASSWORD
           value: "postgres"
-  volumes:
-
-    - name: scxa-ci-data
-      persistentVolumeClaim:
-        claimName: sc-test-experiments-claim
-    - name: bioentity-properties
-      persistentVolumeClaim:
-        claimName: bioentity-properties-claim
-    - name: gradle-ro-dep-cache
-      persistentVolumeClaim:
-        claimName: gradle-ro-dep-cache-claim
-    - name: openjdk-root-gradle-wrapper
-      persistentVolumeClaim:
-        claimName: openjdk-root-gradle-wrapper-claim

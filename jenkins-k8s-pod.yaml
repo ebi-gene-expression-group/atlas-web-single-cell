@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  namespace: jenkins-ci-scxa
+  namespace: jenkins-gene-expression
 spec:
   # If we set workspaceVolume dynamicPVC() or workspaceVolume persistentVolumeClaimWorkspaceVolume() we need to add a
   # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise we get the following exception in the

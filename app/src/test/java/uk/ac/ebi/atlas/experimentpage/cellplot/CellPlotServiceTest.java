@@ -110,16 +110,18 @@ class CellPlotServiceTest {
 
     @Test
     void getCellPlotParameter() {
+        var cellCount = RNG.nextInt(MAX_CELL_COUNT) + 1;
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
-        var method = "umap";
-        var parameters = ImmutableList.copyOf("celltype1", "celltype2");
+        var plotMethod = "umap";
+        var geneId = RandomDataTestUtils.generateRandomEnsemblGeneId();
+        var points = RandomDataTestUtils.generateRandomTSnePointDtosWithExpression(RNG.nextInt(cellCount));
 
-        when(cellPlotDaoMock.fetchCellPlotWithExpression(experimentAccession, method))
-                .thenReturn(parameters);
+        when(cellPlotDaoMock.fetchCellPlotWithExpression(experimentAccession, plotMethod, geneId, ImmutableMap.of()))
+                .thenReturn(ImmutableList.copyOf(points));
 
-        var result = subject.expressionPlot(experimentAccession, method);
+        var result = subject.expressionPlot(experimentAccession, plotMethod, geneId, ImmutableMap.of());
 
         assertThat(result)
-                .hasSize(parameters.size());
+                .hasSize(points.size());
     }
 }

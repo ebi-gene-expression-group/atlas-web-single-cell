@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.toList;
 public class CellPlotService {
     static final String MISSING_METADATA_VALUE_PLACEHOLDER = "not available";
 
-    private static CellPlotDao cellPlotDao;
+    private final CellPlotDao cellPlotDao;
     private final CellMetadataDao cellMetadataDao;
 
     public CellPlotService(CellPlotDao cellPlotDao, CellMetadataDao cellMetadataDao) {
@@ -35,8 +35,8 @@ public class CellPlotService {
         return cellPlotDao.fetchCellPlotMethods(experimentAccession);
     }
 
-    public static ImmutableSet<ArrayList> cellPlotParameter(String experimentAccession, String method) {
-        return (ImmutableSet<ArrayList>) cellPlotDao.fetchCellPlotParameter(experimentAccession, method);
+    public List<String> cellPlotParameter(String experimentAccession, String method) {
+        return cellPlotDao.fetchCellPlotParameter(experimentAccession, method);
     }
 
     public ImmutableMap<String, ImmutableSet<TSnePoint>> clusterPlotWithK(String experimentAccession,

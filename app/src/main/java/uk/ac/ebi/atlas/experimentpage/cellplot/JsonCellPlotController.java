@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -18,9 +19,12 @@ import java.util.Map;
 public class
 JsonCellPlotController extends JsonExceptionHandlingController {
     private final CellPlotJsonSerializer cellPlotJsonSerializer;
+    private final CellPlotService cellPlotService;
 
-    public JsonCellPlotController(CellPlotJsonSerializer cellPlotJsonSerializer) {
+    public JsonCellPlotController(CellPlotJsonSerializer cellPlotJsonSerializer,
+                                  CellPlotService cellPlotService) {
         this.cellPlotJsonSerializer = cellPlotJsonSerializer;
+        this.cellPlotService = cellPlotService;
     }
 
     // Our only assumption is that plot parameters are all integers, but we can further generalise if needed
@@ -28,9 +32,9 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                                                                                    String plotMethod,
                                                                                    Map<String, String> requestParams) {
         var requiredParameters =
-                CellPlotType
-                        .getParameters(experimentAccession, plotMethod)
+                Optional.ofNullable(cellPlotService.cellPlotParameter(experimentAccession, plotMethod))
                         .orElseThrow(() -> new IllegalArgumentException("Unknown plot type " + plotMethod));
+
 
         // Check that no param is missing
         var requiredParametersBuilder = ImmutableMap.<String, Integer>builder();

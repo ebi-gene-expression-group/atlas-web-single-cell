@@ -113,9 +113,9 @@ public class CellPlotJsonSerializer {
         return ImmutableList.of(ImmutableMap.of("name", seriesName, "data", points));
     }
 
-    public String fetchDefaultPlotTypeWithPlotOption(String experimentAccession) {
+    public String fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
         return GSON.toJson(
                 Optional.ofNullable(
-                        cellPlotService.fetchDefaultPlotTypeWithPlotOption(experimentAccession)));
+                        cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession)));
     }
 }

@@ -92,7 +92,7 @@ public class CellPlotService {
                 .collect(toImmutableSet());
     }
 
-    public ImmutableMap<String, String> fetchDefaultPlotTypeWithPlotOption(String experimentAccession) {
-        return cellPlotDao.fetchDefaultPlotTypeWithPlotOption(experimentAccession);
+    public ImmutableMap<String, String> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
+        return cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 }

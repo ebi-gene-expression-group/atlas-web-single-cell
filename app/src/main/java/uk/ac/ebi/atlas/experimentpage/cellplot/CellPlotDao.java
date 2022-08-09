@@ -132,7 +132,7 @@ public class CellPlotDao {
                     "ON dr.method = fi.method " +
                     "AND dr.priority = fi.prt";
 
-    public ImmutableMap<String, String> fetchDefaultPlotTypeWithPlotOption(String experimentAccession) {
+    public ImmutableMap<String, String> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.query(

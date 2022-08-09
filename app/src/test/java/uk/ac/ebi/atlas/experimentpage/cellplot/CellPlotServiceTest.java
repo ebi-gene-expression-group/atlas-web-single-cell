@@ -110,20 +110,20 @@ class CellPlotServiceTest {
 
     @Test
     void canFetchDefaultPlotTypeWithPlotOption(){
-        when(cellPlotDaoMock.fetchDefaultPlotTypeWithPlotOption("E-CURD-4"))
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
                 .thenReturn(ImmutableMap.of("UMAP","{\"n_neighbors\": 15}"));
 
-        assertThat(subject.fetchDefaultPlotTypeWithPlotOption("E-CURD-4"))
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
                 .containsKeys("UMAP")
                 .containsValues("{\"n_neighbors\": 15}");
     }
 
     @Test
     void canReturnEmptyResultIfThereIsNoDefaultPlotTypeAndOption(){
-        when(cellPlotDaoMock.fetchDefaultPlotTypeWithPlotOption("fooBar"))
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .thenReturn(ImmutableMap.of());
 
-        assertThat(subject.fetchDefaultPlotTypeWithPlotOption("fooBar"))
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .isEmpty();
     }
 }

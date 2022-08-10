@@ -122,7 +122,6 @@ public class CellPlotDao {
     }
 
     private static final String SELECT_DEFAULT_PLOT_TYPE_AND_PARAMETERISATION =
-
             "SELECT dr.method, jsonb_array_elements(dr.parameterisation) parameterisation " +
                     "FROM scxa_dimension_reduction dr " +
                     "JOIN (SELECT method,  max(priority) as prt " +

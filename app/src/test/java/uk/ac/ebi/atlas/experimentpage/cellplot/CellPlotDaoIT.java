@@ -173,7 +173,7 @@ class CellPlotDaoIT {
     @Test
     void fetchDefaultPlotMethodAndParameterisationForTheExistingExperiment(){
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation(jdbcTestUtils.fetchExperimentAccessionByMaxPriority()))
-                .containsKeys("UMAP","t-SNE")
+                .containsKeys("UMAP", "t-SNE")
                 .doesNotContainKey("scanvi")
                 .containsValues("{\"n_neighbors\": 15}")
                 .containsValues("{\"perplexity\": 15}");

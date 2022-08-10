@@ -171,7 +171,7 @@ class CellPlotDaoIT {
     }
 
     @Test
-    void canFetchDefaultPlotTypeAndOption(){
+    void fetchDefaultPlotMethodAndParameterisationForTheExistingExperiment(){
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation(jdbcTestUtils.fetchExperimentAccessionByMaxPriority()))
                 .containsKeys("UMAP","t-SNE")
                 .doesNotContainKey("scanvi")
@@ -180,7 +180,7 @@ class CellPlotDaoIT {
     }
 
     @Test
-    void canFetchEmptyResultsIfExperimentDoesNotHaveDefaultPlotType(){
+    void fetchEmptyResultsIfExperimentDoesNotHaveDefaultPlotMethod(){
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .isEmpty();
     }

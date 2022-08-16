@@ -108,7 +108,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 requestParams.getOrDefault("accessKey", ""));
     }
 
-    @GetMapping(value = "/default/plotMethod")
+    @GetMapping(value = "/default/plot-method")
     public String defaultPlotMethodWithParameterisation(@PathVariable String experimentAccession) {
         return cellPlotJsonSerializer.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }

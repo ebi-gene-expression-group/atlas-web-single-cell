@@ -109,7 +109,7 @@ class CellPlotServiceTest {
     }
 
     @Test
-    void canFetchDefaultPlotTypeWithPlotOption(){
+    void fetchDefaultPlotMethodWithParameterisation(){
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
                 .thenReturn(ImmutableMap.of("UMAP","{\"n_neighbors\": 15}"));
 
@@ -119,7 +119,7 @@ class CellPlotServiceTest {
     }
 
     @Test
-    void canReturnEmptyResultIfThereIsNoDefaultPlotTypeAndOption(){
+    void returnEmptyResultIfThereIsNoDefaultPlotMethodAndParameterisation(){
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .thenReturn(ImmutableMap.of());
 

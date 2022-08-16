@@ -121,7 +121,7 @@ public class CellPlotDao {
                                 rs.getString("cell_id")));
     }
 
-    private static final String SELECT_DEFAULT_PLOT_TYPE_AND_PARAMETERISATION =
+    private static final String SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION =
             "SELECT dr.method, jsonb_array_elements(dr.parameterisation) parameterisation " +
                     "FROM scxa_dimension_reduction dr " +
                     "JOIN (SELECT method,  max(priority) as prt " +
@@ -135,7 +135,7 @@ public class CellPlotDao {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.query(
-                SELECT_DEFAULT_PLOT_TYPE_AND_PARAMETERISATION,
+                SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION,
                 namedParameters,
                 (ResultSet resultSet) -> {
                     ImmutableMap.Builder<String, String> plotTypeAndOption = new ImmutableMap.Builder<>();

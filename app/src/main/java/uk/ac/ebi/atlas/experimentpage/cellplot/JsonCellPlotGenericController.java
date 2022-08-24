@@ -6,12 +6,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 @RequestMapping(value="/json/cell-plots/generic/{experimentAccession}", method= RequestMethod.GET)
-public class JsonCellPlotGenericController {
+public class JsonCellPlotGenericController extends JsonExceptionHandlingController {
     private final CellPlotGenericDao cellPlotGenericDao;
 
     public JsonCellPlotGenericController(CellPlotGenericDao cellPlotGenericDao) {

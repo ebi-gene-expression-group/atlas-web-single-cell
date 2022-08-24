@@ -11,6 +11,12 @@ spec:
   securityContext:
     fsGroup: 1000
   containers:
+    - name: jnlp
+      resources:
+        requests:
+          memory: "1Gi"
+        limits:
+          memory: "2Gi"
     - name: openjdk
       image: openjdk:11
       resources:

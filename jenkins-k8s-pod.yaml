@@ -15,9 +15,9 @@ spec:
       image: openjdk:11
       resources:
         requests:
-          memory: "1.5Gi"
+          memory: "2.5Gi"
         limits:
-          memory: "2Gi"
+          memory: "4Gi"
       env:
       - name: GRADLE_OPTS
         value: "-Dorg.gradle.daemon=false"

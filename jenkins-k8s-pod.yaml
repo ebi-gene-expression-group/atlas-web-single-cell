@@ -14,9 +14,9 @@ spec:
     - name: jnlp
       resources:
         requests:
-          memory: "1Gi"
+          memory: "512Mi"
         limits:
-          memory: "1Gi"
+          memory: "512Mi"
     - name: openjdk
       image: openjdk:11
       resources:

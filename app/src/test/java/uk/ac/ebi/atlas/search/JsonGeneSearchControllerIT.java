@@ -37,9 +37,6 @@ class JsonGeneSearchControllerIT {
     @Mock
     private GeneIdSearchService geneIdSearchServiceMock;
 
-    @Inject
-    private SpeciesFactory speciesFactory;
-
     @Mock
     private GeneSearchService geneSearchServiceMock;
 
@@ -56,7 +53,6 @@ class JsonGeneSearchControllerIT {
         subject =
                 new JsonGeneSearchController(
                         geneIdSearchServiceMock,
-                        speciesFactory,
                         geneSearchServiceMock,
                         experimentTrader,
                         experimentAttributesService);

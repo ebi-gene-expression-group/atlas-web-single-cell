@@ -44,18 +44,15 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                     .build();
 
     private final GeneIdSearchService geneIdSearchService;
-    private final SpeciesFactory speciesFactory;
     private final GeneSearchService geneSearchService;
     private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
     public JsonGeneSearchController(GeneIdSearchService geneIdSearchService,
-                                    SpeciesFactory speciesFactory,
                                     GeneSearchService geneSearchService,
                                     ExperimentTrader experimentTrader,
                                     ExperimentAttributesService experimentAttributesService) {
         this.geneIdSearchService = geneIdSearchService;
-        this.speciesFactory = speciesFactory;
         this.geneSearchService = geneSearchService;
         this.experimentTrader = experimentTrader;
         this.experimentAttributesService = experimentAttributesService;

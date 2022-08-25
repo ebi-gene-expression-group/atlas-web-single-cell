@@ -46,9 +46,9 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=zk-cs.jenkins-ci-scxa ' +
+                    '-PzkHost=scxa-zk-0.scxa-zk-hs ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=solrcloud-hs.jenkins-ci-scxa ' +
+                    '-PsolrHost=scxa-solrcloud-0.scxa-solrcloud-hs ' +
                     '-PsolrPort=8983 ' +
                     ':atlas-web-core:testClasses'
           }
@@ -88,9 +88,9 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=zk-cs.jenkins-ci-scxa ' +
+                    '-PzkHost=scxa-zk-0.scxa-zk-hs ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=solrcloud-hs.jenkins-ci-scxa ' +
+                    '-PsolrHost=scxa-solrcloud-0.scxa-solrcloud-hs ' +
                     '-PsolrPort=8983 ' +
                     ':app:testClasses'
           }

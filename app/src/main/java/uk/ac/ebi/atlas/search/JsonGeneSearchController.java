@@ -16,14 +16,12 @@ import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
-import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.stream.Stream;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -67,54 +65,18 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
-        var species = Stream.ofNullable(requestParams.getFirst("species"))
-                .filter(org.apache.commons.lang3.StringUtils::isNotEmpty)
-                .map(speciesFactory::create)
-                .findFirst();
-
-        // We support currently only one query term; in the unlikely case that somebody fabricates a URL with more than
-        // one we’ll build the query with the first match. Remember that in order to support multiple terms we’ll
-        // likely need to change GeneQuery and use internally a SemanticQuery
-        var category =
-                requestParams.keySet().stream()
-                        // We rely on "q" and BioentityPropertyName::name’s being lower case
-                        .filter(actualField -> VALID_QUERY_FIELDS.contains(actualField.toLowerCase()))
-                        .findFirst()
-                        .orElseThrow(() -> new RuntimeException("Error parsing query"));
-        var queryTerm = requestParams.getFirst(category);
-
-        var geneQuery = category.equals("q") ?
-                species
-                        .map(_species -> GeneQuery.create(queryTerm, _species))
-                        .orElseGet(() -> GeneQuery.create(queryTerm)) :
-                species
-                        .map(_species -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category), _species))
-                        .orElseGet(() -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category)));
+        GeneQuery geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
 
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        if (geneIds.isEmpty()) {
-            return GSON.toJson(
-                    ImmutableMap.of(
-                            "results", ImmutableList.of(),
-                            "reason", "Gene unknown"));
-        }
-
-        if (geneIds.get().isEmpty()) {
-            return GSON.toJson(
-                    ImmutableMap.of(
-                            "results", ImmutableList.of(),
-                            "reason", "No expression found"));
+        String emptyGeneIdError = geneIdEmptyValidation(geneIds);
+        if (emptyGeneIdError != null) {
+            return emptyGeneIdError;
         }
 
         // We found expressed gene IDs, let’s get to it now...
-        var geneIds2ExperimentAndCellIds =
-                geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
-
-        var expressedGeneIdEntries =
-                geneIds2ExperimentAndCellIds.entrySet().stream()
-                        .filter(entry -> !entry.getValue().isEmpty())
-                        .collect(toList());
+        List<Map.Entry<String, Map<String, List<String>>>> expressedGeneIdEntries =
+                getMarkerGeneProfileByGeneIds(geneIds);
 
         var markerGeneFacets =
                 geneSearchService.getMarkerGeneProfile(
@@ -188,20 +150,14 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
         GeneQuery geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
-        String emptyGeneIdError = geneIdEmptyValidation(geneIds);
 
+        String emptyGeneIdError = geneIdEmptyValidation(geneIds);
         if (emptyGeneIdError != null) {
             return false;
         }
 
-        // We found expressed gene IDs, let’s get to it now...
-        var geneIds2ExperimentAndCellIds =
-                geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
-
-        var expressedGeneIdEntries =
-                geneIds2ExperimentAndCellIds.entrySet().stream()
-                        .filter(entry -> !entry.getValue().isEmpty())
-                        .collect(toList());
+        List<Map.Entry<String, Map<String, List<String>>>> expressedGeneIdEntries =
+                getMarkerGeneProfileByGeneIds(geneIds);
 
         var markerGeneFacets =
                 geneSearchService.getMarkerGeneProfile(
@@ -212,8 +168,20 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         return markerGeneFacets != null && markerGeneFacets.size() > 0;
     }
 
+    private List<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {
+        // We found expressed gene IDs, let’s get to it now...
+        var geneIds2ExperimentAndCellIds =
+                geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
+
+        return geneIds2ExperimentAndCellIds.entrySet().stream()
+                        .filter(entry -> !entry.getValue().isEmpty())
+                        .collect(toList());
+    }
+
     private boolean isRequestParamsEmpty(MultiValueMap<String, String> requestParams) {
-        return requestParams.containsKey("q") && Objects.equals(requestParams.getFirst("q"), "");
+        return requestParams == null
+                || requestParams.size() == 0
+                || (requestParams.containsKey("q") && Objects.equals(requestParams.getFirst("q"), ""));
     }
 
     private String geneIdEmptyValidation(Optional<ImmutableSet<String>> geneIds) {

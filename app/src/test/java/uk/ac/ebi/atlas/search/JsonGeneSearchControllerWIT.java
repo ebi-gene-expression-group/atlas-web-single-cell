@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
@@ -86,7 +87,9 @@ class JsonGeneSearchControllerWIT {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
+                .alwaysDo(MockMvcResultHandlers.print())
+                .build();
         bioentitiesCollectionProxy = collectionProxyFactory.create(BioentitiesCollectionProxy.class);
     }
 

@@ -213,7 +213,6 @@ class GeneIdSearchServiceTest {
         LinkedMultiValueMap<String, String> requestParams =
                 getRequestParams(symbolText, speciesText, symbolRequestParam);
 
-
         GeneQuery expectedGeneQuery = GeneQuery.create(
                 symbolText, BioentityPropertyName.getByName(symbolRequestParam), randomSpecies);
 

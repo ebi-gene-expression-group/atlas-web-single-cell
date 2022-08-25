@@ -65,13 +65,56 @@ class JsonGeneSearchControllerIT {
     @Test
     void ifSpeciesIsNotPresentGeneQueryHasEmptySpeciesField() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        requestParams.add("q", randomAlphabetic(1, 12));
+        final String geneId = randomAlphabetic(1, 12);
+        requestParams.add("q", geneId);
+
+        GeneQuery geneQuery = GeneQuery.create(geneId);
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenReturn(geneQuery);
+
         subject.search(requestParams);
 
         var geneQueryArgCaptor = ArgumentCaptor.forClass(GeneQuery.class);
         verify(geneIdSearchServiceMock).search(geneQueryArgCaptor.capture());
 
         assertThat(geneQueryArgCaptor.getValue().species()).isEmpty();
+    }
+
+    @Test
+    void whenRequestParamIsEmptyMarkerGeneSearchReturnsFalse() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+
+        boolean isMarkerGene = subject.isMarkerGene(requestParams);
+
+        assertThat(isMarkerGene).isFalse();
+    }
+
+    @Test
+    void whenRequestParamIsNullMarkerGeneSearchReturnsFalse() {
+        LinkedMultiValueMap<String, String> requestParams = null;
+
+        boolean isMarkerGene = subject.isMarkerGene(requestParams);
+
+        assertThat(isMarkerGene).isFalse();
+    }
+
+    @Test
+    void whenGeneIsNotAMarkerGeneSearchForItReturnsFalse() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId = "NOTMarkerGene";
+        requestParams.add("q", geneId);
+
+        GeneQuery geneQuery = GeneQuery.create(geneId);
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenReturn(geneQuery);
+        when(geneIdSearchServiceMock.search(geneQuery))
+                .thenReturn(Optional.empty());
+
+        boolean isMarkerGene = subject.isMarkerGene(requestParams);
+
+        assertThat(isMarkerGene).isFalse();
     }
 
     @Test

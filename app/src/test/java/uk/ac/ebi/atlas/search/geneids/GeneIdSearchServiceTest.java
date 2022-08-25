@@ -2,7 +2,6 @@ package uk.ac.ebi.atlas.search.geneids;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,14 +16,13 @@ import uk.ac.ebi.atlas.species.Species;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.species.SpeciesProperties;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
+import static uk.ac.ebi.atlas.search.SearchTestUtil.getRequestParams;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES_OVERRIDE_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomKnownBioentityPropertyName;
@@ -187,7 +185,7 @@ class GeneIdSearchServiceTest {
 
     @Test
     void whenRequestParamsEmptyThenThrowQueryParsingException() {
-        var requestParams = new LinkedMultiValueMap<String, LinkedList<String>>();
+        var requestParams = new LinkedMultiValueMap<String, String>();
 
         assertThatExceptionOfType(QueryParsingException.class)
                 .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
@@ -196,7 +194,7 @@ class GeneIdSearchServiceTest {
     @Test
     void whenRequestParamsHasGenericQueryFieldThenGotProperGeneQuery() {
         String symbolText = "CFTR";
-        LinkedMultiValueMap<String, LinkedList<String>> requestParams =
+        LinkedMultiValueMap<String, String> requestParams =
                 getRequestParams(symbolText, "", "q");
 
         GeneQuery expectedGeneQuery = GeneQuery.create(symbolText);
@@ -208,32 +206,21 @@ class GeneIdSearchServiceTest {
 
     @Test
     void whenRequestParamsHasValidQueryFieldThenGotProperGeneQuery() {
+        final Species randomSpecies = generateRandomSpecies();
         String symbolText = "CFTR";
-        final String speciesText = "Homo sapiens";
+        final String speciesText = randomSpecies.getName();
         final String symbolRequestParam = "symbol";
-        LinkedMultiValueMap<String, LinkedList<String>> requestParams =
+        LinkedMultiValueMap<String, String> requestParams =
                 getRequestParams(symbolText, speciesText, symbolRequestParam);
 
-        final Species randomSpecies = generateRandomSpecies();
 
         GeneQuery expectedGeneQuery = GeneQuery.create(
                 symbolText, BioentityPropertyName.getByName(symbolRequestParam), randomSpecies);
 
         when(speciesFactory.create(speciesText)).thenReturn(randomSpecies);
 
-        GeneQuery geneQuery = subject.getGeneQueryByRequestParams(requestParams);
+        GeneQuery actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
 
-        assertThat(geneQuery).isEqualTo(expectedGeneQuery);
-    }
-
-    @NotNull
-    private LinkedMultiValueMap<String, LinkedList<String>> getRequestParams(
-            String symbolText, String speciesText, String symbolRequestParam) {
-        var symbols = new LinkedList<>(List.of(symbolText));
-        var species = new LinkedList<>(List.of(speciesText));
-        var requestParams = new LinkedMultiValueMap<String, LinkedList<String>>();
-        requestParams.add(symbolRequestParam, symbols);
-        requestParams.add("species", species);
-        return requestParams;
+        assertThat(actualGeneQuery).isEqualTo(expectedGeneQuery);
     }
 }

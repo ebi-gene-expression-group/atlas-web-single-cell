@@ -10,8 +10,6 @@ import uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy;
 import uk.ac.ebi.atlas.species.Species;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
 
-import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -98,9 +96,8 @@ public class GeneIdSearchService {
         return queryMatchesKnownIds ? Optional.of(ImmutableSet.of()) : Optional.empty();
     }
 
-    public GeneQuery getGeneQueryByRequestParams(MultiValueMap<String, LinkedList<String>> requestParams) {
+    public GeneQuery getGeneQueryByRequestParams(MultiValueMap<String, String> requestParams) {
         var species = Stream.ofNullable(requestParams.getFirst("species"))
-                .map(LinkedList::getFirst)
                 .filter(org.apache.commons.lang3.StringUtils::isNotEmpty)
                 .map(speciesFactory::create)
                 .findFirst();
@@ -114,7 +111,7 @@ public class GeneIdSearchService {
                         .filter(actualField -> VALID_QUERY_FIELDS.contains(actualField.toLowerCase()))
                         .findFirst()
                         .orElseThrow(() -> new QueryParsingException("Error parsing query"));
-        var queryTerm = Objects.requireNonNull(requestParams.getFirst(category)).getFirst();
+        var queryTerm = requestParams.getFirst(category);
 
        return category.equals("q") ?
                 species

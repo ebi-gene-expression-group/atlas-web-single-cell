@@ -1,5 +1,7 @@
 package uk.ac.ebi.atlas.search;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,9 +21,14 @@ import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import javax.inject.Inject;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @WebAppConfiguration
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
@@ -33,8 +40,8 @@ class JsonGeneSearchControllerIT {
     @Inject
     private SpeciesFactory speciesFactory;
 
-    @Inject
-    private GeneSearchService geneSearchService;
+    @Mock
+    private GeneSearchService geneSearchServiceMock;
 
     @Inject
     private ExperimentTrader experimentTrader;
@@ -50,7 +57,7 @@ class JsonGeneSearchControllerIT {
                 new JsonGeneSearchController(
                         geneIdSearchServiceMock,
                         speciesFactory,
-                        geneSearchService,
+                        geneSearchServiceMock,
                         experimentTrader,
                         experimentAttributesService);
     }
@@ -65,5 +72,31 @@ class JsonGeneSearchControllerIT {
         verify(geneIdSearchServiceMock).search(geneQueryArgCaptor.capture());
 
         assertThat(geneQueryArgCaptor.getValue().species()).isEmpty();
+    }
+
+    @Test
+    void whenGeneIsAMarkerGeneSearchForItReturnsTrue() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId = "AT2G23910";
+        final String experimentAccession = "E-CURD-4";
+        final String cellId = "SRR8206663-CACTCTTATAGG";
+        final int kValue = 101;
+        final List<Integer> clusterIds = List.of(1, 2, 3, 4);
+        requestParams.add("q", geneId);
+
+        GeneQuery geneQuery = GeneQuery.create(geneId);
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenReturn(geneQuery);
+        when(geneIdSearchServiceMock.search(geneQuery))
+                .thenReturn(Optional.of(ImmutableSet.of(geneId)));
+        when(geneSearchServiceMock.getCellIdsInExperiments(geneId))
+                .thenReturn(Map.of(geneId, Map.of(experimentAccession, List.of(cellId))));
+        when(geneSearchServiceMock.getMarkerGeneProfile(geneId))
+                .thenReturn(ImmutableMap.of(geneId, Map.of(experimentAccession, Map.of(kValue, clusterIds))));
+
+        boolean isMarkerGene = subject.isMarkerGene(requestParams);
+
+        assertThat(isMarkerGene).isTrue();
     }
 }

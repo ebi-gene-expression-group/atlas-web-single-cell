@@ -21,9 +21,8 @@ import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -177,6 +176,62 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         "matchingGeneId", matchingGeneIds,
                         "results", results,
                         "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
+    }
+
+    @RequestMapping(value = "/json/search/marker-genes",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Boolean isMarkerGene(@RequestParam MultiValueMap<String, String> requestParams) {
+        if (isRequestParamsEmpty(requestParams)) {
+            return false;
+        }
+
+        GeneQuery geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
+        var geneIds = geneIdSearchService.search(geneQuery);
+        String emptyGeneIdError = geneIdEmptyValidation(geneIds);
+
+        if (emptyGeneIdError != null) {
+            return false;
+        }
+
+        // We found expressed gene IDs, let’s get to it now...
+        var geneIds2ExperimentAndCellIds =
+                geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
+
+        var expressedGeneIdEntries =
+                geneIds2ExperimentAndCellIds.entrySet().stream()
+                        .filter(entry -> !entry.getValue().isEmpty())
+                        .collect(toList());
+
+        var markerGeneFacets =
+                geneSearchService.getMarkerGeneProfile(
+                        expressedGeneIdEntries.stream()
+                                .map(Map.Entry::getKey)
+                                .toArray(String[]::new));
+
+        return markerGeneFacets != null && markerGeneFacets.size() > 0;
+    }
+
+    private boolean isRequestParamsEmpty(MultiValueMap<String, String> requestParams) {
+        return requestParams.containsKey("q") && Objects.equals(requestParams.getFirst("q"), "");
+    }
+
+    private String geneIdEmptyValidation(Optional<ImmutableSet<String>> geneIds) {
+        if (geneIds.isEmpty()) {
+            return GSON.toJson(
+                    ImmutableMap.of(
+                            "results", ImmutableList.of(),
+                            "reason", "Gene unknown"));
+        }
+
+        if (geneIds.get().isEmpty()) {
+            return GSON.toJson(
+                    ImmutableMap.of(
+                            "results", ImmutableList.of(),
+                            "reason", "No expression found"));
+        }
+
+        return null;
     }
 
     private <K, V> ImmutableList<SimpleEntry<K, V>> unfoldListMultimap(Map<K, List<V>> multimap) {

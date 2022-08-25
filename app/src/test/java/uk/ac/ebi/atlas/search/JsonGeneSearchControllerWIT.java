@@ -189,4 +189,23 @@ class JsonGeneSearchControllerWIT {
         this.mockMvc.perform(get("/json/search").param("species", "homo sapiens").param("symbol", "aspm"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void whenSearchForAMarkerGeneWithEmptyValueReturnsFalse() throws Exception {
+        final String emptyGeneSearchParams = "";
+        this.mockMvc.perform(get("/json/search/marker-genes").param("q", emptyGeneSearchParams))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string("false"));
+    }
+
+    @Test
+    void whenGeneIsAMarkerGeneSearchForItReturnsTrue() throws Exception {
+        var shouldBeMarkerGene = "AT2G23910";
+
+        this.mockMvc.perform(get("/json/search/marker-genes").param("ensgene", shouldBeMarkerGene))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string("true"));
+    }
 }

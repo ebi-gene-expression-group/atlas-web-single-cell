@@ -68,7 +68,7 @@ class SuggesterDaoIT {
         assertThat(numberOfHumanAndMouseFilteredSuggestions)
                 .isGreaterThan(0)
                 .isGreaterThan(numberOfHumanFilteredSuggestions)
-                .isLessThan(numberOfUnfilteredSuggestions);
+                .isLessThanOrEqualTo(numberOfUnfilteredSuggestions);
     }
 
     @Test

@@ -89,11 +89,11 @@ class GeneIdSearchDaoIT {
     void ifNoDocumentsAreFoundInTheIntersectionReturnEmptySet() {
         var speciesNotCovered = "Oryza_sativa";
 
-        var queryBuilder = new SolrQueryBuilder<BioentitiesCollectionProxy>();
-        queryBuilder
-                .addQueryFieldByTerm(SPECIES, speciesNotCovered)
-                .sortBy(BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc)
-                .setFieldList(BIOENTITY_IDENTIFIER);
+        var queryBuilder =
+                new SolrQueryBuilder<BioentitiesCollectionProxy>()
+                        .addQueryFieldByTerm(SPECIES, speciesNotCovered)
+                        .sortBy(BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc)
+                        .setFieldList(BIOENTITY_IDENTIFIER);
 
         try (var tupleStreamer =
                      TupleStreamer.of(new SearchStreamBuilder<>(bioentitiesCollectionProxy, queryBuilder).build())) {
@@ -102,7 +102,7 @@ class GeneIdSearchDaoIT {
                             .findAny()
                             .map(tuples -> tuples.getString(BIOENTITY_IDENTIFIER.name()))
                             .orElseThrow(RuntimeException::new);
-
+            System.out.println("[[[ Searching for rogue gene ID " + geneId + " ]]]");
             assertThat(subject.searchGeneIds(geneId, ENSGENE.name))
                     .hasValue(ImmutableSet.of());
 

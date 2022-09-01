@@ -92,6 +92,7 @@ class GeneIdSearchDaoIT {
         var queryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
                         .addQueryFieldByTerm(SPECIES, speciesNotCovered)
+                        .addQueryFieldByTerm(PROPERTY_NAME, ENSGENE.name)
                         .sortBy(BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc)
                         .setFieldList(BIOENTITY_IDENTIFIER);
 

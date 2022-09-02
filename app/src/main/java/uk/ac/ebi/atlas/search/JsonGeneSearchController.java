@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.search;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
@@ -16,12 +17,17 @@ import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
-import uk.ac.ebi.atlas.species.SpeciesFactory;
+import uk.ac.ebi.atlas.search.species.SpeciesSearchDao;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -33,6 +39,7 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
+@RequiredArgsConstructor
 public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private final static ImmutableSet<String> VALID_QUERY_FIELDS =
             ImmutableSet.<String>builder()
@@ -48,15 +55,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
-    public JsonGeneSearchController(GeneIdSearchService geneIdSearchService,
-                                    GeneSearchService geneSearchService,
-                                    ExperimentTrader experimentTrader,
-                                    ExperimentAttributesService experimentAttributesService) {
-        this.geneIdSearchService = geneIdSearchService;
-        this.geneSearchService = geneSearchService;
-        this.experimentTrader = experimentTrader;
-        this.experimentAttributesService = experimentAttributesService;
-    }
+    private final SpeciesSearchDao speciesSearchDao;
 
     @RequestMapping(value = "/json/search",
                     method = RequestMethod.GET,
@@ -163,6 +162,25 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                 .toArray(String[]::new));
 
         return markerGeneFacets != null && markerGeneFacets.size() > 0;
+    }
+
+    @RequestMapping(value = "/json/search/species",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Set<String> getSpeciesByGeneId(@RequestParam MultiValueMap<String, String> requestParams) {
+        // TODO validate input params
+//        if (isRequestParamsEmpty(requestParams)) {
+//            return false;
+//        }
+
+        // TODO get the search test and category from the request params
+        var searchText = "";
+        var category = "";
+
+        // TODO add a service and inject the DAO into it
+        var species = speciesSearchDao.searchSpecies(searchText, category);
+
+        return species.orElse(ImmutableSet.of());
     }
 
     private List<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {

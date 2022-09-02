@@ -16,14 +16,14 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
-import uk.ac.ebi.atlas.species.SpeciesFactory;
+import uk.ac.ebi.atlas.search.species.SpeciesSearchDao;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import javax.inject.Inject;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +46,9 @@ class JsonGeneSearchControllerIT {
     @Inject
     private ExperimentAttributesService experimentAttributesService;
 
+    @Inject
+    private SpeciesSearchDao speciesSearchDao;
+
     private JsonGeneSearchController subject;
 
     @BeforeEach
@@ -55,7 +58,8 @@ class JsonGeneSearchControllerIT {
                         geneIdSearchServiceMock,
                         geneSearchServiceMock,
                         experimentTrader,
-                        experimentAttributesService);
+                        experimentAttributesService,
+                        speciesSearchDao);
     }
 
     @Test
@@ -137,5 +141,47 @@ class JsonGeneSearchControllerIT {
         boolean isMarkerGene = subject.isMarkerGene(requestParams);
 
         assertThat(isMarkerGene).isTrue();
+    }
+
+    @Test
+    void whenRequestParamIsEmptySpeciesSearchReturnsError() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        String expectedRequestParamError = "";
+
+        Set<String> requestParamError = subject.getSpeciesByGeneId(requestParams);
+
+        assertThat(requestParamError).containsOnly(expectedRequestParamError);
+    }
+
+    @Test
+    void whenRequestParamIsNullSpeciesSearchReturnsError() {
+        LinkedMultiValueMap<String, String> requestParams = null;
+        String expectedRequestParamError = "";
+
+        Set<String> requestParamError = subject.getSpeciesByGeneId(requestParams);
+
+        assertThat(requestParamError).containsOnly(expectedRequestParamError);
+    }
+
+    @Test
+    void whenGeneIdIsNotPartOfAnyExperimentThenReturnsEmptyList() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId = "NOTPartOfAnyExperiment";
+        requestParams.add("q", geneId);
+
+        Set<String> emptySpeciesResult = subject.getSpeciesByGeneId(requestParams);
+
+        assertThat(emptySpeciesResult).hasSize(0);
+    }
+
+    @Test
+    void whenGeneIdIsPArtOfSomeExperimentsThenReturnsListOfSpecies() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId = "MostInterestingGeneEver";
+        requestParams.add("q", geneId);
+
+        Set<String> speciesResultByGeneId = subject.getSpeciesByGeneId(requestParams);
+
+        assertThat(speciesResultByGeneId).hasSize(2);
     }
 }

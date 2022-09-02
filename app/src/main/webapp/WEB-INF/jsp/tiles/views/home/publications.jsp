@@ -2,7 +2,7 @@
 
 <div id="publication-list" class="callout" data-equalizer-watch>
     <h4>Publications </h4>
-    <a href="https://academic.oup.com/nar/advance-article/doi/10.1093/nar/gkz947/5609521" target="_blank">
+    <a href="https://academic.oup.com/nar/article/50/D1/D129/6438036" target="_blank">
         <div class="media-object">
             <div class="media-object-section middle">
                 <h3 class="icon icon-conceptual" data-icon="l" />

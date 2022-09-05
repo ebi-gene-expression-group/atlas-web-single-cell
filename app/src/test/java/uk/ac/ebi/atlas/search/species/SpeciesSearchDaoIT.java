@@ -32,6 +32,29 @@ class SpeciesSearchDaoIT {
     }
 
     @Test
+    void whenEmptySearchTextProvidedReturnEmptyOptional() {
+        var searchText = "";
+        var category = SYMBOL.name;
+
+        var species = subject.searchSpecies(searchText, category);
+
+        assertThat(species.isPresent()).isTrue();
+        assertThat(species.get()).isEmpty();
+    }
+
+    @Test
+    void whenNoCategoryProvidedButValidGeneIdReturnResult() {
+        var searchText = "ACRV1";
+        String category = null;
+        var expectedSpecies = "Homo_sapiens";
+
+        var species = subject.searchSpecies(searchText, category);
+
+        assertThat(species.isPresent()).isTrue();
+        assertThat(species.get()).contains(expectedSpecies);
+    }
+
+    @Test
     void whenNoDocumentsAreFoundInBioEntitiesReturnEmptyOptional() {
         var species = subject.searchSpecies("FOOBAR", SYMBOL.name);
 
@@ -54,11 +77,11 @@ class SpeciesSearchDaoIT {
     @Test
     void whenGeneIdPartOfExperimentsReturnListOfSpecies() {
         var homoSapiensSymbolValueInOurExperiment = "ACRV1";
-        var homoSapiensSpecies = "Homo_sapiens";
+        var expectedSpecies = "Homo_sapiens";
 
         var species = subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, SYMBOL.name);
 
         assertThat(species.isPresent()).isTrue();
-        assertThat(species.get()).contains(homoSapiensSpecies);
+        assertThat(species.get()).contains(expectedSpecies);
     }
 }

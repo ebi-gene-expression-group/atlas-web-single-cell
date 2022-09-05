@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.search.species;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,10 @@ public class SpeciesSearchDao {
         //  on="bioentity_identifier"
         // )
 
+        if (StringUtils.isBlank(searchText)) {
+            return Optional.of(ImmutableSet.of());
+        }
+
         UniqueStreamBuilder uniqueBioEntitiesStreamBuilder = buildUniqueStreamBuilder(searchText, category);
 
         UniqueStreamBuilder uniqueGene2ExperimentStreamBuilder = buildUniqueStreamBuilder();
@@ -97,9 +102,13 @@ public class SpeciesSearchDao {
     private UniqueStreamBuilder buildUniqueStreamBuilder(String searchText, String category) {
         var bioEntitiesByTextAndCategory = new SolrQueryBuilder<BioentitiesCollectionProxy>()
                 .addQueryFieldByTerm(PROPERTY_VALUE, searchText)
-                .addQueryFieldByTerm(PROPERTY_NAME, category)
                 .setFieldList(ImmutableSet.of(SPECIES_DV, BIOENTITY_IDENTIFIER_DV))
                 .sortBy(BIOENTITY_IDENTIFIER_DV, SolrQuery.ORDER.asc);
+
+        if (StringUtils.isNotBlank(category)) {
+            bioEntitiesByTextAndCategory.addQueryFieldByTerm(PROPERTY_NAME, category);
+        }
+
         var searchBioEntitiesBuilder =
                 new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioEntitiesByTextAndCategory).returnAllDocs();
         var selectBioEntitiesStreamBuilder =

@@ -10,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
-import uk.ac.ebi.atlas.trader.ExperimentTraderDao;
 
 import javax.inject.Inject;
 
@@ -54,12 +53,12 @@ class SpeciesSearchDaoIT {
 
     @Test
     void whenGeneIdPartOfExperimentsReturnListOfSpecies() {
-        var homoSapiensGeneIdInOurExperiment = "ENSG00000288722";
-        var expectedSpecies = "homo_sapiens";
+        var homoSapiensSymbolValueInOurExperiment = "ACRV1";
+        var homoSapiensSpecies = "Homo_sapiens";
 
-        var species = subject.searchSpecies(homoSapiensGeneIdInOurExperiment, SYMBOL.name);
+        var species = subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, SYMBOL.name);
 
         assertThat(species.isPresent()).isTrue();
-        assertThat(species).hasValue(ImmutableSet.of(expectedSpecies));
+        assertThat(species.get()).contains(homoSapiensSpecies);
     }
 }

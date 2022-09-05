@@ -15,7 +15,6 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.InnerJoi
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.SelectStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.UniqueStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
-import uk.ac.ebi.atlas.trader.ExperimentTraderDao;
 
 import java.util.Optional;
 
@@ -64,6 +63,38 @@ public class SpeciesSearchDao {
         //  on="bioentity_identifier"
         // )
 
+        UniqueStreamBuilder uniqueBioEntitiesStreamBuilder = buildUniqueStreamBuilder(searchText, category);
+
+        UniqueStreamBuilder uniqueGene2ExperimentStreamBuilder = buildUniqueStreamBuilder();
+
+        var speciesStreamQueryBuilder = new InnerJoinStreamBuilder(
+                uniqueBioEntitiesStreamBuilder,
+                uniqueGene2ExperimentStreamBuilder,
+                BIOENTITY_IDENTIFIER.name()
+        );
+
+        return getSpeciesFromStreamQueryBuilder(speciesStreamQueryBuilder);
+    }
+
+    private Optional<ImmutableSet<String>> getSpeciesFromStreamQueryBuilder(InnerJoinStreamBuilder speciesStreamQueryBuilder) {
+        try (TupleStreamer tupleStreamer = TupleStreamer.of(speciesStreamQueryBuilder.build())) {
+            return Optional.of(tupleStreamer.get()
+                    .map(tuple -> tuple.getString(SPECIES.name()))
+                    .collect(toImmutableSet())
+            );
+        }
+    }
+
+    private UniqueStreamBuilder buildUniqueStreamBuilder() {
+        var gene2ExperimentQueryBuilder = new SolrQueryBuilder<Gene2ExperimentCollectionProxy>()
+                .setFieldList(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER)
+                .sortBy(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
+        var searchGene2ExperimentBuilder =
+                new SearchStreamBuilder<>(gene2ExperimentCollectionProxy, gene2ExperimentQueryBuilder).returnAllDocs();
+        return new UniqueStreamBuilder(searchGene2ExperimentBuilder, BIOENTITY_IDENTIFIER.name());
+    }
+
+    private UniqueStreamBuilder buildUniqueStreamBuilder(String searchText, String category) {
         var bioEntitiesByTextAndCategory = new SolrQueryBuilder<BioentitiesCollectionProxy>()
                 .addQueryFieldByTerm(PROPERTY_VALUE, searchText)
                 .addQueryFieldByTerm(PROPERTY_NAME, category)
@@ -77,28 +108,6 @@ public class SpeciesSearchDao {
                                 BIOENTITY_IDENTIFIER_DV.name(), BIOENTITY_IDENTIFIER.name(),
                                 SPECIES_DV.name(), SPECIES.name()
                         ));
-        var uniqueBioEntitiesStreamBuilder =
-            new UniqueStreamBuilder(selectBioEntitiesStreamBuilder, BIOENTITY_IDENTIFIER.name());
-
-        var gene2ExperimentQueryBuilder = new SolrQueryBuilder<Gene2ExperimentCollectionProxy>()
-                .setFieldList(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER)
-                .sortBy(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
-        var searchGene2ExperimentBuilder =
-                new SearchStreamBuilder<>(gene2ExperimentCollectionProxy, gene2ExperimentQueryBuilder).returnAllDocs();
-        var uniqueGene2ExperimentStreamBuilder =
-                new UniqueStreamBuilder(searchGene2ExperimentBuilder, BIOENTITY_IDENTIFIER.name());
-
-        var speciesStreamQueryBuilder = new InnerJoinStreamBuilder(
-                uniqueBioEntitiesStreamBuilder,
-                uniqueGene2ExperimentStreamBuilder,
-                BIOENTITY_IDENTIFIER.name()
-        );
-
-        try (TupleStreamer tupleStreamer = TupleStreamer.of(speciesStreamQueryBuilder.build())) {
-            return Optional.of(tupleStreamer.get()
-                    .map(tuple -> tuple.getString(SPECIES.name()))
-                    .collect(toImmutableSet())
-            );
-        }
+        return new UniqueStreamBuilder(selectBioEntitiesStreamBuilder, BIOENTITY_IDENTIFIER.name());
     }
 }

@@ -145,7 +145,7 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh 'if [ env.BRANCH_NAME = main ]; then WEBPACK_OPTS=-p; else WEBPACK_OPTS=-d; fi; ' +
+                sh 'if [ env.BRANCH_NAME = main ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
                         '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }

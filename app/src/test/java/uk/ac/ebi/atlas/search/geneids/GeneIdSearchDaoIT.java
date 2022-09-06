@@ -103,7 +103,6 @@ class GeneIdSearchDaoIT {
                             .findAny()
                             .map(tuples -> tuples.getString(BIOENTITY_IDENTIFIER.name()))
                             .orElseThrow(RuntimeException::new);
-            System.out.println("[[[ Searching for rogue gene ID " + geneId + " ]]]");
             assertThat(subject.searchGeneIds(geneId, ENSGENE.name))
                     .hasValue(ImmutableSet.of());
 

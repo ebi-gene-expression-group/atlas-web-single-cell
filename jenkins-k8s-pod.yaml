@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  namespace: jenkins-ci-scxa
+  namespace: jenkins-gene-expression
 spec:
   # If we set workspaceVolume dynamicPVC() or workspaceVolume persistentVolumeClaimWorkspaceVolume() we need to add a
   # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise we get the following exception in the
@@ -11,13 +11,19 @@ spec:
   securityContext:
     fsGroup: 1000
   containers:
+    - name: jnlp
+      resources:
+        requests:
+          memory: "512Mi"
+        limits:
+          memory: "512Mi"
     - name: openjdk
       image: openjdk:11
       resources:
         requests:
-          memory: "1.5Gi"
+          memory: "1Gi"
         limits:
-          memory: "2Gi"
+          memory: "1.5Gi"
       env:
       - name: GRADLE_OPTS
         value: "-Dorg.gradle.daemon=false"

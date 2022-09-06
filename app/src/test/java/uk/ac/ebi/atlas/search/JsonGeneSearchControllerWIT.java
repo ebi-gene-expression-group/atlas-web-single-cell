@@ -101,7 +101,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void unexpressedGene() throws Exception {
-        this.mockMvc.perform(get("/json/search").param("symbol", "foxo"))
+        this.mockMvc.perform(get("/json/search").param("symbol", "FOX2"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results").isEmpty())

@@ -196,19 +196,30 @@ class JsonGeneSearchControllerWIT {
     @Test
     void whenSearchForAMarkerGeneWithEmptyValueReturnsFalse() throws Exception {
         final String emptyGeneSearchParams = "";
-        this.mockMvc.perform(get("/json/search/marker-genes").param("q", emptyGeneSearchParams))
-                .andExpect(status().isOk())
+        final String expectedMessage = "{\"error\":\"Error parsing query\"}\n";
+        this.mockMvc.perform(get("/json/gene-search/marker-genes").param("q", emptyGeneSearchParams))
+                .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().string("false"));
+                .andExpect(content().string(expectedMessage));
     }
 
     @Test
     void whenGeneIsAMarkerGeneSearchForItReturnsTrue() throws Exception {
         var shouldBeMarkerGene = "AT2G23910";
 
-        this.mockMvc.perform(get("/json/search/marker-genes").param("ensgene", shouldBeMarkerGene))
+        this.mockMvc.perform(get("/json/gene-search/marker-genes").param("ensgene", shouldBeMarkerGene))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().string("true"));
+    }
+
+    @Test
+    void whenGeneIsNotAMarkerGeneSearchForItReturnsFalse() throws Exception {
+        var notAMarkerGene = "NOTMarkerGene";
+
+        this.mockMvc.perform(get("/json/gene-search/marker-genes").param("ensgene", notAMarkerGene))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string("false"));
     }
 }

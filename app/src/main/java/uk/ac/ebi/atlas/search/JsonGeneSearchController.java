@@ -68,14 +68,13 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        String emptyGeneIdError = geneIdEmptyValidation(geneIds);
-        if (emptyGeneIdError != null) {
-            return emptyGeneIdError;
+        var emptyGeneIdError = geneIdEmptyValidation(geneIds);
+        if (emptyGeneIdError.isPresent()) {
+            return emptyGeneIdError.get();
         }
 
         // We found expressed gene IDs, let’s get to it now...
-        List<Map.Entry<String, Map<String, List<String>>>> expressedGeneIdEntries =
-                getMarkerGeneProfileByGeneIds(geneIds);
+        var expressedGeneIdEntries = getMarkerGeneProfileByGeneIds(geneIds);
 
         var markerGeneFacets =
                 geneSearchService.getMarkerGeneProfile(
@@ -139,19 +138,15 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
     }
 
-    @RequestMapping(value = "/json/search/marker-genes",
+    @RequestMapping(value = "/json/gene-search/marker-genes",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Boolean isMarkerGene(@RequestParam MultiValueMap<String, String> requestParams) {
-        if (isRequestParamsEmpty(requestParams)) {
-            return false;
-        }
-
         GeneQuery geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        String emptyGeneIdError = geneIdEmptyValidation(geneIds);
-        if (emptyGeneIdError != null) {
+        var emptyGeneIdError = geneIdEmptyValidation(geneIds);
+        if (emptyGeneIdError.isPresent()) {
             return false;
         }
 
@@ -183,22 +178,22 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                 || (requestParams.containsKey("q") && Objects.equals(requestParams.getFirst("q"), ""));
     }
 
-    private String geneIdEmptyValidation(Optional<ImmutableSet<String>> geneIds) {
+    private Optional<String> geneIdEmptyValidation(Optional<ImmutableSet<String>> geneIds) {
         if (geneIds.isEmpty()) {
-            return GSON.toJson(
+            return Optional.of(GSON.toJson(
                     ImmutableMap.of(
                             "results", ImmutableList.of(),
-                            "reason", "Gene unknown"));
+                            "reason", "Gene unknown")));
         }
 
         if (geneIds.get().isEmpty()) {
-            return GSON.toJson(
+            return Optional.of(GSON.toJson(
                     ImmutableMap.of(
                             "results", ImmutableList.of(),
-                            "reason", "No expression found"));
+                            "reason", "No expression found")));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     private <K, V> ImmutableList<SimpleEntry<K, V>> unfoldListMultimap(Map<K, List<V>> multimap) {

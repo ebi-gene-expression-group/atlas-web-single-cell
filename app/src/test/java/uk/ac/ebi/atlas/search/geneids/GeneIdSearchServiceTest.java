@@ -18,11 +18,13 @@ import uk.ac.ebi.atlas.species.SpeciesProperties;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 import static uk.ac.ebi.atlas.search.SearchTestUtil.getRequestParams;
+import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.SYMBOL;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES_OVERRIDE_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomKnownBioentityPropertyName;
@@ -182,6 +184,97 @@ class GeneIdSearchServiceTest {
         verify(geneIdSearchDaoMock).searchGeneIds(searchString, "flybase_gene_id");
         verify(geneIdSearchDaoMock).searchGeneIds(searchString, "wbpsgene");
     }
+
+    @Test
+    void whenEmptyQueryFieldsGivenThenReturnsError() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String emptyValue = "";
+        var generalCategory = "q";
+        requestParams.add(generalCategory, emptyValue);
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
+    }
+
+    @Test
+    void when2DifferentTypeOfEmptyQueryFieldsGivenThenReturnsError() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        var generalCategory = "q";
+        var symbolCategory = SYMBOL.name();
+        final String emptyValue = "";
+        requestParams.add(generalCategory, emptyValue);
+        requestParams.add(symbolCategory, emptyValue);
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
+    }
+
+    @Test
+    void when2DifferentTypeOfValidQueryFieldsGivenThenReturnsThe1stOne() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId = randomAlphabetic(1, 12);
+        var symbolCategory = SYMBOL.name();
+        var generalCategory = "q";
+        requestParams.add(symbolCategory, geneId);
+        requestParams.add(generalCategory, geneId);
+
+        String expectedCategory = symbolCategory;
+
+        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+
+        assertThat(actualCategory).isEqualTo(expectedCategory);
+    }
+
+    @Test
+    void when2DifferentTypeOfQueryFieldsGivenBut1stIsEmptyAnd2ndIsValidThenReturnsTheSecond() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String emptyValue = "";
+        final String geneId = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        var symbolCategory = SYMBOL.name();
+        requestParams.add(generalCategory, emptyValue);
+        requestParams.add(symbolCategory, geneId);
+
+        String expectedCategory = symbolCategory;
+
+        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+
+        assertThat(actualCategory).isEqualTo(expectedCategory);
+    }
+
+    @Test
+    void whenSameTypeOfQueryFieldsGivenTwiceBut1stIsEmptyAnd2ndIsValidThenReturnsTheSecond() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String emptyValue = "";
+        final String geneId = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        requestParams.add(generalCategory, emptyValue);
+        requestParams.add(generalCategory, geneId);
+
+        String expectedCategory = generalCategory;
+
+        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+
+        assertThat(actualCategory).isEqualTo(expectedCategory);
+    }
+
+    @Test
+    void whenSameTypeOfValidQueryFieldsGivenTwiceThenReturnsTheFirst() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId1 = randomAlphabetic(1, 12);
+        final String geneId2 = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        requestParams.add(generalCategory, geneId1);
+        requestParams.add(generalCategory, geneId2);
+
+        String expectedCategory = generalCategory;
+
+        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+
+        assertThat(actualCategory).isEqualTo(expectedCategory);
+    }
+
+
 
     @Test
     void whenRequestParamsEmptyThenThrowQueryParsingException() {

@@ -16,12 +16,14 @@ import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
-import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;

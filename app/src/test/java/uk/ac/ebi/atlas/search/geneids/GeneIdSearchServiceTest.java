@@ -22,8 +22,10 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.*;
-import static uk.ac.ebi.atlas.search.SearchTestUtil.getRequestParams;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.SYMBOL;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES_OVERRIDE_PROPERTY_NAMES;
@@ -314,5 +316,13 @@ class GeneIdSearchServiceTest {
         GeneQuery actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
 
         assertThat(actualGeneQuery).isEqualTo(expectedGeneQuery);
+    }
+
+    private static LinkedMultiValueMap<String, String> getRequestParams(
+            String symbol, String species, String symbolRequestParam) {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        requestParams.add(symbolRequestParam, symbol);
+        requestParams.add("species", species);
+        return requestParams;
     }
 }

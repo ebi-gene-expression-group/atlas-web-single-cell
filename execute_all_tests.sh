@@ -2,15 +2,11 @@
 
 echo "Execute all tests"
 
-export ATLAS_DATA_PATH=~/dev/gxa/data
-export POSTGRES_HOST=scxa-postgres-test
-export POSTGRES_DB=gxpscxatest
-export POSTGRES_USER=scxa
-export POSTGRES_PASSWORD=scxa
-
-#docker stop scxa-solrcloud-1 scxa-solrcloud-2 scxa-zk-1 scxa-zk-2 scxa-zk-3 scxa-postgres-test scxa-flyway-test scxa-gradle
-
-#docker rm scxa-solrcloud-1 scxa-solrcloud-2 scxa-zk-1 scxa-zk-2 scxa-zk-3 scxa-postgres-test scxa-flyway-test scxa-gradle
+export ATLAS_DATA_PATH=${ATLAS_DATA_PATH:-"~/dev/gxa/data"}
+POSTGRES_HOST=${POSTGRES_HOST:-"scxa-postgres-test"}
+POSTGRES_DB=${POSTGRES_DB:-"gxpscxatest"}
+POSTGRES_USER=${POSTGRES_USER:-"scxa"}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-"scxa"}
 
 docker-compose \
 -f docker/docker-compose-postgres-test.yml \

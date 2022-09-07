@@ -17,12 +17,11 @@ import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
-import uk.ac.ebi.atlas.search.species.SpeciesSearchDao;
+import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,13 +48,14 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                     .map(propertyName -> propertyName.name)
                                     .collect(toImmutableSet()))
                     .build();
+    public static final String ALL_CATEGORIES = "*";
 
     private final GeneIdSearchService geneIdSearchService;
     private final GeneSearchService geneSearchService;
     private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
-    private final SpeciesSearchDao speciesSearchDao;
+    private final SpeciesSearchService speciesSearchService;
 
     @RequestMapping(value = "/json/search",
                     method = RequestMethod.GET,
@@ -168,17 +168,18 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Set<String> getSpeciesByGeneId(@RequestParam MultiValueMap<String, String> requestParams) {
-        // TODO validate input params
-//        if (isRequestParamsEmpty(requestParams)) {
-//            return false;
-//        }
+        if (isRequestParamsEmpty(requestParams)) {
+            return Set.of();
+        }
 
-        // TODO get the search test and category from the request params
-        var searchText = "";
-        var category = "";
+        var category = geneIdSearchService.getCategoryFromRequestParams(requestParams);
+        var searchText = requestParams.getFirst(category);
 
-        // TODO add a service and inject the DAO into it
-        var species = speciesSearchDao.searchSpecies(searchText, category);
+        if (category.equals("q")) {
+            category = ALL_CATEGORIES;
+        }
+
+        var species = speciesSearchService.search(searchText, category);
 
         return species.orElse(ImmutableSet.of());
     }

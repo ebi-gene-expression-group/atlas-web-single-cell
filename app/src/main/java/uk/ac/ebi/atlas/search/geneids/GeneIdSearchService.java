@@ -106,11 +106,7 @@ public class GeneIdSearchService {
         // one we’ll build the query with the first match. Remember that in order to support multiple terms we’ll
         // likely need to change GeneQuery and use internally a SemanticQuery
         var category =
-                requestParams.keySet().stream()
-                        // We rely on "q" and BioentityPropertyName::name’s being lower case
-                        .filter(actualField -> VALID_QUERY_FIELDS.contains(actualField.toLowerCase()))
-                        .findFirst()
-                        .orElseThrow(() -> new QueryParsingException("Error parsing query"));
+                getCategoryFromRequestParams(requestParams);
         var queryTerm = requestParams.getFirst(category);
 
        return category.equals("q") ?
@@ -120,5 +116,13 @@ public class GeneIdSearchService {
                 species
                         .map(_species -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category), _species))
                         .orElseGet(() -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category)));
+    }
+
+    public String getCategoryFromRequestParams(MultiValueMap<String, String> requestParams) {
+        return requestParams.keySet().stream()
+                // We rely on "q" and BioentityPropertyName::name’s being lower case
+                .filter(actualField -> VALID_QUERY_FIELDS.contains(actualField.toLowerCase()))
+                .findFirst()
+                .orElseThrow(() -> new QueryParsingException("Error parsing query"));
     }
 }

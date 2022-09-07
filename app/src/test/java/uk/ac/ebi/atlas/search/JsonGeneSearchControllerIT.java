@@ -16,7 +16,7 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
-import uk.ac.ebi.atlas.search.species.SpeciesSearchDao;
+import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import javax.inject.Inject;
@@ -46,8 +46,8 @@ class JsonGeneSearchControllerIT {
     @Inject
     private ExperimentAttributesService experimentAttributesService;
 
-    @Inject
-    private SpeciesSearchDao speciesSearchDao;
+    @Mock
+    private SpeciesSearchService speciesSearchService;
 
     private JsonGeneSearchController subject;
 
@@ -59,7 +59,7 @@ class JsonGeneSearchControllerIT {
                         geneSearchServiceMock,
                         experimentTrader,
                         experimentAttributesService,
-                        speciesSearchDao);
+                        speciesSearchService);
     }
 
     @Test
@@ -144,44 +144,58 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
-    void whenRequestParamIsEmptySpeciesSearchReturnsError() {
+    void whenRequestParamIsEmptySpeciesSearchReturnsEmptySet() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        String expectedRequestParamError = "";
 
-        Set<String> requestParamError = subject.getSpeciesByGeneId(requestParams);
+        Set<String> species = subject.getSpeciesByGeneId(requestParams);
 
-        assertThat(requestParamError).containsOnly(expectedRequestParamError);
+        assertThat(species).isEmpty();
     }
 
     @Test
-    void whenRequestParamIsNullSpeciesSearchReturnsError() {
+    void whenRequestParamIsNullSpeciesSearchReturnsEmptySet() {
         LinkedMultiValueMap<String, String> requestParams = null;
-        String expectedRequestParamError = "";
 
-        Set<String> requestParamError = subject.getSpeciesByGeneId(requestParams);
+        Set<String> species = subject.getSpeciesByGeneId(requestParams);
 
-        assertThat(requestParamError).containsOnly(expectedRequestParamError);
+        assertThat(species).isEmpty();
     }
 
     @Test
-    void whenGeneIdIsNotPartOfAnyExperimentThenReturnsEmptyList() {
+    void whenGeneIdIsNotPartOfAnyExperimentThenReturnsEmptySetOfSpecies() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String geneId = "NOTPartOfAnyExperiment";
-        requestParams.add("q", geneId);
+        final String notPartOfAnyExperiment = "NOTPartOfAnyExperiment";
+        var generalCategory = "q";
+        var allCategory = "*";
+        requestParams.add(generalCategory, notPartOfAnyExperiment);
+
+        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
+                .thenReturn(generalCategory);
+        when(speciesSearchService.search(notPartOfAnyExperiment, allCategory))
+                .thenReturn(Optional.of(ImmutableSet.of()));
 
         Set<String> emptySpeciesResult = subject.getSpeciesByGeneId(requestParams);
 
-        assertThat(emptySpeciesResult).hasSize(0);
+        assertThat(emptySpeciesResult).isEmpty();
     }
 
     @Test
-    void whenGeneIdIsPArtOfSomeExperimentsThenReturnsListOfSpecies() {
+    void whenGeneIdIsPArtOfSomeExperimentsThenReturnsSetOfSpecies() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String geneId = "MostInterestingGeneEver";
-        requestParams.add("q", geneId);
+        final String mostInterestingGeneEver = "MostInterestingGeneEver";
+        var generalCategory = "q";
+        var allCategory = "*";
+        var expectedSpecies = ImmutableSet.of("Homo_sapiens", "Mus_musculus");
+        requestParams.add(generalCategory, mostInterestingGeneEver);
+
+        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
+                .thenReturn(generalCategory);
+        when(speciesSearchService.search(mostInterestingGeneEver, allCategory))
+                .thenReturn(Optional.of(expectedSpecies));
 
         Set<String> speciesResultByGeneId = subject.getSpeciesByGeneId(requestParams);
 
         assertThat(speciesResultByGeneId).hasSize(2);
+        assertThat(speciesResultByGeneId).containsSequence(expectedSpecies);
     }
 }

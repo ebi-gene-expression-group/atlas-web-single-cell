@@ -43,7 +43,7 @@ class SpeciesSearchDaoIT {
     }
 
     @Test
-    void whenNoCategoryProvidedButValidGeneIdReturnResult() {
+    void whenNoCategoryButValidGeneIdProvidedThenReturnResult() {
         var searchText = "ACRV1";
         String category = null;
         var expectedSpecies = "Homo_sapiens";
@@ -75,13 +75,25 @@ class SpeciesSearchDaoIT {
     }
 
     @Test
-    void whenGeneIdPartOfExperimentsReturnListOfSpecies() {
+    void whenGeneIdAsSimpleQueryPartOfExperimentsReturnListOfSpecies() {
         var homoSapiensSymbolValueInOurExperiment = "ACRV1";
-        var expectedSpecies = "Homo_sapiens";
+        final String allCategory = null;
+        var anExpectedSpecies = "Homo_sapiens";
+
+        var species = subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, allCategory);
+
+        assertThat(species.isPresent()).isTrue();
+        assertThat(species.get()).contains(anExpectedSpecies);
+    }
+
+    @Test
+    void whenGeneIdAsSymbolPartOfExperimentsReturnListOfSpecies() {
+        var homoSapiensSymbolValueInOurExperiment = "ACRV1";
+        var anExpectedSpecies = "Homo_sapiens";
 
         var species = subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, SYMBOL.name);
 
         assertThat(species.isPresent()).isTrue();
-        assertThat(species.get()).contains(expectedSpecies);
+        assertThat(species.get()).contains(anExpectedSpecies);
     }
 }

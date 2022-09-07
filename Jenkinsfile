@@ -6,8 +6,8 @@ pipeline {
   
   agent {
     kubernetes {
-      cloud 'atlas-analysis-3'
-      //workspaceVolume dynamicPVC(storageClassNames: 'ssd-cinder', accessModes: 'ReadWriteOnce')
+      cloud 'gke-autopilot'
+      workspaceVolume dynamicPVC(storageClassNames: 'fast', accessModes: 'ReadWriteOnce', requestsSize: '5Gi')
       defaultContainer 'openjdk'
       yamlFile 'jenkins-k8s-pod.yaml'
     }
@@ -46,9 +46,9 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=zk-cs.jenkins-ci-scxa ' +
+                    '-PzkHost=scxa-zk-fast-0.scxa-zk-fast-hs ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=solrcloud-hs.jenkins-ci-scxa ' +
+                    '-PsolrHost=scxa-solrcloud-fast-0.scxa-solrcloud-fast-hs ' +
                     '-PsolrPort=8983 ' +
                     ':atlas-web-core:testClasses'
           }
@@ -88,9 +88,9 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=zk-cs.jenkins-ci-scxa ' +
+                    '-PzkHost=scxa-zk-fast-0.scxa-zk-fast-hs ' +
                     '-PzkPort=2181 ' +
-                    '-PsolrHost=solrcloud-hs.jenkins-ci-scxa ' +
+                    '-PsolrHost=scxa-solrcloud-fast-0.scxa-solrcloud-fast-hs ' +
                     '-PsolrPort=8983 ' +
                     ':app:testClasses'
           }
@@ -145,7 +145,7 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh 'if [ env.BRANCH_NAME = main ]; then WEBPACK_OPTS=-p; else WEBPACK_OPTS=-d; fi; ' +
+                sh 'if [ env.BRANCH_NAME = main ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
                         '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }

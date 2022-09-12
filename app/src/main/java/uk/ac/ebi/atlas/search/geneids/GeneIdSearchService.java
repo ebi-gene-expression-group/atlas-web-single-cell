@@ -1,7 +1,7 @@
 package uk.ac.ebi.atlas.search.geneids;
 
 import com.google.common.collect.ImmutableSet;
-import org.eclipse.jetty.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -131,7 +131,7 @@ public class GeneIdSearchService {
 
     private Optional<String> getFirstNotBlankQueryField(List<String> values) {
         for (var searchValue : values) {
-            if (StringUtil.isNotBlank(searchValue)) {
+            if (StringUtils.isNotBlank(searchValue)) {
                 return Optional.of(searchValue);
             }
         }

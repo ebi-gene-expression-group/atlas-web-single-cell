@@ -23,6 +23,7 @@ import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
+import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -72,16 +73,27 @@ class JsonGeneSearchControllerWIT {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
-                new ClassPathResource("fixtures/scxa_analytics.sql"));
-        populator.execute(dataSource);
+                new ClassPathResource("fixtures/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql")
+        );
+
+                populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/experiment-delete.sql"));
+                new ClassPathResource("fixtures/experiment-delete.sql")
+        );
         populator.execute(dataSource);
     }
 
@@ -205,7 +217,8 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void whenGeneIsAMarkerGeneSearchForItReturnsTrue() throws Exception {
-        var shouldBeMarkerGene = "AT2G23910";
+        var shouldBeMarkerGene =
+                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
 
         this.mockMvc.perform(get("/json/gene-search/marker-genes").param("ensgene", shouldBeMarkerGene))
                 .andExpect(status().isOk())
@@ -215,7 +228,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void whenGeneIsNotAMarkerGeneSearchForItReturnsFalse() throws Exception {
-        var notAMarkerGene = "NOTMarkerGene";
+        var notAMarkerGene = RandomDataTestUtils.generateRandomEnsemblGeneId();
 
         this.mockMvc.perform(get("/json/gene-search/marker-genes").param("ensgene", notAMarkerGene))
                 .andExpect(status().isOk())

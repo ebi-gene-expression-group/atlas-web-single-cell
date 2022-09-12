@@ -64,7 +64,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
-        GeneQuery geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
+        var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
 
         var geneIds = geneIdSearchService.search(geneQuery);
 
@@ -142,7 +142,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Boolean isMarkerGene(@RequestParam MultiValueMap<String, String> requestParams) {
-        GeneQuery geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
+        var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
 
         var emptyGeneIdError = geneIdEmptyValidation(geneIds);
@@ -150,7 +150,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             return false;
         }
 
-        List<Map.Entry<String, Map<String, List<String>>>> expressedGeneIdEntries =
+        var expressedGeneIdEntries =
                 getMarkerGeneProfileByGeneIds(geneIds);
 
         var markerGeneFacets =

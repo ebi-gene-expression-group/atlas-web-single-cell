@@ -28,7 +28,10 @@ import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import java.util.List;
+
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -198,7 +201,7 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(jsonPath("$.results[0].facets[0].description", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")));
     }
-      
+
     @Test
     void speciesParamCanAppearBeforeGeneQuery() throws Exception {
         this.mockMvc.perform(get("/json/search").param("species", "homo sapiens").param("symbol", "aspm"))
@@ -206,7 +209,7 @@ class JsonGeneSearchControllerWIT {
     }
 
     @Test
-    void whenSearchForAMarkerGeneWithEmptyValueReturnsFalse() throws Exception {
+    void whenSearchForAMarkerGeneWithEmptyValueReturnsError() throws Exception {
         final String emptyGeneSearchParams = "";
         final String expectedMessage = "{\"error\":\"Error parsing query\"}\n";
         this.mockMvc.perform(get("/json/gene-search/marker-genes").param("q", emptyGeneSearchParams))
@@ -234,5 +237,42 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().string("false"));
+    }
+
+    @Test
+    void whenSearchForSpeciesWithEmptyValueReturnsError() throws Exception {
+        final String emptySpeciesSearchParams = "";
+        final String expectedMessage = "{\"error\":\"Error parsing query\"}\n";
+        this.mockMvc.perform(get("/json/gene-search/species").param("q", emptySpeciesSearchParams))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(expectedMessage));
+    }
+
+    @Test
+    void whenGeneIdIsPartOfSomeExperimentsThenReturnSetOfSpecies() throws Exception {
+        var shouldBeGeneThatPartOfExperiments =
+                jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment("E-CURD-4");
+
+        var expectedSpecies = "Arabidopsis_thaliana";
+        var setOfExpectedSpecies = List.of(expectedSpecies);
+
+        this.mockMvc.perform(get("/json/gene-search/species").param("ensgene", shouldBeGeneThatPartOfExperiments))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(equalTo(1))))
+                .andExpect(jsonPath("$", containsInAnyOrder(expectedSpecies)));
+    }
+
+    @Test
+    void whenGeneIdIsNotPartOfAnyExperimentsThenReturnSetOfSpecies() throws Exception {
+        var experimentAccessionForSpeciesNotInOurDB = "E-ENAD-53"; // "Solanum lycopersicum"
+        var geneNotPartOfAnyExperiments =
+                jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(experimentAccessionForSpeciesNotInOurDB);
+
+        this.mockMvc.perform(get("/json/gene-search/species").param("ensgene", geneNotPartOfAnyExperiments))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(equalTo(0))));
     }
 }

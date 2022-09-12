@@ -16,7 +16,6 @@ import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
-import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
@@ -49,6 +48,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                     .collect(toImmutableSet()))
                     .build();
     public static final String ALL_CATEGORIES = "*";
+    public static final String GENERIC_CATEGORY = "q";
 
     private final GeneIdSearchService geneIdSearchService;
     private final GeneSearchService geneSearchService;
@@ -61,18 +61,17 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
-        GeneQuery geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
+        var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
 
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        String emptyGeneIdError = geneIdEmptyValidation(geneIds);
-        if (emptyGeneIdError != null) {
-            return emptyGeneIdError;
+        var emptyGeneIdError = geneIdEmptyValidation(geneIds);
+        if (emptyGeneIdError.isPresent()) {
+            return emptyGeneIdError.get();
         }
 
         // We found expressed gene IDs, let’s get to it now...
-        List<Map.Entry<String, Map<String, List<String>>>> expressedGeneIdEntries =
-                getMarkerGeneProfileByGeneIds(geneIds);
+        var expressedGeneIdEntries = getMarkerGeneProfileByGeneIds(geneIds);
 
         var markerGeneFacets =
                 geneSearchService.getMarkerGeneProfile(
@@ -136,23 +135,19 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
     }
 
-    @RequestMapping(value = "/json/search/marker-genes",
+    @RequestMapping(value = "/json/gene-search/marker-genes",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Boolean isMarkerGene(@RequestParam MultiValueMap<String, String> requestParams) {
-        if (isRequestParamsEmpty(requestParams)) {
-            return false;
-        }
-
-        GeneQuery geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
+        var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        String emptyGeneIdError = geneIdEmptyValidation(geneIds);
-        if (emptyGeneIdError != null) {
+        var emptyGeneIdError = geneIdEmptyValidation(geneIds);
+        if (emptyGeneIdError.isPresent()) {
             return false;
         }
 
-        List<Map.Entry<String, Map<String, List<String>>>> expressedGeneIdEntries =
+        var expressedGeneIdEntries =
                 getMarkerGeneProfileByGeneIds(geneIds);
 
         var markerGeneFacets =
@@ -164,18 +159,14 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         return markerGeneFacets != null && markerGeneFacets.size() > 0;
     }
 
-    @RequestMapping(value = "/json/search/species",
+    @RequestMapping(value = "/json/gene-search/species",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Set<String> getSpeciesByGeneId(@RequestParam MultiValueMap<String, String> requestParams) {
-        if (isRequestParamsEmpty(requestParams)) {
-            return Set.of();
-        }
-
         var category = geneIdSearchService.getCategoryFromRequestParams(requestParams);
         var searchText = requestParams.getFirst(category);
 
-        if (category.equals("q")) {
+        if (category.equals(GENERIC_CATEGORY)) {
             category = ALL_CATEGORIES;
         }
 
@@ -194,28 +185,22 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         .collect(toList());
     }
 
-    private boolean isRequestParamsEmpty(MultiValueMap<String, String> requestParams) {
-        return requestParams == null
-                || requestParams.size() == 0
-                || (requestParams.containsKey("q") && Objects.equals(requestParams.getFirst("q"), ""));
-    }
-
-    private String geneIdEmptyValidation(Optional<ImmutableSet<String>> geneIds) {
+    private Optional<String> geneIdEmptyValidation(Optional<ImmutableSet<String>> geneIds) {
         if (geneIds.isEmpty()) {
-            return GSON.toJson(
+            return Optional.of(GSON.toJson(
                     ImmutableMap.of(
                             "results", ImmutableList.of(),
-                            "reason", "Gene unknown"));
+                            "reason", "Gene unknown")));
         }
 
         if (geneIds.get().isEmpty()) {
-            return GSON.toJson(
+            return Optional.of(GSON.toJson(
                     ImmutableMap.of(
                             "results", ImmutableList.of(),
-                            "reason", "No expression found"));
+                            "reason", "No expression found")));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     private <K, V> ImmutableList<SimpleEntry<K, V>> unfoldListMultimap(Map<K, List<V>> multimap) {

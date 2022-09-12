@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.search.geneids;
 
 import com.google.common.collect.ImmutableSet;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy;
 import uk.ac.ebi.atlas.species.Species;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -105,9 +107,8 @@ public class GeneIdSearchService {
         // We support currently only one query term; in the unlikely case that somebody fabricates a URL with more than
         // one we’ll build the query with the first match. Remember that in order to support multiple terms we’ll
         // likely need to change GeneQuery and use internally a SemanticQuery
-        var category =
-                getCategoryFromRequestParams(requestParams);
-        var queryTerm = requestParams.getFirst(category);
+        var category = getCategoryFromRequestParams(requestParams);
+        var queryTerm = getFirstNotBlankQueryField(requestParams.get(category)).orElseThrow();
 
        return category.equals("q") ?
                 species
@@ -119,10 +120,21 @@ public class GeneIdSearchService {
     }
 
     public String getCategoryFromRequestParams(MultiValueMap<String, String> requestParams) {
-        return requestParams.keySet().stream()
-                // We rely on "q" and BioentityPropertyName::name’s being lower case
-                .filter(actualField -> VALID_QUERY_FIELDS.contains(actualField.toLowerCase()))
-                .findFirst()
-                .orElseThrow(() -> new QueryParsingException("Error parsing query"));
+        for (var requestParam: requestParams.entrySet()) {
+            if (VALID_QUERY_FIELDS.contains(requestParam.getKey().toLowerCase())) {
+                if (getFirstNotBlankQueryField(requestParam.getValue()).isPresent()) return requestParam.getKey();
+            }
+        }
+
+        throw new QueryParsingException("Error parsing query");
+    }
+
+    private Optional<String> getFirstNotBlankQueryField(List<String> values) {
+        for (var searchValue : values) {
+            if (StringUtils.isNotBlank(searchValue)) {
+                return Optional.of(searchValue);
+            }
+        }
+        return Optional.empty();
     }
 }

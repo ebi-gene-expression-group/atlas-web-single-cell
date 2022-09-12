@@ -16,6 +16,7 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
+import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -27,6 +28,7 @@ import java.util.Set;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -147,18 +149,22 @@ class JsonGeneSearchControllerIT {
     void whenRequestParamIsEmptySpeciesSearchReturnsEmptySet() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 
-        Set<String> species = subject.getSpeciesByGeneId(requestParams);
+        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
+                .thenThrow(new QueryParsingException("Error parsing query"));
 
-        assertThat(species).isEmpty();
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getSpeciesByGeneId(requestParams));
     }
 
     @Test
     void whenRequestParamIsNullSpeciesSearchReturnsEmptySet() {
         LinkedMultiValueMap<String, String> requestParams = null;
 
-        Set<String> species = subject.getSpeciesByGeneId(requestParams);
+        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
+                .thenThrow(new QueryParsingException("Error parsing query"));
 
-        assertThat(species).isEmpty();
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getSpeciesByGeneId(requestParams));
     }
 
     @Test

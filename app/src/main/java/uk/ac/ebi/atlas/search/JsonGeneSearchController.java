@@ -23,30 +23,19 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.ebi.atlas.search.FacetGroupName.MARKER_GENE;
 import static uk.ac.ebi.atlas.search.FacetGroupName.ORGANISM;
-import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 @RequiredArgsConstructor
 public class JsonGeneSearchController extends JsonExceptionHandlingController {
-    private final static ImmutableSet<String> VALID_QUERY_FIELDS =
-            ImmutableSet.<String>builder()
-                    .add("q")
-                    .addAll(
-                            BIOENTITY_PROPERTY_NAMES.stream()
-                                    .map(propertyName -> propertyName.name)
-                                    .collect(toImmutableSet()))
-                    .build();
     public static final String ALL_CATEGORIES = "*";
     public static final String GENERIC_CATEGORY = "q";
 

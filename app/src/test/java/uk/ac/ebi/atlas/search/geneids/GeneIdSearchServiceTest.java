@@ -16,6 +16,9 @@ import uk.ac.ebi.atlas.species.Species;
 import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.species.SpeciesProperties;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -26,6 +29,8 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static uk.ac.ebi.atlas.search.geneids.GeneIdSearchService.VALID_QUERY_FIELDS;
 import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.SYMBOL;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES_OVERRIDE_PROPERTY_NAMES;
@@ -191,8 +196,8 @@ class GeneIdSearchServiceTest {
     void whenEmptyQueryFieldsGivenThenReturnsError() {
         var requestParams = new LinkedMultiValueMap<String, String>();
         final String emptyValue = "";
-        var generalCategory = "q";
-        requestParams.add(generalCategory, emptyValue);
+        var aRandomCategory = getCategoriesInRandomOrder().get(0);
+        requestParams.add(aRandomCategory, emptyValue);
 
         assertThatExceptionOfType(QueryParsingException.class)
                 .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
@@ -201,11 +206,12 @@ class GeneIdSearchServiceTest {
     @Test
     void when2DifferentTypeOfEmptyQueryFieldsGivenThenReturnsError() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        var generalCategory = "q";
-        var symbolCategory = SYMBOL.name();
+        var categoriesInRandomOrder = getCategoriesInRandomOrder();
+        var aRandomCategory = categoriesInRandomOrder.get(0);
+        var anotherRandomCategory = categoriesInRandomOrder.get(1);
         final String emptyValue = "";
-        requestParams.add(generalCategory, emptyValue);
-        requestParams.add(symbolCategory, emptyValue);
+        requestParams.add(aRandomCategory, emptyValue);
+        requestParams.add(anotherRandomCategory, emptyValue);
 
         assertThatExceptionOfType(QueryParsingException.class)
                 .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
@@ -215,12 +221,13 @@ class GeneIdSearchServiceTest {
     void when2DifferentTypeOfValidQueryFieldsGivenThenReturnsThe1stOne() {
         var requestParams = new LinkedMultiValueMap<String, String>();
         final String geneId = randomAlphabetic(1, 12);
-        var symbolCategory = SYMBOL.name();
-        var generalCategory = "q";
-        requestParams.add(symbolCategory, geneId);
-        requestParams.add(generalCategory, geneId);
+        var categoriesInRandomOrder = getCategoriesInRandomOrder();
+        var aRandomCategory = categoriesInRandomOrder.get(0);
+        var anotherRandomCategory = categoriesInRandomOrder.get(1);
+        requestParams.add(aRandomCategory, geneId);
+        requestParams.add(anotherRandomCategory, geneId);
 
-        String expectedCategory = symbolCategory;
+        String expectedCategory = aRandomCategory;
 
         String actualCategory = subject.getCategoryFromRequestParams(requestParams);
 
@@ -232,12 +239,13 @@ class GeneIdSearchServiceTest {
         var requestParams = new LinkedMultiValueMap<String, String>();
         final String emptyValue = "";
         final String geneId = randomAlphabetic(1, 12);
-        var generalCategory = "q";
-        var symbolCategory = SYMBOL.name();
-        requestParams.add(generalCategory, emptyValue);
-        requestParams.add(symbolCategory, geneId);
+        var categoriesInRandomOrder = getCategoriesInRandomOrder();
+        var aRandomCategory = categoriesInRandomOrder.get(0);
+        var anotherRandomCategory = categoriesInRandomOrder.get(1);
+        requestParams.add(aRandomCategory, emptyValue);
+        requestParams.add(anotherRandomCategory, geneId);
 
-        String expectedCategory = symbolCategory;
+        String expectedCategory = anotherRandomCategory;
 
         String actualCategory = subject.getCategoryFromRequestParams(requestParams);
 
@@ -249,11 +257,12 @@ class GeneIdSearchServiceTest {
         var requestParams = new LinkedMultiValueMap<String, String>();
         final String emptyValue = "";
         final String geneId = randomAlphabetic(1, 12);
-        var generalCategory = "q";
-        requestParams.add(generalCategory, emptyValue);
-        requestParams.add(generalCategory, geneId);
+        var categoriesInRandomOrder = getCategoriesInRandomOrder();
+        var aRandomCategory = categoriesInRandomOrder.get(0);
+        requestParams.add(aRandomCategory, emptyValue);
+        requestParams.add(aRandomCategory, geneId);
 
-        String expectedCategory = generalCategory;
+        String expectedCategory = aRandomCategory;
 
         String actualCategory = subject.getCategoryFromRequestParams(requestParams);
 
@@ -265,11 +274,12 @@ class GeneIdSearchServiceTest {
         var requestParams = new LinkedMultiValueMap<String, String>();
         final String geneId1 = randomAlphabetic(1, 12);
         final String geneId2 = randomAlphabetic(1, 12);
-        var generalCategory = "q";
-        requestParams.add(generalCategory, geneId1);
-        requestParams.add(generalCategory, geneId2);
+        var categoriesInRandomOrder = getCategoriesInRandomOrder();
+        var aRandomCategory = categoriesInRandomOrder.get(0);
+        requestParams.add(aRandomCategory, geneId1);
+        requestParams.add(aRandomCategory, geneId2);
 
-        String expectedCategory = generalCategory;
+        String expectedCategory = aRandomCategory;
 
         String actualCategory = subject.getCategoryFromRequestParams(requestParams);
 
@@ -286,11 +296,14 @@ class GeneIdSearchServiceTest {
 
     @Test
     void whenRequestParamsHasGenericQueryFieldThenGotProperGeneQuery() {
-        String symbolText = "CFTR";
-        LinkedMultiValueMap<String, String> requestParams =
-                getRequestParams(symbolText, "", "q");
+        var searchText = randomAlphabetic(1, 12);
+        var categoriesInRandomOrder = getCategoriesInRandomOrder();
+        var aRandomCategory = categoriesInRandomOrder.get(0);
 
-        GeneQuery expectedGeneQuery = GeneQuery.create(symbolText);
+        var requestParams = getRequestParams(searchText, "", aRandomCategory);
+
+        GeneQuery expectedGeneQuery =
+                GeneQuery.create(searchText, BioentityPropertyName.getByName(aRandomCategory));
 
         GeneQuery actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
 
@@ -300,14 +313,16 @@ class GeneIdSearchServiceTest {
     @Test
     void whenRequestParamsHasValidQueryFieldThenGotProperGeneQuery() {
         final Species randomSpecies = generateRandomSpecies();
-        String symbolText = "CFTR";
+        var searchText = randomAlphabetic(1, 12);
         final String speciesText = randomSpecies.getName();
-        final String symbolRequestParam = "symbol";
-        LinkedMultiValueMap<String, String> requestParams =
-                getRequestParams(symbolText, speciesText, symbolRequestParam);
+        var categoriesInRandomOrder = getCategoriesInRandomOrder();
+        var aRandomCategory = categoriesInRandomOrder.get(0);
+
+        var requestParams =
+                getRequestParams(searchText, speciesText, aRandomCategory);
 
         GeneQuery expectedGeneQuery = GeneQuery.create(
-                symbolText, BioentityPropertyName.getByName(symbolRequestParam), randomSpecies);
+                searchText, BioentityPropertyName.getByName(aRandomCategory), randomSpecies);
 
         when(speciesFactory.create(speciesText)).thenReturn(randomSpecies);
 
@@ -322,5 +337,12 @@ class GeneIdSearchServiceTest {
         requestParams.add(symbolRequestParam, symbol);
         requestParams.add("species", species);
         return requestParams;
+    }
+
+    private List<String> getCategoriesInRandomOrder() {
+        var queryFields = new ArrayList<>(VALID_QUERY_FIELDS.asList());
+        Collections.shuffle(queryFields);
+
+        return queryFields;
     }
 }

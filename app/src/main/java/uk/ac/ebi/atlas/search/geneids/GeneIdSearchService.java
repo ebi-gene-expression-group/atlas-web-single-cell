@@ -24,7 +24,7 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.
 public class GeneIdSearchService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneIdSearchService.class);
 
-    private final static ImmutableSet<String> VALID_QUERY_FIELDS =
+    protected final static ImmutableSet<String> VALID_QUERY_FIELDS =
             ImmutableSet.<String>builder()
                     .add("q")
                     .addAll(

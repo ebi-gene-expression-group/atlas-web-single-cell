@@ -6,7 +6,7 @@
     <a href="https://github.com/ebi-gene-expression-group/scxa-workflows/tree/0.1.0" target="_blank">
         <div class="media-object">
             <div class="media-object-section middle">
-                <h3><span class="icon icon-generic" data-icon=":"></span></h3>
+                <h3 class="icon icon-generic" data-icon=":"/>
             </div>
             <div class="media-object-section middle">
                 <p>
@@ -23,7 +23,7 @@
     <a href="https://github.com/ebi-gene-expression-group/scxa-tsne-widget" target="_blank">
         <div class="media-object">
             <div class="media-object-section middle">
-                <h3><span class="icon icon-conceptual" data-icon="g"></span></h3>
+                <h3 class="icon icon-conceptual" data-icon="g"/>
             </div>
             <div class="media-object-section middle">
                 <p>

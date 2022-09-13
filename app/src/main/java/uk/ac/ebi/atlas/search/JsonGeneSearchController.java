@@ -153,13 +153,14 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Set<String> getSpeciesByGeneId(@RequestParam MultiValueMap<String, String> requestParams) {
         var category = geneIdSearchService.getCategoryFromRequestParams(requestParams);
-        var searchText = requestParams.getFirst(category);
+        var queryTerm =
+                geneIdSearchService.getFirstNotBlankQueryField(requestParams.get(category)).orElseThrow();
 
         if (category.equals(GENERIC_CATEGORY)) {
             category = ALL_CATEGORIES;
         }
 
-        var species = speciesSearchService.search(searchText, category);
+        var species = speciesSearchService.search(queryTerm, category);
 
         return species.orElse(ImmutableSet.of());
     }
@@ -167,7 +168,8 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private List<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {
         // We found expressed gene IDs, let’s get to it now...
         var geneIds2ExperimentAndCellIds =
-                geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
+                geneSearchService.getCellIdsInExperiments(
+                        geneIds.get().toArray(new String[0]));
 
         return geneIds2ExperimentAndCellIds.entrySet().stream()
                         .filter(entry -> !entry.getValue().isEmpty())

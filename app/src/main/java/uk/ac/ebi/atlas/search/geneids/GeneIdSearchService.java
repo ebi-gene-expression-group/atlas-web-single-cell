@@ -129,7 +129,7 @@ public class GeneIdSearchService {
         throw new QueryParsingException("Error parsing query");
     }
 
-    private Optional<String> getFirstNotBlankQueryField(List<String> values) {
+    public Optional<String> getFirstNotBlankQueryField(List<String> values) {
         for (var searchValue : values) {
             if (StringUtils.isNotBlank(searchValue)) {
                 return Optional.of(searchValue);

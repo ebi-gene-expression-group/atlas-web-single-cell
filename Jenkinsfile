@@ -98,8 +98,8 @@ pipeline {
           }
           steps {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
-            sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-            sh './gradlew --no-watch-fs -PtestResultsPath=e2e -PexcludeTests=**/FileDownloadControllerWIT.class :app:test --tests *WIT'
+            //sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+            //sh './gradlew --no-watch-fs -PtestResultsPath=e2e -PexcludeTests=**/FileDownloadControllerWIT.class :app:test --tests *WIT'
             sh './gradlew --no-watch-fs :app:jacocoTestReport'
           }
         }
@@ -107,7 +107,7 @@ pipeline {
         stage('–– Build ––') {
           when { anyOf {
             branch 'develop'
-            branch 'main'
+            branch 'chore/solr8'
           } }
           stages {
             stage('Provision Node.js build environment') {
@@ -141,7 +141,7 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh 'if [ env.BRANCH_NAME = main ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
+                sh 'if [ env.BRANCH_NAME = "chore/solr8" ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
                         '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }

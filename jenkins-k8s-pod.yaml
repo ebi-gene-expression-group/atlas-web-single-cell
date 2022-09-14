@@ -68,7 +68,7 @@ spec:
         claimName: bioentity-properties-claim
     - name: gradle-ro-dep-cache
       persistentVolumeClaim:
-        claimName: gradle-ro-dep-cache-rox
+        claimName: gradle-7.0-ro-dep-cache-rox
     - name: openjdk-root-gradle-wrapper
       persistentVolumeClaim:
         claimName: openjdk-root-gradle-wrapper-claim

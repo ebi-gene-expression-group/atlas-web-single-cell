@@ -39,11 +39,10 @@ spec:
           name: scxa-ci-data
         - mountPath: /test-data/bioentity_properties
           name: bioentity-properties
+          readOnly: true
         - mountPath: /root/gradle-ro-dep-cache
           name: gradle-ro-dep-cache
           readOnly: true
-        - mountPath: /root/.gradle/wrapper
-          name: openjdk-root-gradle-wrapper
     - name: postgres
       image: postgres:10-alpine
       resources:
@@ -65,10 +64,7 @@ spec:
         claimName: sc-test-experiments-claim
     - name: bioentity-properties
       persistentVolumeClaim:
-        claimName: bioentity-properties-claim
+        claimName: bioentity-properties-rox
     - name: gradle-ro-dep-cache
       persistentVolumeClaim:
         claimName: gradle-7.0-ro-dep-cache-rox
-    - name: openjdk-root-gradle-wrapper
-      persistentVolumeClaim:
-        claimName: openjdk-root-gradle-wrapper-claim

@@ -16,7 +16,7 @@ repositories {
     url "http://45.88.81.176/artifactory/maven-local/"
     allowInsecureProtocol true
   }
-  // For patched version of SolrJ (see dependencies below) and ae-efo-loader
+  // For ae-efo-loader
   // Ideally mavenLocal() would be the last repo to have as fallback, but we won’t have access to our Artifactory
   // unless we’re on the VPN, in which case the build fails
 }
@@ -90,10 +90,10 @@ processTestResources {
 
   filesMatching('solr.properties') {
     expand(
-            zkHost: project.hasProperty('zkHost') ? zkHost : 'localhost',
-            zkPort: project.hasProperty('zkPort') ? zkPort : '2181',
-            solrHost: project.hasProperty('solrHost') ? solrHost : 'localhost',
-            solrPort: project.hasProperty('solrPort') ? solrPort : '8983'
+            zkHosts: project.hasProperty('zkHosts') ? zkHosts : 'localhost',
+            solrHosts: project.hasProperty('solrHosts') ? solrHosts : 'localhost',
+            solrUser: project.hasProperty('solrUser') ? solrUser : '',
+            solrPass: project.hasProperty('solrPass') ? solrPass : '',
     )
   }
 

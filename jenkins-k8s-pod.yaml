@@ -35,8 +35,9 @@ spec:
       args:
       - 99d
       volumeMounts:
-        - mountPath: /test-data/scxa
-          name: scxa-ci-data
+        - mountPath: /test-data/scxa/magetab
+          name: scxa-data
+          readOnly: true
         - mountPath: /test-data/bioentity_properties
           name: bioentity-properties
           readOnly: true
@@ -59,9 +60,9 @@ spec:
           value: "postgres"
   volumes:
 
-    - name: scxa-ci-data
+    - name: scxa-data
       persistentVolumeClaim:
-        claimName: sc-test-experiments-claim
+        claimName: scxa-data-rox
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-rox

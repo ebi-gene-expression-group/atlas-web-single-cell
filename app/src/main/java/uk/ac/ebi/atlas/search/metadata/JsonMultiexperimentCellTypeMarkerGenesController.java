@@ -29,7 +29,7 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getCellTypeMarkerGenes(
             @PathVariable String cellType,
-            @RequestParam(required = false) Collection<String> experimentAccessions) {
+            @RequestParam(name = "experiment-accessions", required = false) Collection<String> experimentAccessions) {
         return GSON.toJson(
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
                         experimentAccessions == null ?

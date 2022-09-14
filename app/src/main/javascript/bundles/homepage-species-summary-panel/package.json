@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.7.0",
+    "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.9.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "species-summary-panel": "file:../../modules/species-summary-panel"

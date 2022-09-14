@@ -1,0 +1,99 @@
+version: "3.6"
+
+services:
+  scxa-solrcloud8-zookeeper-0:
+    image: zookeeper:3.7.0
+    container_name: scxa-solrcloud8-zookeeper-0
+    hostname: scxa-solrcloud8-zookeeper-0
+    networks:
+      - atlas-test-net
+    ports:
+      - 2181:2181
+      - 7000:7000
+    volumes:
+      - data-scxa-solrcloud8-zookeeper-0:/data
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=scxa-solrcloud8-zookeeper-0:2888:3888;2181 server.2=scxa-solrcloud8-zookeeper-1:2888:3888;2181 server.3=scxa-solrcloud8-zookeeper-2:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
+      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
+
+  scxa-solrcloud8-zookeeper-1:
+    image: zookeeper:3.7.0
+    container_name: scxa-solrcloud8-zookeeper-1
+    hostname: scxa-solrcloud8-zookeeper-1
+    networks:
+      - atlas-test-net
+    ports:
+      - 2182:2181
+      - 7001:7000
+    volumes:
+      - data-scxa-solrcloud8-zookeeper-1:/data
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=scxa-solrcloud8-zookeeper-0:2888:3888;2181 server.2=scxa-solrcloud8-zookeeper-1:2888:3888;2181 server.3=scxa-solrcloud8-zookeeper-2:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
+      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
+
+  scxa-solrcloud8-zookeeper-2:
+    image: zookeeper:3.7.0
+    container_name: scxa-solrcloud8-zookeeper-2
+    hostname: scxa-solrcloud8-zookeeper-2
+    networks:
+      - atlas-test-net
+    ports:
+      - 2183:2181
+      - 7002:7000
+    volumes:
+      - data-scxa-solrcloud8-zookeeper-2:/data
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=scxa-solrcloud8-zookeeper-0:2888:3888;2181 server.2=scxa-solrcloud8-zookeeper-1:2888:3888;2181 server.3=scxa-solrcloud8-zookeeper-2:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
+      ZOO_CFG_EXTRA: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true"
+
+  scxa-solrcloud8-0:
+    image: solr:8.7.0
+    container_name: scxa-solrcloud8-0
+    networks:
+      - atlas-test-net
+    ports:
+      - "8983:8983"
+    volumes:
+      - data-scxa-solrcloud8-0:/var/solr/data
+    environment:
+      - SOLR_HEAP=3g
+      - SOLR_OPTS=-Denable.runtime.lib=true
+      - ZK_HOST=scxa-solrcloud8-zookeeper-0:2181,scxa-solrcloud8-zookeeper-1:2181,scxa-solrcloud8-zookeeper-2:2181
+    depends_on:
+      - scxa-solrcloud8-zookeeper-0
+      - scxa-solrcloud8-zookeeper-1
+      - scxa-solrcloud8-zookeeper-2
+
+  scxa-solrcloud8-1:
+    image: solr:8.7.0
+    container_name: scxa-solrcloud8-1
+    networks:
+      - atlas-test-net
+    ports:
+      - "8984:8983"
+    volumes:
+      - data-scxa-solrcloud8-1:/var/solr/data
+    environment:
+      - SOLR_HEAP=3g
+      - SOLR_OPTS=-Denable.runtime.lib=true
+      - ZK_HOST=scxa-solrcloud8-zookeeper-0:2181,scxa-solrcloud8-zookeeper-1:2181,scxa-solrcloud8-zookeeper-2:2181
+    depends_on:
+      - scxa-solrcloud8-zookeeper-0
+      - scxa-solrcloud8-zookeeper-1
+      - scxa-solrcloud8-zookeeper-2
+
+volumes:
+  data-scxa-solrcloud8-zookeeper-0:
+  data-scxa-solrcloud8-zookeeper-1:
+  data-scxa-solrcloud8-zookeeper-2:
+  data-scxa-solrcloud8-0:
+  data-scxa-solrcloud8-1:
+
+networks:
+  atlas-test-net:

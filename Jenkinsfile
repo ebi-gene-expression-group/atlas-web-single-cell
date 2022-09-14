@@ -46,10 +46,8 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-fast-0.scxa-zk-fast-hs ' +
-                    '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-fast-0.scxa-solrcloud-fast-hs ' +
-                    '-PsolrPort=8983 ' +
+                    '-PzkHosts=scxa-solrcloud-zookeeper-0:2181,scxa-solrcloud-zookeeper-1:2181,scxa-solrcloud-zookeeper-2:2181 ' +
+                    '-PsolrHosts=http://scxa-solrcloud-0:8983/solr,http://scxa-solrcloud-1:8983/solr ' +
                     ':atlas-web-core:testClasses'
           }
         }
@@ -88,10 +86,8 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-fast-0.scxa-zk-fast-hs ' +
-                    '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-fast-0.scxa-solrcloud-fast-hs ' +
-                    '-PsolrPort=8983 ' +
+                    '-PzkHosts=scxa-solrcloud-zookeeper-0:2181,scxa-solrcloud-zookeeper-1:2181,scxa-solrcloud-zookeeper-2:2181 ' +
+                    '-PsolrHosts=http://scxa-solrcloud-0:8983/solr,http://scxa-solrcloud-1:8983/solr ' +
                     ':app:testClasses'
           }
         }

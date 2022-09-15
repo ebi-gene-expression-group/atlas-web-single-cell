@@ -177,6 +177,8 @@ class JsonGeneSearchControllerIT {
 
         when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
                 .thenReturn(generalCategory);
+        when(geneIdSearchServiceMock.getFirstNotBlankQueryField(List.of(notPartOfAnyExperiment)))
+                .thenReturn(Optional.of(notPartOfAnyExperiment));
         when(speciesSearchService.search(notPartOfAnyExperiment, allCategory))
                 .thenReturn(Optional.of(ImmutableSet.of()));
 
@@ -196,6 +198,8 @@ class JsonGeneSearchControllerIT {
 
         when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
                 .thenReturn(generalCategory);
+        when(geneIdSearchServiceMock.getFirstNotBlankQueryField(List.of(mostInterestingGeneEver)))
+                .thenReturn(Optional.of(mostInterestingGeneEver));
         when(speciesSearchService.search(mostInterestingGeneEver, allCategory))
                 .thenReturn(Optional.of(expectedSpecies));
 

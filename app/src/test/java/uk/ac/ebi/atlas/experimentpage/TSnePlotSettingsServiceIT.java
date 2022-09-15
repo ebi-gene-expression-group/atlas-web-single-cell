@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage;
 
 import com.sun.management.UnixOperatingSystemMXBean;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,6 +123,7 @@ class TSnePlotSettingsServiceIT {
     // dataFileHub.getSingleCellExperimentFiles(experimentAccession).clustersTsv.get().get()
     // The +1 magic number accounts for open DB connections in the build environment, in my laptop it’s +4.
     // This is the next best thing I could come up with... sorry! :(
+    @Ignore // I added this annotation for now to turn this test of as we discussed this on the stand-up meeting
     @ParameterizedTest
     @MethodSource("randomSingleCellExperimentAccessionProvider")
     void filesClosed(String experimentAccession) {

@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -198,7 +199,7 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(jsonPath("$.results[0].facets[0].description", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")));
     }
-      
+
     @Test
     void speciesParamCanAppearBeforeGeneQuery() throws Exception {
         this.mockMvc.perform(get("/json/search").param("species", "homo sapiens").param("symbol", "aspm"))
@@ -234,5 +235,39 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().string("false"));
+    }
+
+    @Test
+    void whenSearchForOrganismPartWithEmptyValueReturnsError() throws Exception {
+        final String emptyOrganismPartSearchTerm = "";
+        final String expectedMessage = "{\"error\":\"Error parsing query\"}\n";
+        this.mockMvc.perform(get("/json/gene-search/organism-parts").param("q", emptyOrganismPartSearchTerm))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(expectedMessage));
+    }
+
+    @Test
+    void whenSearchTermNotExistsInDBThenReturnsEmptySet() throws Exception {
+        var geneNotPartOfAnyExperiments = "ENSRNA049444660";
+
+        this.mockMvc.perform(get("/json/gene-search/organism-parts").param("ensgene", geneNotPartOfAnyExperiments))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(equalTo(0))));
+    }
+
+    @Test
+    void whenSearchTermExistsInDBThenReturnsSetOfOrganismParts() throws Exception {
+        var shouldBeGeneThatPartOfExperiments =
+                jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment("E-CURD-4");
+
+        var expectedOrganismParts = "root";
+
+        this.mockMvc.perform(get("/json/gene-search/organism-parts").param("ensgene", shouldBeGeneThatPartOfExperiments))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(equalTo(1))))
+                .andExpect(jsonPath("$", containsInAnyOrder(expectedOrganismParts)));
     }
 }

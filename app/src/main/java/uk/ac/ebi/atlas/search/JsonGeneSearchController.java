@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -161,7 +160,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     @RequestMapping(value = "/json/gene-search/organism-parts",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Set<String> getOrganismPartBySearchTerm(LinkedMultiValueMap<String, String> requestParams) {
+    public Set<String> getOrganismPartBySearchTerm(@RequestParam MultiValueMap<String, String> requestParams) {
         var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
 

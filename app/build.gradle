@@ -30,6 +30,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
 
     implementation "org.cache2k:cache2k-api:${cache2kVersion}"
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
     runtimeOnly "org.cache2k:cache2k-core:${cache2kVersion}"
     implementation "org.cache2k:cache2k-spring:${cache2kVersion}"
 

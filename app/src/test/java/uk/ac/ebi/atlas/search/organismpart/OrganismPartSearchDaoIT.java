@@ -82,7 +82,7 @@ public class OrganismPartSearchDaoIT {
 
     @Test
     void whenSetOfInvalidGeneIdsProvidedReturnSetOfOrganismPart() {
-        ImmutableSet<String> geneIds =
+        var geneIds =
                 ImmutableSet.of("invalid-geneId-1", "invalid-geneId-2", "invalid-geneId-3");
 
         var organismParts = subject.searchOrganismPart(geneIds);
@@ -94,9 +94,9 @@ public class OrganismPartSearchDaoIT {
     @Test
     void whenSetOfValidGeneIdsProvidedReturnSetOfOrganismPart() {
         final List<String> randomListOfGeneIds = jdbcUtils.fetchRandomListOfGeneIds(10);
-        ImmutableSet<String> geneIds =
+        var geneIds =
                 ImmutableSet.copyOf(
-                        new HashSet<String>(randomListOfGeneIds));
+                        new HashSet<>(randomListOfGeneIds));
 
         var organismParts = subject.searchOrganismPart(geneIds);
 

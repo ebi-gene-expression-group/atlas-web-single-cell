@@ -22,7 +22,7 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 @Component
 public class OrganismPartSearchDao {
 
-    private GeneSearchDao geneSearchDao;
+    private final GeneSearchDao geneSearchDao;
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
@@ -38,7 +38,7 @@ public class OrganismPartSearchDao {
             return Optional.of(ImmutableSet.of());
         }
 
-        HashSet<String> cellIDs = getCellIdsFromGeneIds(geneIds);
+        var cellIDs = getCellIdsFromGeneIds(geneIds);
 
         if (cellIDs.isEmpty()) {
             return Optional.of(ImmutableSet.of());

@@ -125,7 +125,7 @@ public class TSnePlotDao {
                 Integer.class);
     }
 
-    private static final String SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS =
+    private static final String SELECT_DISTINCT_CELL_METHOD_AND_PARAMETERISATION =
             "SELECT DISTINCT dim.method, option " +
             "FROM scxa_coords AS coords " +
                     "INNER JOIN scxa_dimension_reduction AS dim " +
@@ -147,7 +147,7 @@ public class TSnePlotDao {
     public Map<String, List<JsonObject>> fetchTSnePlotTypesAndOptions(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
-        return namedParameterJdbcTemplate.query(SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS, namedParameters,
+        return namedParameterJdbcTemplate.query(SELECT_DISTINCT_CELL_METHOD_AND_PARAMETERISATION, namedParameters,
                 (ResultSet resultSet) -> {
             Map<String, List<JsonObject>> plotTypeAndOptions = new HashMap<>();
             while (resultSet.next()) {

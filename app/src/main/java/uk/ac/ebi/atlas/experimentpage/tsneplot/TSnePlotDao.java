@@ -126,10 +126,13 @@ public class TSnePlotDao {
     }
 
     private static final String SELECT_DISTINCT_T_SNE_PLOT_TYPES_AND_OPTIONS =
-            "SELECT DISTINCT method, option " +
-                    "FROM scxa_coords AS coords, jsonb_array_elements(coords.parameterisation) option " +
-                    "WHERE experiment_accession=:experiment_accession " +
-                    "ORDER BY option";
+            "SELECT DISTINCT dim.method, option " +
+            "FROM scxa_coords AS coords " +
+                    "INNER JOIN scxa_dimension_reduction AS dim " +
+                    "ON coords.dimension_reduction_id = dim.id, " +
+                    "jsonb_array_elements(dim.parameterisation) option " +
+            "WHERE dim.experiment_accession=:experiment_accession " +
+            "ORDER BY option";
 
     /**
      * Get projection methods and  corresponding PlotOptions for the experiment accession

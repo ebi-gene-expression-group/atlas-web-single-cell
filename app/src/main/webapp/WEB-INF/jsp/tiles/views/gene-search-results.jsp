@@ -29,7 +29,6 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function(event) {
-    document.getElementById("local-nav-search").className += ' active';
     geneSearch.render({
       atlasUrl: '${pageContext.request.contextPath}/',
       basename: '${pageContext.request.contextPath}',

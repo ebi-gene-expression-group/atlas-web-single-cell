@@ -107,9 +107,10 @@ public class TSnePlotDao {
 
     private static final String SELECT_DISTINCT_PERPLEXITIES_STATEMENT =
             "SELECT DISTINCT value " +
-                    "FROM scxa_coords, LATERAL jsonb_each(parameterisation->0) " +
-                    "WHERE experiment_accession=:experiment_accession " +
-                        "AND method=:method";
+                    "FROM scxa_coords as coords " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = coords.dimension_reduction_id, " +
+                    "LATERAL jsonb_each(parameterisation->0) " +
+                    "WHERE sdr.experiment_accession=:experiment_accession AND sdr.method=:method";
     public List<Integer> fetchPerplexities(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession, "method", TSNE_METHOD);
 

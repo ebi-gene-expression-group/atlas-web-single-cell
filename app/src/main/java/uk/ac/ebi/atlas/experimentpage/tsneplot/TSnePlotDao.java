@@ -117,7 +117,9 @@ public class TSnePlotDao {
     private static final String COUNT_CELLS_BY_EXPERIMENT_ACCESSION =
             "SELECT COUNT(DISTINCT(cell_id)) " +
                     "FROM scxa_coords " +
-                    "WHERE experiment_accession=:experiment_accession";
+                    "INNER JOIN scxa_dimension_reduction sdr ON sdr.id = coords.dimension_reduction_id " +
+                    "WHERE sdr.experiment_accession=:experiment_accession";
+
     public Integer fetchNumberOfCellsByExperimentAccession(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 

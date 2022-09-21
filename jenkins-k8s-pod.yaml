@@ -35,7 +35,7 @@ spec:
       args:
       - 99d
       volumeMounts:
-        - mountPath: /test-data/scxa/magetab
+        - mountPath: /test-data/scxa
           name: scxa-data
           readOnly: true
         - mountPath: /test-data/bioentity_properties

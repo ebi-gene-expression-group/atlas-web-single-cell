@@ -97,7 +97,7 @@ pipeline {
           }
           steps {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
-            //sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+            sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
             //sh './gradlew --no-watch-fs -PtestResultsPath=e2e -PexcludeTests=**/FileDownloadControllerWIT.class :app:test --tests *WIT'
             sh './gradlew --no-watch-fs :app:jacocoTestReport'
           }
@@ -169,7 +169,7 @@ pipeline {
 
       junit 'app/build/ut/**/*.xml'
       junit 'app/build/it/**/*.xml'
-      junit 'app/build/e2e/**/*.xml'
+      // junit 'app/build/e2e/**/*.xml'
 
       archiveArtifacts artifacts: 'atlas-web-core/build/reports/**', fingerprint: true, allowEmptyArchive: true
       archiveArtifacts artifacts: 'app/build/reports/**', fingerprint: true, allowEmptyArchive: true

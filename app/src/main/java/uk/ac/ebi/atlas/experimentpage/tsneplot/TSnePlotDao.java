@@ -91,9 +91,10 @@ public class TSnePlotDao {
     private static final String SELECT_T_SNE_PLOT_WITHOUT_CLUSTERS_STATEMENT =
             "SELECT coords.cell_id, coords.x, coords.y " +
                     "FROM scxa_coords AS coords " +
-                    "WHERE coords.experiment_accession=:experiment_accession " +
-                        "AND coords.method=:method " +
-                        "AND coords.parameterisation->0->>'perplexity'=:perplexity";
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = c.dimension_reduction_id " +
+                    "WHERE sdr.experiment_accession=:experiment_accession " +
+                        "AND sdr.method=:method " +
+                        "AND sdr.parameterisation->0->>'perplexity'=:perplexity";
     public List<TSnePoint.Dto> fetchTSnePlotForPerplexity(String experimentAccession, int perplexity) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession, "method", TSNE_METHOD,
                 "perplexity", String.valueOf(perplexity));

@@ -59,13 +59,15 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "postgres"
   volumes:
-
     - name: scxa-data
       persistentVolumeClaim:
         claimName: scxa-data-rox
+        readOnly: true
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-rox
+        readOnly: true
     - name: gradle-ro-dep-cache
       persistentVolumeClaim:
         claimName: gradle-7.0-ro-dep-cache-rox
+        readOnly: true

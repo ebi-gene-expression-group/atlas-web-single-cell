@@ -91,7 +91,7 @@ public class TSnePlotDao {
     private static final String SELECT_T_SNE_PLOT_WITHOUT_CLUSTERS_STATEMENT =
             "SELECT coords.cell_id, coords.x, coords.y " +
                     "FROM scxa_coords AS coords " +
-                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = c.dimension_reduction_id " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = coords.dimension_reduction_id " +
                     "WHERE sdr.experiment_accession=:experiment_accession " +
                         "AND sdr.method=:method " +
                         "AND sdr.parameterisation->0->>'perplexity'=:perplexity";

@@ -63,8 +63,11 @@ services:
       - data-scxa-solrcloud8-0:/var/solr/data
     environment:
       - SOLR_HEAP=3g
-      - SOLR_OPTS=-Denable.runtime.lib=true
+      - SOLR_OPTS=-Denable.packages=true
       - ZK_HOST=scxa-solrcloud8-zookeeper-0:2181,scxa-solrcloud8-zookeeper-1:2181,scxa-solrcloud8-zookeeper-2:2181
+    secrets:
+      - scxa-solrcloud.pem
+      - scxa-solrcloud.der
     depends_on:
       - scxa-solrcloud8-zookeeper-0
       - scxa-solrcloud8-zookeeper-1
@@ -81,12 +84,23 @@ services:
       - data-scxa-solrcloud8-1:/var/solr/data
     environment:
       - SOLR_HEAP=3g
-      - SOLR_OPTS=-Denable.runtime.lib=true
+      - SOLR_OPTS=-Denable.packages=true
       - ZK_HOST=scxa-solrcloud8-zookeeper-0:2181,scxa-solrcloud8-zookeeper-1:2181,scxa-solrcloud8-zookeeper-2:2181
+    secrets:
+      - scxa-solrcloud.pem
+      - scxa-solrcloud.der
     depends_on:
       - scxa-solrcloud8-zookeeper-0
       - scxa-solrcloud8-zookeeper-1
       - scxa-solrcloud8-zookeeper-2
+
+# openssl genrsa -out scxa-solrcloud.pem 512
+# openssl rsa -in scxa-solrcloud.pem -pubout -outform DER -out scxa-solrcloud.der
+secrets:
+  scxa-solrcloud.der:
+    file: ./scxa-solrcloud.der
+  scxa-solrcloud.pem:
+    file: ./scxa-solrcloud.pem
 
 volumes:
   data-scxa-solrcloud8-zookeeper-0:

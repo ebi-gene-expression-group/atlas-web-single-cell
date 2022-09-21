@@ -38,7 +38,7 @@ spec:
         - mountPath: /test-data/scxa
           name: scxa-data
           readOnly: true
-        - mountPath: /test-data/scxa/expdesign
+        - mountPath: /test-data/expdesign
           name: scxa-data-expdesign
         - mountPath: /test-data/bioentity_properties
           name: bioentity-properties

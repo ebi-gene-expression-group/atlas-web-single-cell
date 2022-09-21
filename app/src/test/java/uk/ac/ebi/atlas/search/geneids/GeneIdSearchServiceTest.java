@@ -10,21 +10,27 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.util.LinkedMultiValueMap;
 import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 import uk.ac.ebi.atlas.species.Species;
+import uk.ac.ebi.atlas.species.SpeciesFactory;
 import uk.ac.ebi.atlas.species.SpeciesProperties;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.SYMBOL;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES_OVERRIDE_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomKnownBioentityPropertyName;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomSpecies;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -37,13 +43,16 @@ class GeneIdSearchServiceTest {
     @Mock
     private GeneIdSearchDao geneIdSearchDaoMock;
 
+    @Mock
+    private SpeciesFactory speciesFactory;
+
     private InOrder inOrder;
 
     private GeneIdSearchService subject;
 
     @BeforeEach
     void setUp() {
-        subject = new GeneIdSearchService(geneIdSearchDaoMock);
+        subject = new GeneIdSearchService(geneIdSearchDaoMock, speciesFactory);
         inOrder = inOrder(geneIdSearchDaoMock);
     }
 
@@ -176,5 +185,144 @@ class GeneIdSearchServiceTest {
         verify(geneIdSearchDaoMock).searchGeneIds(searchString, "mgi_symbol");
         verify(geneIdSearchDaoMock).searchGeneIds(searchString, "flybase_gene_id");
         verify(geneIdSearchDaoMock).searchGeneIds(searchString, "wbpsgene");
+    }
+
+    @Test
+    void whenEmptyQueryFieldsGivenThenReturnsError() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String emptyValue = "";
+        var generalCategory = "q";
+        requestParams.add(generalCategory, emptyValue);
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
+    }
+
+    @Test
+    void when2DifferentTypeOfEmptyQueryFieldsGivenThenReturnsError() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        var generalCategory = "q";
+        var symbolCategory = SYMBOL.name();
+        final String emptyValue = "";
+        requestParams.add(generalCategory, emptyValue);
+        requestParams.add(symbolCategory, emptyValue);
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
+    }
+
+    @Test
+    void when2DifferentTypeOfValidQueryFieldsGivenThenReturnsThe1stOne() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId = randomAlphabetic(1, 12);
+        var symbolCategory = SYMBOL.name();
+        var generalCategory = "q";
+        requestParams.add(symbolCategory, geneId);
+        requestParams.add(generalCategory, geneId);
+
+        String expectedCategory = symbolCategory;
+
+        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+
+        assertThat(actualCategory).isEqualTo(expectedCategory);
+    }
+
+    @Test
+    void when2DifferentTypeOfQueryFieldsGivenBut1stIsEmptyAnd2ndIsValidThenReturnsTheSecond() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String emptyValue = "";
+        final String geneId = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        var symbolCategory = SYMBOL.name();
+        requestParams.add(generalCategory, emptyValue);
+        requestParams.add(symbolCategory, geneId);
+
+        String expectedCategory = symbolCategory;
+
+        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+
+        assertThat(actualCategory).isEqualTo(expectedCategory);
+    }
+
+    @Test
+    void whenSameTypeOfQueryFieldsGivenTwiceBut1stIsEmptyAnd2ndIsValidThenReturnsTheSecond() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String emptyValue = "";
+        final String geneId = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        requestParams.add(generalCategory, emptyValue);
+        requestParams.add(generalCategory, geneId);
+
+        String expectedCategory = generalCategory;
+
+        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+
+        assertThat(actualCategory).isEqualTo(expectedCategory);
+    }
+
+    @Test
+    void whenSameTypeOfValidQueryFieldsGivenTwiceThenReturnsTheFirst() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId1 = randomAlphabetic(1, 12);
+        final String geneId2 = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        requestParams.add(generalCategory, geneId1);
+        requestParams.add(generalCategory, geneId2);
+
+        String expectedCategory = generalCategory;
+
+        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+
+        assertThat(actualCategory).isEqualTo(expectedCategory);
+    }
+
+
+
+    @Test
+    void whenRequestParamsEmptyThenThrowQueryParsingException() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getGeneQueryByRequestParams(requestParams));
+    }
+
+    @Test
+    void whenRequestParamsHasGenericQueryFieldThenGotProperGeneQuery() {
+        String symbolText = "CFTR";
+        LinkedMultiValueMap<String, String> requestParams =
+                getRequestParams(symbolText, "", "q");
+
+        GeneQuery expectedGeneQuery = GeneQuery.create(symbolText);
+
+        GeneQuery actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
+
+        assertThat(actualGeneQuery).isEqualTo(expectedGeneQuery);
+    }
+
+    @Test
+    void whenRequestParamsHasValidQueryFieldThenGotProperGeneQuery() {
+        final Species randomSpecies = generateRandomSpecies();
+        String symbolText = "CFTR";
+        final String speciesText = randomSpecies.getName();
+        final String symbolRequestParam = "symbol";
+        LinkedMultiValueMap<String, String> requestParams =
+                getRequestParams(symbolText, speciesText, symbolRequestParam);
+
+        GeneQuery expectedGeneQuery = GeneQuery.create(
+                symbolText, BioentityPropertyName.getByName(symbolRequestParam), randomSpecies);
+
+        when(speciesFactory.create(speciesText)).thenReturn(randomSpecies);
+
+        GeneQuery actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
+
+        assertThat(actualGeneQuery).isEqualTo(expectedGeneQuery);
+    }
+
+    private static LinkedMultiValueMap<String, String> getRequestParams(
+            String symbol, String species, String symbolRequestParam) {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        requestParams.add(symbolRequestParam, symbol);
+        requestParams.add("species", species);
+        return requestParams;
     }
 }

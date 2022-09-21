@@ -28,12 +28,13 @@ public class TSnePlotDao {
     private static final String SELECT_T_SNE_PLOT_WITH_EXPRESSION_STATEMENT =
             "SELECT c.cell_id, c.x, c.y, a.expression_level " +
                     "FROM scxa_coords c " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = c.dimension_reduction_id " +
                     "LEFT JOIN scxa_analytics a " +
-                        "ON c.experiment_accession=a.experiment_accession " +
+                        "ON sdr.experiment_accession=a.experiment_accession " +
                         "AND c.cell_id=a.cell_id AND a.gene_id=:gene_id " +
-                    "WHERE c.experiment_accession=:experiment_accession " +
-                        "AND c.method=:method " +
-                        "AND c.parameterisation->0->>:parameter_name =:parameter " +
+                    "WHERE sdr.experiment_accession=:experiment_accession " +
+                        "AND sdr.method=:method " +
+                        "AND sdr.parameterisation->0->>:parameter_name =:parameter " +
                     "ORDER BY c.cell_id";
     public List<TSnePoint.Dto> fetchTSnePlotWithExpression(String experimentAccession,
                                                            String plotType,
@@ -64,11 +65,12 @@ public class TSnePlotDao {
                         "AND g.experiment_accession=:experiment_accession " +
                         "AND g.variable = :variable " +
                     "RIGHT JOIN scxa_coords c " +
+                    "INNER JOIN scxa_dimension_reduction r on r.id = c.dimension_reduction_id " +
                         "ON m.cell_id=c.cell_id " +
-                        "AND m.experiment_accession=c.experiment_accession " +
-                    "WHERE c.method=:method " +
-                        "AND c.parameterisation->0->>:parameter_name=:parameter " +
-                        "AND c.experiment_accession=:experiment_accession";
+                        "AND m.experiment_accession=r.experiment_accession " +
+                    "WHERE r.method=:method " +
+                        "AND r.parameterisation->0->>:parameter_name=:parameter " +
+                        "AND r.experiment_accession=:experiment_accession";
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, String plotType, int plotOption,
                                                          String variable) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession, "parameter",

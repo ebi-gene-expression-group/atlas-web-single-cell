@@ -38,6 +38,8 @@ spec:
         - mountPath: /test-data/scxa
           name: scxa-data
           readOnly: true
+        - mountPath: /test-data/scxa/expdesign
+          name: scxa-data-expdesign
         - mountPath: /test-data/bioentity_properties
           name: bioentity-properties
           readOnly: true
@@ -63,6 +65,8 @@ spec:
       persistentVolumeClaim:
         claimName: scxa-data-rox
         readOnly: true
+    - name: scxa-data-expdesign
+      emptyDir: {}
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-rox

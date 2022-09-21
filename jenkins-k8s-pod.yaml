@@ -35,12 +35,12 @@ spec:
       args:
       - 99d
       volumeMounts:
-        - mountPath: /test-data/scxa/magetab
-          name: scxa-data
-          readOnly: true
-        - mountPath: /test-data/bioentity_properties
-          name: bioentity-properties
-          readOnly: true
+#        - mountPath: /test-data/scxa/magetab
+#          name: scxa-data
+#          readOnly: true
+#        - mountPath: /test-data/bioentity_properties
+#          name: bioentity-properties
+#          readOnly: true
         - mountPath: /root/gradle-ro-dep-cache
           name: gradle-ro-dep-cache
           readOnly: true
@@ -59,14 +59,14 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "postgres"
   volumes:
-    - name: scxa-data
-      persistentVolumeClaim:
-        claimName: scxa-data-rox
-        readOnly: true
-    - name: bioentity-properties
-      persistentVolumeClaim:
-        claimName: bioentity-properties-rox
-        readOnly: true
+#    - name: scxa-data
+#      persistentVolumeClaim:
+#        claimName: scxa-data-rox
+#        readOnly: true
+#    - name: bioentity-properties
+#      persistentVolumeClaim:
+#        claimName: bioentity-properties-rox
+#        readOnly: true
     - name: gradle-ro-dep-cache
       persistentVolumeClaim:
         claimName: gradle-7.0-ro-dep-cache-rox

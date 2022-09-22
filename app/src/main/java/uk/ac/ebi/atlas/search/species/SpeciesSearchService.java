@@ -21,7 +21,7 @@ public class SpeciesSearchService {
         if (StringUtils.isBlank(searchText)) {
             LOGGER.debug("Search text is empty that is going to result with no species.");
 
-            return Optional.of(ImmutableSet.of());
+            return Optional.empty();
         }
 
         LOGGER.info("Searching for: {}.", searchText);

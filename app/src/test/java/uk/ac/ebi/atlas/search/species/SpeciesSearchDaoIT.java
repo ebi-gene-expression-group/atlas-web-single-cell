@@ -38,8 +38,7 @@ class SpeciesSearchDaoIT {
 
         var species = subject.searchSpecies(searchText, category);
 
-        assertThat(species.isPresent()).isTrue();
-        assertThat(species.get()).isEmpty();
+        assertThat(species.isEmpty()).isTrue();
     }
 
     @Test
@@ -75,12 +74,13 @@ class SpeciesSearchDaoIT {
     }
 
     @Test
-    void whenGeneIdAsSimpleQueryPartOfExperimentsReturnListOfSpecies() {
+    void whenGeneIdAsGenericQueryPartOfExperimentsReturnListOfSpecies() {
         var homoSapiensSymbolValueInOurExperiment = "ACRV1";
-        final String allCategory = null;
+        final String genericCategory = "q";
         var anExpectedSpecies = "Homo_sapiens";
 
-        var species = subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, allCategory);
+        var species =
+                subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, genericCategory);
 
         assertThat(species.isPresent()).isTrue();
         assertThat(species.get()).contains(anExpectedSpecies);

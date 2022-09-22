@@ -172,14 +172,13 @@ class JsonGeneSearchControllerIT {
         var requestParams = new LinkedMultiValueMap<String, String>();
         final String notPartOfAnyExperiment = "NOTPartOfAnyExperiment";
         var generalCategory = "q";
-        var allCategory = "*";
         requestParams.add(generalCategory, notPartOfAnyExperiment);
 
         when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
                 .thenReturn(generalCategory);
         when(geneIdSearchServiceMock.getFirstNotBlankQueryField(List.of(notPartOfAnyExperiment)))
                 .thenReturn(Optional.of(notPartOfAnyExperiment));
-        when(speciesSearchService.search(notPartOfAnyExperiment, allCategory))
+        when(speciesSearchService.search(notPartOfAnyExperiment, generalCategory))
                 .thenReturn(Optional.of(ImmutableSet.of()));
 
         Set<String> emptySpeciesResult = subject.getSpeciesByGeneId(requestParams);
@@ -192,7 +191,6 @@ class JsonGeneSearchControllerIT {
         var requestParams = new LinkedMultiValueMap<String, String>();
         final String mostInterestingGeneEver = "MostInterestingGeneEver";
         var generalCategory = "q";
-        var allCategory = "*";
         var expectedSpecies = ImmutableSet.of("Homo_sapiens", "Mus_musculus");
         requestParams.add(generalCategory, mostInterestingGeneEver);
 
@@ -200,7 +198,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(generalCategory);
         when(geneIdSearchServiceMock.getFirstNotBlankQueryField(List.of(mostInterestingGeneEver)))
                 .thenReturn(Optional.of(mostInterestingGeneEver));
-        when(speciesSearchService.search(mostInterestingGeneEver, allCategory))
+        when(speciesSearchService.search(mostInterestingGeneEver, generalCategory))
                 .thenReturn(Optional.of(expectedSpecies));
 
         Set<String> speciesResultByGeneId = subject.getSpeciesByGeneId(requestParams);

@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.experimentimport;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,6 +32,7 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @Transactional
 @Sql("/fixtures/experiment.sql")
 @Sql(scripts = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
+@Ignore
 class ScxaExperimentCrudIT {
     private static final Random RNG = ThreadLocalRandom.current();
 

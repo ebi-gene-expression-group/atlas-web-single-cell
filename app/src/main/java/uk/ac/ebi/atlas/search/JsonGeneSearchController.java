@@ -15,6 +15,7 @@ import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
+import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
@@ -142,7 +143,9 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     public ImmutableSet<String> getSpeciesByGeneId(@RequestParam MultiValueMap<String, String> requestParams) {
         var category = geneIdSearchService.getCategoryFromRequestParams(requestParams);
         var queryTerm =
-                geneIdSearchService.getFirstNotBlankQueryField(requestParams.get(category)).orElseThrow();
+                geneIdSearchService.getFirstNotBlankQueryField(requestParams.get(category))
+                        .orElseThrow(() -> new QueryParsingException(
+                                String.format("All fields are blank for category: %s", category)));
 
         var species = speciesSearchService.search(queryTerm, category);
 

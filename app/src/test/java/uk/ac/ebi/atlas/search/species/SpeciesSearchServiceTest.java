@@ -64,8 +64,6 @@ class SpeciesSearchServiceTest {
 
         var species = subject.search(existingGeneIdForHuman, searchCategory);
 
-        assertThat(species.isPresent()).isTrue();
-        assertThat(species.get()).hasSize(1);
-        assertThat(species.get()).contains(expectedSpecies);
+        assertThat(species).contains(ImmutableSet.of(expectedSpecies));
     }
 }

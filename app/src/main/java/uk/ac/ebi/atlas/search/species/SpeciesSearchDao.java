@@ -32,14 +32,16 @@ public class SpeciesSearchDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpeciesSearchDao.class);
 
-    public static final String GENERIC_CATEGORY = "q";
-
     private final BioentitiesCollectionProxy bioentitiesCollectionProxy;
     private final Gene2ExperimentCollectionProxy gene2ExperimentCollectionProxy;
 
     public SpeciesSearchDao(SolrCloudCollectionProxyFactory collectionProxyFactory) {
         bioentitiesCollectionProxy = collectionProxyFactory.create(BioentitiesCollectionProxy.class);
         gene2ExperimentCollectionProxy = collectionProxyFactory.create(Gene2ExperimentCollectionProxy.class);
+    }
+
+    public Optional<ImmutableSet<String>> searchSpecies(String searchTerm) {
+        return searchSpecies(searchTerm, null);
     }
 
     public Optional<ImmutableSet<String>> searchSpecies(String searchTerm, String category) {
@@ -71,20 +73,9 @@ public class SpeciesSearchDao {
             return Optional.empty();
         }
 
-        if (category != null && category.equals(GENERIC_CATEGORY)) {
-            LOGGER.info("We can't use generic category (q) as a filter, so we set it to null.");
-            category = null;
-        }
-
-        var streamBuilderForUniqueSpeciesFromBioEntities =
-                getStreamBuilderForUniqueSpeciesFromBioEntities(searchTerm, category);
-
-        var streamBuilderForUniqueBioEntityIDFromGene2Experiment =
-                getStreamBuilderForUniqueBioEntityIDFromGene2Experiment();
-
         var streamBuilderForSpecies = new InnerJoinStreamBuilder(
-                streamBuilderForUniqueSpeciesFromBioEntities,
-                streamBuilderForUniqueBioEntityIDFromGene2Experiment,
+                getStreamBuilderForUniqueSpeciesFromBioEntities(searchTerm, category),
+                getStreamBuilderForUniqueBioEntityIDFromGene2Experiment(),
                 BIOENTITY_IDENTIFIER.name()
         );
 
@@ -118,7 +109,7 @@ public class SpeciesSearchDao {
                 .setFieldList(ImmutableSet.of(SPECIES_DV, BIOENTITY_IDENTIFIER_DV))
                 .sortBy(BIOENTITY_IDENTIFIER_DV, SolrQuery.ORDER.asc);
 
-        if (StringUtils.isNotBlank(category)) {
+        if (category != null) {
             bioEntitiesByTextAndCategory.addQueryFieldByTerm(PROPERTY_NAME, category);
         }
 

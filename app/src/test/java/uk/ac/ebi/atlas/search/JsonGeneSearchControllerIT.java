@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -146,7 +145,7 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
-    void whenRequestParamIsEmptySpeciesSearchReturnsEmptySet() {
+    void whenRequestParamIsEmptySpeciesSearchReturnsAnException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 
         when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
@@ -157,7 +156,7 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
-    void whenRequestParamIsNullSpeciesSearchReturnsEmptySet() {
+    void whenRequestParamIsNullSpeciesSearchReturnsAnException() {
         LinkedMultiValueMap<String, String> requestParams = null;
 
         when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
@@ -170,7 +169,7 @@ class JsonGeneSearchControllerIT {
     @Test
     void whenGeneIdIsNotPartOfAnyExperimentThenReturnsEmptySetOfSpecies() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String notPartOfAnyExperiment = "NOTPartOfAnyExperiment";
+        var notPartOfAnyExperiment = "NOTPartOfAnyExperiment";
         var generalCategory = "q";
         requestParams.add(generalCategory, notPartOfAnyExperiment);
 
@@ -181,7 +180,7 @@ class JsonGeneSearchControllerIT {
         when(speciesSearchService.search(notPartOfAnyExperiment, generalCategory))
                 .thenReturn(Optional.of(ImmutableSet.of()));
 
-        Set<String> emptySpeciesResult = subject.getSpeciesByGeneId(requestParams);
+        var emptySpeciesResult = subject.getSpeciesByGeneId(requestParams);
 
         assertThat(emptySpeciesResult).isEmpty();
     }
@@ -189,7 +188,7 @@ class JsonGeneSearchControllerIT {
     @Test
     void whenGeneIdIsPArtOfSomeExperimentsThenReturnsSetOfSpecies() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String mostInterestingGeneEver = "MostInterestingGeneEver";
+        var mostInterestingGeneEver = "MostInterestingGeneEver";
         var generalCategory = "q";
         var expectedSpecies = ImmutableSet.of("Homo_sapiens", "Mus_musculus");
         requestParams.add(generalCategory, mostInterestingGeneEver);
@@ -201,7 +200,7 @@ class JsonGeneSearchControllerIT {
         when(speciesSearchService.search(mostInterestingGeneEver, generalCategory))
                 .thenReturn(Optional.of(expectedSpecies));
 
-        Set<String> speciesResultByGeneId = subject.getSpeciesByGeneId(requestParams);
+        var speciesResultByGeneId = subject.getSpeciesByGeneId(requestParams);
 
         assertThat(speciesResultByGeneId).hasSize(2);
         assertThat(speciesResultByGeneId).containsSequence(expectedSpecies);

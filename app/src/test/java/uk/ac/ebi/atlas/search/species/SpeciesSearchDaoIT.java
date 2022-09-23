@@ -38,27 +38,26 @@ class SpeciesSearchDaoIT {
 
         var species = subject.searchSpecies(searchText, category);
 
-        assertThat(species.isEmpty()).isTrue();
+        assertThat(species).isNotPresent();
     }
 
     @Test
     void whenNoCategoryButValidGeneIdProvidedThenReturnResult() {
         var searchText = "ACRV1";
         String category = null;
-        var expectedSpecies = "Homo_sapiens";
+        var expectedSpecies = ImmutableSet.of("Homo_sapiens", "Mus_musculus");
 
         var species = subject.searchSpecies(searchText, category);
+        System.out.println(species);
 
-        assertThat(species.isPresent()).isTrue();
-        assertThat(species.get()).contains(expectedSpecies);
+        assertThat(species).contains(expectedSpecies);
     }
 
     @Test
     void whenNoDocumentsAreFoundInBioEntitiesReturnEmptyOptional() {
         var species = subject.searchSpecies("FOOBAR", SYMBOL.name);
 
-        assertThat(species.isPresent()).isTrue();
-        assertThat(species.get()).isEmpty();
+        assertThat(species).contains(ImmutableSet.of());
     }
 
     @Test
@@ -76,11 +75,10 @@ class SpeciesSearchDaoIT {
     @Test
     void whenGeneIdAsGenericQueryPartOfExperimentsReturnListOfSpecies() {
         var homoSapiensSymbolValueInOurExperiment = "ACRV1";
-        final String genericCategory = "q";
         var anExpectedSpecies = "Homo_sapiens";
 
         var species =
-                subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, genericCategory);
+                subject.searchSpecies(homoSapiensSymbolValueInOurExperiment);
 
         assertThat(species.isPresent()).isTrue();
         assertThat(species.get()).contains(anExpectedSpecies);

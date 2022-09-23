@@ -130,11 +130,6 @@ public class GeneIdSearchService {
     }
 
     public Optional<String> getFirstNotBlankQueryField(List<String> values) {
-        for (var searchValue : values) {
-            if (StringUtils.isNotBlank(searchValue)) {
-                return Optional.of(searchValue);
-            }
-        }
-        return Optional.empty();
+        return values.stream().filter(StringUtils::isNotBlank).findFirst();
     }
 }

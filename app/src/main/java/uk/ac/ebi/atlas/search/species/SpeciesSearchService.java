@@ -16,6 +16,7 @@ public class SpeciesSearchService {
 
     private final SpeciesSearchDao speciesSearchDao;
 
+    public static final String GENERIC_CATEGORY = "q";
 
     public Optional<ImmutableSet<String>> search(String searchText, String category) {
         if (StringUtils.isBlank(searchText)) {
@@ -27,6 +28,10 @@ public class SpeciesSearchService {
         LOGGER.info("Searching for: {}.", searchText);
         LOGGER.info("The provided search category is: {}", category);
 
-        return speciesSearchDao.searchSpecies(searchText, category);
+        if (category.equals(GENERIC_CATEGORY)) {
+            return speciesSearchDao.searchSpecies(searchText);
+        } else {
+            return speciesSearchDao.searchSpecies(searchText, category);
+        }
     }
 }

@@ -42,7 +42,6 @@ class ScxaExperimentCrudIT {
     private ScxaExperimentCrud subject;
 
     @Ignore
-    @Test
     void createExperiment() {
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
         subject.deleteExperiment(experimentAccession);
@@ -56,7 +55,6 @@ class ScxaExperimentCrudIT {
     }
 
     @Ignore
-    @Test
     void createExperimentWithSingleNucleusRNASeqAsExperimentType() {
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
         subject.deleteExperiment(experimentAccession);
@@ -70,7 +68,6 @@ class ScxaExperimentCrudIT {
     }
 
     @Ignore
-    @Test
     void createExperimentWithSingleCellRNASeqAsExperimentType() {
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
         subject.deleteExperiment(experimentAccession);
@@ -84,14 +81,12 @@ class ScxaExperimentCrudIT {
     }
 
     @Ignore
-    @Test
     void throwsIfExperimentFilesCannotBeFound() {
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> subject.createExperiment(generateRandomExperimentAccession(), RNG.nextBoolean()));
     }
 
     @Ignore
-    @Test
     void updatesLastUpdateIfExperimentIsAlreadyPresent() {
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
         var experimentBeforeUpdate = subject.readExperiment(experimentAccession).orElseThrow();
@@ -104,14 +99,13 @@ class ScxaExperimentCrudIT {
                 .isAfter(lastUpdateBeforeUpdate);
     }
 
-    @Test
+    @Ignore
     void throwIfExperimentDoesNotExistUpdateExperimentDesign() {
         assertThatExceptionOfType(ResourceNotFoundException.class)
                 .isThrownBy(() -> subject.updateExperimentDesign(generateRandomExperimentAccession()));
     }
 
     @Ignore
-    @Test
     void updateDesignCallsUpdateDesignInSuperClass() {
          var spy = spy(subject);
 

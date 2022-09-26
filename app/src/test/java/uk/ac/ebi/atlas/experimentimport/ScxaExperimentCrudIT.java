@@ -32,7 +32,6 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @Transactional
 @Sql("/fixtures/experiment.sql")
 @Sql(scripts = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
-@Ignore
 class ScxaExperimentCrudIT {
     private static final Random RNG = ThreadLocalRandom.current();
 
@@ -42,6 +41,7 @@ class ScxaExperimentCrudIT {
     @Inject
     private ScxaExperimentCrud subject;
 
+    @Ignore
     @Test
     void createExperiment() {
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
@@ -55,6 +55,7 @@ class ScxaExperimentCrudIT {
                 .get().hasNoNullFieldsOrProperties();
     }
 
+    @Ignore
     @Test
     void createExperimentWithSingleNucleusRNASeqAsExperimentType() {
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
@@ -68,6 +69,7 @@ class ScxaExperimentCrudIT {
                 .get().hasNoNullFieldsOrProperties();
     }
 
+    @Ignore
     @Test
     void createExperimentWithSingleCellRNASeqAsExperimentType() {
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
@@ -81,12 +83,14 @@ class ScxaExperimentCrudIT {
                 .get().hasNoNullFieldsOrProperties();
     }
 
+    @Ignore
     @Test
     void throwsIfExperimentFilesCannotBeFound() {
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> subject.createExperiment(generateRandomExperimentAccession(), RNG.nextBoolean()));
     }
 
+    @Ignore
     @Test
     void updatesLastUpdateIfExperimentIsAlreadyPresent() {
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
@@ -106,6 +110,7 @@ class ScxaExperimentCrudIT {
                 .isThrownBy(() -> subject.updateExperimentDesign(generateRandomExperimentAccession()));
     }
 
+    @Ignore
     @Test
     void updateDesignCallsUpdateDesignInSuperClass() {
          var spy = spy(subject);

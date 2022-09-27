@@ -32,7 +32,6 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @Transactional
 @Sql("/fixtures/experiment.sql")
 @Sql(value = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
-@Ignore
 class ScxaExperimentRepositoryIT {
     @Inject
     private JdbcUtils jdbcUtils;
@@ -43,21 +42,21 @@ class ScxaExperimentRepositoryIT {
     @Inject
     private ScxaExperimentRepository subject;
 
-    @Test
+    @Ignore
     void throwIfExperimentCannotBeFound() {
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "experiment")).isGreaterThan(0);
         assertThatExceptionOfType(ResourceNotFoundException.class)
                 .isThrownBy(() -> subject.getExperiment(generateRandomExperimentAccession()));
     }
 
-    @Test
+    @Ignore
     void singleCellBaselineRnaSeqExperiments() {
         assertThat(subject.getExperiment(jdbcUtils.fetchRandomExperimentAccession(SINGLE_CELL_RNASEQ_MRNA_BASELINE)))
                 .isInstanceOf(SingleCellBaselineExperiment.class)
                 .hasNoNullFieldsOrProperties();
     }
 
-    @Test
+    @Ignore
     void singleNucleusBaselineRnaSeqExperiments() {
         assertThat(subject.getExperiment(jdbcUtils.fetchRandomExperimentAccession(SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE)))
           .isInstanceOf(SingleCellBaselineExperiment.class)

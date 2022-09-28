@@ -33,11 +33,12 @@ public class CellPlotDao {
                         "AND g.experiment_accession=:experiment_accession " +
                         "AND g.variable=:variable " +
                     "RIGHT JOIN scxa_coords c " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = c.dimension_reduction_id " +
                         "ON m.cell_id=c.cell_id " +
-                        "AND m.experiment_accession=c.experiment_accession " +
-                    "WHERE c.method=:method " +
-                        "AND c.parameterisation @> :parameterisation::jsonb " +
-                        "AND c.experiment_accession=:experiment_accession " +
+                        "AND m.experiment_accession=sdr.experiment_accession " +
+                        "WHERE sdr.method=:method " +
+                        "AND sdr.parameterisation @> :parameterisation::jsonb " +
+                        "AND sdr.experiment_accession=:experiment_accession " +
             "ORDER BY cast(g.value as integer) ASC";
     public List<TSnePoint.Dto> fetchCellPlotWithK(String experimentAccession,
                                                   int k,

@@ -27,6 +27,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+//TODO - 'method' DB column fixture data here all small case, but in the latest schema V19,method column values
+// looks like this 'UMAP' and 't-SNE', need correction for the asserts once we finalise the fixture data.Randomised
+// tests will be failing because of fixtures, currently we have a few fixtures and manual adjustments of fixtures.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)

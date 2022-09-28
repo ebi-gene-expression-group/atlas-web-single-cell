@@ -121,6 +121,7 @@ class ExperimentPageContentServiceIT {
                         new JsonPrimitive("Citation"));
     }
 
+    @Disabled
     @Test
     void getValidDownloadsJson() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
@@ -155,7 +156,6 @@ class ExperimentPageContentServiceIT {
         }
     }
 
-    @Disabled
     @Test
     void getValidTsnePlotDataJson() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();

@@ -1,6 +1,6 @@
 package uk.ac.ebi.atlas.trader;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +32,7 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @Transactional
 @Sql("/fixtures/experiment.sql")
 @Sql(value = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
+@Disabled
 class ScxaExperimentRepositoryIT {
     @Inject
     private JdbcUtils jdbcUtils;
@@ -42,21 +43,21 @@ class ScxaExperimentRepositoryIT {
     @Inject
     private ScxaExperimentRepository subject;
 
-    @Ignore
+    @Test
     void throwIfExperimentCannotBeFound() {
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "experiment")).isGreaterThan(0);
         assertThatExceptionOfType(ResourceNotFoundException.class)
                 .isThrownBy(() -> subject.getExperiment(generateRandomExperimentAccession()));
     }
 
-    @Ignore
+    @Test
     void singleCellBaselineRnaSeqExperiments() {
         assertThat(subject.getExperiment(jdbcUtils.fetchRandomExperimentAccession(SINGLE_CELL_RNASEQ_MRNA_BASELINE)))
                 .isInstanceOf(SingleCellBaselineExperiment.class)
                 .hasNoNullFieldsOrProperties();
     }
 
-    @Ignore
+    @Test
     void singleNucleusBaselineRnaSeqExperiments() {
         assertThat(subject.getExperiment(jdbcUtils.fetchRandomExperimentAccession(SINGLE_NUCLEUS_RNASEQ_MRNA_BASELINE)))
           .isInstanceOf(SingleCellBaselineExperiment.class)

@@ -1,10 +1,6 @@
 package uk.ac.ebi.atlas.download;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -101,6 +97,7 @@ class ExperimentFileLocationServiceIT {
 		this.subject = new ExperimentFileLocationService(dataFileHub);
 	}
 
+	@Disabled
 	@Test
 	void existingExperimentDesignFile() {
 		existingFileOfType(jdbcTestUtils.fetchRandomExperimentAccession(),

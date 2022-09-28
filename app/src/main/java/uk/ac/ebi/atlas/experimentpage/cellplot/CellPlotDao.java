@@ -93,12 +93,13 @@ public class CellPlotDao {
     private static final String SELECT_CELL_PLOT_WITH_EXPRESSION_STATEMENT =
             "SELECT c.cell_id, c.x, c.y, a.expression_level " +
                     "FROM scxa_coords c " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = c.dimension_reduction_id " +
                     "LEFT JOIN scxa_analytics a " +
-                        "ON c.experiment_accession=a.experiment_accession " +
+                        "ON sdr.experiment_accession=a.experiment_accession " +
                         "AND c.cell_id=a.cell_id AND a.gene_id=:gene_id " +
-                    "WHERE c.experiment_accession=:experiment_accession " +
-                        "AND c.method=:method " +
-                        "AND c.parameterisation @> :parameterisation::jsonb " +
+                    "WHERE sdr.experiment_accession=:experiment_accession " +
+                        "AND sdr.method=:method " +
+                        "AND sdr.parameterisation @> :parameterisation::jsonb " +
                     "ORDER BY c.cell_id";
     public List<TSnePoint.Dto> fetchCellPlotWithExpression(String experimentAccession,
                                                            String geneId,

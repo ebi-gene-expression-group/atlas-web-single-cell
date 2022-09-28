@@ -65,10 +65,11 @@ public class CellPlotDao {
 
     private static final String SELECT_CELL_PLOT_STATEMENT =
             "SELECT cell_id, x, y " +
-                    "FROM scxa_coords " +
-                    "WHERE method=:method " +
-                        "AND parameterisation @> :parameterisation::jsonb " +
-                        "AND experiment_accession=:experiment_accession";
+                    "FROM scxa_coords AS coords " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = coords.dimension_reduction_id " +
+                    "WHERE sdr.method=:method " +
+                        "AND sdr.parameterisation @> :parameterisation::jsonb " +
+                        "AND sdr.experiment_accession=:experiment_accession";
     public List<TSnePoint.Dto> fetchCellPlot(String experimentAccession,
                                              String plotMethod,
                                              Map<String, Integer> plotParameters) {

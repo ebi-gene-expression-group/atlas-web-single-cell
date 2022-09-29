@@ -48,7 +48,6 @@ class SpeciesSearchDaoIT {
         var expectedSpecies = ImmutableSet.of("Homo_sapiens", "Mus_musculus");
 
         var species = subject.searchSpecies(searchText, category);
-        System.out.println(species);
 
         assertThat(species).contains(expectedSpecies);
     }
@@ -68,7 +67,6 @@ class SpeciesSearchDaoIT {
 
         var species = subject.searchSpecies(gorillaGeneNotInOurExperiment, SYMBOL.name);
 
-        assertThat(species.isPresent()).isTrue();
         assertThat(species).hasValue(ImmutableSet.of());
     }
 

@@ -295,7 +295,7 @@ class GeneIdSearchServiceTest {
     }
 
     @Test
-    void whenRequestParamsHasGenericQueryFieldThenGotProperGeneQuery() {
+    void whenRequestParamsHasNoSpeciesThenGotProperGeneQuery() {
         var searchText = randomAlphabetic(1, 12);
         var categoriesInRandomOrder = getCategoriesInRandomOrder();
         var aRandomCategory = categoriesInRandomOrder.get(0);
@@ -311,7 +311,7 @@ class GeneIdSearchServiceTest {
     }
 
     @Test
-    void whenRequestParamsHasValidQueryFieldThenGotProperGeneQuery() {
+    void whenRequestParamsHasSpeciesThenGotProperGeneQuery() {
         final Species randomSpecies = generateRandomSpecies();
         var searchText = randomAlphabetic(1, 12);
         final String speciesText = randomSpecies.getName();

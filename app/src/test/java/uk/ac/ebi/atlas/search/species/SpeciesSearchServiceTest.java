@@ -36,7 +36,7 @@ class SpeciesSearchServiceTest {
 
         var emptyListOfSpecies = subject.search(emptySearchText, searchCategory);
 
-        assertThat(emptyListOfSpecies.isEmpty()).isTrue();
+        assertThat(emptyListOfSpecies).isEmpty();
     }
 
     @Test
@@ -50,7 +50,7 @@ class SpeciesSearchServiceTest {
         var emptyListOfSpecies = subject.search(notExistingSearchText, searchCategory);
 
         assertThat(emptyListOfSpecies.isPresent()).isTrue();
-        assertThat(emptyListOfSpecies.get()).hasSize(0);
+        assertThat(emptyListOfSpecies.get()).isEmpty();
     }
 
     @Test

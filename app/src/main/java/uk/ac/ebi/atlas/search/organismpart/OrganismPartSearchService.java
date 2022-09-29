@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import uk.ac.ebi.atlas.search.GeneSearchService;
 
 import java.util.Optional;
 
@@ -13,17 +14,25 @@ import java.util.Optional;
 public class OrganismPartSearchService {
 
     private final OrganismPartSearchDao organismPartSearchDao;
+    private final GeneSearchService geneSearchService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganismPartSearchService.class);
 
     public Optional<ImmutableSet<String>> search(Optional<ImmutableSet<String>> geneIds) {
-        if (geneIds.isPresent() && geneIds.get().isEmpty()) {
-            LOGGER.debug("Given set of gene IDs is empty. That results with an empty set of organism part.");
+        if (geneIds.isEmpty() || geneIds.get().isEmpty()) {
+            LOGGER.debug("Can't query for organism part as no gene IDs has given.");
             return Optional.of(ImmutableSet.of());
         }
 
-        LOGGER.info("Searching organism parts for this gene ids: {}", geneIds.orElseThrow().asList());
+        LOGGER.info("Searching organism parts for this gene ids: {}", geneIds.get().asList());
 
-        return organismPartSearchDao.searchOrganismPart(geneIds.orElseThrow());
+        var cellIDs = geneSearchService.getCellIdsFromGeneIds(geneIds.get());
+
+        if (cellIDs.isEmpty()) {
+            return Optional.of(ImmutableSet.of());
+        }
+
+        return organismPartSearchDao.searchOrganismPart(cellIDs);
     }
+
 }

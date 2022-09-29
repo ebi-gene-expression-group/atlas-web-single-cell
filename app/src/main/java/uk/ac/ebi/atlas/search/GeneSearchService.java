@@ -5,9 +5,9 @@ import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +52,15 @@ public class GeneSearchService {
                 geneId -> fetchClusterIDWithPreferredKAndMinPForGeneID(
                         geneSearchDao.fetchExperimentAccessionsWhereGeneIsMarker(geneId),
                         geneId));
+    }
+
+    public ImmutableSet<String> getCellIdsFromGeneIds(ImmutableSet<String> geneIds) {
+        var cellIds = new HashSet<String>();
+        for (var geneId : geneIds) {
+            var cellIdsByGeneID = geneSearchDao.fetchCellIds(geneId);
+            cellIdsByGeneID.values().forEach(cellIds::addAll);
+        }
+        return ImmutableSet.copyOf(cellIds);
     }
 
     private <T> ImmutableMap<String, T> fetchInParallel(Set<String> geneIds, Function<String, T> geneIdInfoProvider) {

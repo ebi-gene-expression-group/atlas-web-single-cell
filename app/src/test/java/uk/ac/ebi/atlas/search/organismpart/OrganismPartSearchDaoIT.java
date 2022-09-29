@@ -13,7 +13,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
-import uk.ac.ebi.atlas.search.GeneSearchDao;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
@@ -39,17 +38,13 @@ public class OrganismPartSearchDaoIT {
     @Inject
     private SolrCloudCollectionProxyFactory collectionProxyFactory;
 
-    @Inject
-    private GeneSearchDao geneSearchDao;
-
     private OrganismPartSearchDao subject;
 
     @BeforeAll
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/experiment.sql")
+                new ClassPathResource("fixtures/scxa_analytics.sql")
         );
 
         populator.execute(dataSource);
@@ -59,7 +54,6 @@ public class OrganismPartSearchDaoIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql")
         );
         populator.execute(dataSource);
@@ -67,38 +61,38 @@ public class OrganismPartSearchDaoIT {
 
     @BeforeEach
     void setup() {
-        subject = new OrganismPartSearchDao(collectionProxyFactory, geneSearchDao);
+        subject = new OrganismPartSearchDao(collectionProxyFactory);
     }
 
     @Test
-    void whenEmptySetOfGeneIDsProvidedReturnEmptyOptional() {
-        ImmutableSet<String> geneIds = ImmutableSet.of();
+    void whenEmptySetOfCellIDsProvidedReturnEmptyOptional() {
+        ImmutableSet<String> cellIDs = ImmutableSet.of();
 
-        var organismParts = subject.searchOrganismPart(geneIds);
+        var organismParts = subject.searchOrganismPart(cellIDs);
 
         assertThat(organismParts.isPresent()).isTrue();
         assertThat(organismParts.get()).isEmpty();
     }
 
     @Test
-    void whenSetOfInvalidGeneIdsProvidedReturnSetOfOrganismPart() {
-        var geneIds =
-                ImmutableSet.of("invalid-geneId-1", "invalid-geneId-2", "invalid-geneId-3");
+    void whenSetOfInvalidCellIdsProvidedReturnSetOfOrganismPart() {
+        var cellIDs =
+                ImmutableSet.of("invalid-cellID-1", "invalid-cellID-2", "invalid-cellID-3");
 
-        var organismParts = subject.searchOrganismPart(geneIds);
+        var organismParts = subject.searchOrganismPart(cellIDs);
 
         assertThat(organismParts.isPresent()).isTrue();
         assertThat(organismParts.get()).isEmpty();
     }
 
     @Test
-    void whenSetOfValidGeneIdsProvidedReturnSetOfOrganismPart() {
-        final List<String> randomListOfGeneIds = jdbcUtils.fetchRandomListOfGeneIds(10);
-        var geneIds =
+    void whenSetOfValidCellIdsProvidedReturnSetOfOrganismPart() {
+        final List<String> randomListOfCellIDs = jdbcUtils.fetchRandomListOfCells(10);
+        var cellIDs =
                 ImmutableSet.copyOf(
-                        new HashSet<>(randomListOfGeneIds));
+                        new HashSet<>(randomListOfCellIDs));
 
-        var organismParts = subject.searchOrganismPart(geneIds);
+        var organismParts = subject.searchOrganismPart(cellIDs);
 
         assertThat(organismParts.isPresent()).isTrue();
         assertThat(organismParts.get().size()).isGreaterThan(0);

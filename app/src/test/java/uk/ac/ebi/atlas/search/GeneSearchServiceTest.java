@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.search;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -227,5 +228,27 @@ class GeneSearchServiceTest {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(
                 () -> subject.getCellIdsInExperiments(generateRandomExperimentAccession()))
                 .withCauseInstanceOf(ExecutionException.class);
+    }
+
+    @Test
+    void whenGeneIdsExistsThenReturnSetOfCellIds() {
+        var existingGeneId1 = "ExistingGeneId1";
+        var existingGeneId2 = "ExistingGeneId2";
+        var validGeneIds = ImmutableSet.of(existingGeneId1, existingGeneId2);
+        var existingCellId1 = "ExistingCellId1";
+        var existingCellId2 = "ExistingCellId2";
+        var experimentAccession = "ExperimentAccession";
+        var expectedCellIds = ImmutableSet.of(existingCellId1, existingCellId2);
+
+        when(geneSearchDaoMock.fetchCellIds(anyString()))
+                .thenReturn(
+                        Map.of(experimentAccession, List.of(existingCellId1)),
+                        Map.of(experimentAccession, List.of(existingCellId2))
+                );
+
+        var actualCellIds =
+                subject.getCellIdsFromGeneIds(validGeneIds);
+
+        assertThat(actualCellIds).containsSequence(expectedCellIds);
     }
 }

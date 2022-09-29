@@ -17,8 +17,6 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.SelectSt
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.UniqueStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
 
-import java.util.Optional;
-
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER_DV;
@@ -40,11 +38,11 @@ public class SpeciesSearchDao {
         gene2ExperimentCollectionProxy = collectionProxyFactory.create(Gene2ExperimentCollectionProxy.class);
     }
 
-    public Optional<ImmutableSet<String>> searchSpecies(String searchTerm) {
+    public ImmutableSet<String> searchSpecies(String searchTerm) {
         return searchSpecies(searchTerm, null);
     }
 
-    public Optional<ImmutableSet<String>> searchSpecies(String searchTerm, String category) {
+    public ImmutableSet<String> searchSpecies(String searchTerm, String category) {
         // innerJoin(
         //      unique(
         //          select(
@@ -70,7 +68,7 @@ public class SpeciesSearchDao {
 
         if (StringUtils.isBlank(searchTerm)) {
             LOGGER.info("We can't conduct a search with an empty search term.");
-            return Optional.empty();
+            return ImmutableSet.of();
         }
 
         var streamBuilderForSpecies = new InnerJoinStreamBuilder(
@@ -83,11 +81,11 @@ public class SpeciesSearchDao {
         return getSpeciesFromStreamBuilder(streamBuilderForSpecies);
     }
 
-    private Optional<ImmutableSet<String>> getSpeciesFromStreamBuilder(InnerJoinStreamBuilder speciesStreamBuilder) {
+    private ImmutableSet<String> getSpeciesFromStreamBuilder(InnerJoinStreamBuilder speciesStreamBuilder) {
         try (TupleStreamer tupleStreamer = TupleStreamer.of(speciesStreamBuilder.build())) {
-            return Optional.of(tupleStreamer.get()
+            return tupleStreamer.get()
                     .map(tuple -> tuple.getString(SPECIES.name()))
-                    .collect(toImmutableSet())
+                    .collect(toImmutableSet()
             );
         }
     }

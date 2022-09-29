@@ -28,8 +28,6 @@ import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-import java.util.List;
-
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -255,7 +253,6 @@ class JsonGeneSearchControllerWIT {
                 jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment("E-CURD-4");
 
         var expectedSpecies = "Arabidopsis_thaliana";
-        var setOfExpectedSpecies = List.of(expectedSpecies);
 
         this.mockMvc.perform(get("/json/gene-search/species").param("ensgene", shouldBeGeneThatPartOfExperiments))
                 .andExpect(status().isOk())

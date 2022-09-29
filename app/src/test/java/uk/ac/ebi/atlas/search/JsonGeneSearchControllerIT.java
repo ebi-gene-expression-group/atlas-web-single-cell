@@ -178,7 +178,7 @@ class JsonGeneSearchControllerIT {
         when(geneIdSearchServiceMock.getFirstNotBlankQueryField(List.of(notPartOfAnyExperiment)))
                 .thenReturn(Optional.of(notPartOfAnyExperiment));
         when(speciesSearchService.search(notPartOfAnyExperiment, generalCategory))
-                .thenReturn(Optional.of(ImmutableSet.of()));
+                .thenReturn(ImmutableSet.of());
 
         var emptySpeciesResult = subject.getSpeciesByGeneId(requestParams);
 
@@ -198,7 +198,7 @@ class JsonGeneSearchControllerIT {
         when(geneIdSearchServiceMock.getFirstNotBlankQueryField(List.of(mostInterestingGeneEver)))
                 .thenReturn(Optional.of(mostInterestingGeneEver));
         when(speciesSearchService.search(mostInterestingGeneEver, generalCategory))
-                .thenReturn(Optional.of(expectedSpecies));
+                .thenReturn(expectedSpecies);
 
         var speciesResultByGeneId = subject.getSpeciesByGeneId(requestParams);
 

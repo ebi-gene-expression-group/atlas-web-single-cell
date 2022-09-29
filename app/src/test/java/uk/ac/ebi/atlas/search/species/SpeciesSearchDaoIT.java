@@ -36,9 +36,9 @@ class SpeciesSearchDaoIT {
         var searchText = "";
         var category = SYMBOL.name;
 
-        var species = subject.searchSpecies(searchText, category);
+        var actualSpecies = subject.searchSpecies(searchText, category);
 
-        assertThat(species).isNotPresent();
+        assertThat(actualSpecies).isEmpty();
     }
 
     @Test
@@ -47,16 +47,16 @@ class SpeciesSearchDaoIT {
         String category = null;
         var expectedSpecies = ImmutableSet.of("Homo_sapiens", "Mus_musculus");
 
-        var species = subject.searchSpecies(searchText, category);
+        var actualSpecies = subject.searchSpecies(searchText, category);
 
-        assertThat(species).contains(expectedSpecies);
+        assertThat(actualSpecies).containsSequence(expectedSpecies);
     }
 
     @Test
     void whenNoDocumentsAreFoundInBioEntitiesReturnEmptyOptional() {
-        var species = subject.searchSpecies("FOOBAR", SYMBOL.name);
+        var actualSpecies = subject.searchSpecies("FOOBAR", SYMBOL.name);
 
-        assertThat(species).contains(ImmutableSet.of());
+        assertThat(actualSpecies).isEmpty();
     }
 
     @Test
@@ -65,9 +65,9 @@ class SpeciesSearchDaoIT {
         // So, the species search by gene id should not find any results
         var gorillaGeneNotInOurExperiment = "ENSGGOG00000029327";
 
-        var species = subject.searchSpecies(gorillaGeneNotInOurExperiment, SYMBOL.name);
+        var actualSpecies = subject.searchSpecies(gorillaGeneNotInOurExperiment, SYMBOL.name);
 
-        assertThat(species).hasValue(ImmutableSet.of());
+        assertThat(actualSpecies).isEmpty();
     }
 
     @Test
@@ -75,11 +75,10 @@ class SpeciesSearchDaoIT {
         var homoSapiensSymbolValueInOurExperiment = "ACRV1";
         var anExpectedSpecies = "Homo_sapiens";
 
-        var species =
+        var actualSpecies =
                 subject.searchSpecies(homoSapiensSymbolValueInOurExperiment);
 
-        assertThat(species.isPresent()).isTrue();
-        assertThat(species.get()).contains(anExpectedSpecies);
+        assertThat(actualSpecies).contains(anExpectedSpecies);
     }
 
     @Test
@@ -87,9 +86,8 @@ class SpeciesSearchDaoIT {
         var homoSapiensSymbolValueInOurExperiment = "ACRV1";
         var anExpectedSpecies = "Homo_sapiens";
 
-        var species = subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, SYMBOL.name);
+        var actualSpecies = subject.searchSpecies(homoSapiensSymbolValueInOurExperiment, SYMBOL.name);
 
-        assertThat(species.isPresent()).isTrue();
-        assertThat(species.get()).contains(anExpectedSpecies);
+        assertThat(actualSpecies).contains(anExpectedSpecies);
     }
 }

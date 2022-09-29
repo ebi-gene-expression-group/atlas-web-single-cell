@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class SpeciesSearchService {
@@ -18,11 +16,11 @@ public class SpeciesSearchService {
 
     public static final String GENERIC_CATEGORY = "q";
 
-    public Optional<ImmutableSet<String>> search(String searchText, String category) {
+    public ImmutableSet<String> search(String searchText, String category) {
         if (StringUtils.isBlank(searchText)) {
             LOGGER.debug("Search text is empty that is going to result with no species.");
 
-            return Optional.empty();
+            return ImmutableSet.of();
         }
 
         LOGGER.info("Searching for: {}.", searchText);

@@ -147,9 +147,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         .orElseThrow(() -> new QueryParsingException(
                                 String.format("All fields are blank for category: %s", category)));
 
-        var species = speciesSearchService.search(queryTerm, category);
-
-        return species.orElse(ImmutableSet.of());
+        return speciesSearchService.search(queryTerm, category);
     }
 
     private ImmutableList<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {

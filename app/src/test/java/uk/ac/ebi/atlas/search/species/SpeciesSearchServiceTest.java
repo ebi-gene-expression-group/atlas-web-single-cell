@@ -9,8 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.SYMBOL;
@@ -30,7 +28,7 @@ class SpeciesSearchServiceTest {
     }
 
     @Test
-    void whenEmptySearchTextProvidedReturnEmptyOptional() {
+    void whenEmptySearchTextProvidedReturnEmptySet() {
         var emptySearchText = "";
         var searchCategory = SYMBOL.name();
 
@@ -40,17 +38,16 @@ class SpeciesSearchServiceTest {
     }
 
     @Test
-    void whenNoSearchTextNotFoundReturnEmptyOptional() {
+    void whenNoSearchTextNotFoundReturnEmptySet() {
         var notExistingSearchText = "NotExistingGeneId";
         var searchCategory = SYMBOL.name();
 
         when(speciesSearchDao.searchSpecies(notExistingSearchText, searchCategory))
-                .thenReturn(Optional.of(ImmutableSet.of()));
+                .thenReturn(ImmutableSet.of());
 
         var emptyListOfSpecies = subject.search(notExistingSearchText, searchCategory);
 
-        assertThat(emptyListOfSpecies.isPresent()).isTrue();
-        assertThat(emptyListOfSpecies.get()).isEmpty();
+        assertThat(emptyListOfSpecies).isEmpty();
     }
 
     @Test
@@ -60,10 +57,10 @@ class SpeciesSearchServiceTest {
         var expectedSpecies = "Homo_sapiens";
 
         when(speciesSearchDao.searchSpecies(existingGeneIdForHuman, searchCategory))
-                .thenReturn(Optional.of(ImmutableSet.of(expectedSpecies)));
+                .thenReturn(ImmutableSet.of(expectedSpecies));
 
         var species = subject.search(existingGeneIdForHuman, searchCategory);
 
-        assertThat(species).contains(ImmutableSet.of(expectedSpecies));
+        assertThat(species).contains(expectedSpecies);
     }
 }

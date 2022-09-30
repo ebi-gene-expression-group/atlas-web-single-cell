@@ -189,8 +189,8 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(organismPartSearchServiceMock.search(Optional.of(geneIdsFromService)))
-                .thenReturn(Optional.of(ImmutableSet.of()));
+        when(organismPartSearchServiceMock.search(geneIdsFromService))
+                .thenReturn(ImmutableSet.of());
 
         var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
 
@@ -212,13 +212,11 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(organismPartSearchServiceMock.search(Optional.of(geneIdsFromService)))
-                .thenReturn(Optional.of(ImmutableSet.of(expectedOrganismPart)));
+        when(organismPartSearchServiceMock.search(geneIdsFromService))
+                .thenReturn(ImmutableSet.of(expectedOrganismPart));
 
         var actualOrganismParts = subject.getOrganismPartBySearchTerm(requestParams);
 
-        assertThat(actualOrganismParts).isNotEmpty();
-        assertThat(actualOrganismParts).hasSize(1);
-        assertThat(actualOrganismParts).contains(expectedOrganismPart);
+        assertThat(actualOrganismParts).containsExactly(expectedOrganismPart);
     }
 }

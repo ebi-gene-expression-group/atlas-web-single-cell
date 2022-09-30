@@ -10,8 +10,6 @@ import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.UniqueStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
 
-import java.util.Optional;
-
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
@@ -26,7 +24,7 @@ public class OrganismPartSearchDao {
                 collectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-    public Optional<ImmutableSet<String>> searchOrganismPart(ImmutableSet<String> cellIDs) {
+    public ImmutableSet<String> searchOrganismPart(ImmutableSet<String> cellIDs) {
 //        Streaming query for getting the organism_part provided by set of cell IDs
 //        unique(
 //            search(scxa-analytics-v6, q=cell_id:<SET_OF_CELL_IDS>,
@@ -50,11 +48,11 @@ public class OrganismPartSearchDao {
         ).returnAllDocs();
     }
 
-    private Optional<ImmutableSet<String>> getOrganismPartFromStreamQuery(UniqueStreamBuilder uniqueOrganismPartStreamBuilder) {
+    private ImmutableSet<String> getOrganismPartFromStreamQuery(UniqueStreamBuilder uniqueOrganismPartStreamBuilder) {
         try (TupleStreamer tupleStreamer = TupleStreamer.of(uniqueOrganismPartStreamBuilder.build())) {
-            return Optional.of(tupleStreamer.get()
+            return tupleStreamer.get()
                     .map(tuple -> tuple.getString(CTW_ORGANISM_PART.name()))
-                    .collect(toImmutableSet())
+                    .collect(toImmutableSet()
             );
         }
     }

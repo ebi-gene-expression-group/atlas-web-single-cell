@@ -65,28 +65,26 @@ public class OrganismPartSearchDaoIT {
     }
 
     @Test
-    void whenEmptySetOfCellIDsProvidedReturnEmptyOptional() {
+    void whenEmptySetOfCellIDsProvidedReturnEmptySetOfOrganismPart() {
         ImmutableSet<String> cellIDs = ImmutableSet.of();
 
         var organismParts = subject.searchOrganismPart(cellIDs);
 
-        assertThat(organismParts.isPresent()).isTrue();
-        assertThat(organismParts.get()).isEmpty();
+        assertThat(organismParts).isEmpty();
     }
 
     @Test
-    void whenSetOfInvalidCellIdsProvidedReturnSetOfOrganismPart() {
+    void whenInvalidCellIdsProvidedReturnEmptySetOfOrganismPart() {
         var cellIDs =
                 ImmutableSet.of("invalid-cellID-1", "invalid-cellID-2", "invalid-cellID-3");
 
         var organismParts = subject.searchOrganismPart(cellIDs);
 
-        assertThat(organismParts.isPresent()).isTrue();
-        assertThat(organismParts.get()).isEmpty();
+        assertThat(organismParts).isEmpty();
     }
 
     @Test
-    void whenSetOfValidCellIdsProvidedReturnSetOfOrganismPart() {
+    void whenValidCellIdsProvidedReturnSetOfOrganismPart() {
         final List<String> randomListOfCellIDs = jdbcUtils.fetchRandomListOfCells(10);
         var cellIDs =
                 ImmutableSet.copyOf(
@@ -94,7 +92,6 @@ public class OrganismPartSearchDaoIT {
 
         var organismParts = subject.searchOrganismPart(cellIDs);
 
-        assertThat(organismParts.isPresent()).isTrue();
-        assertThat(organismParts.get().size()).isGreaterThan(0);
+        assertThat(organismParts.size()).isGreaterThan(0);
     }
 }

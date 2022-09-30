@@ -10,8 +10,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.search.GeneSearchService;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -33,47 +31,45 @@ public class OrganismPartSearchServiceTest {
     }
 
     @Test
-    void whenEmptySetOfGeneIdsProvidedReturnEmptyOptional() {
-        Optional<ImmutableSet<String>> emptySetOfGeneIds = Optional.of(ImmutableSet.of());
+    void whenEmptySetOfGeneIdsProvidedReturnEmptySetOfOrganismPart() {
+        ImmutableSet<String> emptySetOfGeneIds = ImmutableSet.of();
 
         var emptySetOfOrganismParts = subject.search(emptySetOfGeneIds);
 
-        assertThat(emptySetOfOrganismParts).isPresent();
-        assertThat(emptySetOfOrganismParts.get()).hasSize(0);
+        assertThat(emptySetOfOrganismParts).isEmpty();
     }
 
     @Test
-    void whenNonExistentGeneIdsGivenReturnEmptyOptional() {
+    void whenNonExistentGeneIdsGivenReturnEmptySetOfOrganismPart() {
         var nonExistentGeneId = "nonExistentGeneId";
-        var emptySetOfGeneIds = Optional.of(ImmutableSet.of(nonExistentGeneId));
+        var emptySetOfGeneIds = ImmutableSet.of(nonExistentGeneId);
 
-        when(geneSearchService.getCellIdsFromGeneIds(emptySetOfGeneIds.get()))
+        when(geneSearchService.getCellIdsFromGeneIds(emptySetOfGeneIds))
                 .thenReturn(ImmutableSet.of());
 
         var emptySetOfOrganismParts = subject.search(emptySetOfGeneIds);
 
-        assertThat(emptySetOfOrganismParts).isPresent();
-        assertThat(emptySetOfOrganismParts.get()).hasSize(0);
+        assertThat(emptySetOfOrganismParts).isEmpty();
     }
 
     @Test
-    void whenValidSetOfGeneIdsGivenReturnSetOfOrganismParts() {
+    void whenValidGeneIdsGivenReturnSetOfOrganismParts() {
         var existingGeneId1 = "ExistingGeneId1";
         var existingGeneId2 = "ExistingGeneId2";
-        var validGeneIds = Optional.of(ImmutableSet.of(existingGeneId1, existingGeneId2));
+        var validGeneIds = ImmutableSet.of(existingGeneId1, existingGeneId2);
         var existingCellId1 = "ExistingCellId1";
         var existingCellId2 = "ExistingCellId2";
         var validCellIds = ImmutableSet.of(existingCellId1, existingCellId2);
 
         var expectedOrganismPart = "primary visual cortex";
 
-        when(geneSearchService.getCellIdsFromGeneIds(validGeneIds.get()))
+        when(geneSearchService.getCellIdsFromGeneIds(validGeneIds))
                 .thenReturn(validCellIds);
         when(organismPartSearchDao.searchOrganismPart(validCellIds))
-                .thenReturn(Optional.of(ImmutableSet.of(expectedOrganismPart)));
+                .thenReturn(ImmutableSet.of(expectedOrganismPart));
 
         var actualSetOfOrganismParts = subject.search(validGeneIds);
 
-        assertThat(actualSetOfOrganismParts).contains(ImmutableSet.of(expectedOrganismPart));
+        assertThat(actualSetOfOrganismParts).contains(expectedOrganismPart);
     }
 }

@@ -164,11 +164,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        if (geneIds.isPresent() && geneIds.get().isEmpty()) {
+        if (geneIds.isEmpty() ||  geneIds.get().isEmpty()) {
             return ImmutableSet.of();
         }
 
-        return organismPartSearchService.search(geneIds).orElse(ImmutableSet.of());
+        return organismPartSearchService.search(geneIds.get());
     }
 
     private List<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {

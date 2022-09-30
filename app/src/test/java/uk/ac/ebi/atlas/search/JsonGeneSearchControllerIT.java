@@ -16,17 +16,18 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
-import uk.ac.ebi.atlas.species.SpeciesFactory;
+import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
+import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import javax.inject.Inject;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +47,9 @@ class JsonGeneSearchControllerIT {
     @Inject
     private ExperimentAttributesService experimentAttributesService;
 
+    @Mock
+    private SpeciesSearchService speciesSearchService;
+
     private JsonGeneSearchController subject;
 
     @BeforeEach
@@ -55,7 +59,8 @@ class JsonGeneSearchControllerIT {
                         geneIdSearchServiceMock,
                         geneSearchServiceMock,
                         experimentTrader,
-                        experimentAttributesService);
+                        experimentAttributesService,
+                        speciesSearchService);
     }
 
     @Test
@@ -137,5 +142,67 @@ class JsonGeneSearchControllerIT {
         boolean isMarkerGene = subject.isMarkerGene(requestParams);
 
         assertThat(isMarkerGene).isTrue();
+    }
+
+    @Test
+    void whenRequestParamIsEmptySpeciesSearchReturnsAnException() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+
+        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
+                .thenThrow(new QueryParsingException("Error parsing query"));
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getSpeciesByGeneId(requestParams));
+    }
+
+    @Test
+    void whenRequestParamIsNullSpeciesSearchReturnsAnException() {
+        LinkedMultiValueMap<String, String> requestParams = null;
+
+        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
+                .thenThrow(new QueryParsingException("Error parsing query"));
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getSpeciesByGeneId(requestParams));
+    }
+
+    @Test
+    void whenGeneIdIsNotPartOfAnyExperimentThenReturnsEmptySetOfSpecies() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        var notPartOfAnyExperiment = "NOTPartOfAnyExperiment";
+        var generalCategory = "q";
+        requestParams.add(generalCategory, notPartOfAnyExperiment);
+
+        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
+                .thenReturn(generalCategory);
+        when(geneIdSearchServiceMock.getFirstNotBlankQueryField(List.of(notPartOfAnyExperiment)))
+                .thenReturn(Optional.of(notPartOfAnyExperiment));
+        when(speciesSearchService.search(notPartOfAnyExperiment, generalCategory))
+                .thenReturn(ImmutableSet.of());
+
+        var emptySpeciesResult = subject.getSpeciesByGeneId(requestParams);
+
+        assertThat(emptySpeciesResult).isEmpty();
+    }
+
+    @Test
+    void whenGeneIdIsPArtOfSomeExperimentsThenReturnsSetOfSpecies() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        var mostInterestingGeneEver = "MostInterestingGeneEver";
+        var generalCategory = "q";
+        var expectedSpecies = ImmutableSet.of("Homo_sapiens", "Mus_musculus");
+        requestParams.add(generalCategory, mostInterestingGeneEver);
+
+        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
+                .thenReturn(generalCategory);
+        when(geneIdSearchServiceMock.getFirstNotBlankQueryField(List.of(mostInterestingGeneEver)))
+                .thenReturn(Optional.of(mostInterestingGeneEver));
+        when(speciesSearchService.search(mostInterestingGeneEver, generalCategory))
+                .thenReturn(expectedSpecies);
+
+        var speciesResultByGeneId = subject.getSpeciesByGeneId(requestParams);
+
+        assertThat(speciesResultByGeneId).hasSize(2);
+        assertThat(speciesResultByGeneId).containsSequence(expectedSpecies);
     }
 }

@@ -3,11 +3,11 @@ package uk.ac.ebi.atlas.search;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -15,54 +15,33 @@ import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
-import uk.ac.ebi.atlas.search.geneids.GeneQuery;
+import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
+import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static java.util.stream.Collectors.toList;
 import static uk.ac.ebi.atlas.search.FacetGroupName.MARKER_GENE;
 import static uk.ac.ebi.atlas.search.FacetGroupName.ORGANISM;
-import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
+@RequiredArgsConstructor
 public class JsonGeneSearchController extends JsonExceptionHandlingController {
-    private final static ImmutableSet<String> VALID_QUERY_FIELDS =
-            ImmutableSet.<String>builder()
-                    .add("q")
-                    .addAll(
-                            BIOENTITY_PROPERTY_NAMES.stream()
-                                    .map(propertyName -> propertyName.name)
-                                    .collect(toImmutableSet()))
-                    .build();
-
     private final GeneIdSearchService geneIdSearchService;
     private final GeneSearchService geneSearchService;
     private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
-    public JsonGeneSearchController(GeneIdSearchService geneIdSearchService,
-                                    GeneSearchService geneSearchService,
-                                    ExperimentTrader experimentTrader,
-                                    ExperimentAttributesService experimentAttributesService) {
-        this.geneIdSearchService = geneIdSearchService;
-        this.geneSearchService = geneSearchService;
-        this.experimentTrader = experimentTrader;
-        this.experimentAttributesService = experimentAttributesService;
-    }
+    private final SpeciesSearchService speciesSearchService;
 
-    @RequestMapping(value = "/json/search",
-                    method = RequestMethod.GET,
-                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/json/search", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String search(@RequestParam MultiValueMap<String, String> requestParams) {
         var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
 
@@ -138,9 +117,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
     }
 
-    @RequestMapping(value = "/json/gene-search/marker-genes",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/json/gene-search/marker-genes", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Boolean isMarkerGene(@RequestParam MultiValueMap<String, String> requestParams) {
         var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
@@ -162,20 +139,26 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         return markerGeneFacets != null && markerGeneFacets.size() > 0;
     }
 
-    private List<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {
+    @GetMapping(value = "/json/gene-search/species", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ImmutableSet<String> getSpeciesByGeneId(@RequestParam MultiValueMap<String, String> requestParams) {
+        var category = geneIdSearchService.getCategoryFromRequestParams(requestParams);
+        var queryTerm =
+                geneIdSearchService.getFirstNotBlankQueryField(requestParams.get(category))
+                        .orElseThrow(() -> new QueryParsingException(
+                                String.format("All fields are blank for category: %s", category)));
+
+        return speciesSearchService.search(queryTerm, category);
+    }
+
+    private ImmutableList<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {
         // We found expressed gene IDs, let’s get to it now...
         var geneIds2ExperimentAndCellIds =
-                geneSearchService.getCellIdsInExperiments(geneIds.get().toArray(new String[0]));
+                geneSearchService.getCellIdsInExperiments(
+                        geneIds.get().toArray(new String[0]));
 
         return geneIds2ExperimentAndCellIds.entrySet().stream()
                         .filter(entry -> !entry.getValue().isEmpty())
-                        .collect(toList());
-    }
-
-    private boolean isRequestParamsEmpty(MultiValueMap<String, String> requestParams) {
-        return requestParams == null
-                || requestParams.size() == 0
-                || (requestParams.containsKey("q") && Objects.equals(requestParams.getFirst("q"), ""));
+                        .collect(toImmutableList());
     }
 
     private Optional<String> geneIdEmptyValidation(Optional<ImmutableSet<String>> geneIds) {

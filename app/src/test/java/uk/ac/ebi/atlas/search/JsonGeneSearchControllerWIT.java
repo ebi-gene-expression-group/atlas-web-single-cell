@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -198,7 +199,7 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(jsonPath("$.results[0].facets[0].description", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")));
     }
-      
+
     @Test
     void speciesParamCanAppearBeforeGeneQuery() throws Exception {
         this.mockMvc.perform(get("/json/search").param("species", "homo sapiens").param("symbol", "aspm"))
@@ -206,7 +207,7 @@ class JsonGeneSearchControllerWIT {
     }
 
     @Test
-    void whenSearchForAMarkerGeneWithEmptyValueReturnsFalse() throws Exception {
+    void whenSearchForAMarkerGeneWithEmptyValueReturnsError() throws Exception {
         final String emptyGeneSearchParams = "";
         final String expectedMessage = "{\"error\":\"Error parsing query\"}\n";
         this.mockMvc.perform(get("/json/gene-search/marker-genes").param("q", emptyGeneSearchParams))
@@ -234,5 +235,54 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().string("false"));
+    }
+
+    @Test
+    void whenSearchForSpeciesWithEmptyValueReturnsError() throws Exception {
+        final String emptySpeciesSearchParams = "";
+        final String expectedMessage = "{\"error\":\"Error parsing query\"}\n";
+        this.mockMvc.perform(get("/json/gene-search/species").param("q", emptySpeciesSearchParams))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(expectedMessage));
+    }
+
+    @Test
+    void whenGeneIdIsPartOfSomeExperimentsThenReturnSetOfSpecies() throws Exception {
+        var shouldBeGeneThatPartOfExperiments =
+                jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment("E-CURD-4");
+
+        var expectedSpecies = "Arabidopsis_thaliana";
+
+        this.mockMvc.perform(get("/json/gene-search/species").param("ensgene", shouldBeGeneThatPartOfExperiments))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(equalTo(1))))
+                .andExpect(jsonPath("$", containsInAnyOrder(expectedSpecies)));
+    }
+
+    @Test
+    void whenGeneIdIsNotPartOfAnyExperimentsThenReturnEmptySetOfSpecies() throws Exception {
+//        This is the SolR streaming expression query that is getting the list of bioentity_identifiers
+//        that is not part of any experiments based on a given species (as a query parameter in the bioentities query)
+//        I just selected the 1st ID and used that in my test
+//        If we are going to use this query more than once, we might have to implement this in a utility method
+//        Currently the `complement` streaming expression is not implemented in our code, yet, so it is a bigger effort to do it
+//        complement(
+//            search(bioentities-v1, q=species:solanum_lycopersicum, fl="bioentity_identifier_dv",
+//                  sort="bioentity_identifier_dv asc", qt="/export"),
+//            select(
+//                  search(scxa-gene2experiment-v1, q=experiment_accession:E-ENAD-53, fl="bioentity_identifier",
+//                          sort="bioentity_identifier asc", qt="/export"),
+//                  bioentity_identifier as bioentity_identifier_dv),
+//            on="bioentity_identifier_dv"
+//        )
+
+        var geneNotPartOfAnyExperiments = "ENSRNA049444660";
+
+        this.mockMvc.perform(get("/json/gene-search/species").param("ensgene", geneNotPartOfAnyExperiments))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(equalTo(0))));
     }
 }

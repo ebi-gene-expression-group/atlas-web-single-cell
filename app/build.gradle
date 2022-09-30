@@ -35,6 +35,9 @@ dependencies {
     runtimeOnly "org.cache2k:cache2k-core:${cache2kVersion}"
     implementation "org.cache2k:cache2k-spring:${cache2kVersion}"
 
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
     runtimeOnly 'org.apache.tiles:tiles-extras:3.0.8'
     // For URL rewrite (see WEB-INF/web.xml), or your Filter will fail with the most confusing error messages
     runtimeOnly 'org.tuckey:urlrewritefilter:4.0.3'

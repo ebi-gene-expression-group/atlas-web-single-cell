@@ -24,7 +24,7 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.
 public class GeneIdSearchService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneIdSearchService.class);
 
-    private final static ImmutableSet<String> VALID_QUERY_FIELDS =
+    protected final static ImmutableSet<String> VALID_QUERY_FIELDS =
             ImmutableSet.<String>builder()
                     .add("q")
                     .addAll(
@@ -129,12 +129,7 @@ public class GeneIdSearchService {
         throw new QueryParsingException("Error parsing query");
     }
 
-    private Optional<String> getFirstNotBlankQueryField(List<String> values) {
-        for (var searchValue : values) {
-            if (StringUtils.isNotBlank(searchValue)) {
-                return Optional.of(searchValue);
-            }
-        }
-        return Optional.empty();
+    public Optional<String> getFirstNotBlankQueryField(List<String> values) {
+        return values.stream().filter(StringUtils::isNotBlank).findFirst();
     }
 }

@@ -46,10 +46,13 @@ public class OrganismPartSearchServiceTest {
 
         when(geneSearchService.getCellIdsFromGeneIds(emptySetOfGeneIds))
                 .thenReturn(ImmutableSet.of());
+        when(organismPartSearchDao.searchOrganismPart(ImmutableSet.of()))
+                .thenReturn(ImmutableSet.of());
 
         var emptySetOfOrganismParts = subject.search(emptySetOfGeneIds);
 
         assertThat(emptySetOfOrganismParts).isEmpty();
+
     }
 
     @Test

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +16,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 @Component
 public class GeneSearchService {
@@ -55,12 +56,11 @@ public class GeneSearchService {
     }
 
     public ImmutableSet<String> getCellIdsFromGeneIds(ImmutableSet<String> geneIds) {
-        var cellIds = new HashSet<String>();
-        for (var geneId : geneIds) {
-            var cellIdsByGeneID = geneSearchDao.fetchCellIds(geneId);
-            cellIdsByGeneID.values().forEach(cellIds::addAll);
-        }
-        return ImmutableSet.copyOf(cellIds);
+        return geneIds.stream()
+                .map(geneSearchDao::fetchCellIds)
+                .flatMap(geneIdsToCellIds -> geneIdsToCellIds.values().stream())
+                .flatMap(Collection::stream)
+                .collect(toImmutableSet());
     }
 
     private <T> ImmutableMap<String, T> fetchInParallel(Set<String> geneIds, Function<String, T> geneIdInfoProvider) {

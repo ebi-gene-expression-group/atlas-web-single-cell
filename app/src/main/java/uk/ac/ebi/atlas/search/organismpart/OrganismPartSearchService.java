@@ -18,20 +18,13 @@ public class OrganismPartSearchService {
 
     public ImmutableSet<String> search(ImmutableSet<String> geneIds) {
         if (geneIds.isEmpty()) {
-            LOGGER.debug("Can't query for organism part as no gene IDs has given.");
+            LOGGER.warn("Can't query for organism part as no gene IDs has given.");
             return ImmutableSet.of();
         }
 
         LOGGER.info("Searching organism parts for this gene ids: {}", geneIds.asList());
 
-        var cellIDs = geneSearchService.getCellIdsFromGeneIds(geneIds);
-
-        if (cellIDs.isEmpty()) {
-            LOGGER.debug("Can't query for organism part as no cell IDs found.");
-            return ImmutableSet.of();
-        }
-
-        return organismPartSearchDao.searchOrganismPart(cellIDs);
+        return organismPartSearchDao.searchOrganismPart(geneSearchService.getCellIdsFromGeneIds(geneIds));
     }
 
 }

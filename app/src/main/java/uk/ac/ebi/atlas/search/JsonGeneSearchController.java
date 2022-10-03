@@ -148,7 +148,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        if (geneIds.isEmpty() ||  geneIds.get().isEmpty()) {
+        if (geneIds.isEmpty()) {
             return ImmutableSet.of();
         }
 

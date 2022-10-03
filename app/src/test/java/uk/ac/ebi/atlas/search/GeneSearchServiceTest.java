@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomCellId;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemblGeneId;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
@@ -232,12 +233,12 @@ class GeneSearchServiceTest {
 
     @Test
     void whenGeneIdsExistsThenReturnSetOfCellIds() {
-        var existingGeneId1 = "ExistingGeneId1";
-        var existingGeneId2 = "ExistingGeneId2";
+        var existingGeneId1 = generateRandomEnsemblGeneId();
+        var existingGeneId2 = generateRandomEnsemblGeneId();
         var validGeneIds = ImmutableSet.of(existingGeneId1, existingGeneId2);
-        var existingCellId1 = "ExistingCellId1";
-        var existingCellId2 = "ExistingCellId2";
-        var experimentAccession = "ExperimentAccession";
+        var existingCellId1 = generateRandomCellId();
+        var existingCellId2 = generateRandomCellId();
+        var experimentAccession = generateRandomExperimentAccession();
         var expectedCellIds = ImmutableSet.of(existingCellId1, existingCellId2);
 
         when(geneSearchDaoMock.fetchCellIds(anyString()))

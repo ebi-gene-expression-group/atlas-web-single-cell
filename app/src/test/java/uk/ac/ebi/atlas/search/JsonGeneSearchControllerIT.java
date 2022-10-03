@@ -173,6 +173,8 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(ImmutableSet.of()));
+        when(organismPartSearchServiceMock.search(ImmutableSet.of()))
+                .thenReturn(ImmutableSet.of());
 
         var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
 

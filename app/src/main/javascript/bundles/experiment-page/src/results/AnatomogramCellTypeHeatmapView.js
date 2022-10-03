@@ -10,7 +10,8 @@ const supportedOrgans = {
   kidney: `UBERON_0002113`,
   liver: `UBERON_0002107`,
   placenta: `UBERON_0001987`,
-  lung: `UBERON_0002048`
+  lung: `UBERON_0002048`,
+  gut: `UBERON_0000160`
 }
 
 const ontologyAccessionToOntologyUri = (accession) => {
@@ -113,6 +114,24 @@ class AnatomogramCellTypeHeatmapView extends React.Component {
         requestOntologyIds = [
           `CL_2000002`, `EFO_0010710`, `CL_3000001`, `UBERON_0000371`, `UBERON_0000319`, `UBERON_0000426`,
           `EFO_0010712`, `EFO_0010711`, `CL_0002601`, `EFO_0010708`
+        ]
+      }
+    } else if (species === `gut`) {
+      if (view === `gut`) {
+        requestOntologyIds = [supportedOrgans[species]]
+      } else if (view === `colon`) {
+        requestOntologyIds = [
+          "UBERON_8410051", "UBERON_8410015", "UBERON_8410048", "UBERON_8410057",
+          "UBERON_0007178", "UBERON_8410000", "UBERON_8410061", "UBERON_8410058", "UBERON_8410059",
+          "CL_0009043", "CL_0009042", "CL_0009041", "CL_1000347", "CL_0009039", "CL_0009011",
+          "CL_0009009", "CL_0009025", "CL_0009038", "CL_0009040", "UBERON_8410060"
+        ]
+      } else if (view === `intestine`) {
+        requestOntologyIds = [
+          "CL_1000275", "CL_1000334", "UBERON_8410002", "UBERON_0018410", "UBERON_8410004",
+          "UBERON_8410001", "UBERON_8410063", "UBERON_8410064", "UBERON_0001210", "UBERON_0012401",
+          "UBERON_0012402", "CL_0009012", "CL_1000495", "CL_1000343", "CL_1000353", "CL_0009080",
+          "CL_0009017", "CL_0009006", "CL_0009024", "CL_0009022", "CL_1000411", "CL_0009015", "CL_0009007", "UBERON_8410068"
         ]
       }
     }

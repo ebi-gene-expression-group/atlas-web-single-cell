@@ -15,6 +15,7 @@ import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
+import uk.ac.ebi.atlas.search.organismpart.OrganismPartSearchService;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
@@ -24,6 +25,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -39,6 +41,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
+    private final OrganismPartSearchService organismPartSearchService;
     private final SpeciesSearchService speciesSearchService;
 
     @GetMapping(value = "/json/search", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -137,6 +140,19 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                 .toArray(String[]::new));
 
         return markerGeneFacets != null && markerGeneFacets.size() > 0;
+    }
+
+    @GetMapping(value = "/json/gene-search/organism-parts",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Set<String> getOrganismPartBySearchTerm(@RequestParam MultiValueMap<String, String> requestParams) {
+        var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
+        var geneIds = geneIdSearchService.search(geneQuery);
+
+        if (geneIds.isEmpty()) {
+            return ImmutableSet.of();
+        }
+
+        return organismPartSearchService.search(geneIds.get());
     }
 
     @GetMapping(value = "/json/gene-search/species", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

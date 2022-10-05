@@ -17,6 +17,7 @@ import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
+import uk.ac.ebi.atlas.search.organismpart.OrganismPartSearchService;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -41,6 +42,9 @@ class JsonGeneSearchControllerIT {
     @Mock
     private GeneSearchService geneSearchServiceMock;
 
+    @Mock
+    private OrganismPartSearchService organismPartSearchServiceMock;
+
     @Inject
     private ExperimentTrader experimentTrader;
 
@@ -60,6 +64,7 @@ class JsonGeneSearchControllerIT {
                         geneSearchServiceMock,
                         experimentTrader,
                         experimentAttributesService,
+                        organismPartSearchServiceMock,
                         speciesSearchService);
     }
 
@@ -142,6 +147,83 @@ class JsonGeneSearchControllerIT {
         boolean isMarkerGene = subject.isMarkerGene(requestParams);
 
         assertThat(isMarkerGene).isTrue();
+    }
+
+    @Test
+    void whenRequestParamIsEmptyOrganismPartSearchReturnsEmptySet() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenThrow(new QueryParsingException("Error parsing query"));
+
+        assertThatExceptionOfType(QueryParsingException.class)
+                .isThrownBy(() -> subject.getOrganismPartBySearchTerm(requestParams));
+    }
+
+    @Test
+    void whenSearchTermIsNotFoundAnyGeneIdsReturnsEmptySet() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String searchTermNotInDB = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        requestParams.add(generalCategory, searchTermNotInDB);
+
+        GeneQuery geneQuery = GeneQuery.create(searchTermNotInDB);
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenReturn(geneQuery);
+        when(geneIdSearchServiceMock.search(geneQuery))
+                .thenReturn(Optional.of(ImmutableSet.of()));
+        when(organismPartSearchServiceMock.search(ImmutableSet.of()))
+                .thenReturn(ImmutableSet.of());
+
+        var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
+
+        assertThat(emptyOrganismPartSet).isEmpty();
+    }
+
+    @Test
+    void whenSearchTermIsFoundButNoRelatedCellIdsThenReturnsEmptySet() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String searchTermInDB = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        requestParams.add(generalCategory, searchTermInDB);
+        var geneIdsFromService = ImmutableSet.of(searchTermInDB);
+
+        GeneQuery geneQuery = GeneQuery.create(searchTermInDB);
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenReturn(geneQuery);
+        when(geneIdSearchServiceMock.search(geneQuery))
+                .thenReturn(Optional.of(geneIdsFromService));
+        when(organismPartSearchServiceMock.search(geneIdsFromService))
+                .thenReturn(ImmutableSet.of());
+
+        var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
+
+        assertThat(emptyOrganismPartSet).isEmpty();
+    }
+
+    @Test
+    void whenSearchTermIsFoundAndThereAreRelatedCellIdsThenReturnsOrganismParts() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String searchTermInDB = randomAlphabetic(1, 12);
+        var generalCategory = "q";
+        requestParams.add(generalCategory, searchTermInDB);
+        var geneIdsFromService = ImmutableSet.of(searchTermInDB);
+        var expectedOrganismPart = "primary visual cortex";
+
+        GeneQuery geneQuery = GeneQuery.create(searchTermInDB);
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenReturn(geneQuery);
+        when(geneIdSearchServiceMock.search(geneQuery))
+                .thenReturn(Optional.of(geneIdsFromService));
+        when(organismPartSearchServiceMock.search(geneIdsFromService))
+                .thenReturn(ImmutableSet.of(expectedOrganismPart));
+
+        var actualOrganismParts = subject.getOrganismPartBySearchTerm(requestParams);
+
+        assertThat(actualOrganismParts).containsExactly(expectedOrganismPart);
     }
 
     @Test

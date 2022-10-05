@@ -21,6 +21,8 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_CELL_TYPE;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
 
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
@@ -67,7 +69,7 @@ public class AnalyticsSearchDaoIT {
     void whenEmptySetOfCellIDsProvidedReturnEmptySetOfOrganismPart() {
         ImmutableSet<String> cellIDs = ImmutableSet.of();
 
-        var organismParts = subject.searchOrganismPart(cellIDs);
+        var organismParts = subject.searchFieldByCellIds(CTW_ORGANISM_PART, cellIDs);
 
         assertThat(organismParts).isEmpty();
     }
@@ -81,7 +83,7 @@ public class AnalyticsSearchDaoIT {
                         RandomDataTestUtils.generateRandomCellId()
                 );
 
-        var organismParts = subject.searchOrganismPart(cellIDs);
+        var organismParts = subject.searchFieldByCellIds(CTW_ORGANISM_PART, cellIDs);
 
         assertThat(organismParts).isEmpty();
     }
@@ -91,7 +93,7 @@ public class AnalyticsSearchDaoIT {
         var cellIDs =
                 ImmutableSet.copyOf(jdbcUtils.fetchRandomListOfCells(10));
 
-        var organismParts = subject.searchOrganismPart(cellIDs);
+        var organismParts = subject.searchFieldByCellIds(CTW_ORGANISM_PART, cellIDs);
 
         assertThat(organismParts.size()).isGreaterThan(0);
     }
@@ -100,7 +102,7 @@ public class AnalyticsSearchDaoIT {
     void whenEmptySetOfCellIdsProvidedReturnEmptySetOfCellType() {
         ImmutableSet<String> cellIDs = ImmutableSet.of();
 
-        var cellTypes = subject.searchCellTypeByCellIds(cellIDs);
+        var cellTypes = subject.searchFieldByCellIds(CTW_CELL_TYPE, cellIDs);
 
         assertThat(cellTypes).isEmpty();
     }
@@ -114,7 +116,7 @@ public class AnalyticsSearchDaoIT {
                         RandomDataTestUtils.generateRandomCellId()
                 );
 
-        var cellTypes = subject.searchCellTypeByCellIds(cellIDs);
+        var cellTypes = subject.searchFieldByCellIds(CTW_CELL_TYPE, cellIDs);
 
         assertThat(cellTypes).isEmpty();
     }
@@ -124,7 +126,7 @@ public class AnalyticsSearchDaoIT {
         var cellIDs =
                 ImmutableSet.copyOf(jdbcUtils.fetchRandomListOfCells(10));
 
-        var cellTypes = subject.searchCellTypeByCellIds(cellIDs);
+        var cellTypes = subject.searchFieldByCellIds(CTW_CELL_TYPE, cellIDs);
 
         assertThat(cellTypes.size()).isGreaterThan(0);
     }

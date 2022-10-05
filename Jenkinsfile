@@ -16,6 +16,13 @@ pipeline {
 
 
   stages {
+
+    stage('Scale SlrCloud/Zk') {
+      steps {
+        container('kubectl') {}
+      }
+    }
+
     stage('Provision Gradle') {
       options {
         timeout (time: 20, unit: "MINUTES")

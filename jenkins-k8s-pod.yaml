@@ -3,6 +3,7 @@ kind: Pod
 metadata:
   namespace: jenkins-gene-expression
 spec:
+  serviceAccountName: admin-jenkins-gene-expression
   # If we set workspaceVolume dynamicPVC() or workspaceVolume persistentVolumeClaimWorkspaceVolume() we need to add a
   # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise we get the following exception in the
   # jnlp container:
@@ -11,6 +12,15 @@ spec:
   securityContext:
     fsGroup: 1000
   containers:
+    - name: "kubectl"
+      image: bitnami/kubectl
+      command: ["/bin/sh"]
+      args: ["-c", "kubectl scale --replicas=2 statefulset/scxa-solrcloud-fast; kubectl scale --replicas=3 statefulset/scxa-zk-fast"]
+      resources:
+        requests:
+          memory: "0.5Gi"
+        limits:
+          memory: "0.5Gi"
     - name: jnlp
       resources:
         requests:

@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.ac.ebi.atlas.search.CellTypeSearchDao;
+import uk.ac.ebi.atlas.search.celltype.CellTypeSearchDao;
 
 import java.util.List;
 

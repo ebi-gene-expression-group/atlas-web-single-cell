@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.search;
+package uk.ac.ebi.atlas.search.celltype;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;

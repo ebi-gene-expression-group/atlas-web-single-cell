@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.search.organismpart;
+package uk.ac.ebi.atlas.search.analytics;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -12,14 +12,15 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStrea
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_CELL_TYPE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
 
 @Component
-public class OrganismPartSearchDao {
+public class AnalyticsSearchDao {
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
-    public OrganismPartSearchDao(SolrCloudCollectionProxyFactory collectionProxyFactory) {
+    public AnalyticsSearchDao(SolrCloudCollectionProxyFactory collectionProxyFactory) {
         singleCellAnalyticsCollectionProxy =
                 collectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
@@ -33,25 +34,49 @@ public class OrganismPartSearchDao {
 //            ),
 //            over="ctw_organism_part"
 //        )
-        return getOrganismPartFromStreamQuery(
-                new UniqueStreamBuilder(getStreamBuilderForOrganismPartByCellIds(cellIDs), CTW_ORGANISM_PART.name()));
+        return getSchemaFieldFromStreamQuery(
+                new UniqueStreamBuilder(
+                        getStreamBuilderByCellIdsForSchemaField(cellIDs, CTW_ORGANISM_PART),
+                        CTW_ORGANISM_PART.name()
+                ),
+                CTW_ORGANISM_PART.name()
+        );
     }
 
-    private SearchStreamBuilder<SingleCellAnalyticsCollectionProxy> getStreamBuilderForOrganismPartByCellIds(
-            ImmutableSet<String> cellIDs) {
+    public ImmutableSet<String> searchCellTypeByCellIds(ImmutableSet<String> cellIDs) {
+//        Streaming query for getting the organism_part provided by set of cell IDs
+//        unique(
+//            search(scxa-analytics-v6, q=cell_id:<SET_OF_CELL_IDS>,
+//            fl="ctw_cell_type",
+//            sort="ctw_cell_type asc"
+//            ),
+//            over="ctw_cell_type"
+//        )
+
+        return getSchemaFieldFromStreamQuery(
+                new UniqueStreamBuilder(
+                        getStreamBuilderByCellIdsForSchemaField(cellIDs, CTW_CELL_TYPE),
+                        CTW_CELL_TYPE.name()
+                ),
+                CTW_CELL_TYPE.name()
+        );
+    }
+    private SearchStreamBuilder<SingleCellAnalyticsCollectionProxy> getStreamBuilderByCellIdsForSchemaField(
+            ImmutableSet<String> cellIDs, SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField schemaField) {
         return new SearchStreamBuilder<>(
                 singleCellAnalyticsCollectionProxy,
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(CELL_ID, cellIDs)
-                        .setFieldList(CTW_ORGANISM_PART)
-                        .sortBy(CTW_ORGANISM_PART, SolrQuery.ORDER.asc)
+                        .setFieldList(schemaField)
+                        .sortBy(schemaField, SolrQuery.ORDER.asc)
         ).returnAllDocs();
     }
 
-    private ImmutableSet<String> getOrganismPartFromStreamQuery(UniqueStreamBuilder uniqueOrganismPartStreamBuilder) {
+    private ImmutableSet<String> getSchemaFieldFromStreamQuery(UniqueStreamBuilder uniqueOrganismPartStreamBuilder,
+            String schemaField) {
         try (TupleStreamer tupleStreamer = TupleStreamer.of(uniqueOrganismPartStreamBuilder.build())) {
             return tupleStreamer.get()
-                    .map(tuple -> tuple.getString(CTW_ORGANISM_PART.name()))
+                    .map(tuple -> tuple.getString(schemaField))
                     .collect(toImmutableSet()
             );
         }

@@ -17,7 +17,7 @@ import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
-import uk.ac.ebi.atlas.search.organismpart.OrganismPartSearchService;
+import uk.ac.ebi.atlas.search.analytics.AnalyticsSearchService;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -43,7 +43,7 @@ class JsonGeneSearchControllerIT {
     private GeneSearchService geneSearchServiceMock;
 
     @Mock
-    private OrganismPartSearchService organismPartSearchServiceMock;
+    private AnalyticsSearchService analyticsSearchServiceMock;
 
     @Inject
     private ExperimentTrader experimentTrader;
@@ -64,7 +64,7 @@ class JsonGeneSearchControllerIT {
                         geneSearchServiceMock,
                         experimentTrader,
                         experimentAttributesService,
-                        organismPartSearchServiceMock,
+                        analyticsSearchServiceMock,
                         speciesSearchService);
     }
 
@@ -173,7 +173,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(ImmutableSet.of()));
-        when(organismPartSearchServiceMock.search(ImmutableSet.of()))
+        when(analyticsSearchServiceMock.search(ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
@@ -195,7 +195,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(organismPartSearchServiceMock.search(geneIdsFromService))
+        when(analyticsSearchServiceMock.search(geneIdsFromService))
                 .thenReturn(ImmutableSet.of());
 
         var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
@@ -218,7 +218,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(organismPartSearchServiceMock.search(geneIdsFromService))
+        when(analyticsSearchServiceMock.search(geneIdsFromService))
                 .thenReturn(ImmutableSet.of(expectedOrganismPart));
 
         var actualOrganismParts = subject.getOrganismPartBySearchTerm(requestParams);

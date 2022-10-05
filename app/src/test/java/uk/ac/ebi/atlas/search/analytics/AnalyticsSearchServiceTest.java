@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.search.organismpart;
+package uk.ac.ebi.atlas.search.analytics;
 
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,19 +15,19 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class OrganismPartSearchServiceTest {
+public class AnalyticsSearchServiceTest {
 
     @Mock
-    private OrganismPartSearchDao organismPartSearchDao;
+    private AnalyticsSearchDao analyticsSearchDao;
 
     @Mock
     private GeneSearchService geneSearchService;
 
-    private OrganismPartSearchService subject;
+    private AnalyticsSearchService subject;
 
     @BeforeEach
     void setup() {
-        subject = new OrganismPartSearchService(organismPartSearchDao, geneSearchService);
+        subject = new AnalyticsSearchService(analyticsSearchDao, geneSearchService);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class OrganismPartSearchServiceTest {
 
         when(geneSearchService.getCellIdsFromGeneIds(emptySetOfGeneIds))
                 .thenReturn(ImmutableSet.of());
-        when(organismPartSearchDao.searchOrganismPart(ImmutableSet.of()))
+        when(analyticsSearchDao.searchOrganismPart(ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptySetOfOrganismParts = subject.search(emptySetOfGeneIds);
@@ -68,7 +68,7 @@ public class OrganismPartSearchServiceTest {
 
         when(geneSearchService.getCellIdsFromGeneIds(validGeneIds))
                 .thenReturn(validCellIds);
-        when(organismPartSearchDao.searchOrganismPart(validCellIds))
+        when(analyticsSearchDao.searchOrganismPart(validCellIds))
                 .thenReturn(ImmutableSet.of(expectedOrganismPart));
 
         var actualSetOfOrganismParts = subject.search(validGeneIds);

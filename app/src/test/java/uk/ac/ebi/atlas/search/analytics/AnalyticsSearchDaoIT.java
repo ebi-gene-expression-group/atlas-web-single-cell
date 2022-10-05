@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.search.organismpart;
+package uk.ac.ebi.atlas.search.analytics;
 
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
@@ -15,11 +15,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
+import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.util.HashSet;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class OrganismPartSearchDaoIT {
+public class AnalyticsSearchDaoIT {
 
     @Inject
     private JdbcUtils jdbcUtils;
@@ -38,7 +37,7 @@ public class OrganismPartSearchDaoIT {
     @Inject
     private SolrCloudCollectionProxyFactory collectionProxyFactory;
 
-    private OrganismPartSearchDao subject;
+    private AnalyticsSearchDao subject;
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -61,7 +60,7 @@ public class OrganismPartSearchDaoIT {
 
     @BeforeEach
     void setup() {
-        subject = new OrganismPartSearchDao(collectionProxyFactory);
+        subject = new AnalyticsSearchDao(collectionProxyFactory);
     }
 
     @Test
@@ -76,7 +75,11 @@ public class OrganismPartSearchDaoIT {
     @Test
     void whenInvalidCellIdsProvidedReturnEmptySetOfOrganismPart() {
         var cellIDs =
-                ImmutableSet.of("invalid-cellID-1", "invalid-cellID-2", "invalid-cellID-3");
+                ImmutableSet.of(
+                        RandomDataTestUtils.generateRandomCellId(),
+                        RandomDataTestUtils.generateRandomCellId(),
+                        RandomDataTestUtils.generateRandomCellId()
+                );
 
         var organismParts = subject.searchOrganismPart(cellIDs);
 
@@ -85,13 +88,44 @@ public class OrganismPartSearchDaoIT {
 
     @Test
     void whenValidCellIdsProvidedReturnSetOfOrganismPart() {
-        final List<String> randomListOfCellIDs = jdbcUtils.fetchRandomListOfCells(10);
         var cellIDs =
-                ImmutableSet.copyOf(
-                        new HashSet<>(randomListOfCellIDs));
+                ImmutableSet.copyOf(jdbcUtils.fetchRandomListOfCells(10));
 
         var organismParts = subject.searchOrganismPart(cellIDs);
 
         assertThat(organismParts.size()).isGreaterThan(0);
+    }
+
+    @Test
+    void whenEmptySetOfCellIdsProvidedReturnEmptySetOfCellType() {
+        ImmutableSet<String> cellIDs = ImmutableSet.of();
+
+        var cellTypes = subject.searchCellTypeByCellIds(cellIDs);
+
+        assertThat(cellTypes).isEmpty();
+    }
+
+    @Test
+    void whenInvalidCellIdsProvidedReturnEmptySetOfCellType() {
+        var cellIDs =
+                ImmutableSet.of(
+                        RandomDataTestUtils.generateRandomCellId(),
+                        RandomDataTestUtils.generateRandomCellId(),
+                        RandomDataTestUtils.generateRandomCellId()
+                );
+
+        var cellTypes = subject.searchCellTypeByCellIds(cellIDs);
+
+        assertThat(cellTypes).isEmpty();
+    }
+
+    @Test
+    void whenValidCellIdsProvidedReturnSetOfCellTypes() {
+        var cellIDs =
+                ImmutableSet.copyOf(jdbcUtils.fetchRandomListOfCells(10));
+
+        var cellTypes = subject.searchCellTypeByCellIds(cellIDs);
+
+        assertThat(cellTypes.size()).isGreaterThan(0);
     }
 }

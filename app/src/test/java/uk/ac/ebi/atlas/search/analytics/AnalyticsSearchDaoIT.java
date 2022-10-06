@@ -67,7 +67,7 @@ public class AnalyticsSearchDaoIT {
 
     @Test
     void whenEmptySetOfCellIDsProvidedReturnEmptySetOfOrganismPart() {
-        ImmutableSet<String> cellIDs = ImmutableSet.of();
+        var cellIDs = ImmutableSet.<String>of();
 
         var organismParts = subject.searchFieldByCellIds(CTW_ORGANISM_PART, cellIDs);
 
@@ -100,7 +100,7 @@ public class AnalyticsSearchDaoIT {
 
     @Test
     void whenEmptySetOfCellIdsProvidedReturnEmptySetOfCellType() {
-        ImmutableSet<String> cellIDs = ImmutableSet.of();
+        var cellIDs = ImmutableSet.<String>of();
 
         var cellTypes = subject.searchFieldByCellIds(CTW_CELL_TYPE, cellIDs);
 

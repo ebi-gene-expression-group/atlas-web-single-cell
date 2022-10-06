@@ -297,7 +297,7 @@ class JsonGeneSearchControllerWIT {
     }
 
     @Test
-    void whenSearchTermNotExistsInDBThenReturnsEmptySet() throws Exception {
+    void whenSearchTermNotExistsInDBThenOrganismPartSearchReturnsEmptySet() throws Exception {
         var geneNotPartOfAnyExperiments = "ENSRNA049444660";
 
         this.mockMvc.perform(get("/json/gene-search/organism-parts").param("ensgene", geneNotPartOfAnyExperiments))
@@ -318,5 +318,38 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$", hasSize(equalTo(1))))
                 .andExpect(jsonPath("$", containsInAnyOrder(expectedOrganismParts)));
+    }
+
+    @Test
+    void whenSearchForCellTypesWithEmptyValueReturnsError() throws Exception {
+        final String emptyCellTypeSearchTerm = "";
+        final String expectedMessage = "{\"error\":\"Error parsing query\"}\n";
+        this.mockMvc.perform(get("/json/gene-search/cell-types").param("q", emptyCellTypeSearchTerm))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(expectedMessage));
+    }
+
+    @Test
+    void whenSearchTermNotExistsInDBThenCellTypeSearchReturnsEmptySet() throws Exception {
+        var geneNotPartOfAnyExperiments = "ENSRNA049444660";
+
+        this.mockMvc.perform(get("/json/gene-search/cell-types").param("ensgene", geneNotPartOfAnyExperiments))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(equalTo(0))));
+    }
+
+    @Test
+    void whenSearchTermExistsInDBThenReturnsSetOfCellType() throws Exception {
+        var shouldBeGeneThatPartOfExperiments = "AT2G21840";
+
+        var expectedCellType = "trichoblast 17";
+
+        this.mockMvc.perform(get("/json/gene-search/cell-types").param("ensgene", shouldBeGeneThatPartOfExperiments))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(equalTo(1))))
+                .andExpect(jsonPath("$", containsInAnyOrder(expectedCellType)));
     }
 }

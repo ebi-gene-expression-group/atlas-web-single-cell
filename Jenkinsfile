@@ -106,7 +106,6 @@ pipeline {
         stage('–– Build ––') {
           when { anyOf {
             branch 'develop'
-            branch 'chore/solr8'
           } }
           stages {
             stage('Provision Node.js build environment') {
@@ -165,7 +164,7 @@ pipeline {
   post {
     always {
       junit 'atlas-web-core/build/ut/**/*.xml'
-      // junit 'atlas-web-core/build/it/**/*.xml'
+      //junit 'atlas-web-core/build/it/**/*.xml'
 
       junit 'app/build/ut/**/*.xml'
       junit 'app/build/it/**/*.xml'

@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,8 +28,8 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
-// Some of the tests in this class are executed against the scxa-analytics collection, although the subject class is
-// located in atlas-core
+// Some tests in this class are executed against the scxa-analytics collection, although the subject class is located
+// in atlas-web-core
 class SearchStreamBuilderIT {
     private static final int MAX_NUM_ROWS = 100;
 
@@ -44,8 +43,7 @@ class SearchStreamBuilderIT {
         singleCellAnalyticsCollectionProxy = collectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-    @Ignore
-    // This test won’t pass if you have multiple shards: https://issues.apache.org/jira/browse/SOLR-12510
+    @Test
     void returnAllRowsOverridesRowsParameterInSolrQuery() {
         var numRows = ThreadLocalRandom.current().nextInt(MAX_NUM_ROWS);
         var solrQueryBuilder =

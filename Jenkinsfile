@@ -14,11 +14,11 @@ pipeline {
 
 
   stages {
-    stage('Scale SlrCloud/Zk') {
-      steps {
-        container('kubectl') {}
-      }
-    }
+//     stage('Scale SlrCloud/Zk') {
+//       steps {
+//         container('kubectl') {}
+//       }
+//     }
 
     stage('Provision Gradle') {
       options {

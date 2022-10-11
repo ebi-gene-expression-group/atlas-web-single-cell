@@ -3,14 +3,24 @@ kind: Pod
 metadata:
   namespace: jenkins-gene-expression
 spec:
+  serviceAccountName: admin-jenkins-gene-expression
   # If we set workspaceVolume dynamicPVC() or workspaceVolume persistentVolumeClaimWorkspaceVolume() we need to add a
-  # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise we get the following exception in the
+  # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise, we get the following exception in the
   # jnlp container:
   # Exception in thread "main" java.io.IOException: The specified working directory should be fully accessible to the remoting executable (RWX): /home/jenkins/agent
   # The securityContext in the pod is inherited, as it becomes the default pod template
   securityContext:
     fsGroup: 1000
   containers:
+    - name: "kubectl"
+      image: bitnami/kubectl
+      command: [ "/bin/sh" ]
+      args: [ "-c", "kubectl scale --replicas=2 statefulset/scxa-solrcloud; kubectl scale --replicas=3 statefulset/scxa-solrcloud-zookeeper" ]
+      resources:
+        requests:
+          memory: "0.5Gi"
+        limits:
+          memory: "0.5Gi"
     - name: jnlp
       resources:
         requests:

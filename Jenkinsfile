@@ -13,6 +13,11 @@ pipeline {
   }
 
 
+  stage('Scale SlrCloud/Zk') {
+    steps {
+      container('kubectl') {}
+    }
+  }
 
   stages {
     stage('Provision Gradle') {

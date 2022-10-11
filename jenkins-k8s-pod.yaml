@@ -71,8 +71,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "postgres"
     - name: kubectl
-      image: bitnami/kubectl
-      command: [ "/bin/sh" ]
+      image: busybox:latest
   volumes:
     - name: scxa-data
       persistentVolumeClaim:

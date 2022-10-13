@@ -41,9 +41,7 @@ class TSnePlotViewRoute extends React.Component {
           plotOptions: this.props.plotTypesAndOptions.tsne
         }
      ]
-
     const cellTypeValue = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
-    const search = URI(this.props.location.search).search(true)
 
     this.state = {
       selectedPlotType: plotTypeDropdown[0].plotType.toLowerCase(),
@@ -54,8 +52,15 @@ class TSnePlotViewRoute extends React.Component {
       selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`
+      selectedColourByCategory: ``
     }
+  }
+
+  componentDidMount() {
+    const search = URI(this.props.location.search).search(true)
+    this.setState({
+      selectedColourByCategory: !isNaN(search.colourBy) || !isNaN(this.state.selectedColourBy) ? `clusters` : `metadata`
+    })
   }
 
   render() {

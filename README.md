@@ -3,6 +3,8 @@
 ## Requirements
 - Docker v19+
 - Docker Compose v1.25+
+- Node.js v16
+- You need `npm-check-updates` installed globally: [https://www.npmjs.com/package/npm-check-updates](https://www.npmjs.com/package/npm-check-updates)
 - 60 GB of available storage (experiment files, PostgreSQL and Solr backup snapshots and Docker volumes)
 
 Notice that PostgreSQL and Solr snapshots are [`bind` mounted](https://docs.docker.com/storage/bind-mounts/) in order
@@ -42,7 +44,27 @@ wget -P $ATLAS_DATA_PATH -c --reject="index.html*" --recursive -np -nc -nH --cut
 Notice that either way `ATLAS_DATA_PATH` will be created for you if the directory doesn’t exist.
 
 This task will take a variable amount of time that depends on your connection speed. After its completion you will see
-three new folders under `ATLAS_DATA_PATH`: `filesystem`, `solrcloud` and `postgressql`.
+2 new folders under `ATLAS_DATA_PATH`: `bioentity-properties` and `scxa-experiments`.
+
+Do the following steps:
+1. Please create a new folder named `scxa` under the `ATLAS_DATA_PATH` folder.
+2. Copy the contents of `scxa-experiments` folder (`expdesign`, `magetab`, `release-metadata.json` and `species-properties.json`) into the newly created folder.
+3. Delete the empty `scxa-experiments` folder.
+4. Rename the folder `bioentity-properties` to `bioentity_properties`.
+
+## Build the web application
+
+1. Set up the user credentials for Postgres DB:
+```bash
+POSTGRES_USER=atlas3dev \
+POSTGRES_PASSWORD=atlas3dev
+```
+
+2. Edit `jdbc.properties` file under `/docker/atlas-properties` folder.
+3. Set the `jdbc.username` to the same value that POSTGRES_USER env variable contains.
+4. Set the `jdbc.password` to the same value that POSTGRES_PASSWORD env variable contains.
+6. Build the JavaScript bundles with the `compile-front-end-packages.sh` command line script.
+7. Execute the following Gradle task to build the web application: `war`.
 
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace

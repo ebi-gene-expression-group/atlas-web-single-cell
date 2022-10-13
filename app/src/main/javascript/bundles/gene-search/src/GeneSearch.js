@@ -12,10 +12,16 @@ import ExperimentCard from './ExperimentCard'
 const GeneSearchFormWithFetchLoader = withFetchLoader(GeneSearchForm)
 const FacetedSearchResultsWithFetchLoader = withFetchLoader(FacetedSearchResults)
 
-const GeneSearch = ({atlasUrl, history}) => {
+function GeneSearch ({atlasUrl, history}) {
   const updateUrl = (event, query, species) => {
     event.preventDefault()
-    history.push(`/search?species=` + species + `&` + query.category + `=` + query.term)
+    history.push(
+      URI(`/search`)
+        .query({
+          [query.category]: query.term,
+          species: species
+        })
+        .toString())
   }
 
   const requestParams = URI(location.search).query(true)
@@ -55,20 +61,18 @@ const GeneSearch = ({atlasUrl, history}) => {
         firstMatchingRequestParam &&
         <FacetedSearchResultsWithFetchLoader
           host={atlasUrl}
-          resource={
-            `json/search?` +
-            URI.buildQuery({
-              [geneQuery.category]: geneQuery.term,
-              species: requestParams.species
-            })
-          }
+          resource={`json/search`}
+          query={{
+            [geneQuery.category]: geneQuery.term,
+            species: requestParams.species
+          }}
           fulfilledPayloadProvider={data => ({
             resultsMessage: data ?
               (data.results && data.results.length > 0) ?
                 `${geneQuery.term} ${data.matchingGeneId}  is expressed in:` :
                 `Your search for ${geneQuery.term} yielded no results: ${data.reason}` :
               `WTF!`
-            })
+          })
           }
           sortTitle={`markerGenes`}
           ResultsHeaderClass={ExperimentsHeader}

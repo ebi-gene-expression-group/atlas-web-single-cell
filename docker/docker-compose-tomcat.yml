@@ -5,7 +5,7 @@ services:
     image: tomcat:9-jdk11
     container_name: scxa-tomcat
     networks:
-      - scxa
+      - atlas-test-net
     environment:
       JPDA_ADDRESS: "*:8000"
     ports:
@@ -14,7 +14,8 @@ services:
     volumes:
       - ../webapps:/usr/local/tomcat/webapps
       - ./atlas-properties:/atlas-properties
-      - $ATLAS_DATA_PATH/filesystem:/atlas-data
+      - $ATLAS_DATA_PATH/scxa:/atlas-data/scxa
+      - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
       - scxa-tomcat-conf:/usr/local/tomcat/conf
     depends_on:
       - scxa-postgres
@@ -27,5 +28,5 @@ volumes:
     name: scxa-tomcat-conf
 
 networks:
-  scxa:
-    name: scxa
+  atlas-test-net:
+    name: atlas-test-net

@@ -5,9 +5,9 @@ import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +16,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.function.Function;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 @Component
 public class GeneSearchService {
@@ -52,6 +53,14 @@ public class GeneSearchService {
                 geneId -> fetchClusterIDWithPreferredKAndMinPForGeneID(
                         geneSearchDao.fetchExperimentAccessionsWhereGeneIsMarker(geneId),
                         geneId));
+    }
+
+    public ImmutableSet<String> getCellIdsFromGeneIds(ImmutableSet<String> geneIds) {
+        return geneIds.stream()
+                .map(geneSearchDao::fetchCellIds)
+                .flatMap(geneIdsToCellIds -> geneIdsToCellIds.values().stream())
+                .flatMap(Collection::stream)
+                .collect(toImmutableSet());
     }
 
     private <T> ImmutableMap<String, T> fetchInParallel(Set<String> geneIds, Function<String, T> geneIdInfoProvider) {

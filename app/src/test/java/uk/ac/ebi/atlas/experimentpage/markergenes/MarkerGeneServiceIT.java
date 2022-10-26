@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
@@ -15,7 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
-import uk.ac.ebi.atlas.search.CellTypeSearchDao;
+import uk.ac.ebi.atlas.search.celltype.CellTypeSearchDao;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
@@ -45,10 +44,10 @@ class MarkerGeneServiceIT {
 		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
 				new ClassPathResource("fixtures/experiment.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
-				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
+				new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql"),
+				new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_membership.sql"),
+				new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_genes.sql"),
+				new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_gene_stats.sql"));
 		populator.execute(dataSource);
 	}
 
@@ -89,13 +88,18 @@ class MarkerGeneServiceIT {
 	}
 
 	@Test
-	void getCellTypeMarkerGenesForTheMultipleOrganismParts(){
-		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000061","http://purl.obolibrary.org/obo/UBERON_0001987")))
+	void getCellTypeMarkerGenesForMultipleOrganismParts(){
+		assertThat(
+				subject.getCellTypeMarkerGeneProfile(
+						"FOO",
+						ImmutableSet.of(
+								"http://purl.obolibrary.org/obo/UBERON_0000061",
+								"http://purl.obolibrary.org/obo/UBERON_0001987")))
 				.isEmpty();
 	}
 
 	@Test
-	void getClusterMarkerGeneForTheValidExperimentAccession() {
+	void getClusterMarkerGeneForValidExperimentAccession() {
 		var experimentAccession = jdbcTestUtils.fetchRandomSingleCellExperimentAccessionWithMarkerGenes();
 		var k = jdbcTestUtils.fetchRandomKWithMarkerGene(experimentAccession);
 		assertThat(subject.getMarkerGenesPerCluster(experimentAccession, k))
@@ -103,22 +107,21 @@ class MarkerGeneServiceIT {
 	}
 
 	@Test
-	void getEmptyCellTypeMarkerGenesForTheInvalidExperimentAccession() {
+	void getCellTypeMarkerGenesForInvalidExperimentAccession() {
 		assertThat(subject.getCellTypeMarkerGeneProfile("FOO", ImmutableSet.of("skin")))
 				.isEmpty();
 	}
 
 	@Test
 	void getCellTypesWithMarkerGenesForValidExperimentAccession() {
-		var experimentAccession = "E-MTAB-5061";
-		assertThat(subject.getCellTypesWithMarkerGenes(experimentAccession, "inferred cell type - ontology labels"))
+		assertThat(subject.getCellTypesWithMarkerGenes("E-MTAB-5061", "inferred cell type - ontology labels"))
 				.isNotEmpty();
 	}
 
 	@Test
 	void getCellTypeMarkerGeneHeatmapForValidExperimentAccesion() {
-		var experimentAccession = "E-MTAB-5061";
-		assertThat(subject.getCellTypeMarkerGeneHeatmapData(experimentAccession, "inferred cell type - ontology labels", ImmutableSet.of("mast cell")))
+		assertThat(subject.getCellTypeMarkerGeneHeatmapData(
+				"E-MTAB-5061", "inferred cell type - ontology labels", ImmutableSet.of("co-expression cell")))
 				.isNotEmpty();
 	}
 }

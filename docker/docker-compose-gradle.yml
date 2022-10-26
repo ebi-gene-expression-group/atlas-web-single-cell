@@ -5,7 +5,7 @@ services:
     image: openjdk:11
     container_name: scxa-gradle
     networks:
-      - scxa
+      - atlas-test-net
     ports:
       - "5005:5005"
     working_dir: /root/project
@@ -14,7 +14,11 @@ services:
       - root-gradle-caches:/root/.gradle/caches
       - ..:/root/project
       - ./packages:/root/.m2
-      - $ATLAS_DATA_PATH:/root/scxa/integration-test-data
+      - gradle-ro-dep-cache:/gradle-ro-dep-cache
+      - $ATLAS_DATA_PATH/scxa:/atlas-data/scxa
+      - $ATLAS_DATA_PATH/gxa:/atlas-data/gxa
+      - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
+
     depends_on:
       - scxa-solrcloud-1
       - scxa-solrcloud-2
@@ -24,14 +28,15 @@ services:
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
     command:
       - sh
       - -c
       - >
         ./gradlew :app:clean &&
         ./gradlew
-        -PdataFilesLocation=/root/scxa/integration-test-data
-        -PexperimentFilesLocation=/root/scxa/integration-test-data/scxa
+        -PdataFilesLocation=/atlas-data
+        -PexperimentFilesLocation=/atlas-data/scxa
         -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB
         -PjdbcUsername=$POSTGRES_USER
         -PjdbcPassword=$POSTGRES_PASSWORD
@@ -46,7 +51,8 @@ services:
 volumes:
   root-gradle-wrapper:
   root-gradle-caches:
+  gradle-ro-dep-cache:
 
 networks:
-  scxa:
-    name: scxa
+  atlas-test-net:
+    name: atlas-test-net

@@ -1,25 +1,44 @@
 package uk.ac.ebi.atlas.search.geneids;
 
 import com.google.common.collect.ImmutableSet;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 import uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy;
 import uk.ac.ebi.atlas.species.Species;
+import uk.ac.ebi.atlas.species.SpeciesFactory;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 
 // Takes a GeneQuery object and returns a set of matching gene IDs, if a category is missing it tries several ID fields
 @Component
 public class GeneIdSearchService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneIdSearchService.class);
 
+    protected final static ImmutableSet<String> VALID_QUERY_FIELDS =
+            ImmutableSet.<String>builder()
+                    .add("q")
+                    .addAll(
+                            BIOENTITY_PROPERTY_NAMES.stream()
+                                    .map(propertyName -> propertyName.name)
+                                    .collect(toImmutableSet()))
+                    .build();
     private final GeneIdSearchDao geneIdSearchDao;
 
-    public GeneIdSearchService(GeneIdSearchDao geneIdSearchDao) {
+    private final SpeciesFactory speciesFactory;
+
+    public GeneIdSearchService(GeneIdSearchDao geneIdSearchDao, SpeciesFactory speciesFactory) {
         this.geneIdSearchDao = geneIdSearchDao;
+        this.speciesFactory = speciesFactory;
     }
 
     public Optional<ImmutableSet<String>> search(GeneQuery geneQuery) {
@@ -77,5 +96,40 @@ public class GeneIdSearchService {
         }
 
         return queryMatchesKnownIds ? Optional.of(ImmutableSet.of()) : Optional.empty();
+    }
+
+    public GeneQuery getGeneQueryByRequestParams(MultiValueMap<String, String> requestParams) {
+        var species = Stream.ofNullable(requestParams.getFirst("species"))
+                .filter(org.apache.commons.lang3.StringUtils::isNotEmpty)
+                .map(speciesFactory::create)
+                .findFirst();
+
+        // We support currently only one query term; in the unlikely case that somebody fabricates a URL with more than
+        // one we’ll build the query with the first match. Remember that in order to support multiple terms we’ll
+        // likely need to change GeneQuery and use internally a SemanticQuery
+        var category = getCategoryFromRequestParams(requestParams);
+        var queryTerm = getFirstNotBlankQueryField(requestParams.get(category)).orElseThrow();
+
+       return category.equals("q") ?
+                species
+                        .map(_species -> GeneQuery.create(queryTerm, _species))
+                        .orElseGet(() -> GeneQuery.create(queryTerm)) :
+                species
+                        .map(_species -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category), _species))
+                        .orElseGet(() -> GeneQuery.create(queryTerm, BioentityPropertyName.getByName(category)));
+    }
+
+    public String getCategoryFromRequestParams(MultiValueMap<String, String> requestParams) {
+        for (var requestParam: requestParams.entrySet()) {
+            if (VALID_QUERY_FIELDS.contains(requestParam.getKey().toLowerCase())) {
+                if (getFirstNotBlankQueryField(requestParam.getValue()).isPresent()) return requestParam.getKey();
+            }
+        }
+
+        throw new QueryParsingException("Error parsing query");
+    }
+
+    public Optional<String> getFirstNotBlankQueryField(List<String> values) {
+        return values.stream().filter(StringUtils::isNotBlank).findFirst();
     }
 }

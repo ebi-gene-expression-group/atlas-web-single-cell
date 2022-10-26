@@ -92,7 +92,7 @@ class JsonBioentityInformationControllerWIT {
 
     @Test
     public void geneIdsContainingDotIsNotTruncated() throws Exception {
-        String geneId = solrUtils.fetchRandomGeneOfSpecies("Arabidopsis_lyrata"); // has gene IDs containing dots
+        String geneId = solrUtils.fetchRandomGeneOfSpecies("Mus_musculus"); // has gene IDs containing dots
 
         if(!geneId.isEmpty()) {
             this.mockMvc

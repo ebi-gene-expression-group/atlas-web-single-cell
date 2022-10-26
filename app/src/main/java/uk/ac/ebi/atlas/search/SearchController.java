@@ -12,8 +12,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName;
 
-import java.util.List;
-
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
@@ -21,7 +19,7 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Controller
 public class SearchController extends HtmlExceptionHandlingController {
-    private static final List<String> VALID_REQUEST_PARAMS =
+    private static final ImmutableList<String> VALID_REQUEST_PARAMS =
             ImmutableList.<String>builder()
                     .add("q")
                     .addAll(BIOENTITY_PROPERTY_NAMES.stream().map(BioentityPropertyName::name).collect(toList()))
@@ -31,26 +29,30 @@ public class SearchController extends HtmlExceptionHandlingController {
 
     @RequestMapping(value = SEARCH_ENDPOINT, method = RequestMethod.POST)
     public String parseJsonAsRequestParamsAndRedirect(
-            @RequestParam(value = "geneQuery") String geneQuery,
+            @RequestParam(value = "geneQuery") String query,
             @RequestParam(value = "species", defaultValue = "") String species) {
-        JsonObject geneQueryObject = GSON.fromJson(geneQuery, JsonObject.class);
+        var queryObject = GSON.fromJson(query, JsonObject.class);
 
-        String getSearchUrl = UriComponentsBuilder
+        var searchUrlBuilder = UriComponentsBuilder
                 .newInstance()
-                .path(SEARCH_ENDPOINT)
-                .queryParam(geneQueryObject.get("category").getAsString(), geneQueryObject.get("term").getAsString())
-                .queryParam("species", species)
-                .build()
-                .toUriString();
+                .path(SEARCH_ENDPOINT);
 
-        return "redirect:" + getSearchUrl;
+        if (queryObject.get("category").getAsString().equals("metadata")) {
+            searchUrlBuilder
+                    .pathSegment("metadata", queryObject.get("term").getAsString());
+        } else {
+            searchUrlBuilder
+                    .queryParam(queryObject.get("category").getAsString(), queryObject.get("term").getAsString())
+                    .queryParam("species", species);
+        }
 
+        return "redirect:" + searchUrlBuilder.build().toUriString();
     }
 
     @RequestMapping(value = SEARCH_ENDPOINT, method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
     public String getSearch(@RequestParam MultiValueMap<String, String> requestParams,
                             Model model) {
-        String endpoint =
+        var endpoint =
                 UriComponentsBuilder
                         .newInstance()
                         .path("json/search")
@@ -64,8 +66,8 @@ public class SearchController extends HtmlExceptionHandlingController {
             model.addAttribute("species", requestParams.getFirst("species"));
         }
 
-        for (String requestParam : requestParams.keySet()) {
-            for (String idPropertyName : VALID_REQUEST_PARAMS) {
+        for (var requestParam : requestParams.keySet()) {
+            for (var idPropertyName : VALID_REQUEST_PARAMS) {
                 if (requestParam.equalsIgnoreCase(idPropertyName)) {
                     model.addAttribute("geneQueryTerm", requestParams.getFirst(requestParam));
                     model.addAttribute("geneQueryCategory", requestParam);
@@ -76,5 +78,4 @@ public class SearchController extends HtmlExceptionHandlingController {
 
         return "gene-search-results";
     }
-
 }

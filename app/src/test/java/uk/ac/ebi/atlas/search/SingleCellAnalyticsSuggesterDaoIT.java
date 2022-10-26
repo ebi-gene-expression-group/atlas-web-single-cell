@@ -24,26 +24,25 @@ class SingleCellAnalyticsSuggesterDaoIT {
 
     @Test
     void canFetchSuggestionsForOrganismAndOrganismPrt() {
-        assertThat(subject.fetchMetaDataSuggestions("Homo", 10, ArrayUtils.toArray())).isNotEmpty();
-        assertThat(subject.fetchMetaDataSuggestions("skin", 10, ArrayUtils.toArray())).isNotEmpty();
+        assertThat(subject.fetchMetadataSuggestions("Homo", 10)).isNotEmpty();
+        assertThat(subject.fetchMetadataSuggestions("skin", 10)).isNotEmpty();
     }
 
     @Test
     void canFetchSuggestionsForCellTypeAndDisease() {
-        assertThat(subject.fetchMetaDataSuggestions("B cell", 10, ArrayUtils.toArray())).isNotEmpty();
-        assertThat(subject.fetchMetaDataSuggestions("cancer", 10, ArrayUtils.toArray())).isNotEmpty();
+        assertThat(subject.fetchMetadataSuggestions("B cell", 10)).isNotEmpty();
+        assertThat(subject.fetchMetadataSuggestions("cancer", 10)).isNotEmpty();
     }
 
     @Test
     void doesNotContainDuplicateSuggestions() {
         String query = randomAlphabetic(3, 4);
-        var result = subject.fetchMetaDataSuggestions(query.toLowerCase(), 10, ArrayUtils.toArray())
-                .collect(toImmutableList());;
+        var result = subject.fetchMetadataSuggestions(query.toLowerCase(), 10).collect(toImmutableList());;
         assertThat(result).hasSameSizeAs(result.stream().distinct().collect(toImmutableList()));
     }
 
     @Test
     void atLeastTwoCharactersRequiredToFetchSuggestions() {
-        assertThat(subject.fetchMetaDataSuggestions("a", 10, ArrayUtils.toArray())).isEmpty();
+        assertThat(subject.fetchMetadataSuggestions("a", 10)).isEmpty();
     }
 }

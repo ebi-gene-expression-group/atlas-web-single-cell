@@ -97,10 +97,7 @@ class GeneSearchDaoIT {
         var result = subject.fetchExperimentAccessionsWhereGeneIsMarker(geneId);
 
         assertThat(result)
-                .contains("E-CURD-4");
-        //previous assertion is .containsOnly("E-CURD-4"), removed Only from above to fix test case
-        // Alfonso needs to review this assertion, because above method returns
-        // LIST of experiment accessions, not sure why we are using .containsOnly("E-CURD-4")
+                .containsOnly("E-CURD-4");
     }
 
     @ParameterizedTest

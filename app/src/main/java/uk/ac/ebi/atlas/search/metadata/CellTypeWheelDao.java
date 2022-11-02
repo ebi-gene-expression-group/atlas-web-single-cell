@@ -29,6 +29,7 @@ public class CellTypeWheelDao {
     private static final String ORGANISM_PARTS_TERMS_KEY = "organismParts";
     private static final String CELL_TYPES_TERMS_KEY = "cellTypes";
     private static final String EXPERIMENT_ACCESSIONS_TERMS_KEY = "experimentAccessions";
+    private static final String NOT_APPLICABLE_TERM = "not applicable";
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
@@ -37,36 +38,45 @@ public class CellTypeWheelDao {
     }
 
 //    curl http://$SOLR_HOST/solr/scxa-analytics-v6/query?rows=0 -d '
-//    {
-//      "query": "ontology_annotation_ancestors_labels_t:t\ cell",
-//      "facet": {
-//        "organisms": {
-//          "type": "terms",
-//          "field": "ctw_organism",
-//          "limit": -1,
-//          "facet" : {
+//{
+//    "query": "ontology_annotation_label_t:lung",
+//        "filter": "!ctw_cell_type:\"not applicable\"",
+//        "facet": {
+//    "organisms": {
+//        "type": "terms",
+//                "field": "ctw_organism",
+//                "limit": -1,
+//                "facet": {
 //            "organismParts": {
-//              "type": "terms",
-//              "field": "ctw_organism_part",
-//              "limit": -1,
-//              "facet": {
-//                "cellTypes": {
-//                  "type": "terms",
-//                  "field": "ctw_cell_type",
-//                  "limit": -1
-//                  "facet": {
-//                    "experimentAccessions": {
-//                      "field": "experiment_accession",
-//                      "limit": -1
+//                "type": "terms",
+//                        "field": "ctw_organism_part",
+//                        "limit": -1,
+//                        "facet": {
+//                    "organismParts": {
+//                        "type": "terms",
+//                                "field": "ctw_organism_part",
+//                                "limit": -1,
+//                                "facet": {
+//                            "cellTypes": {
+//                                "type": "terms",
+//                                        "field": "ctw_cell_type",
+//                                        "limit": -1,
+//                                        "facet": {
+//                                    "experimentAccessions": {
+//                                        "type": "terms",
+//                                                "field": "experiment_accession",
+//                                                "limit": -1
+//                                    }
+//                                }
+//                            }
+//                        }
 //                    }
-//                  }
 //                }
-//              }
 //            }
-//          }
 //        }
-//      }
 //    }
+//}
+//}
 //    '
 
     public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm) {
@@ -98,6 +108,7 @@ public class CellTypeWheelDao {
                                 ONTOLOGY_ANNOTATION_ANCESTORS_LABELS, ImmutableSet.of(searchTerm),
                                 ONTOLOGY_ANNOTATION_PART_OF_LABELS, ImmutableSet.of(searchTerm),
                                 ONTOLOGY_ANNOTATION_SYNONYMS, ImmutableSet.of(searchTerm)))
+                        .addNegativeFilterFieldByTerm(CTW_CELL_TYPE, ImmutableList.of(NOT_APPLICABLE_TERM))
                         .addFacet(ORGANISMS_TERMS_KEY, facetBuilder)
                         .setRows(0);    // We only want the facets, we don’t care about the docs
 

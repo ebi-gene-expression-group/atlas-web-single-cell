@@ -134,3 +134,4 @@ volumes:
 
 networks:
   atlas-test-net:
+    name: atlas-test-net

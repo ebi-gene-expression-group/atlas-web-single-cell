@@ -72,7 +72,6 @@ services:
       - SOLR_OPTS=-Denable.packages=true
       - ZK_HOST=scxa-solrcloud-zookeeper-0:2181,scxa-solrcloud-zookeeper-1:2181,scxa-solrcloud-zookeeper-2:2181
     secrets:
-      - scxa-solrcloud.pem
       - scxa-solrcloud.der
     depends_on:
       - scxa-solrcloud-zookeeper-0
@@ -93,7 +92,6 @@ services:
       - SOLR_OPTS=-Denable.packages=true
       - ZK_HOST=scxa-solrcloud-zookeeper-0:2181,scxa-solrcloud-zookeeper-1:2181,scxa-solrcloud-zookeeper-2:2181
     secrets:
-      - scxa-solrcloud.pem
       - scxa-solrcloud.der
     depends_on:
       - scxa-solrcloud-zookeeper-0
@@ -104,9 +102,7 @@ services:
 # openssl rsa -in scxa-solrcloud.pem -pubout -outform DER -out scxa-solrcloud.der
 secrets:
   scxa-solrcloud.der:
-    file: ${SOLR_KEYS_PATH}/scxa-solrcloud.der
-  scxa-solrcloud.pem:
-    file: ${SOLR_KEYS_PATH}/scxa-solrcloud.pem
+    file: ${SOLR_PUBLIC_KEY}
 
 volumes:
   data-scxa-solrcloud-zookeeper-0:

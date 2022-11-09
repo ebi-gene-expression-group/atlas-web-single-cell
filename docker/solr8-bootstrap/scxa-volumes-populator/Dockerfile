@@ -9,4 +9,4 @@ VOLUME /scxa-data /bioentity_properties
 
 ENV EXP_IDS E-CURD-4 E-EHCA-2 E-GEOD-71585 E-GEOD-81547 E-GEOD-99058 E-MTAB-5061 E-ENAD-53
 COPY docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["/docker-entrypoint.sh"]

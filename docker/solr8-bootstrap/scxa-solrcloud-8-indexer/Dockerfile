@@ -22,7 +22,7 @@ ENV SOLR_COLLECTION_ANALYTICS scxa-analytics
 ENV SOLR_COLLECTION_ANALYTICS_SCHEMA_VERSION 7
 ENV BIOSOLR_VERSION 2.0.0
 ENV BIOSOLR_JAR_PATH /root/index-scxa/lib/solr-ontology-update-processor-2.0.0.jar
-ENV SIGNING_PRIVATE_KEY /root/secrets/scxa-solrcloud.pem
+ENV SIGNING_PRIVATE_KEY /run/secrets/scxa-solrcloud.pem
 ENV SCXA_ONTOLOGY file:///var/solr/data/userfiles/scatlas.owl
 
 COPY ./docker-entrypoint.sh /

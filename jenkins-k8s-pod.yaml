@@ -15,7 +15,7 @@ spec:
     - name: "kubectl"
       image: bitnami/kubectl
       command: ["/bin/sh"]
-      args: ["-c", "kubectl scale --replicas=2 statefulset/scxa-solrcloud-fast; kubectl scale --replicas=3 statefulset/scxa-zk-fast"]
+      args: ["-c", "kubectl scale --replicas=3 solrcloud/scxa"]
       resources:
         requests:
           memory: "0.5Gi"

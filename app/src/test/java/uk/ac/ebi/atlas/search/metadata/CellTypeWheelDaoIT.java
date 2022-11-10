@@ -31,6 +31,7 @@ class CellTypeWheelDaoIT {
                         .map(result -> result.get(0))
                         .distinct()
                         .collect(toImmutableList()))
+                .doesNotContain("not applicable")
                 .containsExactlyInAnyOrder("Homo sapiens", "Mus musculus");
     }
 

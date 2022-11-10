@@ -17,7 +17,7 @@
     "@ebi-gene-expression-group/atlas-feedback-form": "^1.4.1",
     "@ebi-gene-expression-group/atlas-homepage-cards": "^2.5.3",
     "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.9.0",
-    "@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap": "^1.2.0",
+    "@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap": "^1.3.2",
     "@ebi-gene-expression-group/scxa-gene-search-form": "^2.0.0",
     "expression-atlas-autocomplete": "^3.2.0",
     "lodash": "^4.17.20",

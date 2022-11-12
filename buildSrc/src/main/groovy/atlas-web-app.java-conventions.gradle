@@ -35,7 +35,7 @@ dependencies {
   implementation 'au.com.bytecode:opencsv:2.4'
   implementation 'io.atlassian.util.concurrent:atlassian-util-concurrent:4.0.1'
 
-  implementation 'org.postgresql:postgresql:42.2.5.jre7' //Only in core?
+  implementation 'org.postgresql:postgresql:42.5.0'
 
   implementation 'org.jetbrains:annotations:17.0.0'
   implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.200'

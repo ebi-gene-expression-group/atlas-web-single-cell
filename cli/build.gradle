@@ -40,10 +40,10 @@ processResources {
 
     filesMatching('solr.properties') {
         expand(
-                zkHost: project.hasProperty('zkHost') ? zkHost : "${System.env.ATLAS_ZK_HOST}",
-                zkPort: project.hasProperty('zkPort') ? zkPort : '2181',
-                solrHost: project.hasProperty('solrHost') ? solrHost : "${System.env.ATLAS_SOLR_HOST}",
-                solrPort: project.hasProperty('solrPort') ? solrPort : '8983'
+                zkHosts: project.hasProperty('zkHosts') ? zkHosts : "${System.env.ATLAS_ZK_HOSTS}",
+                solrHosts: project.hasProperty('solrHosts') ? solrHosts : "${System.env.ATLAS_SOLR_HOSTS}",
+                solrUser: project.hasProperty('solrUser') ? solrUser : "${System.env.ATLAS_SOLR_USER}",
+                solrPassword: project.hasProperty('solrPassword') ? solrPassword : "${System.env.ATLAS_SOLR_PASSWORD}"
         )
     }
 }

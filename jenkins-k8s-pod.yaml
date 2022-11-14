@@ -15,7 +15,8 @@ spec:
     - name: "kubectl"
       image: bitnami/kubectl
       command: [ "/bin/sh" ]
-      args: [ "-c", "kubectl scale --replicas=2 solrcloud scxa && sleep 2h" ]
+      #args: [ "-c", "kubectl scale --replicas=2 solrcloud scxa && sleep 2h" ]
+      args: [ "-c", "sleep 2h" ]
       resources:
         requests:
           memory: "0.5Gi"

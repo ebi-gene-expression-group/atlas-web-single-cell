@@ -60,7 +60,7 @@ class CellTypeSearchDaoIT {
 
     @Test
     // This is a weak test, but it’s useful to remember that there can be overlap between ontology and authors labels
-    void onotologyLabelsAndAuthorMayBeDifferent() {
+    void ontologyLabelsAndAuthorMayBeDifferent() {
         var ontologyLabelsInPancreas =
                 subject.getInferredCellTypeOntologyLabels(
                         "E-MTAB-5061", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0001264"));

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTOR_VALUE;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACET_CHARACTERISTIC_NAME;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -49,7 +49,7 @@ class SearchStreamBuilderIT {
         var solrQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, "E-EHCA-2")
-                        .setFieldList(ImmutableSet.of(EXPERIMENT_ACCESSION, CELL_ID, CHARACTERISTIC_NAME))
+                        .setFieldList(ImmutableSet.of(EXPERIMENT_ACCESSION, CELL_ID, FACET_CHARACTERISTIC_NAME))
                         .setRows(numRows)
                         .sortBy(CELL_ID, asc);
 
@@ -74,7 +74,7 @@ class SearchStreamBuilderIT {
         var solrQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, "E-EHCA-2")
-                        .setFieldList(ImmutableSet.of(EXPERIMENT_ACCESSION, FACTOR_VALUE))
+                        .setFieldList(ImmutableSet.of(EXPERIMENT_ACCESSION, CHARACTERISTIC_NAME))
                         .setRows(numRows)
                         .sortBy(EXPERIMENT_ACCESSION, asc);
 

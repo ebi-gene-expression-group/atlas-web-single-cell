@@ -41,10 +41,8 @@ spec:
         value: "-Dorg.gradle.daemon=false"
       - name: GRADLE_RO_DEP_CACHE
         value: "/root/gradle-ro-dep-cache"
-      command:
-      - sleep
-      args:
-      - 99d
+      command: [ "/bin/sh" ]
+      args: [ "-c", "mkdir -p /root/expdesign-rw && cp /test-data/expdesign/* /test-data/expdesign-rw && sleep 2h" ]
       volumeMounts:
         - mountPath: /test-data/scxa
           name: scxa-data

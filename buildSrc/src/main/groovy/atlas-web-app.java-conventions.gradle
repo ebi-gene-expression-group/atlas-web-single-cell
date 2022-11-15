@@ -81,6 +81,7 @@ processTestResources {
     expand(
             dataFilesLocation: dataFilesLocation,
             experimentFilesLocation: experimentFilesLocation,
+            experimentDesignLocation: experimentDesignLocation,
             buildNumber: project.hasProperty('buildNumber') ? buildNumber : '42',
             buildBranch: project.hasProperty('buildBranch') ? buildBranch : 'dev',
             buildRevision: project.hasProperty('buildRevision') ? buildRevision : 'dev',

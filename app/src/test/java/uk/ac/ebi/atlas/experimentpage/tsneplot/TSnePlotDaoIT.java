@@ -42,6 +42,9 @@ class TSnePlotDaoIT {
     private Path dataFilesPath;
 
     @Inject
+    private Path experimentDesignDirPath;
+
+    @Inject
     private JdbcUtils jdbcTestUtils;
 
     @Inject
@@ -125,7 +128,9 @@ class TSnePlotDaoIT {
         //populator.setScripts(new ClassPathResource("fixtures/scxa_tsne-full.sql"));
         populator.execute(dataSource);
         var resource =
-                new DataFileHub(dataFilesPath.resolve("scxa")).getSingleCellExperimentFiles(experimentAccession).tSnePlotTsvs;
+                new DataFileHub(dataFilesPath.resolve("scxa"), experimentDesignDirPath)
+                        .getSingleCellExperimentFiles(experimentAccession)
+                        .tSnePlotTsvs;
         var firstFile = resource.entrySet().iterator().next();
         var fileContent = firstFile.getValue().get().get();
         var fileContentLines = Math.toIntExact(fileContent.count());

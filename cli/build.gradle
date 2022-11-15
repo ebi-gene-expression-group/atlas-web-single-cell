@@ -27,6 +27,7 @@ processResources {
         expand(
                 dataFilesLocation: project.hasProperty('dataFilesLocation') ? dataFilesLocation : "${System.env.ATLAS_DATA_PATH}",
                 experimentFilesLocation: project.hasProperty('experimentFilesLocation') ? experimentFilesLocation : "${System.env.ATLAS_DATA_PATH}/scxa",
+                experimentDesignLocation: project.hasProperty('experimentDesignLocation') ? experimentDesignLocation : "${System.env.ATLAS_DATA_PATH}/scxa/expdesign"
         )
     }
 

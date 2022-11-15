@@ -32,7 +32,6 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @Transactional
 @Sql("/fixtures/experiment.sql")
 @Sql(value = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
-@Disabled
 class ScxaExperimentRepositoryIT {
     @Inject
     private JdbcUtils jdbcUtils;

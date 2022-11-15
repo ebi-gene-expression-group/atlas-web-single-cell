@@ -35,10 +35,11 @@ to run/compile the application with Gradle. However, notice that the `-D` argume
 compile time, so if you forget or your environment changes, you don’t need to recompile.
 
 ### Expression Atlas file options: `configuration.properties`
-| Java property name          | Gradle property name      | Default value            |
-|-----------------------------|---------------------------|--------------------------|
-| `data.files.location`       | `dataFilesLocation`       | `${ATLAS_DATA_PATH}`     |
-| `experiment.files.location` | `experimentFilesLocation` | `${ATLAS_DATA_PATH}/gxa` |
+| Java property name            | Gradle property name       | Default value                  |
+|-------------------------------|----------------------------|--------------------------------|
+| `data.files.location`         | `dataFilesLocation`        | `${ATLAS_DATA_PATH}`           |
+| `experiment.files.location`   | `experimentFilesLocation`  | `${ATLAS_DATA_PATH}/gxa`       |
+| `experiment.design.location`  | `experimentDesignLocation` | `${ATLAS_DATA_PATH}/expdesign` |
 
 ### Expression Atlas database options: `jdbc.properties`
 | Java Property name | Gradle property name | Default value                                                        |

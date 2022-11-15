@@ -121,7 +121,6 @@ class ExperimentPageContentServiceIT {
                         new JsonPrimitive("Citation"));
     }
 
-    @Disabled
     @Test
     void getValidDownloadsJson() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();

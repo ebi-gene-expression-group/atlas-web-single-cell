@@ -97,7 +97,6 @@ class ExperimentFileLocationServiceIT {
 		this.subject = new ExperimentFileLocationService(dataFileHub);
 	}
 
-	@Disabled
 	@Test
 	void existingExperimentDesignFile() {
 		existingFileOfType(jdbcTestUtils.fetchRandomExperimentAccession(),

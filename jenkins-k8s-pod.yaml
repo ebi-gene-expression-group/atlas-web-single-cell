@@ -16,7 +16,7 @@ spec:
       image: bitnami/kubectl
       command: [ "/bin/sh" ]
       #args: [ "-c", "kubectl scale --replicas=2 solrcloud scxa && sleep 2h" ]
-      args: [ "-c", "mkdir -p /test-data/expdesign-rw && cp /test-data/expdesign/* /test-data/expdesign-rw && sleep 2h" ]
+      args: [ "-c", "sleep 2h" ]
       resources:
         requests:
           memory: "0.5Gi"

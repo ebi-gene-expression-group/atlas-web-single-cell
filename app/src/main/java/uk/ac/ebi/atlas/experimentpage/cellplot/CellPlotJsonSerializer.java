@@ -114,8 +114,6 @@ public class CellPlotJsonSerializer {
     }
 
     public String fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
-        return GSON.toJson(
-                Optional.ofNullable(
-                        cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession)));
+        return GSON.toJson(cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession));
     }
 }

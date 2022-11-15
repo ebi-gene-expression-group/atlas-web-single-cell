@@ -13,9 +13,9 @@ services:
       - "8000:8000"
     volumes:
       - ../webapps:/usr/local/tomcat/webapps
-      - ./atlas-properties:/atlas-properties
-      - $ATLAS_DATA_PATH/scxa:/atlas-data/scxa
-      - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
+      - webapp-properties:/webapp-properties
+      - bioentity-properties:/atlas-data/bioentity_properties
+      - scxa-data:/atlas-data/scxa
       - scxa-tomcat-conf:/usr/local/tomcat/conf
     depends_on:
       - scxa-postgres
@@ -24,6 +24,12 @@ services:
     command: ["catalina.sh", "jpda", "run"]
 
 volumes:
+  webapp-properties:
+    name: scxa-webapp-properties
+  bioentity-properties:
+    name: scxa-atlas-data-bioentity-properties
+  scxa-data:
+    name: scxa-atlas-data-scxa
   scxa-tomcat-conf:
     name: scxa-tomcat-conf
 

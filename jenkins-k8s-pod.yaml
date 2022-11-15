@@ -16,7 +16,7 @@ spec:
       image: bitnami/kubectl
       command: [ "/bin/sh" ]
       #args: [ "-c", "kubectl scale --replicas=2 solrcloud scxa && sleep 2h" ]
-      args: [ "-c", "sleep 2h" ]
+      args: [ "-c", "mkdir -p /test-data/expdesign-rw && cp /test-data/expdesign/* /test-data/expdesign-rw && sleep 2h" ]
       resources:
         requests:
           memory: "0.5Gi"
@@ -50,6 +50,9 @@ spec:
           name: scxa-data
           readOnly: true
         - mountPath: /test-data/expdesign
+          name: scxa-expdesign
+          readOnly: true
+        - mountPath: /test-data/expdesign
           name: scxa-data-expdesign
         - mountPath: /test-data/bioentity_properties
           name: bioentity-properties
@@ -58,7 +61,7 @@ spec:
           name: gradle-ro-dep-cache
           readOnly: true
     - name: postgres
-      image: postgres:10-alpine
+      image: postgres:11-alpine
       resources:
         requests:
           memory: "100Mi"
@@ -76,8 +79,10 @@ spec:
       persistentVolumeClaim:
         claimName: scxa-data-rox
         readOnly: true
-    - name: scxa-data-expdesign
-      emptyDir: {}
+    - name: scxa-expdesign
+      persistentVolumeClaim:
+        claimName: scxa-expdesign-rox
+        readOnly: true
     - name: bioentity-properties
       persistentVolumeClaim:
         claimName: bioentity-properties-rox

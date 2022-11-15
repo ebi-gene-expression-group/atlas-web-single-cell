@@ -14,7 +14,7 @@ pipeline {
 
 
   stages {
-    stage('Scale SlrCloud/Zk') {
+    stage('Scale SolrCloud') {
       steps {
         container('kubectl') {}
       }
@@ -47,6 +47,7 @@ pipeline {
             sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/gxa-test-data ' +
                     '-PexperimentFilesLocation=/gxa-test-data/gxa ' +
+                    '-PexperimentDesignLocation=/test-data/expdesign-rw' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
@@ -87,6 +88,7 @@ pipeline {
             sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/test-data ' +
                     '-PexperimentFilesLocation=/test-data/scxa ' +
+                    '-PexperimentDesignLocation=/test-data/expdesign-rw' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +

@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   scxa-postgres-test:
-    image: postgres:10-alpine
+    image: postgres:11-alpine
     container_name: $POSTGRES_HOST
     networks:
       - atlas-test-net
@@ -21,7 +21,7 @@ services:
     container_name: scxa-flyway-test
     networks:
       - atlas-test-net
-    command: -url=jdbc:postgresql://$POSTGRES_HOST/$POSTGRES_DB -schemas=$POSTGRES_USER -user=$POSTGRES_USER -password=$POSTGRES_PASSWORD -connectRetries=60 migrate
+    command: -url=jdbc:postgresql://$POSTGRES_HOST/$POSTGRES_DB -schemas=$POSTGRES_USER -user=$POSTGRES_USER -password=$POSTGRES_PASSWORD -connectRetries=60 migrate -target=18
     volumes:
       - ../schemas/flyway/scxa/:/flyway/sql
     depends_on:

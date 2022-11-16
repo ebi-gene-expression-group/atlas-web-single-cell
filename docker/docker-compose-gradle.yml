@@ -20,8 +20,8 @@ services:
       - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
 
     depends_on:
+      - scxa-solrcloud-0
       - scxa-solrcloud-1
-      - scxa-solrcloud-2
       - scxa-flyway-test
     environment:
       POSTGRES_HOST: $POSTGRES_HOST

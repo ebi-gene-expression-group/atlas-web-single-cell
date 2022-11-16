@@ -19,8 +19,8 @@ services:
       - scxa-tomcat-conf:/usr/local/tomcat/conf
     depends_on:
       - scxa-postgres
+      - scxa-solrcloud-0
       - scxa-solrcloud-1
-      - scxa-solrcloud-2
     command: ["catalina.sh", "jpda", "run"]
 
 volumes:

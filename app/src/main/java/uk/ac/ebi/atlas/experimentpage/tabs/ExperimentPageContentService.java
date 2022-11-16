@@ -12,6 +12,7 @@ import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
+import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
@@ -34,6 +35,7 @@ public class ExperimentPageContentService {
     private final CellMetadataService cellMetadataService;
     private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
+    private final CellPlotService cellPlotService;
 
     final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-GEOD-130473", "E-HCAD-8", "E-MTAB-6653", "E-GEOD-86618", "E-CURD-11", "E-MTAB-6308",
@@ -44,13 +46,15 @@ public class ExperimentPageContentService {
                                         TSnePlotSettingsService tsnePlotSettingsService,
                                         CellMetadataService cellMetadataService,
                                         OntologyAccessionsSearchService ontologyAccessionsSearchService,
-                                        ExperimentTrader experimentTrader) {
+                                        ExperimentTrader experimentTrader,
+                                        CellPlotService cellPlotService) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.dataFileHub = dataFileHub;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
         this.cellMetadataService = cellMetadataService;
         this.ontologyAccessionsSearchService = ontologyAccessionsSearchService;
         this.experimentTrader = experimentTrader;
+        this.cellPlotService = cellPlotService;
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
@@ -69,6 +73,9 @@ public class ExperimentPageContentService {
 
         result.add("plotTypesAndOptions",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)));
+
+        result.add("defaultPlotTypeAndParameterisation",
+                GSON.toJsonTree(cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession)));
 
         result.add("metadata", getMetadata(experimentAccession));
 

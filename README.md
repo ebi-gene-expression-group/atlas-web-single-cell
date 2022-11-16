@@ -3,13 +3,17 @@
 ## Requirements
 - Docker v19+
 - Docker Compose v1.25+
-- 60 GB of available storage (experiment files, PostgreSQL and Solr backup snapshots and Docker volumes)
+- 45 GB of available storage for the following Docker volumes:
+  - Experiment files
+  - Bioentity properties (i.e. gene annotations)
+  - PostgreSQL
+  - SolrCloud and ZooKeeper
+  - Tomcat configuration files
 
-Notice that PostgreSQL and Solr snapshots are [`bind` mounted](https://docs.docker.com/storage/bind-mounts/) in order
-to move data back and forth from the containers. Actual files managed by either Solr or PostgreSQL are kept in volumes
-which will be reused even if the containers are removed or brought down by Docker Compose. If you want to start afresh
-delete the old volume (e.g. for Postgres `docker volume rm scxa-pgdata`) and re-run the necessary step to return to the
-initial state.
+Files managed by either Solr or PostgreSQL are kept in volumes which will be reused even if the containers are removed 
+or brought down by Docker Compose. If you want to start afresh delete the old volume (e.g. for Postgres 
+`docker volume rm scxa-postgres-11-pgdata`) and re-run the necessary bootstrap script to return to the initial state.
+You can find the volume names used by each service in the `volumes` section of its Docker Compose YAML file.
 
 ## Code
 Clone the repositories of both Atlas Web Core (common business logic for bulk Expression Atlas and Single Cell
@@ -24,25 +28,14 @@ If you have already cloned the project ensure it’s up-to-date:
   git pull
   git submodule update --remote
 ```
-## Data
-Choose a suitable location for the experiment files, database and Solr backup data. Set the path in the variable
-`ATLAS_DATA_PATH`.
 
-To download the data you can use `rsync` if you’re connected to the EBI network (over VPN or from campus):
+## Create a Gradle read-only dependency cache
+To speed up builds and tests it is strongly encouraged to create a Docker volume to back a [Gradle read-only dependency
+cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:ephemeral-ci-cache).
 ```bash
-ATLAS_DATA_PATH=/path/to/sc/atlas/data
-rsync -ravz ebi-cli:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/* $ATLAS_DATA_PATH
+cd docker/prepare-dev/environment/gradle-ro-dep-cache
+./run.sh -l gradle-ro-dep-cache.log
 ```
-
-Alternatively you can use `wget` and connect to EBI’s FTP server over HTTP:
-```bash
-wget -P $ATLAS_DATA_PATH -c --reject="index.html*" --recursive -np -nc -nH --cut-dirs=7 --random-wait --wait 1 -e robots=off http://ftp.ebi.ac.uk/pub/databases/microarray/data/atlas/test/scxa/
-```
-
-Notice that either way `ATLAS_DATA_PATH` will be created for you if the directory doesn’t exist.
-
-This task will take a variable amount of time that depends on your connection speed. After its completion you will see
-three new folders under `ATLAS_DATA_PATH`: `filesystem`, `solrcloud` and `postgressql`.
 
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace

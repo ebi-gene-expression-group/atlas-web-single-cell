@@ -33,9 +33,27 @@ If you have already cloned the project ensure it’s up-to-date:
 To speed up builds and tests it is strongly encouraged to create a Docker volume to back a [Gradle read-only dependency
 cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:ephemeral-ci-cache).
 ```bash
-cd docker/prepare-dev/environment/gradle-ro-dep-cache
+cd docker/prepare-dev-environment/gradle-ro-dep-cache
+# Run ./run.sh -h for more details and usage instructions
 ./run.sh -l gradle-ro-dep-cache.log
 ```
+
+## Prepare volumes
+In order to run integration tests and a development instance of Single Cell Expression Atlas you will need a few Docker
+volumes first. They will be populated with data that will be indexed in Solr and Postgres. Single Cell Expression Atlas 
+needs all three (i.e. file bundles in the volume, Solr collections and Postgres data) to run.
+```bash
+cd docker/prepare-dev-environment/volumes
+# Run ./run.sh -h for more details and usage instructions
+./run.sh -l volumes.log
+```
+
+This script, unless it’s run with the `-r` flag, is non-destructive. This means that it can be interrupted without 
+losing any data. The container mirrors directories via FTP, and can resume after cancellation. It can be re-run to
+update the data in the volumes should the contents of the source directories change. This is especially useful when
+experiments are re-analysed/re-annotated, or the bioentity properties directory is updated after a release of  Ensembl, 
+WormBase ParaSite, Reactome, Gene Ontoloy, Plant Ontology or InterPro. 
+
 
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace
@@ -59,32 +77,6 @@ log should come from Tomcat, and it should be something similar to:
 ```
 scxa-tomcat    | 18-Dec-2020 13:40:58.907 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 6705 ms
 ```
-
-Now let’s populate both the Postgres database and the SolrCloud collections.
-
-### Postgres
-Run the  following command to restore Postgres data from the provided `pg-dump.bin` file:
-```bash
-docker exec -it scxa-postgres bash -c 'pg_restore -d $POSTGRES_DB -h localhost -p 5432 -U $POSTGRES_USER --clean /var/backups/postgresql/pg-dump.bin'
-```
-
-You’ll see some errors due to the way `pg_dump` and `pg_restore` deal with partitioned tables (`scxa_analytics` in our
-case). This is normal; they can be safely ignored.
-
-A few minutes later your Postgres database will be ready.
-
-### SolrCloud
-Use the provided `Dockerfile` to bootstrap SolrCloud:
-```bash
-docker build -t scxa-solrcloud-bootstrap .
-docker run -i --rm --network scxa scxa-solrcloud-bootstrap
-```
-
-You will see many warnings or errors in Solr’s responses. That’s alright and to be expected, since the scripts that
-create the config sets, collections and define the schemas will attempt first to remove them to start from a clean,
-known state; however Solr will reply with an error if the collections can’t be deleted.
-
-Again, this step will take a few minutes.
 
 ### Tomcat
 Copy the Tomcat credentials file to the container. The `admin` role is used to access several admin endpoints in Single
@@ -128,47 +120,11 @@ POSTGRES_PASSWORD=atlas3dev \
 docker-compose -f docker-compose-solrcloud.yml -f docker-compose-postgres.yml -f docker-compose-tomcat.yml down
 ```
 If you get any `java.net.UnknownHostException: Invalid hostname for server: local` exceptions while running application.
-Go to `profile-docker. gradle` file and check these attribute values `ext.zkHost` & `ext.solrHost` and compare with running container names.
-If they are different, update them.These should be ZooKeeper and Solr container names.
-
-## Backing up your data
-Eventually you’ll add new experiments to your development instance of SCXA, or new, improved collections in Solr will
-replace the old ones. In such cases you’ll want to get a snapshot of the data to share with the team. Below there are
-instructions to do that.
-
-### PostgreSQL
-If at some point you wish to create a backup dump of the database run the command below:
-```bash
-docker exec -it scxa-postgres bash -c 'pg_dump -d $POSTGRES_DB -h localhost -p 5432 -U $POSTGRES_USER -f /var/lib/postgresql/scxa/pg-dump.bin -F c -n $POSTGRES_USER -t $POSTGRES_USER.* -T *flyway*'
-```
-
-### SolrCloud
-```bash
-for SOLR_COLLECTION in $SOLR_COLLECTIONS
-do
-  START_DATE_IN_SECS=`date +%s`
-  curl "http://localhost:8983/solr/${SOLR_COLLECTION}/replication?command=backup&location=/var/backups/solr&name=${SOLR_COLLECTION}"
-
-  # Pattern enclosed in (?<=) is zero-width look-behind and (?=) is zero-width look-ahead, we match everything in between
-  COMPLETED_DATE=`curl -s "http://localhost:8983/solr/${SOLR_COLLECTION}/replication?command=details" | grep -oP '(?<="snapshotCompletedAt",").*(?=")'`
-  COMPLETED_DATE_IN_SECS=`date +%s -d "${COMPLETED_DATE}"`
-
-  # We wait until snapshotCompletedAt is later than the date we took before issuing the backup operation
-  while [ ${COMPLETED_DATE_IN_SECS} -lt ${START_DATE_IN_SECS} ]
-  do
-    sleep 1s
-    COMPLETED_DATE=`curl -s "http://localhost:8983/solr/${SOLR_COLLECTION}/replication?command=details" | grep -oP '(?<="snapshotCompletedAt",").*(?=")'`
-    COMPLETED_DATE_IN_SECS=`date +%s -d "${COMPLETED_DATE}"`
-  done
-done
-```
+Go to `profile-docker. gradle` file and check these attribute values `ext.zkHosts` and `ext.solrHosts` and compare 
+them with running container names. If they are different, update them.
 
 ### Update test data
-Remember to update the file and any new experiments added to the `filesystem` directory by syncing your
-`ATLAS_DATA_PATH` with `/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa`:
-```bash
-rsync -ravz $ATLAS_DATA_PATH/* ebi-cli:/nfs/ftp/pub/databases/microarray/data/atlas/test/scxa/
-```
+Just add the necessary species name and experiment accession in the data loading scripts in the `docker` directory.
 
 ## Testing
 **Note: A few tests depend on the Solr suggesters, so don’t forget to build them in the SolrCloud container!**
@@ -181,12 +137,12 @@ mistake and wiping full tables when cleaning fixtures... such an unfortunate acc
 
 Depending on your OS and Docker settings you might be able to run Gradle from your host machine without a container,
 and access Solr, ZooKeeper and Postgres via mapped ports on `localhost`. We know this is possible in Linux, but we’ve 
-found it to be problematic in macOS. It’s probably due to the way DNS in Docker Compose works (i.e., ZooKeeper resolves 
-`localhost` to an unknown IP address). As they say, networking is hard. YMMV. 
+found it to be problematic in macOS. It’s probably due to the way DNS in Docker Compose works: ZooKeeper resolves 
+`localhost` to an unknown IP address. As they say, networking is hard. YMMV. 
 
 ### Before you start
 Check with `docker ps` and `docker container ls -a` that no services used during tests are running or stopped,
-respectively. These are `scxa-solrcloud-1`, `scxa-solrcloud-2`, `scxa-zk-1`, `scxa-zk-2`, `scxa-zk-3`, 
+respectively. These are `scxa-solrcloud-0`, `scxa-solrcloud-1`, `scxa-zk-0`, `scxa-zk-1`, `scxa-zk-2`, 
 `scxa-postgres-test`, `scxa-flyway-test` and `scxa-gradle`. We want to start with a clean application context every 
 time we execute the test task. Here are two useful commands:
 ```bash

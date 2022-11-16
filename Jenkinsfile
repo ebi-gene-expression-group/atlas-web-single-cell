@@ -88,7 +88,7 @@ pipeline {
             sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/test-data ' +
                     '-PexperimentFilesLocation=/test-data/scxa ' +
-                    '-PexperimentDesignLocation=/root/expdesign-rw' +
+                    '-PexperimentDesignLocation=/root/expdesign-rw ' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +

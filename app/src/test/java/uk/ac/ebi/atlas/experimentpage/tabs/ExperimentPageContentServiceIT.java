@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +17,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
@@ -60,6 +60,9 @@ class ExperimentPageContentServiceIT {
     @Inject
     private ExperimentTrader experimentTrader;
 
+    @Inject
+    private CellPlotService cellPlotService;
+
     private ExperimentPageContentService subject;
 
     @BeforeAll
@@ -95,7 +98,8 @@ class ExperimentPageContentServiceIT {
                         tsnePlotSettingsService,
                         cellMetadataService,
                         ontologyAccessionsSearchService,
-                        experimentTrader);
+                        experimentTrader,
+                        cellPlotService);
     }
 
     @Test

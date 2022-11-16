@@ -10,14 +10,13 @@ services:
       - "5005:5005"
     working_dir: /root/project
     volumes:
-      - root-gradle-wrapper:/root/.gradle/wrapper
-      - root-gradle-caches:/root/.gradle/caches
       - ..:/root/project
-      - ./packages:/root/.m2
-      - gradle-ro-dep-cache:/gradle-ro-dep-cache
-      - $ATLAS_DATA_PATH/scxa:/atlas-data/scxa
-      - $ATLAS_DATA_PATH/gxa:/atlas-data/gxa
-      - $ATLAS_DATA_PATH/bioentity_properties:/atlas-data/bioentity_properties
+      - gradle-ro-dep-cache:/gradle-ro-dep-cache:ro
+      # Only needed if running ITs in atlas-web-core
+      #- $ATLAS_DATA_PATH/gxa:/atlas-data/gxa
+      - bioentity-properties:/atlas-data/bioentity_properties:ro
+      - scxa-data:/atlas-data/scxa:ro
+      - expdesign:/atlas-data/expdesign
 
     depends_on:
       - scxa-solrcloud-0
@@ -37,6 +36,7 @@ services:
         ./gradlew
         -PdataFilesLocation=/atlas-data
         -PexperimentFilesLocation=/atlas-data/scxa
+        -PexperimentDesignLocation=/atlas-data/expdesign
         -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB
         -PjdbcUsername=$POSTGRES_USER
         -PjdbcPassword=$POSTGRES_PASSWORD
@@ -49,9 +49,14 @@ services:
         ./gradlew :app:jacocoTestReport
 
 volumes:
-  root-gradle-wrapper:
-  root-gradle-caches:
   gradle-ro-dep-cache:
+    name: scxa-gradle-ro-dep-cache
+  bioentity-properties:
+    name: scxa-atlas-data-bioentity-properties
+  scxa-data:
+    name: scxa-atlas-data-scxa
+  expdesign:
+    name: scxa-atlas-data-expdesign
 
 networks:
   atlas-test-net:

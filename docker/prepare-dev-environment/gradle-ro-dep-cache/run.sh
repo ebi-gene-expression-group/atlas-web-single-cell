@@ -27,7 +27,7 @@ do
       exit 0
       ;;
     \?)
-      printf "Invalid option: -$OPTARG\n" >&2
+      printf '%b\n' "Invalid option: -$OPTARG" >&2
       print_usage
       exit 2
       ;;

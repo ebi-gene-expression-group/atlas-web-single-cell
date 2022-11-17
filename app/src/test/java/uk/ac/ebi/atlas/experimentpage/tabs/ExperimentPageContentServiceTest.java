@@ -14,6 +14,7 @@ import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.download.IconType;
+import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experiments.ExperimentBuilder;
@@ -61,6 +62,9 @@ class ExperimentPageContentServiceTest {
 
     @Mock
     private ExperimentTrader experimentTraderMock;
+
+    @Mock
+    private CellPlotService cellPlotServiceMock;
 
     private final JsonObject tpmsDownloadJsonObject = new JsonObject();
 
@@ -129,7 +133,8 @@ class ExperimentPageContentServiceTest {
                 tsnePlotSettingsServiceMock,
                 cellMetadataServiceMock,
                 ontologyAccessionsSearchService,
-                experimentTraderMock);
+                experimentTraderMock,
+                cellPlotServiceMock);
 
         tpmsDownloadJsonObject.addProperty("url", EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE);
         tpmsDownloadJsonObject.addProperty("type", IconType.TSV.getName());

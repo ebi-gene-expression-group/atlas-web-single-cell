@@ -190,6 +190,13 @@ class ExperimentPageContentServiceIT {
         assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("tsne").getAsJsonArray()).isNotEmpty();
         assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("umap").getAsJsonArray()).isNotEmpty();
 
+        assertThat(result.has("defaultPlotTypeAndParameterisation")).isTrue();
+        assertThat(result.get("defaultPlotTypeAndParameterisation")
+                .getAsJsonObject()
+                .get("UMAP")
+                .getAsJsonArray())
+                .isNotEmpty();
+
         // Not all experiments have metadata, see E-GEOD-99058
         if (result.has("metadata")) {
             assertThat(result.get("metadata").getAsJsonArray())

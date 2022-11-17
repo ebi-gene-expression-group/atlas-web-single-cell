@@ -2,6 +2,8 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,17 +133,17 @@ public class CellPlotDao {
                     "ON dr.method = fi.method " +
                     "AND dr.priority = fi.prt";
 
-    public ImmutableMap<String, String> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
+    public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION,
                 namedParameters,
                 (ResultSet resultSet) -> {
-                    ImmutableMap.Builder<String, String> plotTypeAndOption = new ImmutableMap.Builder<>();
+                    ImmutableMap.Builder<String, JsonObject> plotTypeAndOption = new ImmutableMap.Builder<>();
                     while (resultSet.next()) {
                         var plotType = resultSet.getString("method");
-                        var plotOption = resultSet.getString("parameterisation");
+                        var plotOption = new Gson().fromJson(resultSet.getString("parameterisation"), JsonObject.class);
                         plotTypeAndOption.put(plotType,plotOption);
                     }
                     return plotTypeAndOption.build();

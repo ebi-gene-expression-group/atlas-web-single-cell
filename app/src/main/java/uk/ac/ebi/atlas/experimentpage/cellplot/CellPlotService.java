@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math.util.MathUtils;
 import org.springframework.stereotype.Service;
@@ -92,7 +93,7 @@ public class CellPlotService {
                 .collect(toImmutableSet());
     }
 
-    public ImmutableMap<String, String> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
+    public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
         return cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 }

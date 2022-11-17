@@ -46,7 +46,7 @@ IMAGE_NAME=scxa-gradle-ro-dep-cache-builder
 print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
 --build-arg GRADLE_RO_DEP_CACHE_DEST=${GRADLE_RO_DEP_CACHE_DEST} \
--t ${IMAGE_NAME} . &>> ${LOG_FILE}
+-t ${IMAGE_NAME} ${SCRIPT_DIR} &>> ${LOG_FILE}
 print_done
 
 print_stage_name "⚙ Spin up ephemeral container to copy local artifacts to dependency cache volume"

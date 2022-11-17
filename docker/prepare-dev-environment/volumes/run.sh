@@ -77,7 +77,7 @@ docker build \
 --build-arg WEBAPP_PROPERTIES_DEST=${WEBAPP_PROPERTIES_DEST} \
 --build-arg ATLAS_DATA_SCXA_EXPDESIGN_DEST=${ATLAS_DATA_SCXA_EXPDESIGN_DEST} \
 --build-arg EXP_IDS="${EXP_IDS}" \
--t ${IMAGE_NAME} . &>> ${LOG_FILE}
+-t ${IMAGE_NAME} ${SCRIPT_DIR} &>> ${LOG_FILE}
 print_done
 
 print_stage_name "⚙ Spin up ephemeral container to populate volumes"

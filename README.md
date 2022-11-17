@@ -33,9 +33,7 @@ If you have already cloned the project ensure it’s up-to-date:
 To speed up builds and tests it is strongly encouraged to create a Docker volume to back a [Gradle read-only dependency
 cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:ephemeral-ci-cache).
 ```bash
-cd docker/prepare-dev-environment/gradle-ro-dep-cache
-# Run ./run.sh -h for more details and usage instructions
-./run.sh -l gradle-ro-dep-cache.log
+./docker/prepare-dev-environment/gradle-ro-dep-cache/run.sh -l gradle-ro-dep-cache.log
 ```
 
 ## Prepare volumes
@@ -43,16 +41,14 @@ In order to run integration tests and a development instance of Single Cell Expr
 volumes first. They will be populated with data that will be indexed in Solr and Postgres. Single Cell Expression Atlas 
 needs all three (i.e. file bundles in the volume, Solr collections and Postgres data) to run.
 ```bash
-cd docker/prepare-dev-environment/volumes
-# Run ./run.sh -h for more details and usage instructions
-./run.sh -l volumes.log
+./docker/prepare-dev-environment/volumes/run.sh -l volumes.log
 ```
 
-This script, unless it’s run with the `-r` flag, is non-destructive. This means that it can be interrupted without 
-losing any data. The container mirrors directories via FTP, and can resume after cancellation. It can be re-run to
-update the data in the volumes should the contents of the source directories change. This is especially useful when
-experiments are re-analysed/re-annotated, or the bioentity properties directory is updated after a release of  Ensembl, 
-WormBase ParaSite, Reactome, Gene Ontoloy, Plant Ontology or InterPro. 
+This script, unless it’s run with the `-r` flag, can be interrupted without losing any data. The container mirrors 
+directories via FTP, and can resume after cancellation. It can be re-run to update the data in the volumes should the 
+contents of the source directories change. This is especially useful when experiments are re-analysed/re-annotated, 
+or the bioentity properties directory is updated after a release of  Ensembl, WormBase ParaSite, Reactome, Gene 
+Ontoloy, Plant Ontology or InterPro. 
 
 
 ## Bring up the environment

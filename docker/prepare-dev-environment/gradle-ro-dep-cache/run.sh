@@ -43,7 +43,7 @@ docker volume create ${GRADLE_RO_DEP_CACHE_VOL_NAME} &>> ${LOG_FILE}
 print_done
 
 IMAGE_NAME=scxa-gradle-ro-dep-cache-builder
-print_stage_name "🚧 Build Docker image"
+print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
 --build-arg GRADLE_RO_DEP_CACHE_DEST=${GRADLE_RO_DEP_CACHE_DEST} \
 -t ${IMAGE_NAME} . &>> ${LOG_FILE}

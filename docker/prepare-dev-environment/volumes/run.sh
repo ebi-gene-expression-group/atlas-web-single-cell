@@ -70,7 +70,7 @@ done
 print_done
 
 IMAGE_NAME=scxa-volumes-populator
-print_stage_name "🚧 Build Docker images"
+print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
 --build-arg ATLAS_DATA_BIOENTITY_PROPERTIES_DEST=${ATLAS_DATA_BIOENTITY_PROPERTIES_DEST} \
 --build-arg ATLAS_DATA_SCXA_DEST=${ATLAS_DATA_SCXA_DEST} \

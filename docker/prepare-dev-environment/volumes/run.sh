@@ -6,14 +6,15 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # ATLAS_DATA_BIOENTITY_PROPERTIES_DEST
 # ATLAS_DATA_SCXA_VOL_NAME
 # ATLAS_DATA_SCXA_DEST
-# ATLAS_DATA_EXPDESIGN_VOL_NAME
-# ATLAS_DATA_EXPDESIGN_DEST
+# ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME
+# ATLAS_DATA_SCXA_EXPDESIGN_DEST
 # WEBAPP_PROPERTIES_VOL_NAME
 # WEBAPP_PROPERTIES_DEST
 # EXP_IDS
 # print_stage_name
 # print_done
-source ${SCRIPT_DIR}/../env.sh
+source ${SCRIPT_DIR}/../scxa.env
+source ${SCRIPT_DIR}/../utils.sh
 
 function print_usage() {
   printf '\n%b\n\n' "Usage: ${0} [ -r ] [ -l FILE ]"

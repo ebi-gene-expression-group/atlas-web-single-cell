@@ -6,7 +6,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # GRADLE_RO_DEP_CACHE_DEST
 # print_stage_name
 # print_done
-source ${SCRIPT_DIR}/../env.sh
+source ${SCRIPT_DIR}/../scxa.env
+source ${SCRIPT_DIR}/../utils.sh
 
 function print_usage() {
   printf '\n%b\n\n' "Usage: ${0} [ -l FILE ]"

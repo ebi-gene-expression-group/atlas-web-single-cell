@@ -50,6 +50,30 @@ contents of the source directories change. This is especially useful when experi
 or the bioentity properties directory is updated after a release of  Ensembl, WormBase ParaSite, Reactome, Gene 
 Ontoloy, Plant Ontology or InterPro. 
 
+## PostgreSQL
+To enable easy switching between anndata support and earlier versions of the database, the script sets the environment
+variable `SCHEMA_VERSION` to either `latest` or `18` ([latest version before anndata was introduced]
+(https://github.com/ebi-gene-expression-group/db-scxa/commit/1236753d3d799effa4d24fa9bdfb9292c66309ab)), respectively. 
+The value is appended to the volume name used by the Postgres service, so ensure to set it when running
+`docker-compose up`.
+
+The best way to proceed is to run the script twice and then choose later the appropriate version:
+```bash
+./docker/prepare-dev-environment/volumes/run.sh -l pg-anndata.log        # anndata support
+./docker/prepare-dev-environment/volumes/run.sh -a -l pg-no-anndata.log  # no anndata support
+```
+
+To run the Postgres service **with support for anndata experiments**:
+```bash
+SCHEMA_VERSION=latest docker-compose -f docker-compose-postgres.yml ... up
+```
+
+To run the Postgres service **without support for anndata experiments**:
+```bash
+SCHEMA_VERSION=18 docker-compose -f docker-compose-postgres.yml ... up
+```
+
+Unfortunately we cannot use an environment variable
 
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace

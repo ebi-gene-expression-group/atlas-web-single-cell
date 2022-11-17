@@ -171,12 +171,16 @@ class CellPlotDaoIT {
     }
 
     @Test
-    void fetchDefaultPlotMethodAndParameterisationForTheExistingExperiment(){
-        assertThat(subject.fetchDefaultPlotMethodWithParameterisation(jdbcTestUtils.fetchExperimentAccessionByMaxPriority()))
+    void fetchDefaultPlotMethodAndParameterisationForTheExistingExperiment() {
+        var defaultPlotMethodResult = subject.fetchDefaultPlotMethodWithParameterisation(
+                jdbcTestUtils.fetchExperimentAccessionByMaxPriority());
+        assertThat(defaultPlotMethodResult)
                 .containsKeys("UMAP", "t-SNE")
-                .doesNotContainKey("scanvi")
-                .containsValues("{\"n_neighbors\": 15}")
-                .containsValues("{\"perplexity\": 15}");
+                .doesNotContainKey("scanvi");
+        assertThat(defaultPlotMethodResult.get("UMAP").getAsJsonObject()
+                .has("n_neighbors"));
+        assertThat(defaultPlotMethodResult.get("t-SNE").getAsJsonObject()
+                .has("perplexity"));
     }
 
     @Test

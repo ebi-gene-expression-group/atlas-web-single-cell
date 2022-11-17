@@ -2,6 +2,8 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,11 +113,12 @@ class CellPlotServiceTest {
     @Test
     void fetchDefaultPlotMethodWithParameterisation(){
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("UMAP","{\"n_neighbors\": 15}"));
+                .thenReturn(ImmutableMap.of("UMAP",new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)));
 
-        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .containsKeys("UMAP")
-                .containsValues("{\"n_neighbors\": 15}");
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
+                .get("UMAP")
+                .getAsJsonObject()
+                .has("n_neighbors"));
     }
 
     @Test

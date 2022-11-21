@@ -74,8 +74,8 @@ public class ExperimentPageContentService {
         result.add("plotTypesAndOptions",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)));
 
-        result.add("defaultPlotTypeAndParameterisation",
-                GSON.toJsonTree(cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession)));
+        result.add("defaultPlotMethodAndParameterisation",
+                GSON.toJsonTree(fetchDefaultPlotMethodAndParameterisation(experimentAccession)));
 
         result.add("metadata", getMetadata(experimentAccession));
 
@@ -252,5 +252,9 @@ public class ExperimentPageContentService {
     private static boolean isSmartExperiment(Collection<String> technologyType) {
         return technologyType.stream()
                 .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
+    }
+
+    public ImmutableMap fetchDefaultPlotMethodAndParameterisation(String experimentAccession){
+        return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 }

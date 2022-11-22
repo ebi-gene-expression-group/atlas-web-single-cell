@@ -3,10 +3,10 @@ set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # GRADLE_RO_DEP_CACHE_VOL_NAME
-# GRADLE_RO_DEP_CACHE_DEST
+source ${SCRIPT_DIR}/../../dev.env
 # print_stage_name
 # print_done
-source ${SCRIPT_DIR}/../scxa.env
+# print_error
 source ${SCRIPT_DIR}/../utils.sh
 
 function print_usage() {

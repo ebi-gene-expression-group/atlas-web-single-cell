@@ -13,4 +13,3 @@ function print_error() {
   printf '\n\n%b\n' "😢 Something went wrong! See ${LOG_FILE} for more details."
 }
 trap print_error ERR
-

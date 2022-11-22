@@ -2,20 +2,18 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+# EXP_IDS
+source ${SCRIPT_DIR}/../test-data.env
+# ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME
+# GRADLE_RO_DEP_CACHE_VOL_NAME
 # POSTGRES_HOST
 # POSTGRES_DB
 # POSTGRES_USER
 # POSTGRES_PASSWORD
-# ATLAS_DATA
-# ATLAS_DATA_SCXA_DEST
-# ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME
-# ATLAS_DATA_SCXA_EXPDESIGN_DEST
-# GRADLE_RO_DEP_CACHE_VOL_NAME
-# GRADLE_RO_DEP_CACHE_DEST
-# EXP_IDS
+source ${SCRIPT_DIR}/../../dev.env
 # print_stage_name
 # print_done
-source ${SCRIPT_DIR}/../scxa.env
+# print_error
 source ${SCRIPT_DIR}/../utils.sh
 
 function print_usage() {

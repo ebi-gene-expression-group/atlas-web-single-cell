@@ -84,6 +84,7 @@ pipeline {
                     '-Pflyway.password=postgres ' +
                     '-Pflyway.locations=filesystem:./schemas/flyway/scxa ' +
                     '-Pflyway.schemas=scxa ' +
+                    '-Pflyway.target=18 ' +
                     'flywayMigrate'
             sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/test-data ' +

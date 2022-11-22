@@ -70,8 +70,6 @@ spec:
           value: "postgres"
         - name: POSTGRES_PASSWORD
           value: "postgres"
-        - name: SCHEMA_VERSION
-          value: "18"
   volumes:
     - name: scxa-data
       persistentVolumeClaim:

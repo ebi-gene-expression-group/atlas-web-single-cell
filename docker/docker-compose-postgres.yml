@@ -1,9 +1,13 @@
 version: "3.6"
 
 services:
-  scxa-postgres:
-    env_file: ./prepare-dev-environment/scxa.env
+  postgres:
+    container_name: ${POSTGRES_HOST}
     image: postgres:11-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - atlas-test-net
     command: -c max_wal_size=2GB
@@ -12,26 +16,28 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  scxa-flyway:
-    env_file: ./prepare-dev-environment/scxa.env
+  flyway:
     image: flyway/flyway
     networks:
       - atlas-test-net
-    # A trick to interpolate environment variables in Flyway
-    # https://github.com/flyway/flyway-docker/issues/11#issuecomment-531272336
-    entrypoint: /bin/bash
     command: [
-      "-c",
-      "/flyway/flyway -url=jdbc:postgresql://$${POSTGRES_HOST}/$${POSTGRES_DB} -schemas=$${POSTGRES_USER} -user=$${POSTGRES_USER} -password=$${POSTGRES_PASSWORD} -connectRetries=60 migrate -target=${SCHEMA_VERSION}"
+      "-url=jdbc:postgresql://${POSTGRES_HOST}/${POSTGRES_DB}",
+      "-schemas=${POSTGRES_USER}",
+      "-user=${POSTGRES_USER}",
+      "-password=${POSTGRES_PASSWORD}",
+      "-target=${SCHEMA_VERSION}",
+      "-connectRetries=60",
+      "migrate"
     ]
     volumes:
       - ../schemas/flyway/scxa:/flyway/sql
     depends_on:
-      - scxa-postgres
+      - postgres
 
 volumes:
   pgdata:
-    name: scxa-postgres-11-pgdata-${SCHEMA_VERSION:-no-schema-specified}
+    # Not strictly necessary to error out, but it avoids creating an empty `scxa-postgres-11-pgdata-` volume
+    name: scxa-postgres-11-pgdata-${SCHEMA_VERSION:?err}
 
 networks:
   atlas-test-net:

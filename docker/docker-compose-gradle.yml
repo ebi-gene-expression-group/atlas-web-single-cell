@@ -13,15 +13,15 @@ services:
       - ..:/root/project
       - gradle-ro-dep-cache:/gradle-ro-dep-cache:ro
       # Only needed if running ITs in atlas-web-core
-      #- $ATLAS_DATA_PATH/gxa:/atlas-data/gxa
+      # - foobar:/atlas-data/gxa
       - bioentity-properties:/atlas-data/bioentity_properties:ro
       - scxa-data:/atlas-data/scxa:ro
-      - expdesign:/atlas-data/expdesign
+      - scxa-expdesign:/atlas-data/expdesign
 
     depends_on:
       - scxa-solrcloud-0
       - scxa-solrcloud-1
-      - scxa-flyway-test
+      - flyway
     environment:
       POSTGRES_HOST: $POSTGRES_HOST
       POSTGRES_DB: $POSTGRES_DB
@@ -40,8 +40,8 @@ services:
         -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB
         -PjdbcUsername=$POSTGRES_USER
         -PjdbcPassword=$POSTGRES_PASSWORD
-        -PzkHost=scxa-zk-1
-        -PsolrHost=scxa-solrcloud-1
+        -PzkHosts=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
+        -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr
         :app:testClasses &&
         ./gradlew -PtestResultsPath=ut :app:test --tests *Test &&
         ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
@@ -50,13 +50,13 @@ services:
 
 volumes:
   gradle-ro-dep-cache:
-    name: scxa-gradle-ro-dep-cache
+    name: ${GRADLE_RO_DEP_CACHE_VOL_NAME}
   bioentity-properties:
-    name: scxa-atlas-data-bioentity-properties
+    name: ${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
   scxa-data:
-    name: scxa-atlas-data-scxa
-  expdesign:
-    name: scxa-atlas-data-expdesign
+    name: ${ATLAS_DATA_SCXA_VOL_NAME}
+  scxa-expdesign:
+    name: ${ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME}
 
 networks:
   atlas-test-net:

@@ -16,20 +16,23 @@ services:
       - webapp-properties:/webapp-properties
       - bioentity-properties:/atlas-data/bioentity_properties
       - scxa-data:/atlas-data/scxa
+      - scxa-expdesign:/atlas-data/scxa-expdesign
       - scxa-tomcat-conf:/usr/local/tomcat/conf
     depends_on:
-      - scxa-postgres
+      - postgres
       - scxa-solrcloud-0
       - scxa-solrcloud-1
     command: ["catalina.sh", "jpda", "run"]
 
 volumes:
   webapp-properties:
-    name: scxa-webapp-properties
+    name: ${WEBAPP_PROPERTIES_VOL_NAME}
   bioentity-properties:
-    name: scxa-atlas-data-bioentity-properties
+    name: ${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
   scxa-data:
-    name: scxa-atlas-data-scxa
+    name: ${ATLAS_DATA_SCXA_VOL_NAME}
+  scxa-expdesign:
+    name: ${ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME}
   scxa-tomcat-conf:
     name: scxa-tomcat-conf
 

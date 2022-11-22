@@ -53,10 +53,13 @@ cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:
 ## Prepare volumes
 In order to run integration tests and a development instance of Single Cell Expression Atlas you will need a few Docker
 volumes first. They will be populated with data that will be indexed in Solr and Postgres. Single Cell Expression Atlas 
-needs all three (i.e. file bundles in the volume, Solr collections and Postgres data) to run.
+needs all three of: file bundles in the volume, Solr collections and Postgres data. This step takes care of the first
+requirement:
 ```bash
 ./docker/prepare-dev-environment/volumes/run.sh -l volumes.log
 ```
+
+You can get detailed information about which volumes are created if you run the script with the `-h` flag.
 
 This script, unless it’s run with the `-r` flag, can be interrupted without losing any data. The container mirrors 
 directories via FTP, and can resume after cancellation. It can be re-run to update the data in the volumes should the 
@@ -66,14 +69,15 @@ Ontoloy, Plant Ontology or InterPro.
 
 ## PostgreSQL
 To enable easy switching between anndata support and earlier versions of the database, the script sets the environment
-variable `SCHEMA_VERSION` to either `latest` or `18` ([latest version before anndata was introduced]
-(https://github.com/ebi-gene-expression-group/db-scxa/commit/1236753d3d799effa4d24fa9bdfb9292c66309ab)), respectively. 
-The value is appended to the volume name used by the Postgres service, so ensure to set it when running
-`docker-compose up`.
+variable `SCHEMA_VERSION` to either `latest` or `18` 
+([latest version before anndata was introduced](https://github.com/ebi-gene-expression-group/db-scxa/commit/1236753d3d799effa4d24fa9bdfb9292c66309ab)),
+respectively.  The value is appended to the volume name used by the Postgres service.
 
 The best way to proceed is to run the script twice and then choose later the appropriate version:
 ```bash
-./docker/prepare-dev-environment/volumes/run.sh -l pg-anndata.log        # anndata support
+./docker/prepare-dev-environment/volumes/run.sh -l pg-anndata.log       # anndata support
+# Stop Postgres container:
+# SCHEMA_VERSION=18 docker-compose -f ./docker/docker-compose-postgres.yml down
 ./docker/prepare-dev-environment/volumes/run.sh -a -l pg-no-anndata.log  # no anndata support
 ```
 

@@ -1,27 +1,13 @@
 FROM ubuntu:jammy
 
-ARG ATLAS_DATA_BIOENTITY_PROPERTIES_DEST
-ENV ATLAS_DATA_BIOENTITY_PROPERTIES_DEST=${ATLAS_DATA_BIOENTITY_PROPERTIES_DEST}
-ARG ATLAS_DATA_SCXA_DEST
-ENV ATLAS_DATA_SCXA_DEST=${ATLAS_DATA_SCXA_DEST}
-ARG ATLAS_DATA_SCXA_EXPDESIGN_DEST
-
-ARG WEBAPP_PROPERTIES_DEST
-ENV WEBAPP_PROPERTIES_DEST=${WEBAPP_PROPERTIES_DEST}
-
-ARG EXP_IDS
-ENV EXP_IDS=${EXP_IDS}
-
 RUN apt -y -qq update
-RUN apt install -y -qq lftp bash
+RUN apt -y -qq install lftp
 
-RUN mkdir -p ${ATLAS_DATA_BIOENTITY_PROPERTIES_DEST} ${ATLAS_DATA_SCXA_DEST}/magetab ${ATLAS_DATA_SCXA_DEST}/admin ${ATLAS_DATA_SCXA_EXPDESIGN_DEST}
-COPY atlas-data/scxa/* ${ATLAS_DATA_SCXA_DEST}/
+VOLUME /atlas-data/bioentity_properties /atlas-data/scxa /atlas-data/scxa-expdesign /webapp-properties
+RUN mkdir /atlas-data/scxa/magetab
 
-RUN mkdir -p ${WEBAPP_PROPERTIES_DEST}
-COPY webapp-properties/* ${WEBAPP_PROPERTIES_DEST}/
-
-VOLUME ${ATLAS_DATA_SCXA_DEST} ${ATLAS_DATA_BIOENTITY_PROPERTIES_DEST} ${ATLAS_DATA_SCXA_EXPDESIGN_DEST} ${WEBAPP_PROPERTIES_DEST}
+COPY atlas-data/scxa/* /atlas-data/scxa/
+COPY webapp-properties/* /webapp-properties/
 
 COPY docker-entrypoint.sh /
 CMD ["/docker-entrypoint.sh"]

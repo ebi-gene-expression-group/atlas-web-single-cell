@@ -51,6 +51,7 @@ do
 done
 
 ALL_VOLUMES="${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME} ${ATLAS_DATA_SCXA_VOL_NAME} ${ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME} ${WEBAPP_PROPERTIES_VOL_NAME}"
+
 if [ "${REMOVE_VOLUMES}" = "true" ]; then
   print_stage_name "🗑 Remove Docker volumes: ${ALL_VOLUMES}"
   for VOL_NAME in ${ALL_VOLUMES}
@@ -68,30 +69,32 @@ done
 print_done
 
 IMAGE_NAME=scxa-volumes-populator
+
 print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
---build-arg ATLAS_DATA_BIOENTITY_PROPERTIES_DEST=${ATLAS_DATA_BIOENTITY_PROPERTIES_DEST} \
---build-arg ATLAS_DATA_SCXA_DEST=${ATLAS_DATA_SCXA_DEST} \
---build-arg WEBAPP_PROPERTIES_DEST=${WEBAPP_PROPERTIES_DEST} \
---build-arg ATLAS_DATA_SCXA_EXPDESIGN_DEST=${ATLAS_DATA_SCXA_EXPDESIGN_DEST} \
---build-arg EXP_IDS="${EXP_IDS}" \
 -t ${IMAGE_NAME} ${SCRIPT_DIR} &>> ${LOG_FILE}
 print_done
 
+ATLAS_DATA_BIOENTITY_PROPERTIES_MAPPING=${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}:/atlas-data/bioentity_properties:rw
+ATLAS_DATA_SCXA_MAPPING=${ATLAS_DATA_SCXA_VOL_NAME}:/atlas-data/scxa:rw
+WEBAPP_PROPERTIES_MAPPING=${WEBAPP_PROPERTIES_VOL_NAME}:/webapp-properties:rw
+ATLAS_DATA_SCXA_EXPDESIGN_MAPPING=${ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME}:/atlas-data/scxa-expdesign:rw
+
 print_stage_name "⚙ Spin up ephemeral container to populate volumes"
 docker run --rm \
--v ${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}:${ATLAS_DATA_BIOENTITY_PROPERTIES_DEST} \
--v ${ATLAS_DATA_SCXA_VOL_NAME}:${ATLAS_DATA_SCXA_DEST} \
--v ${WEBAPP_PROPERTIES_VOL_NAME}:${WEBAPP_PROPERTIES_DEST} \
+-v ${ATLAS_DATA_BIOENTITY_PROPERTIES_MAPPING} \
+-v ${ATLAS_DATA_SCXA_MAPPING} \
+-v ${WEBAPP_PROPERTIES_MAPPING} \
+-v ${ATLAS_DATA_SCXA_EXPDESIGN_MAPPING} \
+-e EXP_IDS="${EXP_IDS}" \
 ${IMAGE_NAME} &>> ${LOG_FILE}
 print_done
 
 printf '%b\n' "🙂 All done! You can inspect the volume contents attaching them to a container:"
 printf '%b\n' "   # ${ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME} will be empty until we load data in Postgres"
 printf '%b\n' "   docker run \\"
-printf '%b\n' "   -v ${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}:${ATLAS_DATA_BIOENTITY_PROPERTIES_DEST} \\"
-printf '%b\n' "   -v ${ATLAS_DATA_SCXA_VOL_NAME}:${ATLAS_DATA_SCXA_DEST} \\"
-printf '%b\n' "   -v ${ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME}:${ATLAS_DATA_SCXA_EXPDESIGN_DEST} \\"
-printf '%b\n' "   -v ${WEBAPP_PROPERTIES_VOL_NAME}:${WEBAPP_PROPERTIES_DEST} \\"
+printf '%b\n' "   -v ${ATLAS_DATA_BIOENTITY_PROPERTIES_MAPPING} \\"
+printf '%b\n' "   -v ${ATLAS_DATA_SCXA_MAPPING} \\"
+printf '%b\n' "   -v ${WEBAPP_PROPERTIES_MAPPING} \\"
+printf '%b\n' "   -v ${ATLAS_DATA_SCXA_EXPDESIGN_MAPPING} \\"
 printf '%b\n' "   --rm -it ubuntu:jammy bash"
-

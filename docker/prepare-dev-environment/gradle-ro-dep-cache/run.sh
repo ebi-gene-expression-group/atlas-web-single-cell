@@ -45,17 +45,17 @@ print_done
 IMAGE_NAME=scxa-gradle-ro-dep-cache-builder
 print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
---build-arg GRADLE_RO_DEP_CACHE_DEST=${GRADLE_RO_DEP_CACHE_DEST} \
 -t ${IMAGE_NAME} ${SCRIPT_DIR} &>> ${LOG_FILE}
 print_done
 
+GRADLE_RO_DEP_CACHE_MAPPING=${GRADLE_RO_DEP_CACHE_VOL_NAME}:/gradle-ro-dep-cache:rw
 print_stage_name "⚙ Spin up ephemeral container to copy local artifacts to dependency cache volume"
 docker run --rm \
--v ${GRADLE_RO_DEP_CACHE_VOL_NAME}:${GRADLE_RO_DEP_CACHE_DEST} \
+-v ${GRADLE_RO_DEP_CACHE_MAPPING} \
 ${IMAGE_NAME} &>> ${LOG_FILE}
 print_done
 
 printf '%b\n' "🙂 All done! You can inspect the volume contents mounting it in a container:"
 printf '%b\n' "   docker run --rm \\"
-printf '%b\n' "   -v ${GRADLE_RO_DEP_CACHE_VOL_NAME}:${GRADLE_RO_DEP_CACHE_DEST} \\"
+printf '%b\n' "   -v ${GRADLE_RO_DEP_CACHE_MAPPING} \\"
 printf '%b\n' "   -it ubuntu:jammy bash"

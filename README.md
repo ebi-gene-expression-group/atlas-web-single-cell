@@ -3,7 +3,7 @@
 ## Requirements
 - Docker v19+
 - Docker Compose v1.25+
-- 45 GB of available storage for the following Docker volumes:
+- 60 GB of available storage for the following Docker volumes:
   - Experiment files
   - Bioentity properties (i.e. gene annotations)
   - PostgreSQL
@@ -73,7 +73,40 @@ To run the Postgres service **without support for anndata experiments**:
 SCHEMA_VERSION=18 docker-compose -f docker-compose-postgres.yml ... up
 ```
 
-Unfortunately we cannot use an environment variable
+## Solr
+The Solr script can optionally be given a location for the Single Cell Expression Atlas ontology OWL file. Otherwise,
+it will download 
+[the published `scatlas.owl` file in the EBI SPOT repository](https://github.com/EBISPOT/scatlas_ontology/blob/master/scatlas.owl).
+It will also generate an RSA keypair
+[to sign and verify Solr packages](https://solr.apache.org/guide/8_7/package-manager-internals.html) that you can keep
+for reference and to sign other packages (or later versions of BioSolr). Be aware that Solr can store multiple keys, so
+they are not strictly necessary; it is possible to generate a new keypair and store its public key every time you add a 
+package. Run the script with the `-h` flag for more details.
+
+```bash
+./docker/prepare-dev-environment/solr/run.sh -l solr.log
+```
+
+You may want to speed up the process by raising the value of the environment variable `NUM_DOCS_PER_BATCH` (L126 of the
+`run.sh` script). On
+[a fairly powerful laptop at the time of writing](https://www.lenovo.com/gb/en/p/laptops/thinkpad/thinkpadx1/x1-extreme-gen-2/22tp2txx1e2)
+20,000 has been found to be a reliable number, but your mileage may vary. Ensure that there are no errors in the script
+logs, or some of the tests will probably fail due to incomplete annotations; especially `grep` for 
+`DistributedUpdatesAsyncException`, which signals a problem storing the document batch, which in turn stops processing
+the current file.
+
+# Run tests
+```bash
+SCHEMA_VERSION=18 \
+docker-compose \
+-f ./docker/docker-compose-gradle.yml \
+-f ./docker/docker-compose-postgres-test.yml \
+-f ./docker/docker-compose-solrcloud.yml \
+--env-file \
+./docker/dev.env up
+```
+
+# Run web application
 
 ## Bring up the environment
 Besides `ATLAS_DATA_PATH` you need to set some variables for the Postgres container. Use the settings below and replace

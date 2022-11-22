@@ -29,6 +29,20 @@ If you have already cloned the project ensure it’s up-to-date:
   git submodule update --remote
 ```
 
+# Prepare development environment 
+
+## TL;DR
+
+```bash
+./docker/prepare-dev-environment/gradle-ro-dep-cache/run.sh -l gradle-ro-dep-cache.log && \
+./docker/prepare-dev-environment/volumes/run.sh -l volumes.log && \
+./docker/prepare-dev-environment/postgres/run.sh -l pg-anndata.log && \
+SCHEMA_VERSION=18 docker-compose -f ./docker/docker-compose-postgres.yml down && \
+./docker/prepare-dev-environment/postgres/run.sh -a -l pg-no-anndata.log && \
+SCHEMA_VERSION=latest docker-compose -f ./docker/docker-compose-postgres.yml down && \
+./docker/prepare-dev-environment/solr/run.sh -l solr.log && \
+```
+
 ## Create a Gradle read-only dependency cache
 To speed up builds and tests it is strongly encouraged to create a Docker volume to back a [Gradle read-only dependency
 cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:ephemeral-ci-cache).

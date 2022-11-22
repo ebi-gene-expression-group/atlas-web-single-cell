@@ -18,16 +18,16 @@ function print_usage() {
 LOG_FILE=/dev/stdout
 while getopts "l:h" opt
 do
-  case $opt in
+  case ${opt} in
     l)
-      LOG_FILE=$OPTARG
+      LOG_FILE=${OPTARG}
       ;;
     h)
       print_usage
       exit 0
       ;;
     \?)
-      printf '%b\n' "Invalid option: -$OPTARG" >&2
+      printf '%b\n' "Invalid option: -${OPTARG}" >&2
       print_usage
       exit 2
       ;;

@@ -31,7 +31,7 @@ LOG_FILE=/dev/stdout
 REMOVE_VOLUMES=false
 while getopts "rl:h" opt
 do
-  case $opt in
+  case ${opt} in
     r)
       REMOVE_VOLUMES=true
       ;;
@@ -43,7 +43,7 @@ do
       exit 0
       ;;
     \?)
-      printf '%b\n' "Invalid option: -$OPTARG" >&2
+      printf '%b\n' "Invalid option: -${OPTARG}" >&2
       print_usage
       exit 2
       ;;

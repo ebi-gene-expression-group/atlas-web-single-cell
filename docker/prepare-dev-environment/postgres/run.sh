@@ -17,7 +17,7 @@ source ${SCRIPT_DIR}/../../dev.env
 source ${SCRIPT_DIR}/../utils.sh
 
 function print_usage() {
-  printf '\n%b\n' "Usage: $0 [ -v NUMBER ] [ -l FILE ]"
+  printf '\n%b\n' "Usage: ${0} [ -v NUMBER ] [ -l FILE ]"
   printf '\n%b\n' "Populate a Single Cell Expression Atlas Postgres 11 database."
   printf '\n%b\n' "-a\tdisable anndata support (i.e. migrates database to v18)"
   printf '\n%b\n' "-l FILE\tLog file (default is /dev/stdout)"
@@ -28,19 +28,19 @@ LOG_FILE=/dev/stdout
 SCHEMA_VERSION=latest
 while getopts "al:h" opt
 do
-  case $opt in
+  case ${opt} in
     a)
       SCHEMA_VERSION=18
       ;;
     l)
-      LOG_FILE=$OPTARG
+      LOG_FILE=${OPTARG}
       ;;
     h)
       print_usage
       exit 0
       ;;
     \?)
-      printf '%b\n' "Invalid option: -$OPTARG" >&2
+      printf '%b\n' "Invalid option: -${OPTARG}" >&2
       print_usage
       exit 2
       ;;

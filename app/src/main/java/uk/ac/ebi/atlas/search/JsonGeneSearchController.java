@@ -50,9 +50,9 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        var emptyGeneIdError = geneIdEmptyValidation(geneIds);
-        if (emptyGeneIdError.isPresent()) {
-            return emptyGeneIdError.get();
+        var geneIdValidationError = hasGeneIdNotFoundOrNotExpressed(geneIds);
+        if (geneIdValidationError.isPresent()) {
+            return geneIdValidationError.get();
         }
 
         // We found expressed gene IDs, let’s get to it now...
@@ -65,7 +65,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                 .toArray(String[]::new));
 
         // geneSearchServiceDao guarantees that values in the inner maps can’t be empty. The map itself may be empty
-        // but if there’s an entry the list will have at least on element
+        // but if there’s an entry the list will have at least one element
         var results =
                 expressedGeneIdEntries.stream()
                         // TODO Measure in production if parallelising the stream results in any speedup
@@ -120,12 +120,80 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
     }
 
+    // TODO: this contains duplicated code with the `/json/search` endpoint,
+    // when the 'gene search' epic has been finished that endpoint - and with that the duplicated code - will be removed
+    @GetMapping(value = "/json/gene-search", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String searchForGene(@RequestParam MultiValueMap<String, String> requestParams) {
+        var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
+
+        var geneIds = geneIdSearchService.search(geneQuery);
+
+        var geneIdValidationError = hasGeneIdNotFoundOrNotExpressed(geneIds);
+        if (geneIdValidationError.isPresent()) {
+            return geneIdValidationError.get();
+        }
+
+        // We found expressed gene IDs, let’s get to it now...
+        var expressedGeneIdEntries = getMarkerGeneProfileByGeneIds(geneIds);
+
+        var markerGeneFacets =
+                geneSearchService.getMarkerGeneProfile(
+                        expressedGeneIdEntries.stream()
+                                .map(Map.Entry::getKey)
+                                .toArray(String[]::new));
+
+        // geneSearchServiceDao guarantees that values in the inner maps can’t be empty. The map itself may be empty
+        // but if there’s an entry the list will have at least one element
+        var results =
+                expressedGeneIdEntries.stream()
+                        // TODO Measure in production if parallelising the stream results in any speedup
+                        //      (the more experiments we have the better). BEWARE: just adding parallel() throws! (?)
+                        .flatMap(entry -> entry.getValue().entrySet().stream().map(exp2cells -> {
+
+                            // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...
+                            var geneId = entry.getKey();
+                            var experimentAccession = exp2cells.getKey();
+                            var cellIds = exp2cells.getValue();
+
+                            var experimentAttributes =
+                                    ImmutableMap.<String, Object>builder().putAll(
+                                            getExperimentInformation(experimentAccession, geneId));
+
+                            if (markerGeneFacets.containsKey(geneId) &&
+                                    markerGeneFacets.get(geneId).containsKey(experimentAccession)) {
+                                experimentAttributes.put(
+                                        "markerGenes",
+                                        convertMarkerGeneModel(
+                                                experimentAccession,
+                                                geneId,
+                                                markerGeneFacets.get(geneId).get(experimentAccession)));
+                            } else {
+                                experimentAttributes.put(
+                                        "markerGenes", ImmutableList.of());
+                            }
+
+                            return experimentAttributes.build();
+
+                        })).collect(toImmutableList());
+
+        var matchingGeneIds = "";
+        if (geneIds.get().size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) {
+            matchingGeneIds = "(" + String.join(", ", geneIds.get()) + ")";
+        }
+
+        return GSON.toJson(
+                ImmutableMap.of(
+                        "matchingGeneId", matchingGeneIds,
+                        "results", results,
+                        "checkboxFacetGroups", ImmutableList.of(MARKER_GENE.getTitle(), ORGANISM.getTitle())));
+    }
+
     @GetMapping(value = "/json/gene-search/marker-genes", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Boolean isMarkerGene(@RequestParam MultiValueMap<String, String> requestParams) {
         var geneQuery = geneIdSearchService.getGeneQueryByRequestParams(requestParams);
         var geneIds = geneIdSearchService.search(geneQuery);
 
-        var emptyGeneIdError = geneIdEmptyValidation(geneIds);
+        var emptyGeneIdError = hasGeneIdNotFoundOrNotExpressed(geneIds);
         if (emptyGeneIdError.isPresent()) {
             return false;
         }
@@ -190,7 +258,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                         .collect(toImmutableList());
     }
 
-    private Optional<String> geneIdEmptyValidation(Optional<ImmutableSet<String>> geneIds) {
+    private Optional<String> hasGeneIdNotFoundOrNotExpressed(Optional<ImmutableSet<String>> geneIds) {
         if (geneIds.isEmpty()) {
             return Optional.of(GSON.toJson(
                     ImmutableMap.of(

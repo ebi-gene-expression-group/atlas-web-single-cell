@@ -45,11 +45,12 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES;
 
+// TODO: Remove this test suit when the '/json/search' endpoint has been removed
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class JsonGeneSearchControllerWIT {
+class ToBeDeprecatedJsonGeneSearchControllerWIT {
     @Inject
     private DataSource dataSource;
 
@@ -108,7 +109,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void unknownGene() throws Exception {
-        this.mockMvc.perform(get("/json/gene-search").param("q", "FOO"))
+        this.mockMvc.perform(get("/json/search").param("q", "FOO"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results").isEmpty())
@@ -117,7 +118,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void unexpressedGene() throws Exception {
-        this.mockMvc.perform(get("/json/gene-search").param("symbol", "FOX2"))
+        this.mockMvc.perform(get("/json/search").param("symbol", "FOX2"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results").isEmpty())
@@ -128,12 +129,16 @@ class JsonGeneSearchControllerWIT {
     void validJsonForValidGeneId() throws Exception {
         var geneId = jdbcTestUtils.fetchRandomGene();
 
-        this.mockMvc.perform(get("/json/gene-search").param("ensgene", geneId))
+        this.mockMvc.perform(get("/json/search").param("ensgene", geneId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$.results[0].experimentAccession", isA(String.class)))
-                .andExpect(jsonPath("$.results[0].markerGenes", hasSize(greaterThanOrEqualTo(0))))
+                .andExpect(jsonPath("$.results[0].element.experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].element.markerGenes", hasSize(greaterThanOrEqualTo(0))))
+                .andExpect(jsonPath("$.results[0].facets", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.results[0].facets[0].group", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].value", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].label", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")))
                 .andExpect(jsonPath("$.matchingGeneId", equalTo("")));
     }
@@ -166,11 +171,15 @@ class JsonGeneSearchControllerWIT {
         var symbol = docList.get(0).getFieldValue(PROPERTY_VALUE.name()).toString();
         var species = docList.get(0).getFieldValue(SPECIES.name()).toString();
 
-        this.mockMvc.perform(get("/json/gene-search").param("symbol", symbol).param("species", species))
+        this.mockMvc.perform(get("/json/search").param("symbol", symbol).param("species", species))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$.results[0].experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].element.experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.results[0].facets[0].group", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].value", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].label", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")))
                 .andExpect(jsonPath("$.matchingGeneId", equalTo("(" + geneId + ")")));
     }
@@ -179,17 +188,22 @@ class JsonGeneSearchControllerWIT {
     void jsonPayloadContainsFacetDescription() throws Exception {
         var geneId = jdbcTestUtils.fetchRandomGene();
 
-        this.mockMvc.perform(get("/json/gene-search").param("ensgene", geneId))
+        this.mockMvc.perform(get("/json/search").param("ensgene", geneId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$.results[0].experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].element.experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.results[0].facets[0].group", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].value", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].label", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].description", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")));
     }
 
     @Test
     void speciesParamCanAppearBeforeGeneQuery() throws Exception {
-        this.mockMvc.perform(get("/json/gene-search").param("species", "homo sapiens").param("symbol", "aspm"))
+        this.mockMvc.perform(get("/json/search").param("species", "homo sapiens").param("symbol", "aspm"))
                 .andExpect(status().isOk());
     }
 

@@ -21,7 +21,7 @@ services:
     depends_on:
       - scxa-solrcloud-0
       - scxa-solrcloud-1
-      - flyway
+      - scxa-flyway-test
     environment:
       POSTGRES_HOST: $POSTGRES_HOST
       POSTGRES_DB: $POSTGRES_DB

@@ -1,7 +1,7 @@
 version: "3.6"
 
 services:
-  postgres:
+  scxa-postgres:
     container_name: ${POSTGRES_HOST}
     image: postgres:11-alpine
     environment:
@@ -16,7 +16,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  flyway:
+  scxa-flyway:
     image: flyway/flyway
     networks:
       - atlas-test-net
@@ -32,7 +32,7 @@ services:
     volumes:
       - ../schemas/flyway/scxa:/flyway/sql
     depends_on:
-      - postgres
+      - scxa-postgres
 
 volumes:
   pgdata:

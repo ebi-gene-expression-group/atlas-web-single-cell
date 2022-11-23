@@ -151,6 +151,9 @@ development environment.
 ```bash
 ./execute-all-tests.sh 18      # For non-anndata DB
 ./execute-all-tests.sh latest  # For anndata DB
+./execute-single-test.sh TEST_NAME [ 18 ]
+./debug-single-test.sh TEST_NAME [ 18 ]
+./stop-and-remove-containers.sh
 ```
 
 ### Execute all tests
@@ -163,8 +166,8 @@ declared in `docker-compose-gradle.yml`) has been changed to `scxa-postgres-test
 accident is known to have happened.
 
 The job is split in the following six phases:
-1. Clean the build directory
-2. Compile the test classes
+1. Clean build directory
+2. Compile test classes
 3. Run unit tests
 4. Run integration tests
 5. Run end-to-end tests
@@ -194,9 +197,7 @@ docker-compose \
 -f ./docker/docker-compose-solrcloud.yml \
 up
 ```
-### Update test data
-Just add the necessary species names and experiment accessions in the `dev.env` file and rebuild the development 
-environment.
+
 You will eventually see these log messages:
 ```
 scxa-gradle         | BUILD SUCCESSFUL in 2s
@@ -214,6 +215,8 @@ docker-compose \
 -f ./docker/docker-compose-solrcloud.yml \
 down
 ```
+
+Or run `./stop-and-remove-containers.sh`.
 
 You will find very convenient to use the script `execute-all-tests.sh`. By default, it runs the *anndata* database, but
 the schema version can be provided as an argument. E.g.:

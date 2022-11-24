@@ -35,9 +35,9 @@ class MultiexperimentCellTypeMarkerGenesDaoIT {
     void populateDatabaseTables() {
         populator.setScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
-                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_genes.sql"),
-                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_gene_stats.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 

@@ -24,12 +24,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestConfig.class)
 @Sql({
         "/fixtures/experiment.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_analytics.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_coords.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_membership.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_genes.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_gene_stats.sql"
+        "/fixtures/scxa_analytics.sql",
+        "/fixtures/scxa_coords.sql",
+        "/fixtures/scxa_cell_group.sql",
+        "/fixtures/scxa_cell_group_membership.sql",
+        "/fixtures/scxa_cell_group_marker_genes.sql",
+        "/fixtures/scxa_cell_group_marker_gene_stats.sql"
 })
 @Sql(scripts = {
         "/fixtures/scxa_cell_group_marker_gene_stats-delete.sql",

@@ -92,14 +92,14 @@ respectively.  The value is appended to the volume name mounted by the Postgres 
 
 Run the script twice and then choose later the appropriate version:
 ```bash
-./docker/prepare-dev-environment/volumes/run.sh -l pg-anndata.log       # anndata support
+./docker/prepare-dev-environment/postgres/run.sh -l pg-anndata.log       # anndata support
 # Stop Postgres service:
 SCHEMA_VERSION=18 \
 docker-compose \
 --env-file ./docker/dev.env \
 -f ./docker/docker-compose-postgres.yml \
 down
-./docker/prepare-dev-environment/volumes/run.sh -a -l pg-no-anndata.log  # no anndata support
+./docker/prepare-dev-environment/postgres/run.sh -a -l pg-no-anndata.log  # no anndata support
 ```
 
 To run the Postgres service **with support for anndata experiments**:

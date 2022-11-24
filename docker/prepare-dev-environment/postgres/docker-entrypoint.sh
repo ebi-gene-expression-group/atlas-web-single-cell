@@ -47,13 +47,13 @@ do
     done
   fi
 
-  CLUSTERS_FORMAT=SCANPY \
   EXP_ID=${EXP_ID} \
   EXPERIMENT_CLUSTERS_FILE=/atlas-data/scxa/magetab/${EXP_ID}/${EXP_ID}.clusters.tsv \
   CONDENSED_SDRF_TSV=/atlas-data/scxa/magetab/${EXP_ID}/${EXP_ID}.condensed-sdrf.tsv \
   ./load_db_scxa_cell_clusters.sh
 
   EXP_ID=${EXP_ID} \
+  CLUSTERS_FORMAT=SCANPY \
   EXPERIMENT_MGENES_PATH=/atlas-data/scxa/magetab/${EXP_ID} \
   ./load_db_scxa_marker_genes.sh
 done

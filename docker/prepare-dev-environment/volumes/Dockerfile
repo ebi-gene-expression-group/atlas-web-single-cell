@@ -4,7 +4,7 @@ RUN apt -y -qq update
 RUN apt -y -qq install lftp
 
 VOLUME /atlas-data/bioentity_properties /atlas-data/scxa /atlas-data/scxa-expdesign /webapp-properties
-RUN mkdir /atlas-data/scxa/magetab
+RUN mkdir -p /atlas-data/scxa/magetab
 
 COPY atlas-data/scxa/* /atlas-data/scxa/
 COPY webapp-properties/* /webapp-properties/

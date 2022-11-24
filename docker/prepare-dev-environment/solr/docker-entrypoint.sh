@@ -22,7 +22,7 @@ export SOLR_COLLECTION=${SOLR_COLLECTION_BIOENTITIES}
 export SCHEMA_VERSION=${SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION}
 for FILE in `ls /root/bioentity-properties-jsonl/*.jsonl`
 do
-  INPUT_JSONL=${FILE} ./solr-jsonl-chunk-loader.sh &>> /dev/stdout
+  INPUT_JSONL=${FILE} ./solr-jsonl-chunk-loader.sh >> /dev/stdout 2>&1
 done
 ./build-suggesters.sh
 unset SOLR_COLLECTION

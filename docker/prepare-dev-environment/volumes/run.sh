@@ -56,7 +56,7 @@ if [ "${REMOVE_VOLUMES}" = "true" ]; then
   print_stage_name "🗑 Remove Docker volumes: ${ALL_VOLUMES}"
   for VOL_NAME in ${ALL_VOLUMES}
   do
-    docker volume rm ${VOL_NAME} &>> ${LOG_FILE} || true
+    docker volume rm ${VOL_NAME} >> ${LOG_FILE} 2>&1 || true
   done
   print_done
 fi
@@ -64,7 +64,7 @@ fi
 print_stage_name "💾 Create Docker volumes: ${ALL_VOLUMES}"
 for VOL_NAME in ${ALL_VOLUMES}
 do
-  docker volume create ${VOL_NAME} &>> ${LOG_FILE}
+  docker volume create ${VOL_NAME} >> ${LOG_FILE} 2>&1
 done
 print_done
 
@@ -72,7 +72,7 @@ IMAGE_NAME=scxa-volumes-populator
 
 print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
--t ${IMAGE_NAME} ${SCRIPT_DIR} &>> ${LOG_FILE}
+-t ${IMAGE_NAME} ${SCRIPT_DIR} >> ${LOG_FILE} 2>&1
 print_done
 
 ATLAS_DATA_BIOENTITY_PROPERTIES_MAPPING=${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}:/atlas-data/bioentity_properties:rw
@@ -87,7 +87,7 @@ docker run --rm \
 -v ${WEBAPP_PROPERTIES_MAPPING} \
 -v ${ATLAS_DATA_SCXA_EXPDESIGN_MAPPING} \
 -e EXP_IDS="${EXP_IDS}" \
-${IMAGE_NAME} &>> ${LOG_FILE}
+${IMAGE_NAME} >> ${LOG_FILE} 2>&1
 print_done
 
 printf '%b\n' "🙂 All done! You can inspect the volume contents attaching them to a container:"

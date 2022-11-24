@@ -59,14 +59,14 @@ done
 IMAGE_NAME=scxa-solr-indexer
 print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
--t ${IMAGE_NAME} ${SCRIPT_DIR} &>> ${LOG_FILE}
+-t ${IMAGE_NAME} ${SCRIPT_DIR} >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🔐 Generate RSA keypair to sign and verify Solr packages"
 SOLR_PRIVATE_KEY=${SOLR_KEYS_DIRECTORY}/scxa-solrcloud.pem
 SOLR_PUBLIC_KEY=${SOLR_KEYS_DIRECTORY}/scxa-solrcloud.der
-openssl genrsa -out ${SOLR_PRIVATE_KEY} 512 &>> ${LOG_FILE}
-openssl rsa -in ${SOLR_PRIVATE_KEY} -pubout -outform DER -out ${SOLR_PUBLIC_KEY} &>> ${LOG_FILE}
+openssl genrsa -out ${SOLR_PRIVATE_KEY} 512 >> ${LOG_FILE} 2>&1
+openssl rsa -in ${SOLR_PRIVATE_KEY} -pubout -outform DER -out ${SOLR_PUBLIC_KEY} >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🌅 Start Solr 8 cluster in Docker Compose"
@@ -74,7 +74,7 @@ SOLR_PUBLIC_KEY=${SOLR_PUBLIC_KEY} \
 docker-compose \
 --env-file ${SCRIPT_DIR}/../../dev.env \
 -f ${SCRIPT_DIR}/../../docker-compose-solrcloud.yml \
-up -d &>> ${LOG_FILE}
+up -d >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "💤 Give Solr ten seconds to start up before copying ontology file..."
@@ -85,20 +85,20 @@ if [ -z ${SC_ATLAS_ONTOLOGY_FILE+x} ]
 then
   SC_ATLAS_ONTOLOGY_FILE=${SCRIPT_DIR}/scatlas.owl
   print_stage_name "🌐 No OWL file provided, download https://github.com/EBISPOT/scatlas_ontology/raw/master/scatlas.owl"
-  curl -o ${SC_ATLAS_ONTOLOGY_FILE} -H 'Accept: application/vnd.github.v3.raw' https://api.github.com/repos/EBISPOT/scatlas_ontology/contents/scatlas.owl &>> ${LOG_FILE}
+  curl -o ${SC_ATLAS_ONTOLOGY_FILE} -H 'Accept: application/vnd.github.v3.raw' https://api.github.com/repos/EBISPOT/scatlas_ontology/contents/scatlas.owl >> ${LOG_FILE} 2>&1
   print_done
 fi
 
 SOLR_USERFILES_PATH=/var/solr/data/userfiles/
 print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH}"
-docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH} &>> ${LOG_FILE}
+docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
 print_done
 print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH}"
-docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH} &>> ${LOG_FILE}
+docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🔏 Register ${SOLR_PUBLIC_KEY} in SolrCloud"
-docker exec ${SOLR_CLOUD_CONTAINER_1_NAME} ./bin/solr package add-key /run/secrets/scxa-solrcloud.der &>> ${LOG_FILE}
+docker exec ${SOLR_CLOUD_CONTAINER_1_NAME} ./bin/solr package add-key /run/secrets/scxa-solrcloud.der >> ${LOG_FILE} 2>&1
 print_done
 
 POSTGRES_HOST=postgres
@@ -131,13 +131,13 @@ docker run --rm -it \
 -e SIGNING_PRIVATE_KEY=${SOLR_PRIVATE_KEY_DEST} \
 -e SCXA_ONTOLOGY=file://${SOLR_USERFILES_PATH}/scatlas.owl \
 --network atlas-test-net \
-${IMAGE_NAME} &>> ${LOG_FILE}
+${IMAGE_NAME} >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🧹 Clean up Postgres container"
 echo "docker stop ${PG_CONTAINER_ID}"
-docker stop ${PG_CONTAINER_ID} &>> ${LOG_FILE}
-docker rm ${PG_CONTAINER_ID} &>> ${LOG_FILE}
+docker stop ${PG_CONTAINER_ID} >> ${LOG_FILE} 2>&1
+docker rm ${PG_CONTAINER_ID} >> ${LOG_FILE} 2>&1
 print_done
 
 printf '%b\n' "🙂 All done! Point your browser at http://localhost:8983 to explore your SolrCloud instance."

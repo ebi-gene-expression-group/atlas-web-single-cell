@@ -35,24 +35,24 @@ do
 done
 
 print_stage_name "🗑 Remove previous version of ${GRADLE_RO_DEP_CACHE_VOL_NAME} if it exists"
-docker volume rm ${GRADLE_RO_DEP_CACHE_VOL_NAME} &>> ${LOG_FILE} || true
+docker volume rm ${GRADLE_RO_DEP_CACHE_VOL_NAME} >> ${LOG_FILE} 2>&1 || true
 print_done
 
 print_stage_name "💾 Create Docker volume ${GRADLE_RO_DEP_CACHE_VOL_NAME}"
-docker volume create ${GRADLE_RO_DEP_CACHE_VOL_NAME} &>> ${LOG_FILE}
+docker volume create ${GRADLE_RO_DEP_CACHE_VOL_NAME} >> ${LOG_FILE} 2>&1
 print_done
 
 IMAGE_NAME=scxa-gradle-ro-dep-cache-builder
 print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
--t ${IMAGE_NAME} ${SCRIPT_DIR} &>> ${LOG_FILE}
+-t ${IMAGE_NAME} ${SCRIPT_DIR} >> ${LOG_FILE} 2>&1
 print_done
 
 GRADLE_RO_DEP_CACHE_MAPPING=${GRADLE_RO_DEP_CACHE_VOL_NAME}:/gradle-ro-dep-cache:rw
 print_stage_name "⚙ Spin up ephemeral container to copy local artifacts to dependency cache volume"
 docker run --rm \
 -v ${GRADLE_RO_DEP_CACHE_MAPPING} \
-${IMAGE_NAME} &>> ${LOG_FILE}
+${IMAGE_NAME} >> ${LOG_FILE} 2>&1
 print_done
 
 printf '%b\n' "🙂 All done! You can inspect the volume contents mounting it in a container:"

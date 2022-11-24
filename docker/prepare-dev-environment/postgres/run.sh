@@ -50,7 +50,7 @@ done
 IMAGE_NAME=scxa-postgres-loader
 print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
 docker build \
--t ${IMAGE_NAME} ${SCRIPT_DIR} &>> ${LOG_FILE}
+-t ${IMAGE_NAME} ${SCRIPT_DIR} >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🐘 Start Postgres 11 in Docker Compose"
@@ -58,7 +58,7 @@ SCHEMA_VERSION=${SCHEMA_VERSION} \
 docker-compose \
 --env-file ${SCRIPT_DIR}/../../dev.env \
 -f ${SCRIPT_DIR}/../../docker-compose-postgres.yml \
-up -d &>> ${LOG_FILE}
+up -d >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "💤 Wait for twenty seconds to apply migrations and Postgres server be ready to work"
@@ -80,7 +80,7 @@ docker run --rm \
 -e SCHEMA_VERSION=${SCHEMA_VERSION} \
 -e GRADLE_RO_DEP_CACHE=${GRADLE_RO_DEP_CACHE_DEST} \
 --network atlas-test-net \
-${IMAGE_NAME} &>> ${LOG_FILE}
+${IMAGE_NAME} >> ${LOG_FILE} 2>&1
 print_done
 
 printf '%b\n' "🙂 All done! Remember to set the environment variable SCHEMA_VERSION=${SCHEMA_VERSION} when creating/starting the Docker Compose Postgres service."

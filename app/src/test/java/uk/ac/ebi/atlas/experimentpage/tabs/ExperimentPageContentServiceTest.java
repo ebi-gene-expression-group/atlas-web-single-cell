@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.experimentpage.tabs;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -193,5 +194,22 @@ class ExperimentPageContentServiceTest {
         var result = this.subject.getTsnePlotData(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION);
 
         assertThat(result.getAsJsonObject("anatomogram").size()).isEqualTo(0);
+    }
+
+    @Test
+    void getEmptyDefaultPlotMethodAndParamsForTheInvalidExperiment(){
+        when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("FooBar"))
+                .thenReturn(ImmutableMap.of());
+
+        assertThat(subject.fetchDefaultPlotMethodAndParameterisation("FooBar")).isEmpty();
+    }
+
+    @Test
+    void getEmptyDefaultPlotMethodAndParamsForTheValidExperiment(){
+        when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
+                .thenReturn(ImmutableMap.of("UMAP",new Gson().fromJson("{\"n_neighbors\":100}",JsonObject.class),
+                                            "t-SNE",new Gson().fromJson("{\"perplexity\":50}",JsonObject.class)));
+
+        assertThat(subject.fetchDefaultPlotMethodAndParameterisation("E-CURD-4")).isNotEmpty();
     }
 }

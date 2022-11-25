@@ -19,7 +19,7 @@ services:
       - scxa-expdesign:/atlas-data/scxa-expdesign
       - scxa-tomcat-conf:/usr/local/tomcat/conf
     depends_on:
-      - postgres
+      - scxa-postgres
       - scxa-solrcloud-0
       - scxa-solrcloud-1
     command: ["catalina.sh", "jpda", "run"]

@@ -106,8 +106,7 @@ To run the Postgres service **with support for anndata experiments**:
 ```bash
 SCHEMA_VERSION=latest \
 docker-compose --env-file ./docker/dev.env \
--f ./docker/docker-
--postgres.yml \
+-f ./docker/docker-compose-postgres.yml \
 up
 ```
 

@@ -106,7 +106,8 @@ To run the Postgres service **with support for anndata experiments**:
 ```bash
 SCHEMA_VERSION=latest \
 docker-compose --env-file ./docker/dev.env \
--f docker-compose-postgres.yml \
+-f ./docker/docker-
+-postgres.yml \
 up
 ```
 
@@ -114,7 +115,7 @@ To run the Postgres service **without support for anndata experiments**:
 ```bash
 SCHEMA_VERSION=18 \
 docker-compose --env-file ./docker/dev.env \
--f docker-compose-postgres.yml \
+-f ./docker/docker-compose-postgres.yml \
 up
 ```
 
@@ -235,9 +236,9 @@ e.g. `ExperimentFileLocationServiceIT.java`:
 ```bash
 docker-compose \
 --env-file ./docker/dev.env \
--f docker-compose-gradle.yml \
--f docker-compose-postgres-test.yml \
--f docker-compose-solrcloud.yml \
+-f ./docker/docker-compose-gradle.yml \
+-f ./docker/docker-compose-postgres-test.yml \
+-f ./docker/docker-compose-solrcloud.yml \
 run --rm --service-ports \
 scxa-gradle bash -c '
 ./gradlew :app:clean &&
@@ -298,14 +299,14 @@ will need to start and attach the remote debugger every time Gradle compiles and
 The script `debug-single-test.sh` is a shortcut for this task. It takes the same arguments as executing a single test.
 
 ## Run web application
-In the `atlas-web-single-cell/docker` directory run the following:
+Run the following:
 ```bash
 SCHEMA_VERSION=latest \
 docker-compose \
 --env-file=./docker/dev.env \
 -f ./docker/docker-compose-solrcloud.yml \
--f docker-compose-postgres.yml \
--f docker-compose-tomcat.yml \
+-f ./docker/docker-compose-postgres.yml \
+-f ./docker/docker-compose-tomcat.yml \
 up
 ```
 
@@ -340,8 +341,8 @@ If you get any `war` redeploy issues or want to start again freshly, stop all th
 SCHEMA_VERSION=latest \
 docker-compose \
 --env-file=./docker/dev.env \
--f docker-compose-solrcloud.yml \
--f docker-compose-postgres.yml \
--f docker-compose-tomcat.yml \
+-f ./docker/docker-compose-solrcloud.yml \
+-f ./docker/docker-compose-postgres.yml \
+-f ./docker/docker-compose-tomcat.yml \
 down
 ```

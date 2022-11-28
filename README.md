@@ -320,7 +320,7 @@ scxa-tomcat    | 18-Dec-2020 13:40:58.907 INFO [main] org.apache.catalina.startu
 
 Run the Gradle task `war` in the `atlas-web-single-cell` directory:
 ```bash
-./gradlew :app:war
+./gradlew clean :app:war
 ```
 
 You should now have the file `webapps/gxa#sc.war`. Beacuse the directory `webapps` is bind-mounted in Tomcat’s 

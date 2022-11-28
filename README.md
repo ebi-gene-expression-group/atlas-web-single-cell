@@ -334,7 +334,7 @@ Point your browser at `http://localhost:8080/gxa/sc` and voilà!
 
 Every time you re-run the `war` task the web app will be automatically re-deployed by Tomcat.
 
-If you get any `war` redeploy issues or want to start again freshly, stop all the containers using this:
+If you get any `war` redeployment issues or want to start again freshly, stop all the containers using this:
 
 ```bash
 SCHEMA_VERSION=latest \

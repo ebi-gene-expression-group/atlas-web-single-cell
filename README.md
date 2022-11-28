@@ -263,7 +263,7 @@ Again, a convenience script can be used:
 ./execute-single-test.sh TEST_NAME [ 18 ]
 ```
 
-The second argument is optional and can be used to specify a databae version. As before, if unspecified it defaults to
+The second argument is optional and can be used to specify a database version. As before, if unspecified it defaults to
 `latest`.
 
 ### Debug tests

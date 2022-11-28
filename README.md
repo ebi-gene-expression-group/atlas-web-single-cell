@@ -136,7 +136,7 @@ You may want to speed up the process by raising the value of the environment var
 writing](https://www.lenovo.com/gb/en/p/laptops/thinkpad/thinkpadx1/x1-extreme-gen-2/22tp2txx1e2) 20,000 has been 
 found to be a reliable number via painstaking trail and error, but your mileage may vary. Ensure that there are no 
 errors in the script logs, or### Update test data
-Just add the necessary species names and experiment accessions in the `dev.env` file and rebuild the development 
+Just add the necessary species names and experiment accessions in the `test-dev.env` file and rebuild the development 
 environment. Some tests may fail due to incomplete annotations; `grep` for `DistributedUpdatesAsyncException` in 
 particular, which signals a problem storing the document batch, which in turn stops processing the current file. If 
 found, try again with a lower value for `NUM_DOCS_PER_BATCH`.

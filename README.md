@@ -323,7 +323,7 @@ Run the Gradle task `war` in the `atlas-web-single-cell` directory:
 ./gradlew clean :app:war
 ```
 
-You should now have the file `webapps/gxa#sc.war`. Beacuse the directory `webapps` is bind-mounted in Tomcat’s 
+You should now have the file `webapps/gxa#sc.war`. Because the directory `webapps` is bind-mounted in Tomcat’s 
 container, Tomcat should automatically load the application after a few seconds. You should be seeing something like
 this in your logs:
 ```

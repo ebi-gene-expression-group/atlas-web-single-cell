@@ -113,7 +113,7 @@ pipeline {
 
         stage('–– Build ––') {
           when { anyOf {
-            branch 'develop'
+            branch 'develop'; branch 'main'
           } }
           stages {
             stage('Provision Node.js build environment') {
@@ -147,7 +147,7 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh 'if [ env.BRANCH_NAME = "chore/solr8" ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
+                sh 'if [ env.BRANCH_NAME = "main" ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
                         '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }

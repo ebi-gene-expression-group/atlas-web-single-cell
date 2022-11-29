@@ -176,7 +176,7 @@ pipeline {
 
       junit 'app/build/ut/**/*.xml'
       junit 'app/build/it/**/*.xml'
-      // junit 'app/build/e2e/**/*.xml'
+      junit 'app/build/e2e/**/*.xml'
 
       archiveArtifacts artifacts: 'atlas-web-core/build/reports/**', fingerprint: true, allowEmptyArchive: true
       archiveArtifacts artifacts: 'app/build/reports/**', fingerprint: true, allowEmptyArchive: true

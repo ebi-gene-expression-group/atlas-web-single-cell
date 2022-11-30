@@ -33,6 +33,9 @@ class IdfParserIT {
     private Path dataFilesPath;
 
     @Inject
+    private Path experimentDesignDirPath;
+
+    @Inject
     private JdbcUtils jdbcUtils;
 
     @BeforeAll
@@ -52,7 +55,7 @@ class IdfParserIT {
     @ParameterizedTest
     @MethodSource("singleCellExperimentsProvider")
     void testParserForSingleCell(String experimentAccession) {
-        IdfParser idfParser = new IdfParser(new DataFileHub(dataFilesPath.resolve("scxa")));
+        IdfParser idfParser = new IdfParser(new DataFileHub(dataFilesPath.resolve("scxa"), experimentDesignDirPath));
         IdfParserOutput result = idfParser.parse(experimentAccession);
 
         assertThat(result.getExpectedClusters()).isGreaterThanOrEqualTo(0);

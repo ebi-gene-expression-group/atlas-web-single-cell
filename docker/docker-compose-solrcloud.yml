@@ -1,103 +1,120 @@
 version: "3.6"
 
 services:
-  scxa-zk-1:
-    image: zookeeper:3.4.14
-    container_name: scxa-zk-1
+  scxa-solrcloud-zookeeper-0:
+    container_name: ${SOLR_CLOUD_ZK_CONTAINER_1_NAME}
+    image: zookeeper:3.7.0
     networks:
       - atlas-test-net
     ports:
-      - "2181:2181"
+      - 2181:2181
+      - 7000:7000
     volumes:
-      - scxa-zk-1-data:/data
-      - scxa-zk-1-datalog:/datalog
+      - zookeeper-0-data:/data
+      - zookeeper-0-datalog:/datalog
     environment:
       ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=scxa-zk-3:2888:3888
+      ZOO_SERVERS: server.1=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2888:3888;2181 server.2=${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2888:3888;2181 server.3=${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
+      ZOO_CFG_EXTRA: metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true
 
-  scxa-zk-2:
-    image: zookeeper:3.4.14
-    container_name: scxa-zk-2
+  scxa-solrcloud-zookeeper-1:
+    container_name: ${SOLR_CLOUD_ZK_CONTAINER_2_NAME}
+    image: zookeeper:3.7.0
     networks:
       - atlas-test-net
     ports:
-      - "2182:2181"
+      - 2182:2181
+      - 7001:7000
     volumes:
-      - scxa-zk-2-data:/data
-      - scxa-zk-2-datalog:/datalog
+      - zookeeper-1-data:/data
+      - zookeeper-1-datalog:/datalog
     environment:
       ZOO_MY_ID: 2
-      ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=scxa-zk-3:2888:3888
+      ZOO_SERVERS: server.1=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2888:3888;2181 server.2=${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2888:3888;2181 server.3=${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
+      ZOO_CFG_EXTRA: metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true
 
-  scxa-zk-3:
-    image: zookeeper:3.4.14
-    container_name: scxa-zk-3
+  scxa-solrcloud-zookeeper-2:
+    container_name: ${SOLR_CLOUD_ZK_CONTAINER_3_NAME}
+    image: zookeeper:3.7.0
     networks:
       - atlas-test-net
     ports:
-      - "2183:2181"
+      - 2183:2181
+      - 7002:7000
     volumes:
-      - scxa-zk-3-data:/data
-      - scxa-zk-3-datalog:/datalog
+      - zookeeper-2-data:/data
+      - zookeeper-2-datalog:/datalog
     environment:
       ZOO_MY_ID: 3
-      ZOO_SERVERS: server.1=scxa-zk-1:2888:3888 server.2=scxa-zk-2:2888:3888 server.3=0.0.0.0:2888:3888
+      ZOO_SERVERS: server.1=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2888:3888;2181 server.2=${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2888:3888;2181 server.3=${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
+      ZOO_CFG_EXTRA: metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true
+
+  scxa-solrcloud-0:
+    container_name: ${SOLR_CLOUD_CONTAINER_1_NAME}
+    image: solr:8.7.0
+    networks:
+      - atlas-test-net
+    ports:
+      - 8983:8983
+    volumes:
+      - solrcloud-0-data:/var/solr/data
+    environment:
+      SOLR_HEAP: 3g
+      SOLR_OPTS: -Denable.packages=true
+      ZK_HOST: ${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
+    secrets:
+      - scxa-solrcloud.der
+    depends_on:
+      - scxa-solrcloud-zookeeper-0
+      - scxa-solrcloud-zookeeper-1
+      - scxa-solrcloud-zookeeper-2
 
   scxa-solrcloud-1:
-    image: solr:7.1.0
-    container_name: scxa-solrcloud-1
+    container_name: ${SOLR_CLOUD_CONTAINER_2_NAME}
+    image: solr:8.7.0
     networks:
       - atlas-test-net
     ports:
-      - "8983:8983"
+      - 8984:8983
     volumes:
-      - scxa-solrcloud-1-data:/opt/solr/server/solr
-      - $ATLAS_DATA_PATH/solrcloud/solr1:/var/backups/solr
+      - solrcloud-1-data:/var/solr/data
     environment:
-      - SOLR_HEAP=3g
-      - SOLR_OPTS=-Denable.runtime.lib=true
-      - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
+      SOLR_HEAP: 3g
+      SOLR_OPTS: -Denable.packages=true
+      ZK_HOST: ${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
+    secrets:
+      - scxa-solrcloud.der
     depends_on:
-      - scxa-zk-1
-      - scxa-zk-2
-      - scxa-zk-3
+      - scxa-solrcloud-zookeeper-0
+      - scxa-solrcloud-zookeeper-1
+      - scxa-solrcloud-zookeeper-2
 
-  scxa-solrcloud-2:
-    image: solr:7.1.0
-    container_name: scxa-solrcloud-2
-    networks:
-      - atlas-test-net
-    ports:
-      - "8984:8983"
-    volumes:
-      - scxa-solrcloud-2-data:/opt/solr/server/solr
-      - $ATLAS_DATA_PATH/solrcloud/solr2:/var/backups/solr
-    environment:
-      - SOLR_HEAP=3g
-      - SOLR_OPTS=-Denable.runtime.lib=true
-      - ZK_HOST=scxa-zk-1:2181,scxa-zk-2:2181,scxa-zk-3:2181
-    depends_on:
-      - scxa-zk-1
-      - scxa-zk-2
-      - scxa-zk-3
+# openssl genrsa -out scxa-solrcloud.pem 512
+# openssl rsa -in scxa-solrcloud.pem -pubout -outform DER -out scxa-solrcloud.der
+secrets:
+  scxa-solrcloud.der:
+    file: ${SOLR_PUBLIC_KEY}
 
 volumes:
-  scxa-zk-1-data:
-    name: scxa-zk-1-data
-  scxa-zk-1-datalog:
-    name: scxa-zk-1-datalog
-  scxa-zk-2-data:
-    name: scxa-zk-2-data
-  scxa-zk-2-datalog:
-    name: scxa-zk-2-datalog
-  scxa-zk-3-data:
-    name: scxa-zk-3-data
-  scxa-zk-3-datalog:
-    name: scxa-zk-3-datalog
-  scxa-solrcloud-1-data:
-    name: scxa-solrcloud-1-data
-  scxa-solrcloud-2-data:
-    name: scxa-solrcloud-2-data
+  zookeeper-0-data:
+    name: scxa-solrcloud-zookeeper-0-data-solr-8.7
+  zookeeper-0-datalog:
+    name: scxa-solrcloud-zookeeper-0-datalog-solr-8.7
+  zookeeper-1-data:
+    name: scxa-solrcloud-zookeeper-1-data-solr-8.7
+  zookeeper-1-datalog:
+    name: scxa-solrcloud-zookeeper-1-datalog-solr-8.7
+  zookeeper-2-data:
+    name: scxa-solrcloud-zookeeper-2-data-solr-8.7
+  zookeeper-2-datalog:
+    name: scxa-solrcloud-zookeeper-2-datalog-solr-8.7
+  solrcloud-0-data:
+    name: scxa-solrcloud-0-data-solr-8.7
+  solrcloud-1-data:
+    name: scxa-solrcloud-1-data-solr-8.7
 
 networks:
   atlas-test-net:

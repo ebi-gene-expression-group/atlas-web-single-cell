@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.experimentimport;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -25,9 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
-@WebAppConfiguration
 @ExtendWith(SpringExtension.class)
+@WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 @Sql("/fixtures/experiment.sql")
 @Sql(scripts = "/fixtures/experiment-delete.sql", executionPhase = AFTER_TEST_METHOD)
@@ -106,7 +108,7 @@ class ScxaExperimentCrudIT {
 
     @Test
     void updateDesignCallsUpdateDesignInSuperClass() {
-         var spy = spy(subject);
+        var spy = spy(subject);
 
         var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
         spy.updateExperimentDesign(experimentAccession);

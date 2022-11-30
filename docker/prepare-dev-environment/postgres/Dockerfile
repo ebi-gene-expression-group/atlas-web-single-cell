@@ -11,7 +11,7 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt -y -qq install openjdk-11-jdk 
 VOLUME /atlas-data/scxa /atlas-data/scxa-expdesign
 
 WORKDIR /root
-RUN git clone --recurse-submodules --depth 1 --branch chore/solr8 https://github.com/ebi-gene-expression-group/atlas-web-single-cell.git
+RUN git clone --recurse-submodules --depth 1 https://github.com/ebi-gene-expression-group/atlas-web-single-cell.git
 RUN git clone --recurse-submodules https://github.com/ebi-gene-expression-group/db-scxa.git
 
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"

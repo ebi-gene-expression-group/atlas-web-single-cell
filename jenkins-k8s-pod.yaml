@@ -32,10 +32,10 @@ spec:
       image: openjdk:11
       resources:
         requests:
-          memory: "2.5Gi"
+          memory: "3.5Gi"
           ephemeral-storage: "5Gi"
         limits:
-          memory: "3Gi"
+          memory: "4Gi"
       env:
       - name: GRADLE_OPTS
         value: "-Dorg.gradle.daemon=false"

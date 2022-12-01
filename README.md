@@ -136,7 +136,7 @@ You may want to speed up the process by raising the value of the environment var
 writing](https://www.lenovo.com/gb/en/p/laptops/thinkpad/thinkpadx1/x1-extreme-gen-2/22tp2txx1e2) 20,000 has been 
 found to be a reliable number via painstaking trail and error, but your mileage may vary. Ensure that there are no 
 errors in the script logs, or### Update test data
-Just add the necessary species names and experiment accessions in the `dev.env` file and rebuild the development 
+Just add the necessary species names and experiment accessions in the `test-dev.env` file and rebuild the development 
 environment. Some tests may fail due to incomplete annotations; `grep` for `DistributedUpdatesAsyncException` in 
 particular, which signals a problem storing the document batch, which in turn stops processing the current file. If 
 found, try again with a lower value for `NUM_DOCS_PER_BATCH`.
@@ -263,7 +263,7 @@ Again, a convenience script can be used:
 ./execute-single-test.sh TEST_NAME [ 18 ]
 ```
 
-The second argument is optional and can be used to specify a databae version. As before, if unspecified it defaults to
+The second argument is optional and can be used to specify a database version. As before, if unspecified it defaults to
 `latest`.
 
 ### Debug tests
@@ -320,10 +320,10 @@ scxa-tomcat    | 18-Dec-2020 13:40:58.907 INFO [main] org.apache.catalina.startu
 
 Run the Gradle task `war` in the `atlas-web-single-cell` directory:
 ```bash
-./gradlew :app:war
+./gradlew clean :app:war
 ```
 
-You should now have the file `webapps/gxa#sc.war`. Beacuse the directory `webapps` is bind-mounted in Tomcat’s 
+You should now have the file `webapps/gxa#sc.war`. Because the directory `webapps` is bind-mounted in Tomcat’s 
 container, Tomcat should automatically load the application after a few seconds. You should be seeing something like
 this in your logs:
 ```
@@ -334,7 +334,7 @@ Point your browser at `http://localhost:8080/gxa/sc` and voilà!
 
 Every time you re-run the `war` task the web app will be automatically re-deployed by Tomcat.
 
-If you get any `war` redeploy issues or want to start again freshly, stop all the containers using this:
+If you get any `war` redeployment issues or want to start again freshly, stop all the containers using this:
 
 ```bash
 SCHEMA_VERSION=latest \

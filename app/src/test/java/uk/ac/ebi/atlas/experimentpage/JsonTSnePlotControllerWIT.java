@@ -33,28 +33,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// ALL TESTS IGNORED BECAUSE THE SUBJECT IS GOING TO BE DEPRECATED
-//@ExtendWith(SpringExtension.class)
-//@WebAppConfiguration
-//@ContextConfiguration(classes = TestConfig.class)
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(SpringExtension.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = TestConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonTSnePlotControllerWIT {
-    //@Inject
+    @Inject
     private DataSource dataSource;
 
-    //@Inject
+    @Inject
     private JdbcUtils jdbcTestUtils;
 
-    //@Autowired
+    @Autowired
     private WebApplicationContext wac;
 
     private MockMvc mockMvc;
 
-    //@BeforeAll
+    @BeforeAll
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"),
                 new ClassPathResource("fixtures/scxa_coords.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
@@ -62,7 +62,7 @@ class JsonTSnePlotControllerWIT {
         populator.execute(dataSource);
     }
 
-    //@AfterAll
+    @AfterAll
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
@@ -70,16 +70,17 @@ class JsonTSnePlotControllerWIT {
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"),
                 new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 
-    //@BeforeEach
+    @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    //@Test
+    @Test
     void validJsonForExpressedGeneId() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var geneId = jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(experimentAccession);
@@ -102,7 +103,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series", hasSize(greaterThan(0))));
     }
 
-    //@Test
+    @Test
     void validJsonForInvalidGeneId() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
@@ -119,7 +120,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series..expressionLevel", everyItem(is(0.0))));
     }
 
-    //@Test
+    @Test
     void noExpressionForEmptyGeneId() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
@@ -135,7 +136,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series..expressionLevel", everyItem(is(0.0))));
     }
 
-    //@Test
+    @Test
     void validJsonForValidK() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
@@ -154,7 +155,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series[0].data").isNotEmpty());
     }
 
-    //@Test
+    @Test
     void validJsonForInvalidK() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
@@ -168,7 +169,7 @@ class JsonTSnePlotControllerWIT {
                 .andExpect(jsonPath("$.series", hasSize(1)));
     }
 
-    //@Test
+    @Test
     void defaultMethodInExpressionRequestsWithoutAGeneIdIsUmap() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var nNeighbors = jdbcTestUtils.fetchRandomNeighboursFromExperimentUmap(experimentAccession);

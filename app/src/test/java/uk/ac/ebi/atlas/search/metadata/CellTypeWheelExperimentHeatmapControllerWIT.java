@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql({
         "/fixtures/experiment.sql",
         "/fixtures/scxa_analytics.sql",
+        "/fixtures/scxa_dimension_reduction.sql",
         "/fixtures/scxa_coords.sql",
         "/fixtures/scxa_cell_group.sql",
         "/fixtures/scxa_cell_group_membership.sql",
@@ -37,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "/fixtures/scxa_cell_group_membership-delete.sql",
         "/fixtures/scxa_cell_group-delete.sql",
         "/fixtures/scxa_coords-delete.sql",
+        "/fixtures/scxa_dimension_reduction-delete.sql",
         "/fixtures/scxa_analytics-delete.sql",
         "/fixtures/experiment-delete.sql"
 }, executionPhase = AFTER_TEST_METHOD)

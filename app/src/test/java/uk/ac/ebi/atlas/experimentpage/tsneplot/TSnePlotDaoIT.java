@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,8 +75,8 @@ class TSnePlotDaoIT {
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"),
-                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -126,8 +127,9 @@ class TSnePlotDaoIT {
     // match the return result by querying in the fixture.
     // If the fixture is a partition of the full dataset, then it will fail, so we load a full test dataset.
     // TODO Re-think this test with scxa_coords
-    // @ParameterizedTest
-    // @MethodSource("randomExperimentAccessionProvider")
+    @Disabled
+    @ParameterizedTest
+    @MethodSource("randomExperimentAccessionProvider")
     void testNumberOfCellsByExperimentAccession(String experimentAccession) {
         cleanDatabaseTables();
         //populator.setScripts(new ClassPathResource("fixtures/scxa_tsne-full.sql"));

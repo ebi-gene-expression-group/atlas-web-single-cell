@@ -47,6 +47,7 @@ public class TsnePlotServiceIT {
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"),
                 new ClassPathResource("fixtures/scxa_coords.sql"));
         populator.execute(dataSource);
     }
@@ -55,7 +56,8 @@ public class TsnePlotServiceIT {
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"));
         populator.execute(dataSource);
     }
 

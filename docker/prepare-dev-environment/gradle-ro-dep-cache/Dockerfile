@@ -3,7 +3,7 @@ FROM ubuntu:jammy
 RUN apt -y -qq update
 RUN apt -y -qq install git openjdk-11-jdk rsync
 
-RUN git clone --recurse-submodules --depth 1 --branch chore/solr8 https://github.com/ebi-gene-expression-group/atlas-web-single-cell.git /root/atlas-web-single-cell
+RUN git clone --recurse-submodules --depth 1 https://github.com/ebi-gene-expression-group/atlas-web-single-cell.git /root/atlas-web-single-cell
 WORKDIR /root/atlas-web-single-cell
 
 VOLUME /gradle-ro-dep-cache

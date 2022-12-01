@@ -12,8 +12,6 @@ services:
     volumes:
       - ..:/root/project
       - gradle-ro-dep-cache:/gradle-ro-dep-cache:ro
-      # Only needed if running ITs in atlas-web-core
-      # - foobar:/atlas-data/gxa
       - bioentity-properties:/atlas-data/bioentity_properties:ro
       - scxa-data:/atlas-data/scxa:ro
       - scxa-expdesign:/atlas-data/expdesign

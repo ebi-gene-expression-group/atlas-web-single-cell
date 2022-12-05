@@ -30,7 +30,7 @@ public abstract class GeneQuery {
     }
 
     public static GeneQuery create(String queryTerm, BioentityPropertyName category, Species species) {
-        return create(queryTerm, Optional.of(category), Optional.of(species));
+        return create(queryTerm, Optional.ofNullable(category), Optional.of(species));
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")

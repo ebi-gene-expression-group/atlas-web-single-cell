@@ -175,11 +175,6 @@ class ExperimentPageContentServiceIT {
                 .contains(
                         jdbcTestUtils.fetchKsFromCellGroups(experimentAccession).toArray(new Integer[0]));
 
-        if (result.has("selectedK")) {
-             assertThat(jdbcTestUtils.fetchKsFromCellGroups(experimentAccession))
-                     .contains(result.get("selectedK").getAsInt());
-         }
-
         assertThat(result.has("plotTypesAndOptions")).isTrue();
         assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("tsne").getAsJsonArray()).isNotEmpty();
         assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("umap").getAsJsonArray()).isNotEmpty();

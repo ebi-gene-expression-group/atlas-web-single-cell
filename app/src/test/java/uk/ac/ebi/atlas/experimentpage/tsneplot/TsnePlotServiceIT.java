@@ -41,7 +41,7 @@ public class TsnePlotServiceIT {
 
     private TSnePlotService subject;
 
-    private static final String EXPERIMENT_ACCESSION_WITH_MISSING_INFERRED_CELL_TYPE = "E-GEOD-71585";
+    private static final String EXPERIMENT_ACCESSION_WITH_MISSING_INFERRED_CELL_TYPE = "E-EHCA-2";
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -78,5 +78,4 @@ public class TsnePlotServiceIT {
                         metadataType))
                 .containsKeys(StringUtils.capitalize(MISSING_METADATA_VALUE_PLACEHOLDER));
     }
-
 }

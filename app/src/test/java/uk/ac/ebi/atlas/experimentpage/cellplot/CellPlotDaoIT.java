@@ -72,9 +72,11 @@ class CellPlotDaoIT {
         populator.execute(dataSource);
     }
 
+
     @Test
     void fetchCellPlotWithK() {
-        assertThat(subject.fetchCellPlotWithK("E-ENAD-53", 38, "umap", Map.of("n_neighbors",50)))
+        assertThat(
+                subject.fetchCellPlotWithK("E-ENAD-53", 14, "umap", Map.of("n_neighbors", 15)))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }
@@ -100,7 +102,8 @@ class CellPlotDaoIT {
                                                              int k,
                                                              String plotMethod,
                                                              Map<String, Integer> parameterisation) {
-        assertThat(subject.fetchCellPlotWithK(experimentAccession, k, randomAlphabetic(4), parameterisation))
+        assertThat(
+                subject.fetchCellPlotWithK(experimentAccession, k, randomAlphabetic(4), parameterisation))
                 .isEmpty();
     }
 
@@ -136,10 +139,12 @@ class CellPlotDaoIT {
                        int k,
                        String plotMethod,
                        Map<String, Integer> parameterisation) {
-        assertThat(subject.fetchCellPlot(experimentAccession, plotMethod, parameterisation))
+        assertThat(
+                subject.fetchCellPlot(experimentAccession, plotMethod, parameterisation))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }
+
 
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionPlotWithGeneIdProvider")
@@ -148,7 +153,8 @@ class CellPlotDaoIT {
                              String geneId,
                              String plotMethod,
                              Map<String, Integer> parameterisation) {
-        assertThat(subject.fetchCellPlotWithExpression(experimentAccession, geneId, plotMethod, parameterisation))
+        assertThat(
+                subject.fetchCellPlotWithExpression(experimentAccession, geneId, plotMethod, parameterisation))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }

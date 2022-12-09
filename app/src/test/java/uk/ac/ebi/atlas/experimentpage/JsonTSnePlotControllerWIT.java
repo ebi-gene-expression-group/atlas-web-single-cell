@@ -16,11 +16,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
+
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
@@ -32,12 +36,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemblGeneId;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonTSnePlotControllerWIT {
+    private static final Random RNG = ThreadLocalRandom.current();
+
     @Inject
     private DataSource dataSource;
 
@@ -89,10 +96,16 @@ class JsonTSnePlotControllerWIT {
         // need to restrict this value to the perplexities actually available for the particular gene we choose.
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession, geneId);
 
+        var uri =
+                UriComponentsBuilder
+                        .fromPath("/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression/{geneId}")
+                        .queryParam("method", "tsne")
+                        .encode()
+                        .buildAndExpand(experimentAccession, perplexity, geneId)
+                        .toUri();
+
         this.mockMvc
-                .perform(get(
-                        "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
-                        "/expression/" + geneId))
+                .perform(get(uri))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.min", isA(Number.class)))
@@ -108,9 +121,16 @@ class JsonTSnePlotControllerWIT {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
+        var uri =
+                UriComponentsBuilder
+                        .fromPath("/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression/{geneId}")
+                        .queryParam("method", "tsne")
+                        .encode()
+                        .buildAndExpand(experimentAccession, perplexity, generateRandomEnsemblGeneId())
+                        .toUri();
+
         this.mockMvc
-                .perform(get(
-                        "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity + "/expression/FOOBAR"))
+                .perform(get(uri))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.min").doesNotExist())
@@ -125,8 +145,16 @@ class JsonTSnePlotControllerWIT {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
+        var uri =
+                UriComponentsBuilder
+                        .fromPath("/json/experiments/{experimentAccession}/tsneplot/{perplexity}/expression/{geneId}")
+                        .queryParam("method", "tsne")
+                        .encode()
+                        .buildAndExpand(experimentAccession, perplexity, "")
+                        .toUri();
+
         this.mockMvc
-                .perform(get("/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity + "/expression/"))
+                .perform(get(uri))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.min").doesNotExist())
@@ -139,13 +167,19 @@ class JsonTSnePlotControllerWIT {
     @Test
     void validJsonForValidK() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        var k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
+        var allKs = jdbcTestUtils.fetchKsFromCellGroups(experimentAccession);
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
+        var uri =
+                UriComponentsBuilder
+                        .fromPath("/json/experiments/{experimentAccession}/tsneplot/{perplexity}/clusters/variable/{k}")
+                        .queryParam("method", "tsne")
+                        .encode()
+                        .buildAndExpand(experimentAccession, perplexity, allKs.get(RNG.nextInt(allKs.size())))
+                        .toUri();
+
         this.mockMvc
-                .perform(get(
-                        "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
-                        "/clusters/variable/" + k))
+                .perform(get(uri))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 // With full experiments this test could be even better:
@@ -160,10 +194,16 @@ class JsonTSnePlotControllerWIT {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
+        var uri =
+                UriComponentsBuilder
+                        .fromPath("/json/experiments/{experimentAccession}/tsneplot/{perplexity}/clusters/variable/{k}")
+                        .queryParam("method", "tsne")
+                        .encode()
+                        .buildAndExpand(experimentAccession, perplexity, 9000)
+                        .toUri();
+
         this.mockMvc
-                .perform(get(
-                        "/json/experiments/" + experimentAccession + "/tsneplot/" + perplexity +
-                        "/clusters/variable/9000"))
+                .perform(get(uri))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.series", hasSize(1)));
@@ -172,19 +212,32 @@ class JsonTSnePlotControllerWIT {
     @Test
     void defaultMethodInExpressionRequestsWithoutAGeneIdIsUmap() throws Exception {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        var nNeighbors = jdbcTestUtils.fetchRandomNeighboursFromExperimentUmap(experimentAccession);
+        var nNeighbours = jdbcTestUtils.fetchRandomNeighboursFromExperimentUmap(experimentAccession);
+
+        var uriWithMethod =
+                UriComponentsBuilder
+                        .fromPath("/json/experiments/{experimentAccession}/tsneplot/{nNeighbours}/expression")
+                        .queryParam("method", "umap")
+                        .encode()
+                        .buildAndExpand(experimentAccession, nNeighbours)
+                        .toUri();
 
         var expected =
                 this.mockMvc
-                        .perform(get(
-                                "/json/experiments/" + experimentAccession + "/tsneplot/" + nNeighbors + "/expression")
-                                .param("method", "umap"))
+                        .perform(get(uriWithMethod))
                         .andReturn()
                         .getResponse()
                         .getContentAsByteArray();
 
+        var uriWithoutMethod =
+                UriComponentsBuilder
+                        .fromPath("/json/experiments/{experimentAccession}/tsneplot/{nNeighbours}/expression")
+                        .encode()
+                        .buildAndExpand(experimentAccession, nNeighbours)
+                        .toUri();
+
         this.mockMvc
-                .perform(get("/json/experiments/" + experimentAccession + "/tsneplot/" + nNeighbors + "/expression"))
+                .perform(get(uriWithoutMethod))
                 .andExpect(content().bytes(expected));
     }
 }

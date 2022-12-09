@@ -51,7 +51,9 @@ JsonTSnePlotController extends JsonExceptionHandlingController {
     }
 
     @GetMapping(
-            value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/expression/{geneId}",
+            // Remember that gene IDs can have dots, e.g. Solyc09g014380.3 in E-ENAD-53
+            // See also JsonBioentityInformationController.java
+            value = "/json/experiments/{experimentAccession}/tsneplot/{parameter}/expression/{geneId:.+}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String tSnePlotWithExpression(@PathVariable String experimentAccession,
                                          @PathVariable int parameter,

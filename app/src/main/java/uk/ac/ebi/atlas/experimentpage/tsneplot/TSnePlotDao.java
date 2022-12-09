@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
@@ -73,9 +74,13 @@ public class TSnePlotDao {
                         "AND r.experiment_accession=:experiment_accession";
     public List<TSnePoint.Dto> fetchTSnePlotWithClusters(String experimentAccession, String plotType, int plotOption,
                                                          String variable) {
-        var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession, "parameter",
-                String.valueOf(plotOption), "parameter_name", plotType.equals(TSNE_METHOD) ? "perplexity" : "n_neighbors",
-                "method", plotType, "variable", variable);
+        var namedParameters =
+                ImmutableMap.of(
+                        "experiment_accession", experimentAccession,
+                        "parameter", String.valueOf(plotOption),
+                        "parameter_name", plotType.equals(TSNE_METHOD) ? "perplexity" : "n_neighbors",
+                        "method", plotType,
+                        "variable", variable);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_T_SNE_PLOT_WITH_CLUSTERS_STATEMENT,
@@ -84,7 +89,7 @@ public class TSnePlotDao {
                         TSnePoint.Dto.create(
                                 rs.getDouble("x"),
                                 rs.getDouble("y"),
-                                rs.getString("cluster_id"),
+                                Objects.isNull(rs.getString("cluster_id")) ? "" : rs.getString("cluster_id"),
                                 rs.getString("cell_id")));
     }
 

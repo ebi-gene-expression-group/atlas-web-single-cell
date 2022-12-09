@@ -24,6 +24,8 @@ import javax.sql.DataSource;
 import java.nio.file.Path;
 import java.util.List;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TSnePlotDaoIT {
+    private static final Random RNG = ThreadLocalRandom.current();
+
     @Inject
     private DataSource dataSource;
 
@@ -181,9 +185,9 @@ class TSnePlotDaoIT {
     // TODO Re-think this provider with scxa_coords
     private Stream<Arguments> randomExperimentAccessionKAndPerplexityProvider() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        var k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
+        var allKs = jdbcTestUtils.fetchKsFromCellGroups(experimentAccession);
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
-        return Stream.of(Arguments.of(experimentAccession, k, perplexity));
+        return Stream.of(Arguments.of(experimentAccession, allKs.get(RNG.nextInt(allKs.size())), perplexity));
     }
 }

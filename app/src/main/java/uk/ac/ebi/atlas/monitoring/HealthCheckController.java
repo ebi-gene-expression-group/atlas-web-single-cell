@@ -15,8 +15,8 @@ public class HealthCheckController {
     public HealthCheckController(HealthCheckService healthCheckService) {
         healthChecker = new HealthChecker(
                 healthCheckService,
-                ImmutableSet.of("bioentities"),
-                ImmutableSet.of("scxa-analytics", "scxa-gene2experiment"));
+                ImmutableSet.of(),
+                ImmutableSet.of("bioentities", "scxa-analytics", "scxa-gene2experiment"));
     }
 
     @RequestMapping(value = "/json/health",

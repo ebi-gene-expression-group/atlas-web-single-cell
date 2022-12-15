@@ -18,21 +18,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CellTypeWheelDaoIT {
+    private final static String MULTIPLE_SPECIES_METADATA_TERM = "leukocyte";
+
     @Inject
     private CellTypeWheelDao subject;
 
     @Test
-    void knownTermReturnsResults() {
-        var results = subject.facetSearchCtwFields("leukocyte");
+    void knownTermReturnsResultsWithoutNotApplicable() {
+        var results = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM);
 
-        assertThat(results).isNotEmpty();
         assertThat(
                 results.stream()
                         .map(result -> result.get(0))
-                        .distinct()
-                        .collect(toImmutableList()))
+                        .distinct())
                 .doesNotContain("not applicable")
                 .containsExactlyInAnyOrder("Homo sapiens", "Mus musculus");
+    }
+
+    @Test
+    void canFilterBySpecies() {
+        var resultsWithoutSpeciesFiltering = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM);
+        var resultsWithSpeciesFitlering = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, "Mus musculus");
+
+        assertThat(
+                resultsWithoutSpeciesFiltering.stream()
+                        .map(result -> result.get(0))
+                        .distinct())
+                .containsExactlyInAnyOrder("Homo sapiens", "Mus musculus");
+
+        assertThat(
+                resultsWithSpeciesFitlering.stream()
+                        .map(result -> result.get(0))
+                        .distinct())
+                .containsExactly("Mus musculus");
     }
 
     @Test

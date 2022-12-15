@@ -49,5 +49,3 @@ do
   MATRIX_MARKT_ROWS_GENES_FILE=/atlas-data/scxa/magetab/${EXP_ID}/${EXP_ID}.aggregated_filtered_normalised_counts.mtx_rows \
   ./load-scxa-gene2experiment.sh
 done
-
-sleep 3h

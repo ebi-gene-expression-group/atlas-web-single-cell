@@ -11,6 +11,7 @@ services:
     working_dir: /root/project
     volumes:
       - ..:/root/project
+      - gradle-wrapper-dists:/root/.gradle/wrapper/dists
       - gradle-ro-dep-cache:/gradle-ro-dep-cache:ro
       - bioentity-properties:/atlas-data/bioentity_properties:ro
       - scxa-data:/atlas-data/scxa:ro
@@ -47,6 +48,8 @@ services:
         ./gradlew :app:jacocoTestReport
 
 volumes:
+  gradle-wrapper-dists:
+    name: ${GRADLE_WRAPPER_DISTS_VOL_NAME}
   gradle-ro-dep-cache:
     name: ${GRADLE_RO_DEP_CACHE_VOL_NAME}
   bioentity-properties:

@@ -3,9 +3,11 @@ package uk.ac.ebi.atlas.search.metadata;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
@@ -21,9 +23,13 @@ public class JsonCellTypeWheelController extends JsonExceptionHandlingController
 
     @GetMapping(value = "/json/cell-type-wheel/{searchTerm}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String jsonCellTypeWheel(@PathVariable String searchTerm) {
+    public String jsonCellTypeWheel(@PathVariable String searchTerm,
+                                    @RequestParam(name = "species", defaultValue = "") String species) {
         return GSON.toJson(
                 highchartsSunburstAdapter.getCellTypeWheelSunburst(
-                        searchTerm, cellTypeWheelService.search(searchTerm)));
+                        searchTerm,
+                        isBlank(species) ?
+                                cellTypeWheelService.search(searchTerm) :
+                                cellTypeWheelService.search(searchTerm, species)));
     }
 }

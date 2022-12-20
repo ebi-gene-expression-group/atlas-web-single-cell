@@ -23,6 +23,8 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION_PART_OF_LABELS;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION_SYNONYMS;
 
+// This class makes the following query using our Solr type-safe libraries. The ctw_organism filter is optional.
+// The service class unrolls the results to create the cell type wheel JSON payload for the Highcharts sunburst chart.
 // curl -u $SOLR_USER:$SOLR_PASS http://$SOLR_HOST/solr/scxa-analytics/query?rows=0 -d '
 // {
 //   "query": "ontology_annotation_ancestors_labels_t:\"lung\" OR ontology_annotation_parent_labels_t:\"lung\" OR ontology_annotation_part_of_rel_labels_t:\"lung\" OR ontology_annotation_synonyms_t:\"lung\" OR ontology_annotation_label_t:\"lung\"",

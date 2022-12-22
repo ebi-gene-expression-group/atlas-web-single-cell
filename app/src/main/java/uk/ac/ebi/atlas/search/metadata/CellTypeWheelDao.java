@@ -13,6 +13,7 @@ import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import java.util.ArrayList;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_CELL_TYPE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
@@ -23,6 +24,49 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION_PART_OF_LABELS;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.ONTOLOGY_ANNOTATION_SYNONYMS;
 
+// This class makes the following query using our Solr type-safe libraries. The ctw_organism filter is optional.
+// The service class unrolls the results to create the cell type wheel JSON payload for the Highcharts sunburst chart.
+// curl -u $SOLR_USER:$SOLR_PASS http://$SOLR_HOST/solr/scxa-analytics/query?rows=0 -d '
+// {
+//   "query": "ontology_annotation_ancestors_labels_t:\"lung\" OR ontology_annotation_parent_labels_t:\"lung\" OR ontology_annotation_part_of_rel_labels_t:\"lung\" OR ontology_annotation_synonyms_t:\"lung\" OR ontology_annotation_label_t:\"lung\"",
+//   "filter": "!ctw_cell_type:\"not applicable\" AND ctw_organism:\"Mus musculus\"",
+//   "facet": {
+//     "organisms": {
+//       "type": "terms",
+//       "field": "ctw_organism",
+//       "limit": -1,
+//       "facet": {
+//         "organismParts": {
+//           "type": "terms",
+//           "field": "ctw_organism_part",
+//           "limit": -1,
+//           "facet": {
+//             "organismParts": {
+//               "type": "terms",
+//               "field": "ctw_organism_part",
+//               "limit": -1,
+//               "facet": {
+//                 "cellTypes": {
+//                   "type": "terms",
+//                   "field": "ctw_cell_type",
+//                   "limit": -1,
+//                   "facet": {
+//                     "experimentAccessions": {
+//                       "type": "terms",
+//                       "field": "experiment_accession",
+//                       "limit": -1
+//                     }
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+// '
 @Component
 public class CellTypeWheelDao {
     private static final String ORGANISMS_TERMS_KEY = "organisms";
@@ -37,69 +81,29 @@ public class CellTypeWheelDao {
         singleCellAnalyticsCollectionProxy = proxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-//    curl http://$SOLR_HOST/solr/scxa-analytics-v6/query?rows=0 -d '
-//{
-//    "query": "ontology_annotation_label_t:lung",
-//        "filter": "!ctw_cell_type:\"not applicable\"",
-//        "facet": {
-//    "organisms": {
-//        "type": "terms",
-//                "field": "ctw_organism",
-//                "limit": -1,
-//                "facet": {
-//            "organismParts": {
-//                "type": "terms",
-//                        "field": "ctw_organism_part",
-//                        "limit": -1,
-//                        "facet": {
-//                    "organismParts": {
-//                        "type": "terms",
-//                                "field": "ctw_organism_part",
-//                                "limit": -1,
-//                                "facet": {
-//                            "cellTypes": {
-//                                "type": "terms",
-//                                        "field": "ctw_cell_type",
-//                                        "limit": -1,
-//                                        "facet": {
-//                                    "experimentAccessions": {
-//                                        "type": "terms",
-//                                                "field": "experiment_accession",
-//                                                "limit": -1
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//}
-//    '
+    public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm, String species) {
+        // Build the facet in the query above:
+        // "facet": {
+        //   ...
+        // }
+        var facetBuilder = new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                .setFacetField(CTW_ORGANISM)
+                .addNestedFacet(
+                        ORGANISM_PARTS_TERMS_KEY,
+                        new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                                .setFacetField(CTW_ORGANISM_PART)
+                                .addNestedFacet(
+                                        CELL_TYPES_TERMS_KEY,
+                                        new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                                                .setFacetField(CTW_CELL_TYPE)
+                                                .addNestedFacet(
+                                                        EXPERIMENT_ACCESSIONS_TERMS_KEY,
+                                                        new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+                                                                .setFacetField(EXPERIMENT_ACCESSION))));
 
-    public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm) {
-        var facetBuilder =
-                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
-                        .setFacetField(CTW_ORGANISM)
-                        .addNestedFacet(
-                                ORGANISM_PARTS_TERMS_KEY,
-                                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
-                                        .setFacetField(CTW_ORGANISM_PART)
-                                        .addNestedFacet(
-                                                CELL_TYPES_TERMS_KEY,
-                                                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
-                                                        .setFacetField(CTW_CELL_TYPE)
-                                                        .addNestedFacet(
-                                                                EXPERIMENT_ACCESSIONS_TERMS_KEY,
-                                                                new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
-                                                                        .setFacetField(EXPERIMENT_ACCESSION))));
-
-        // "query": "ontology_annotation_ancestors_labels_t:\"entity\" OR
-        // ontology_annotation_parent_labels_t:\"entity\" OR
-        // ontology_annotation_part_of_rel_labels_t:\"entity\" OR ontology_annotation_synonyms_t:\"entity\" OR
-        // ontology_annotation_label_t:\"entity\""
+        // Build the query and first part of the filter:
+        // "query": "ontology_annotation_ancestors_labels_t:\"lung\" OR ...",
+        // "filter": "!ctw_cell_type:\"not applicable\"",
         var queryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(ImmutableMap.of(
@@ -109,8 +113,15 @@ public class CellTypeWheelDao {
                                 ONTOLOGY_ANNOTATION_PART_OF_LABELS, ImmutableSet.of(searchTerm),
                                 ONTOLOGY_ANNOTATION_SYNONYMS, ImmutableSet.of(searchTerm)))
                         .addNegativeFilterFieldByTerm(CTW_CELL_TYPE, ImmutableList.of(NOT_APPLICABLE_TERM))
-                        .addFacet(ORGANISMS_TERMS_KEY, facetBuilder)
-                        .setRows(0);    // We only want the facets, we don’t care about the docs
+                        .setRows(0);    // We only want the facets, we don’t care about the docs;
+
+        // If there’s a species add it as an additional filter
+        if (isNotBlank(species)) {
+            queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, species);
+        }
+
+        // Add the facet to the query
+        queryBuilder.addFacet(ORGANISMS_TERMS_KEY, facetBuilder);
 
         return extractNestedFacetTerms(
                 (SimpleOrderedMap<Object>) singleCellAnalyticsCollectionProxy

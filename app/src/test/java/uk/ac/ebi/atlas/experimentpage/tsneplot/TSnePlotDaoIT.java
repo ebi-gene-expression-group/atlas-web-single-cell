@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.experimentpage.tsneplot;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,15 +24,22 @@ import javax.sql.DataSource;
 import java.nio.file.Path;
 import java.util.List;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+//TODO - 'method' DB column fixture data here all small case, but in the latest schema V19,method column values
+// looks like this 'UMAP' and 't-SNE', need correction for the asserts once we finalise the fixture data.Randomised
+// tests will be failing because of fixtures, currently we have a few fixtures and manual adjustments of fixtures.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TSnePlotDaoIT {
+    private static final Random RNG = ThreadLocalRandom.current();
+
     @Inject
     private DataSource dataSource;
 
@@ -57,9 +65,10 @@ class TSnePlotDaoIT {
         populator.setScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
                 new ClassPathResource("fixtures/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/scxa_coords.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"),
+                new ClassPathResource("fixtures/scxa_coords.sql"));
         populator.execute(dataSource);
     }
 
@@ -68,9 +77,10 @@ class TSnePlotDaoIT {
         populator.setScripts(
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/experiment-delete.sql"));
+                new ClassPathResource("fixtures/experiment-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -121,8 +131,9 @@ class TSnePlotDaoIT {
     // match the return result by querying in the fixture.
     // If the fixture is a partition of the full dataset, then it will fail, so we load a full test dataset.
     // TODO Re-think this test with scxa_coords
-    // @ParameterizedTest
-    // @MethodSource("randomExperimentAccessionProvider")
+    @Disabled
+    @ParameterizedTest
+    @MethodSource("randomExperimentAccessionProvider")
     void testNumberOfCellsByExperimentAccession(String experimentAccession) {
         cleanDatabaseTables();
         //populator.setScripts(new ClassPathResource("fixtures/scxa_tsne-full.sql"));
@@ -174,9 +185,9 @@ class TSnePlotDaoIT {
     // TODO Re-think this provider with scxa_coords
     private Stream<Arguments> randomExperimentAccessionKAndPerplexityProvider() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        var k = jdbcTestUtils.fetchRandomKFromCellClusters(experimentAccession);
+        var allKs = jdbcTestUtils.fetchKsFromCellGroups(experimentAccession);
         var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
 
-        return Stream.of(Arguments.of(experimentAccession, k, perplexity));
+        return Stream.of(Arguments.of(experimentAccession, allKs.get(RNG.nextInt(allKs.size())), perplexity));
     }
 }

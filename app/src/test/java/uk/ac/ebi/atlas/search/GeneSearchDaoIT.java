@@ -90,9 +90,9 @@ class GeneSearchDaoIT {
                 .isNotEmpty();
     }
 
-    // Any gene with marker_probability < 0.05
+    // Any gene with marker_probability < 0.05, see scxa_cell_group_marker_genes.sql
     @ParameterizedTest
-    @ValueSource(strings = {"AT2G23910"})
+    @ValueSource(strings = {"AT1G62480"})
     void validGeneIdReturnsExperimentAccessions(String geneId) {
         var result = subject.fetchExperimentAccessionsWhereGeneIsMarker(geneId);
 
@@ -110,7 +110,7 @@ class GeneSearchDaoIT {
     // Look for the cell group IDs that match an experiment and its preferred K variable, then find a gene in that cell
     // group that has marker_probability < 0.05
     @ParameterizedTest
-    @CsvSource({"'ENSG00000176170', 'E-GEOD-81547', 24"})
+    @CsvSource({"'ENSMUSG00000023224', 'E-EHCA-2', 24"})
     void validExperimentAccessionReturnsClusterIDsWithPreferredKAndMinP(String geneId,
                                                                         String experimentAccession,
                                                                         Integer preferredK) {
@@ -123,12 +123,12 @@ class GeneSearchDaoIT {
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                // Hard-coded values depending on the gene,experiment we use for this test
-                                24, ImmutableList.of(10, 14)));
+                                24, ImmutableList.of(11)));
     }
 
+    // Use any value from scxa_cell_group_marker_gene_stats.sql
     @ParameterizedTest
-    @CsvSource({"'ENSMUSG00000042129', 'E-EHCA-2', 31"})
+    @CsvSource({"'AT1G52060', 'E-CURD-4', 17"})
     void validExperimentAccessionReturnsOnlyOneClusterIDWithBothPreferredKAndMinP(String geneId,
                                                                                   String experimentAccession,
                                                                                   Integer preferredK) {
@@ -140,7 +140,7 @@ class GeneSearchDaoIT {
                 .isNotEmpty()
                 .containsAllEntriesOf(
                         ImmutableMap.of(
-                                31, ImmutableList.of(13, 17)));
+                                17, ImmutableList.of(10)));
     }
 
     @ParameterizedTest

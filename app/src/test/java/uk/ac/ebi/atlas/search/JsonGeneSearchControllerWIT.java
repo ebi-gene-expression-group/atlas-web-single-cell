@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.search;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -263,7 +264,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void whenGeneIdIsNotPartOfAnyExperimentsThenReturnEmptySetOfSpecies() throws Exception {
-//        This is the SolR streaming expression query that is getting the list of bioentity_identifiers
+//        This is the Solr streaming expression query that is getting the list of bioentity_identifiers
 //        that is not part of any experiments based on a given species (as a query parameter in the bioentities query)
 //        I just selected the 1st ID and used that in my test
 //        If we are going to use this query more than once, we might have to implement this in a utility method
@@ -342,14 +343,20 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void whenSearchTermExistsInDBThenReturnsSetOfCellType() throws Exception {
-        var shouldBeGeneThatPartOfExperiments = "AT2G21840";
+        var shouldBeGeneThatPartOfExperiments = "AT4G01480";
 
-        var expectedCellType = "trichoblast 17";
+        // Find out which cells the gene ID is expressed in the scxa_analytics.sql fixture and then get the cell types
+        // in Solr
+        var expectedCellTypes =
+                ImmutableSet.of(
+                        "non-hair root epidermal cell 4", "protoplast", "root cortex; trichoblast 10",
+                        "root cortex; trichoblast 9", "root endodermis 11", "root endodermis 12", "stele 14",
+                        "trichoblast 17");
 
         this.mockMvc.perform(get("/json/gene-search/cell-types").param("ensgene", shouldBeGeneThatPartOfExperiments))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(equalTo(1))))
-                .andExpect(jsonPath("$", containsInAnyOrder(expectedCellType)));
+                .andExpect(jsonPath("$", hasSize(equalTo(expectedCellTypes.size()))))
+                .andExpect(jsonPath("$", containsInAnyOrder(expectedCellTypes.toArray())));
     }
 }

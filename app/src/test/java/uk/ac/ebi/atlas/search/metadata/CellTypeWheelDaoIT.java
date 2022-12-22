@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateBlankString;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -30,7 +31,7 @@ class CellTypeWheelDaoIT {
 
     @Test
     void knownTermReturnsResultsWithoutNotApplicable() {
-        var results = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM);
+        var results = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, null);
 
         assertThat(
                 results.stream()
@@ -43,8 +44,10 @@ class CellTypeWheelDaoIT {
     @Test
     void canFilterBySpecies() {
         var speciesFilter = MULTIPLE_SPECIES.get(RNG.nextInt(MULTIPLE_SPECIES.size()));
-        var resultsWithoutSpeciesFiltering = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM);
-        var resultsWithSpeciesFitlering = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, speciesFilter);
+        var resultsWithoutSpeciesFiltering =
+                subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, generateBlankString());
+        var resultsWithSpeciesFitlering =
+                subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, speciesFilter);
 
         assertThat(
                 resultsWithoutSpeciesFiltering.stream()
@@ -61,7 +64,7 @@ class CellTypeWheelDaoIT {
 
     @Test
     void unknownTermReturnsEmpty() {
-        assertThat(subject.facetSearchCtwFields("foobar")).isEmpty();
+        assertThat(subject.facetSearchCtwFields("foobar", generateBlankString())).isEmpty();
     }
 
 }

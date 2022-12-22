@@ -12,6 +12,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateBlankString;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomSpecies;
 
@@ -32,12 +33,12 @@ class CellTypeWheelServiceTest {
         var metadataSearchTerm =  randomAlphabetic(20);
         var species = generateRandomSpecies();
 
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, generateBlankString()))
                 .thenReturn(ImmutableList.of());
         when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName()))
                 .thenReturn(ImmutableList.of());
 
-        assertThat(subject.search(metadataSearchTerm)).isEmpty();
+        assertThat(subject.search(metadataSearchTerm, generateBlankString())).isEmpty();
         assertThat(subject.search(metadataSearchTerm, species.getName())).isEmpty();
     }
 
@@ -45,11 +46,11 @@ class CellTypeWheelServiceTest {
     void callsTheRightDaoMethodWithoutSpeciesFiltering() {
         var metadataSearchTerm =  randomAlphabetic(20);
 
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, generateBlankString()))
                 .thenReturn(ImmutableList.of());
 
-        subject.search(metadataSearchTerm);
-        verify(cellTypeWheelDaoMock).facetSearchCtwFields(metadataSearchTerm);
+        subject.search(metadataSearchTerm, generateBlankString());
+        verify(cellTypeWheelDaoMock).facetSearchCtwFields(metadataSearchTerm, generateBlankString());
     }
 
     @Test
@@ -180,9 +181,10 @@ class CellTypeWheelServiceTest {
                         )
                 );
 
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm)).thenReturn(twoSpeciesCellTypesWheel);
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null))
+                .thenReturn(twoSpeciesCellTypesWheel);
 
-        assertThat(subject.search(metadataSearchTerm))
+        assertThat(subject.search(metadataSearchTerm, null))
                 .containsExactlyInAnyOrder(
                         // Species 1
                         ImmutablePair.of(

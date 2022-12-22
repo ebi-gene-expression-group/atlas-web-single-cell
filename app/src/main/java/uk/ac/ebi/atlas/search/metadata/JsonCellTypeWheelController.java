@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
@@ -26,10 +25,7 @@ public class JsonCellTypeWheelController extends JsonExceptionHandlingController
     public String jsonCellTypeWheel(@PathVariable String searchTerm,
                                     @RequestParam(name = "species", defaultValue = "") String species) {
         return GSON.toJson(
-                highchartsSunburstAdapter.getCellTypeWheelSunburst(
-                        searchTerm,
-                        isBlank(species) ?
-                                cellTypeWheelService.search(searchTerm) :
-                                cellTypeWheelService.search(searchTerm, species)));
+                highchartsSunburstAdapter
+                        .getCellTypeWheelSunburst(searchTerm, cellTypeWheelService.search(searchTerm, species)));
     }
 }

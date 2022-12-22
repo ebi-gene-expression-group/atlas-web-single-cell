@@ -13,6 +13,7 @@ import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import java.util.ArrayList;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_CELL_TYPE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
@@ -80,13 +81,12 @@ public class CellTypeWheelDao {
         singleCellAnalyticsCollectionProxy = proxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-    // This method takes care of building the facet in the query above:
-    // "facet": {
-    //   ...
-    // }
-    private SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>
-    buildFacetOrganismToOrganismPartsToCellTypesToExperimentAccessions() {
-        return new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
+    public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm, String species) {
+        // Build the facet in the query above:
+        // "facet": {
+        //   ...
+        // }
+        var facetBuilder = new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                 .setFacetField(CTW_ORGANISM)
                 .addNestedFacet(
                         ORGANISM_PARTS_TERMS_KEY,
@@ -100,27 +100,29 @@ public class CellTypeWheelDao {
                                                         EXPERIMENT_ACCESSIONS_TERMS_KEY,
                                                         new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                                                                 .setFacetField(EXPERIMENT_ACCESSION))));
-    }
 
-    // This method builds the query and first part of the filter:
-    // "query": "ontology_annotation_ancestors_labels_t:\"lung\" OR ...",
-    // "filter": "!ctw_cell_type:\"not applicable\"",
-    private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>
-    buildQueryForFacetOfOntologyAnnotationsWithoutNotApplicableCellTypes(String searchTerm) {
-        return new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
-                .addQueryFieldByTerm(ImmutableMap.of(
-                        ONTOLOGY_ANNOTATION_LABEL, ImmutableSet.of(searchTerm),
-                        ONTOLOGY_ANNOTATION_PARENT_LABELS, ImmutableSet.of(searchTerm),
-                        ONTOLOGY_ANNOTATION_ANCESTORS_LABELS, ImmutableSet.of(searchTerm),
-                        ONTOLOGY_ANNOTATION_PART_OF_LABELS, ImmutableSet.of(searchTerm),
-                        ONTOLOGY_ANNOTATION_SYNONYMS, ImmutableSet.of(searchTerm)))
-                .addNegativeFilterFieldByTerm(CTW_CELL_TYPE, ImmutableList.of(NOT_APPLICABLE_TERM))
-                .setRows(0);    // We only want the facets, we don’t care about the docs;
-    }
+        // Build the query and first part of the filter:
+        // "query": "ontology_annotation_ancestors_labels_t:\"lung\" OR ...",
+        // "filter": "!ctw_cell_type:\"not applicable\"",
+        var queryBuilder =
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(ImmutableMap.of(
+                                ONTOLOGY_ANNOTATION_LABEL, ImmutableSet.of(searchTerm),
+                                ONTOLOGY_ANNOTATION_PARENT_LABELS, ImmutableSet.of(searchTerm),
+                                ONTOLOGY_ANNOTATION_ANCESTORS_LABELS, ImmutableSet.of(searchTerm),
+                                ONTOLOGY_ANNOTATION_PART_OF_LABELS, ImmutableSet.of(searchTerm),
+                                ONTOLOGY_ANNOTATION_SYNONYMS, ImmutableSet.of(searchTerm)))
+                        .addNegativeFilterFieldByTerm(CTW_CELL_TYPE, ImmutableList.of(NOT_APPLICABLE_TERM))
+                        .setRows(0);    // We only want the facets, we don’t care about the docs;
 
-    private ImmutableList<ImmutableList<String>>
-    extractNestedFacetTermsOrganismsAndOrganismPartsAndCellTypesAndExperimentAccessions(
-            SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder) {
+        // If there’s a species add it as an additional filter
+        if (isNotBlank(species)) {
+            queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, species);
+        }
+
+        // Add the facet to the query
+        queryBuilder.addFacet(ORGANISMS_TERMS_KEY, facetBuilder);
+
         return extractNestedFacetTerms(
                 (SimpleOrderedMap<Object>) singleCellAnalyticsCollectionProxy
                         .query(queryBuilder)
@@ -128,23 +130,6 @@ public class CellTypeWheelDao {
                         .findRecursive("facets"),
                 ImmutableList.of(ORGANISMS_TERMS_KEY, ORGANISM_PARTS_TERMS_KEY, CELL_TYPES_TERMS_KEY, EXPERIMENT_ACCESSIONS_TERMS_KEY),
                 ImmutableList.of());
-    }
-
-    public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm) {
-        var facetBuilder = buildFacetOrganismToOrganismPartsToCellTypesToExperimentAccessions();
-        var queryBuilder = buildQueryForFacetOfOntologyAnnotationsWithoutNotApplicableCellTypes(searchTerm)
-                .addFacet(ORGANISMS_TERMS_KEY, facetBuilder);
-
-        return extractNestedFacetTermsOrganismsAndOrganismPartsAndCellTypesAndExperimentAccessions(queryBuilder);
-    }
-
-    public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm, String species) {
-        var facetBuilder = buildFacetOrganismToOrganismPartsToCellTypesToExperimentAccessions();
-        var queryBuilder = buildQueryForFacetOfOntologyAnnotationsWithoutNotApplicableCellTypes(searchTerm)
-                        .addFilterFieldByTerm(CTW_ORGANISM, species)
-                        .addFacet(ORGANISMS_TERMS_KEY, facetBuilder);
-
-        return extractNestedFacetTermsOrganismsAndOrganismPartsAndCellTypesAndExperimentAccessions(queryBuilder);
     }
 
     // extractNestedFacetTerms is a recursive, general version of:

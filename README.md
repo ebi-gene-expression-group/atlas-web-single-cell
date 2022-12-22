@@ -4,7 +4,7 @@
 
 ### TL;DR
 ```bash
-./docker/prepare-dev-environment/gradle-ro-dep-cache/run.sh -l gradle-ro-dep-cache.log && \
+./docker/prepare-dev-environment/gradle-cache/run.sh -l gradle-cache.log && \
 ./docker/prepare-dev-environment/volumes/run.sh -l volumes.log && \
 ./docker/prepare-dev-environment/postgres/run.sh -l pg-anndata.log && \
 SCHEMA_VERSION=18 docker-compose -f ./docker/docker-compose-postgres.yml down && \
@@ -33,6 +33,7 @@ The full list of volumes is:
 - `scxa-atlas-data-bioentity-properties`
 - `scxa-atlas-data-scxa`
 - `scxa-atlas-data-scxa-expdesign`
+- `scxa-gradle-wrapper-dists`
 - `scxa-gradle-ro-dep-cache`
 - `scxa-postgres-11-pgdata-18`
 - `scxa-postgres-11-pgdata-latest`
@@ -63,7 +64,7 @@ git submodule update --remote
 To speed up builds and tests it is strongly encouraged to create a Docker volume to back a [Gradle read-only dependency
 cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:ephemeral-ci-cache).
 ```bash
-./docker/prepare-dev-environment/gradle-ro-dep-cache/run.sh -l gradle-ro-dep-cache.log
+./docker/prepare-dev-environment/gradle-cache/run.sh -l gradle-cache.log
 ```
 
 ### Prepare volumes

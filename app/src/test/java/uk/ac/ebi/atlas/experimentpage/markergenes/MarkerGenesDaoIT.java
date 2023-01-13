@@ -96,7 +96,7 @@ class MarkerGenesDaoIT {
     @Test
     void shouldFetchAllMarkerGenesBelowThreshold() {
         var markerGenesWithAveragesPerCellGroup =
-                subject.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("skin"));
+                subject.getCellTypeMarkerGenesOntologyLabels("E-EHCA-2", ImmutableSet.of("skin"));
         assertThat(markerGenesWithAveragesPerCellGroup)
                 .allMatch(markerGene -> markerGene.pValue() < 0.05);
     }
@@ -104,7 +104,7 @@ class MarkerGenesDaoIT {
     @Test
     void shouldFetchOnlyInferredCellTypeMarkerGenes() {
         var markerGenesWithAveragesPerCellGroup =
-                subject.getCellTypeMarkerGenes("E-EHCA-2", ImmutableSet.of("skin"));
+                subject.getCellTypeMarkerGenesOntologyLabels("E-EHCA-2", ImmutableSet.of("skin"));
         assertThat(markerGenesWithAveragesPerCellGroup)
                 .allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
     }
@@ -117,7 +117,7 @@ class MarkerGenesDaoIT {
     @Test
     void shouldGetCellTypesWithMarkerGenesGivenCellTypeGroup() {
         var cellTypesWithMarkerGenes =
-                subject.getCellTypeMarkerGenes("E-MTAB-5061", ImmutableSet.of("pancreatic A cell", "co-expression cell"));
+                subject.getCellTypeMarkerGenesOntologyLabels("E-MTAB-5061", ImmutableSet.of("pancreatic A cell", "co-expression cell"));
         assertThat(cellTypesWithMarkerGenes).isNotEmpty();
 
     }
@@ -125,7 +125,7 @@ class MarkerGenesDaoIT {
     @Test
     void shouldGetMarkerGenesHeatmapDataForTheGivenCellGroupAndCellType() {
         var cellTypeMarkerGenes =
-                subject.getCellTypeMarkerGenes(
+                subject.getCellTypeMarkerGenesOntologyLabels(
                         "E-MTAB-5061", ImmutableSet.of("mast cell"));
         assertThat(cellTypeMarkerGenes)
                 .allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));

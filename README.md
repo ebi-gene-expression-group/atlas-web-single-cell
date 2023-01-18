@@ -346,3 +346,22 @@ docker-compose \
 -f ./docker/docker-compose-tomcat.yml \
 down
 ```
+
+##  Troubleshooting
+
+  ### On Mac OS
+    For the docker-compose version 2.xx.xx
+  
+While running application, if you see this warning and unable to proceed further:
+
+```
+WARN[0000] The "SOLR_PUBLIC_KEY" variable is not set. Defaulting to a blank string.
+secret "scxa-solrcloud.der" must declare either `file` or `environment`: invalid compose project
+```
+The fix for this is,  get the path for the file "scxa-solrcloud.der" from the project and export the 'SOLR_PUBLIC_KEY' variable with the file path on
+your project terminal where you are running the application.
+  
+#### Example:
+```
+export SOLR_PUBLIC_KEY=/Users/ukumbham/atlas_workshop/atlas-web-single-cell/docker/prepare-dev-environment/solr/scxa-solrcloud.der
+```

@@ -11,14 +11,14 @@ import java.nio.file.Paths;
 @Configuration
 @PropertySource("classpath:configuration.properties")
 public class SingleCellFilePathConfig {
-    private final String dataFilesLocation;
+    private final String experimentFilesLocation;
 
-    public SingleCellFilePathConfig(@Value("${data.files.location}") String dataFilesLocation) {
-        this.dataFilesLocation = dataFilesLocation;
+    public SingleCellFilePathConfig(@Value("${experiment.files.location}") String experimentFilesLocation) {
+        this.experimentFilesLocation = experimentFilesLocation;
     }
 
     @Bean
     public Path cellStatsFilePath() {
-        return Paths.get(dataFilesLocation).resolve("scxa").resolve("magetab").resolve("cell_stats.json");
+        return Paths.get(experimentFilesLocation).resolve("magetab").resolve("cell_stats.json");
     }
 }

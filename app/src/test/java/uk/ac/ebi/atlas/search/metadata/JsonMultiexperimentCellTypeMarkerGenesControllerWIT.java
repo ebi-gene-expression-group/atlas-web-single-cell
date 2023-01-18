@@ -26,12 +26,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestConfig.class)
 @Sql({
         "/fixtures/experiment.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_analytics.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_coords.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_membership.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_genes.sql",
-        "/fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_gene_stats.sql"
+        "/fixtures/scxa_analytics.sql",
+        "/fixtures/scxa_dimension_reduction.sql",
+        "/fixtures/scxa_coords.sql",
+        "/fixtures/scxa_cell_group.sql",
+        "/fixtures/scxa_cell_group_membership.sql",
+        "/fixtures/scxa_cell_group_marker_genes.sql",
+        "/fixtures/scxa_cell_group_marker_gene_stats.sql"
 })
 @Sql(scripts = {
         "/fixtures/scxa_cell_group_marker_gene_stats-delete.sql",
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "/fixtures/scxa_cell_group_membership-delete.sql",
         "/fixtures/scxa_cell_group-delete.sql",
         "/fixtures/scxa_coords-delete.sql",
+        "/fixtures/scxa_dimension_reduction-delete.sql",
         "/fixtures/scxa_analytics-delete.sql",
         "/fixtures/experiment-delete.sql"
 }, executionPhase = AFTER_TEST_METHOD)

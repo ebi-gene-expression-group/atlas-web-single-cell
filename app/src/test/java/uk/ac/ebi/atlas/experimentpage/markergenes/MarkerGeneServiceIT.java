@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +22,6 @@ import javax.sql.DataSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -44,10 +42,10 @@ class MarkerGeneServiceIT {
 		var populator = new ResourceDatabasePopulator();
 		populator.addScripts(
 				new ClassPathResource("fixtures/experiment.sql"),
-				new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql"),
-				new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_membership.sql"),
-				new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_genes.sql"),
-				new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_gene_stats.sql"));
+				new ClassPathResource("fixtures/scxa_cell_group.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+				new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
 		populator.execute(dataSource);
 	}
 
@@ -68,8 +66,7 @@ class MarkerGeneServiceIT {
 		subject = new MarkerGeneService(markerGenesDao, cellTypeSearchDao);
 	}
 
-//    TODO: Re enable this test once we receive proper test data
-	@Ignore
+    @Test
 	void getMarkerGeneProfileForTheValidExperimentAccession() {
 		assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", ImmutableSet.of("http://purl.obolibrary.org/obo/UBERON_0000061")))
 				.isNotEmpty();

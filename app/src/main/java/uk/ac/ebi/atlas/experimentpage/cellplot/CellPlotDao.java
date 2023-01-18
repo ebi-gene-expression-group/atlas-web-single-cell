@@ -2,19 +2,13 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
@@ -39,11 +33,12 @@ public class CellPlotDao {
                         "AND g.experiment_accession=:experiment_accession " +
                         "AND g.variable=:variable " +
                     "RIGHT JOIN scxa_coords c " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = c.dimension_reduction_id " +
                         "ON m.cell_id=c.cell_id " +
-                        "AND m.experiment_accession=c.experiment_accession " +
-                    "WHERE c.method=:method " +
-                        "AND c.parameterisation @> :parameterisation::jsonb " +
-                        "AND c.experiment_accession=:experiment_accession " +
+                        "AND m.experiment_accession=sdr.experiment_accession " +
+                        "WHERE sdr.method=:method " +
+                        "AND sdr.parameterisation @> :parameterisation::jsonb " +
+                        "AND sdr.experiment_accession=:experiment_accession " +
             "ORDER BY cast(g.value as integer) ASC";
     public List<TSnePoint.Dto> fetchCellPlotWithK(String experimentAccession,
                                                   int k,
@@ -70,10 +65,11 @@ public class CellPlotDao {
 
     private static final String SELECT_CELL_PLOT_STATEMENT =
             "SELECT cell_id, x, y " +
-                    "FROM scxa_coords " +
-                    "WHERE method=:method " +
-                        "AND parameterisation @> :parameterisation::jsonb " +
-                        "AND experiment_accession=:experiment_accession";
+                    "FROM scxa_coords AS coords " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = coords.dimension_reduction_id " +
+                    "WHERE sdr.method=:method " +
+                        "AND sdr.parameterisation @> :parameterisation::jsonb " +
+                        "AND sdr.experiment_accession=:experiment_accession";
     public List<TSnePoint.Dto> fetchCellPlot(String experimentAccession,
                                              String plotMethod,
                                              Map<String, Integer> plotParameters) {
@@ -97,12 +93,13 @@ public class CellPlotDao {
     private static final String SELECT_CELL_PLOT_WITH_EXPRESSION_STATEMENT =
             "SELECT c.cell_id, c.x, c.y, a.expression_level " +
                     "FROM scxa_coords c " +
+                    "INNER JOIN scxa_dimension_reduction sdr on sdr.id = c.dimension_reduction_id " +
                     "LEFT JOIN scxa_analytics a " +
-                        "ON c.experiment_accession=a.experiment_accession " +
+                        "ON sdr.experiment_accession=a.experiment_accession " +
                         "AND c.cell_id=a.cell_id AND a.gene_id=:gene_id " +
-                    "WHERE c.experiment_accession=:experiment_accession " +
-                        "AND c.method=:method " +
-                        "AND c.parameterisation @> :parameterisation::jsonb " +
+                    "WHERE sdr.experiment_accession=:experiment_accession " +
+                        "AND sdr.method=:method " +
+                        "AND sdr.parameterisation @> :parameterisation::jsonb " +
                     "ORDER BY c.cell_id";
     public List<TSnePoint.Dto> fetchCellPlotWithExpression(String experimentAccession,
                                                            String geneId,

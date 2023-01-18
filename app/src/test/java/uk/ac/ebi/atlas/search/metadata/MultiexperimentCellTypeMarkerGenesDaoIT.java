@@ -35,9 +35,9 @@ class MultiexperimentCellTypeMarkerGenesDaoIT {
     void populateDatabaseTables() {
         populator.setScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
-                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_genes.sql"),
-                new ClassPathResource("fixtures/inferred-cell-types-marker-genes/scxa_cell_group_marker_gene_stats.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_genes.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql"));
         populator.execute(dataSource);
     }
 
@@ -54,7 +54,8 @@ class MultiexperimentCellTypeMarkerGenesDaoIT {
     @Test
     void knownCellTypeReturnsResults() {
         // We have a few cell type marker genes in our fixtures; this is one of them
-        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-GEOD-81547"), "pancreatic A cell"))
+        // Pick a value from scxa_cell_group.sql with variable "inferred cell type - *"
+        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-GEOD-81547"), "mesenchymal cell"))
                 .isNotEmpty();
     }
 
@@ -66,7 +67,7 @@ class MultiexperimentCellTypeMarkerGenesDaoIT {
 
     @Test
     void unknownExperimentAccessionReturnsEmpty() {
-        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-FOOBAR"), "columella root cap cell 6"))
+        assertThat(subject.getCellTypeMarkerGenes(ImmutableSet.of("E-FOOBAR"), "mesenchymal cell"))
                 .isEmpty();
     }
 }

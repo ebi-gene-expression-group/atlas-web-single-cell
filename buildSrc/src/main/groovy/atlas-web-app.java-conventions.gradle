@@ -16,7 +16,7 @@ repositories {
     url "http://45.88.81.176/artifactory/maven-local/"
     allowInsecureProtocol true
   }
-  // For patched version of SolrJ (see dependencies below) and ae-efo-loader
+  // For ae-efo-loader
   // Ideally mavenLocal() would be the last repo to have as fallback, but we won’t have access to our Artifactory
   // unless we’re on the VPN, in which case the build fails
 }
@@ -35,7 +35,7 @@ dependencies {
   implementation 'au.com.bytecode:opencsv:2.4'
   implementation 'io.atlassian.util.concurrent:atlassian-util-concurrent:4.0.1'
 
-  implementation 'org.postgresql:postgresql:42.2.5.jre7' //Only in core?
+  implementation 'org.postgresql:postgresql:42.5.0'
 
   implementation 'org.jetbrains:annotations:17.0.0'
   implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.200'
@@ -57,17 +57,9 @@ dependencies {
   implementation 'ch.qos.logback:logback-core:1.2.3'
   implementation 'ch.qos.logback:logback-classic:1.2.3'
 
-  // Nasty bug in HttpClient 4.5.3 (bundled with Solr 7.1.0)
-  // https://issues.apache.org/jira/browse/HTTPCLIENT-1831
-  implementation 'org.apache.httpcomponents:httpclient:4.5.8'
-  // We’re using a patched version of SolrJ in which QueryRequest uses POST instead of GET to avoid erros due to very
-  // long (i.e. unparseable) URIs. You need to install this on your local Maven repository: see mavenLocal() above
-  implementation ('org.apache.solr:solr-core:7.1.0-QUERY_REQUEST_WITH_POST') {
-    exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+  implementation ('org.apache.solr:solr-core:8.7.0') {
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j-impl'
   }
-  // solr-core includes/depends on solrj, but if we don’t explicitly set a version Gradle will pull 8.5.2
-  implementation 'org.apache.solr:solr-solrj:7.1.0-QUERY_REQUEST_WITH_POST'
-
 
   testImplementation 'org.springframework:spring-test:5.1.5.RELEASE'
   testImplementation 'com.h2database:h2:1.4.199'
@@ -91,6 +83,7 @@ processTestResources {
     expand(
             dataFilesLocation: dataFilesLocation,
             experimentFilesLocation: experimentFilesLocation,
+            experimentDesignLocation: experimentDesignLocation,
             buildNumber: project.hasProperty('buildNumber') ? buildNumber : '42',
             buildBranch: project.hasProperty('buildBranch') ? buildBranch : 'dev',
             buildRevision: project.hasProperty('buildRevision') ? buildRevision : 'dev',
@@ -100,10 +93,10 @@ processTestResources {
 
   filesMatching('solr.properties') {
     expand(
-            zkHost: project.hasProperty('zkHost') ? zkHost : 'localhost',
-            zkPort: project.hasProperty('zkPort') ? zkPort : '2181',
-            solrHost: project.hasProperty('solrHost') ? solrHost : 'localhost',
-            solrPort: project.hasProperty('solrPort') ? solrPort : '8983'
+            zkHosts: project.hasProperty('zkHosts') ? zkHosts : 'localhost',
+            solrHosts: project.hasProperty('solrHosts') ? solrHosts : 'localhost',
+            solrUser: project.hasProperty('solrUser') ? solrUser : '',
+            solrPass: project.hasProperty('solrPass') ? solrPass : '',
     )
   }
 

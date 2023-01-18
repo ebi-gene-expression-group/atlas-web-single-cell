@@ -3,14 +3,25 @@ kind: Pod
 metadata:
   namespace: jenkins-gene-expression
 spec:
+  serviceAccountName: admin-jenkins-gene-expression
   # If we set workspaceVolume dynamicPVC() or workspaceVolume persistentVolumeClaimWorkspaceVolume() we need to add a
-  # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise we get the following exception in the
+  # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise, we get the following exception in the
   # jnlp container:
   # Exception in thread "main" java.io.IOException: The specified working directory should be fully accessible to the remoting executable (RWX): /home/jenkins/agent
   # The securityContext in the pod is inherited, as it becomes the default pod template
   securityContext:
     fsGroup: 1000
   containers:
+    - name: "kubectl"
+      image: bitnami/kubectl
+      command: [ "/bin/sh" ]
+      #args: [ "-c", "kubectl scale --replicas=2 solrcloud scxa && sleep 2h" ]
+      args: [ "-c", "sleep 2h" ]
+      resources:
+        requests:
+          memory: "0.5Gi"
+        limits:
+          memory: "0.5Gi"
     - name: jnlp
       resources:
         requests:
@@ -21,31 +32,32 @@ spec:
       image: openjdk:11
       resources:
         requests:
-          memory: "1Gi"
+          memory: "3.5Gi"
           ephemeral-storage: "5Gi"
         limits:
-          memory: "1.5Gi"
+          memory: "4Gi"
       env:
       - name: GRADLE_OPTS
         value: "-Dorg.gradle.daemon=false"
       - name: GRADLE_RO_DEP_CACHE
         value: "/root/gradle-ro-dep-cache"
-      command:
-      - sleep
-      args:
-      - 99d
+      command: [ "/bin/sh" ]
+      args: [ "-c", "mkdir -p /root/expdesign-rw && cp /test-data/expdesign/* /root/expdesign-rw ; sleep 2h" ]
       volumeMounts:
         - mountPath: /test-data/scxa
-          name: scxa-ci-data
+          name: scxa-data
+          readOnly: true
+        - mountPath: /test-data/expdesign
+          name: scxa-expdesign
+          readOnly: true
         - mountPath: /test-data/bioentity_properties
           name: bioentity-properties
+          readOnly: true
         - mountPath: /root/gradle-ro-dep-cache
           name: gradle-ro-dep-cache
           readOnly: true
-        - mountPath: /root/.gradle/wrapper
-          name: openjdk-root-gradle-wrapper
     - name: postgres
-      image: postgres:10-alpine
+      image: postgres:11-alpine
       resources:
         requests:
           memory: "100Mi"
@@ -59,16 +71,19 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "postgres"
   volumes:
-
-    - name: scxa-ci-data
+    - name: scxa-data
       persistentVolumeClaim:
-        claimName: sc-test-experiments-claim
+        claimName: scxa-data-rox
+        readOnly: true
+    - name: scxa-expdesign
+      persistentVolumeClaim:
+        claimName: scxa-expdesign-rox
+        readOnly: true
     - name: bioentity-properties
       persistentVolumeClaim:
-        claimName: bioentity-properties-claim
+        claimName: bioentity-properties-rox
+        readOnly: true
     - name: gradle-ro-dep-cache
       persistentVolumeClaim:
-        claimName: gradle-ro-dep-cache-claim
-    - name: openjdk-root-gradle-wrapper
-      persistentVolumeClaim:
-        claimName: openjdk-root-gradle-wrapper-claim
+        claimName: gradle-7.0-ro-dep-cache-rox
+        readOnly: true

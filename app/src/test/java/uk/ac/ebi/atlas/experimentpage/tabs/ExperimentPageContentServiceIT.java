@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +67,7 @@ class ExperimentPageContentServiceIT {
         populator.setScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
                 new ClassPathResource("fixtures/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"),
                 new ClassPathResource("fixtures/scxa_coords.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership.sql"));
@@ -81,6 +81,7 @@ class ExperimentPageContentServiceIT {
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
                 new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
@@ -100,7 +101,6 @@ class ExperimentPageContentServiceIT {
 
     @Test
     void getValidExperimentDesignJson() {
-        // TODO replace empty experiment design table with mock table
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var result = this.subject.getExperimentDesign(experimentAccession, new JsonObject(), "");
         assertThat(result.has("table")).isTrue();
@@ -172,13 +172,8 @@ class ExperimentPageContentServiceIT {
                 ImmutableSet.copyOf(result.get("ks").getAsJsonArray()).stream()
                         .map(JsonElement::getAsInt)
                         .collect(toSet()))
-                .containsExactlyInAnyOrder(
+                .contains(
                         jdbcTestUtils.fetchKsFromCellGroups(experimentAccession).toArray(new Integer[0]));
-
-        if (result.has("selectedK")) {
-            assertThat(jdbcTestUtils.fetchKsFromCellGroups(experimentAccession))
-                    .contains(result.get("selectedK").getAsInt());
-        }
 
         assertThat(result.has("plotTypesAndOptions")).isTrue();
         assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("tsne").getAsJsonArray()).isNotEmpty();

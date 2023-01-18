@@ -18,8 +18,8 @@ public class CellTypeWheelService {
         this.cellTypeWheelDao = cellTypeWheelDao;
     }
 
-    public ImmutableSet<ImmutablePair<ImmutableList<String>, String>> search(String searchTerm) {
-        return cellTypeWheelDao.facetSearchCtwFields(searchTerm)
+    public ImmutableSet<ImmutablePair<ImmutableList<String>, String>> search(String searchTerm, String species) {
+        return cellTypeWheelDao.facetSearchCtwFields(searchTerm, species)
                 .stream()
                 // This will effectively “explode” tuples and aggregate experiment accessions (the last element in the
                 // tuple) to the organisms, organism parts and cell types

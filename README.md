@@ -363,5 +363,5 @@ your project terminal where you are running the application.
   
 #### Example:
 ```
-Export SOLR_PUBLIC_KEY=/Users/ukumbham/atlas_workshop/atlas-web-single-cell/docker/prepare-dev-environment/solr/scxa-solrcloud.der
+export SOLR_PUBLIC_KEY=/Users/ukumbham/atlas_workshop/atlas-web-single-cell/docker/prepare-dev-environment/solr/scxa-solrcloud.der
 ```

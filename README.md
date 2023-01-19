@@ -319,6 +319,13 @@ log should come from Tomcat, and it should be similar to:
 scxa-tomcat    | 18-Dec-2020 13:40:58.907 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 6705 ms
 ```
 
+Regenerate front end packages to make sure that all packages are up to date.
+
+Run the below script in the `atlas-web-single-cell` directory to generate packages:
+```
+ ./compile-front-end-packages.sh
+
+```
 Run the Gradle task `war` in the `atlas-web-single-cell` directory:
 ```bash
 ./gradlew clean :app:war

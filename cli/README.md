@@ -35,25 +35,26 @@ to run/compile the application with Gradle. However, notice that the `-D` argume
 compile time, so if you forget or your environment changes, you don’t need to recompile.
 
 ### Expression Atlas file options: `configuration.properties`
-| Java property name          | Gradle property name      | Default value            |
-|-----------------------------|---------------------------|--------------------------|
-| `data.files.location`       | `dataFilesLocation`       | `${ATLAS_DATA_PATH}`     |
-| `experiment.files.location` | `experimentFilesLocation` | `${ATLAS_DATA_PATH}/gxa` |
+| Java property name            | Gradle property name       | Default value                  |
+|-------------------------------|----------------------------|--------------------------------|
+| `data.files.location`         | `dataFilesLocation`        | `${ATLAS_DATA_PATH}`           |
+| `experiment.files.location`   | `experimentFilesLocation`  | `${ATLAS_DATA_PATH}/gxa`       |
+| `experiment.design.location`  | `experimentDesignLocation` | `${ATLAS_DATA_PATH}/expdesign` |
 
 ### Expression Atlas database options: `jdbc.properties`
-| Java Property name | Gradle property name | Default value                                                       |
-|--------------------|----------------------|---------------------------------------------------------------------|
-| `jdbc.url`         | `jdbcUrl`            | `jdbc:postgresql://${ATLAS_POSTGRES_HOST}:5432/${ATLAS_POSTGRES_DB` |
-| `jdbc.username`    | `jdbcUsername`       | `${ATLAS_POSTGRES_USER}`                                            |
-| `jdbc.password`    | `jdbcPassword`       | `${ATLAS_POSTRES_PASSWORD}`                                         |
+| Java Property name | Gradle property name | Default value                                                        |
+|--------------------|----------------------|----------------------------------------------------------------------|
+| `jdbc.url`         | `jdbcUrl`            | `jdbc:postgresql://${ATLAS_POSTGRES_HOST}:5432/${ATLAS_POSTGRES_DB}` |
+| `jdbc.username`    | `jdbcUsername`       | `${ATLAS_POSTGRES_USER}`                                             |
+| `jdbc.password`    | `jdbcPassword`       | `${ATLAS_POSTRES_PASSWORD}`                                          |
 
 ### Expression Atlas Solr options: `solr.properties`
-| Java property name | Gradle property name | Default value        |
-|--------------------|----------------------|----------------------|
-| `zk.host`          | `zkHost`             | `${ATLAS_ZK_HOST}`   |
-| `zk.port`          | `zkPort`             | `2181`               |
-| `solr.host`        | `solrHost`           | `${ATLAS_SOLR_HOST}` |
-| `solr.port`        | `solrPort`           | `8983`               |
+| Java property name | Gradle property name | Default value            |
+|--------------------|----------------------|--------------------------|
+| `zk.hosts`         | `zkHosts`            | `${ATLAS_ZK_HOSTS}`      |
+| `solr.hosts`       | `solrHosts`          | `${ATLAS_SOLR_HOSTS}`    |
+| `solr.user`        | `solrUser`           | `${ATLAS_SOLR_USER}`     |
+| `solr.pass`        | `solrPassword`       | `${ATLAS_SOLR_PASSWORD`} |
 
 ## Tasks
 Run without any arguments to get a list of available tasks:

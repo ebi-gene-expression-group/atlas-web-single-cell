@@ -53,30 +53,30 @@ class CellPlotDaoIT {
         populator.setScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
                 new ClassPathResource("fixtures/scxa_analytics.sql"),
-                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"),
-                new ClassPathResource("fixtures/scxa_coords.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"),
+                new ClassPathResource("fixtures/scxa_coords.sql"));
         populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
         populator.setScripts(
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
-                new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"),
-                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
+                new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 
+
     @Test
     void fetchCellPlotWithK() {
-        assertThat(subject.fetchCellPlotWithK("E-ENAD-53", 38, "umap", Map.of("n_neighbors",50)))
+        assertThat(
+                subject.fetchCellPlotWithK("E-ENAD-53", 14, "umap", Map.of("n_neighbors", 15)))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }
@@ -102,7 +102,8 @@ class CellPlotDaoIT {
                                                              int k,
                                                              String plotMethod,
                                                              Map<String, Integer> parameterisation) {
-        assertThat(subject.fetchCellPlotWithK(experimentAccession, k, randomAlphabetic(4), parameterisation))
+        assertThat(
+                subject.fetchCellPlotWithK(experimentAccession, k, randomAlphabetic(4), parameterisation))
                 .isEmpty();
     }
 
@@ -138,10 +139,12 @@ class CellPlotDaoIT {
                        int k,
                        String plotMethod,
                        Map<String, Integer> parameterisation) {
-        assertThat(subject.fetchCellPlot(experimentAccession, plotMethod, parameterisation))
+        assertThat(
+                subject.fetchCellPlot(experimentAccession, plotMethod, parameterisation))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }
+
 
     @ParameterizedTest
     @MethodSource("randomExperimentAccessionPlotWithGeneIdProvider")
@@ -150,7 +153,8 @@ class CellPlotDaoIT {
                              String geneId,
                              String plotMethod,
                              Map<String, Integer> parameterisation) {
-        assertThat(subject.fetchCellPlotWithExpression(experimentAccession, geneId, plotMethod, parameterisation))
+        assertThat(
+                subject.fetchCellPlotWithExpression(experimentAccession, geneId, plotMethod, parameterisation))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
     }

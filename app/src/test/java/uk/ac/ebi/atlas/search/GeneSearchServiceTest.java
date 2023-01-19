@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.search;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomCellId;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemblGeneId;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
@@ -227,5 +229,27 @@ class GeneSearchServiceTest {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(
                 () -> subject.getCellIdsInExperiments(generateRandomExperimentAccession()))
                 .withCauseInstanceOf(ExecutionException.class);
+    }
+
+    @Test
+    void whenGeneIdsExistsThenReturnSetOfCellIds() {
+        var existingGeneId1 = generateRandomEnsemblGeneId();
+        var existingGeneId2 = generateRandomEnsemblGeneId();
+        var validGeneIds = ImmutableSet.of(existingGeneId1, existingGeneId2);
+        var existingCellId1 = generateRandomCellId();
+        var existingCellId2 = generateRandomCellId();
+        var experimentAccession = generateRandomExperimentAccession();
+        var expectedCellIds = ImmutableSet.of(existingCellId1, existingCellId2);
+
+        when(geneSearchDaoMock.fetchCellIds(anyString()))
+                .thenReturn(
+                        Map.of(experimentAccession, List.of(existingCellId1)),
+                        Map.of(experimentAccession, List.of(existingCellId2))
+                );
+
+        var actualCellIds =
+                subject.getCellIdsFromGeneIds(validGeneIds);
+
+        assertThat(actualCellIds).containsSequence(expectedCellIds);
     }
 }

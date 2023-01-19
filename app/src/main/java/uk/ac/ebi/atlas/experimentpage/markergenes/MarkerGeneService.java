@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
-import uk.ac.ebi.atlas.search.CellTypeSearchDao;
+import uk.ac.ebi.atlas.search.celltype.CellTypeSearchDao;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 

@@ -1,8 +1,8 @@
 package uk.ac.ebi.atlas.search;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,9 +64,9 @@ class GeneSearchServiceIT {
      * He said that we will have a discussion with the curation team or bioinformatics team to find the right file location &
      * Asked me to @Ignore
      */
-    @Ignore
+    @Disabled
     @MethodSource("experimentAccesionWithoutPreferredKProvider")
-//	@ParameterizedTest
+	@ParameterizedTest
     void experimentsWithoutPreferredKReturnASingleProfile(String experimentAccession) {
         String geneId = jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment(experimentAccession);
         assertThat(subject.getMarkerGeneProfile(geneId)).hasSize(1);

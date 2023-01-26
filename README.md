@@ -366,12 +366,14 @@ down
 - **Operating system**: macOS Ventura
 - **Docker Compose version**: v2.x
 
+#### Issue
 Docker may refuse to start the Solr cluster and display this error message:
 ```
 WARN[0000] The "SOLR_PUBLIC_KEY" variable is not set. Defaulting to a blank string.
 secret "scxa-solrcloud.der" must declare either `file` or `environment`: invalid compose project
 ```
 
+#### Solution
 The path for the file `scxa-solrcloud.der` must be set before bringing up the Solr containers. Export the
 `SOLR_PUBLIC_KEY` and set its value to e.g. the public key generated in the Solr section above:
 ```

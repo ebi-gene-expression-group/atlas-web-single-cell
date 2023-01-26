@@ -299,7 +299,31 @@ will need to start and attach the remote debugger every time Gradle compiles and
 The script `debug-single-test.sh` is a shortcut for this task. It takes the same arguments as executing a single test.
 
 ## Run web application
-Run the following:
+The web application is compiled in two stages:
+1. Front end JavaScript packages are transpiled into “bundles” with [Webpack](https://webpack.js.org/)
+2. Bundles and back end Java code are built as a WAR file to deploy and serve with Tomcat (other Java EE web servers
+might work but no testing has been carried out in this regard)
+
+To generate the Webpack bundles run the following script:
+```bash
+ ./compile-front-end-packages.sh -iu
+```
+
+If the script encounters no compilation errors it will open your default browser with a graphical diagram of the
+bundles and their contents.
+
+Run the script with `-h` to know more about its usage.
+You can add `-p` to generate production bundles, which will minify the code and omit browser console warnings. Certain
+React rendering tasks are also faster but it makes debugging very hard.
+
+Then run the Gradle task `war` in the `atlas-web-single-cell` directory:
+```bash
+./gradlew clean :app:war
+```
+
+You should now have the file `webapps/gxa#sc.war`.
+
+You can now deploy it in Tomcat’s container with the following:
 ```bash
 SCHEMA_VERSION=latest \
 docker-compose \
@@ -310,31 +334,14 @@ docker-compose \
 up
 ```
 
-You can also set a Docker Compose *Run* configuration in IntelliJ IDEA with the environment variable from the command
-above.
+You can also set a Docker Compose *Run* configuration in IntelliJ IDEA with `SCHEMA_VERSION` in environment variables
+and `dev.env` in environment files.
 
 After bringing up the containers, you may want to inspect the logs to see that all services are running fine. The last
 log should come from Tomcat, and it should be similar to:
 ```
 scxa-tomcat    | 18-Dec-2020 13:40:58.907 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 6705 ms
-```
-
-Regenerate front end packages to make sure that all packages are up to date.
-
-Run the below script in the `atlas-web-single-cell` directory to generate packages:
-```
- ./compile-front-end-packages.sh
-
-```
-Run the Gradle task `war` in the `atlas-web-single-cell` directory:
-```bash
-./gradlew clean :app:war
-```
-
-You should now have the file `webapps/gxa#sc.war`. Because the directory `webapps` is bind-mounted in Tomcat’s 
-container, Tomcat should automatically load the application after a few seconds. You should be seeing something like
-this in your logs:
-```
+...
 scxa-tomcat    | 12-Jan-2021 14:59:47.566 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/usr/local/tomcat/webapps/gxa#sc.war] has finished in [5,510] ms
 ```
 
@@ -342,8 +349,7 @@ Point your browser at `http://localhost:8080/gxa/sc` and voilà!
 
 Every time you re-run the `war` task the web app will be automatically re-deployed by Tomcat.
 
-If you get any `war` redeployment issues or want to start again freshly, stop all the containers using this:
-
+If you get any redeployment issues or want to start again afresh, remove all containers using this:
 ```bash
 SCHEMA_VERSION=latest \
 docker-compose \
@@ -354,21 +360,24 @@ docker-compose \
 down
 ```
 
-##  Troubleshooting
+## Troubleshooting
 
-  ### On Mac OS
-    For the docker-compose version 2.xx.xx
-  
-While running application, if you see this warning and unable to proceed further:
+### ``secret "scxa-solrcloud.der" must declare either `file` or `environment`: invalid compose project``
+- **Operating system**: macOS Ventura
+- **Docker Compose version**: v2.x
 
+#### Issue
+Docker may refuse to start the Solr cluster and display this error message:
 ```
 WARN[0000] The "SOLR_PUBLIC_KEY" variable is not set. Defaulting to a blank string.
 secret "scxa-solrcloud.der" must declare either `file` or `environment`: invalid compose project
 ```
-The fix for this is,  get the path for the file "scxa-solrcloud.der" from the project and export the 'SOLR_PUBLIC_KEY' variable with the file path on
-your project terminal where you are running the application.
-  
-#### Example:
+
+#### Solution
+The path for the file `scxa-solrcloud.der` must be set before bringing up the Solr containers. Export the
+`SOLR_PUBLIC_KEY` and set its value to e.g. the public key generated in the Solr section above:
 ```
-export SOLR_PUBLIC_KEY=/Users/ukumbham/atlas_workshop/atlas-web-single-cell/docker/prepare-dev-environment/solr/scxa-solrcloud.der
+export SOLR_PUBLIC_KEY=$ATLAS_WEB_SINGLE_CELL/docker/prepare-dev-environment/solr/scxa-solrcloud.der
 ```
+
+It is recommended to use an absolute path to avoid any second guesses by Docker.

@@ -35,6 +35,9 @@ class SdrfParserIT {
     private Path dataFilesPath;
 
     @Inject
+    private Path experimentDesignDirPath;
+
+    @Inject
     private JdbcUtils jdbcUtils;
 
     @BeforeAll
@@ -55,7 +58,7 @@ class SdrfParserIT {
     @MethodSource("singleCellExperimentsProvider")
     @DisplayName("parses technology type")
     void testIfTechnologyTypePresentInSingleCellExperiment(String experimentAccession) {
-        var sdrfParser = new SdrfParser(new DataFileHub(dataFilesPath.resolve("scxa")));
+        var sdrfParser = new SdrfParser(new DataFileHub(dataFilesPath.resolve("scxa"), experimentDesignDirPath));
         assertThat(sdrfParser.parseSingleCellTechnologyType(experimentAccession)).isNotEmpty();
     }
 

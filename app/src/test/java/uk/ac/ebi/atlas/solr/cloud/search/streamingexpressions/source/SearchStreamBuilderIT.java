@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,13 +23,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CHARACTERISTIC_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
-import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACTOR_VALUE;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACET_CHARACTERISTIC_NAME;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
-// Some of the tests in this class are executed against the scxa-analytics collection, although the subject class is
-// located in atlas-core
+// Some tests in this class are executed against the scxa-analytics collection, although the subject class is located
+// in atlas-web-core
 class SearchStreamBuilderIT {
     private static final int MAX_NUM_ROWS = 100;
 
@@ -44,26 +43,28 @@ class SearchStreamBuilderIT {
         singleCellAnalyticsCollectionProxy = collectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-    @Ignore
-    // This test won’t pass if you have multiple shards: https://issues.apache.org/jira/browse/SOLR-12510
+    @Test
     void returnAllRowsOverridesRowsParameterInSolrQuery() {
         var numRows = ThreadLocalRandom.current().nextInt(MAX_NUM_ROWS);
         var solrQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, "E-EHCA-2")
-                        .setFieldList(ImmutableSet.of(EXPERIMENT_ACCESSION, CELL_ID, CHARACTERISTIC_NAME))
+                        .setFieldList(ImmutableSet.of(EXPERIMENT_ACCESSION, CELL_ID, FACET_CHARACTERISTIC_NAME))
                         .setRows(numRows)
                         .sortBy(CELL_ID, asc);
 
         var searchStreamBuilder = new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, solrQueryBuilder);
-        try (var tupleStreamer = TupleStreamer.of(searchStreamBuilder.build())) {
-            assertThat(tupleStreamer.get().count()).isEqualTo(numRows);
-        }
-
+        // SolrJ 8.7 still exhibits this weird behaviour: https://issues.apache.org/jira/browse/SOLR-12510
+        // Rather than disabling the test, let’s skip the assumption that rows works as a sane person would expect
+        // try (var tupleStreamer = TupleStreamer.of(searchStreamBuilder.build())) {
+        //     assertThat(tupleStreamer.get().count()).isEqualTo(numRows);
+        // }
         var allDocsSearchStreamBuilder =
                 new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, solrQueryBuilder).returnAllDocs();
-        try (var tupleStreamer = TupleStreamer.of(allDocsSearchStreamBuilder.build())) {
-            assertThat(tupleStreamer.get().count()).isGreaterThan(numRows);
+
+        try (var tupleStreamer = TupleStreamer.of(searchStreamBuilder.build());
+             var allDocsStreamer = TupleStreamer.of(allDocsSearchStreamBuilder.build())) {
+            assertThat(allDocsStreamer.get().count()).isGreaterThan(tupleStreamer.get().count());
         }
     }
 
@@ -73,7 +74,7 @@ class SearchStreamBuilderIT {
         var solrQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, "E-EHCA-2")
-                        .setFieldList(ImmutableSet.of(EXPERIMENT_ACCESSION, FACTOR_VALUE))
+                        .setFieldList(ImmutableSet.of(EXPERIMENT_ACCESSION, CHARACTERISTIC_NAME))
                         .setRows(numRows)
                         .sortBy(EXPERIMENT_ACCESSION, asc);
 

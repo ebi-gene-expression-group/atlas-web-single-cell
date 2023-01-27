@@ -87,7 +87,7 @@ class GeneIdSearchDaoIT {
 
     @Test
     void ifNoDocumentsAreFoundInTheIntersectionReturnEmptySet() {
-        var speciesNotCovered = "Oryza_sativa";
+        var speciesNotCovered = "Glycine_max";
 
         var queryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()

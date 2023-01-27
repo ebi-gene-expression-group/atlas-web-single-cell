@@ -1,0 +1,7 @@
+{
+  "efo": "3.10.0", 
+  "efo_url": "https://github.com/EBISPOT/efo/releases/download/v3.10.0/efo.owl", 
+  "ensembl": "104", 
+  "ensembl_genomes": "51", 
+  "wormbase_parasite": "15"
+}

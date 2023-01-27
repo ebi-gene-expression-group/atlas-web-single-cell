@@ -1,0 +1,2 @@
+- `release-metadata.json`: edit and update manually
+- `species-properties.json`: run `sh/atlas_species.sh` in https://github.com/ebi-gene-expression-group/atlas-annotations

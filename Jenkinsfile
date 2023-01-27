@@ -1,21 +1,25 @@
 pipeline {
   options {
-    disableConcurrentBuilds()
-    buildDiscarder(logRotator(numToKeepStr: '5'))
+    buildDiscarder(logRotator(numToKeepStr: '10'))
   }
   
   agent {
     kubernetes {
       cloud 'gke-autopilot'
-      workspaceVolume dynamicPVC(storageClassNames: 'fast', accessModes: 'ReadWriteOnce', requestsSize: '5Gi')
+      workspaceVolume dynamicPVC(storageClassName: 'premium-rwo', accessModes: 'ReadWriteOnce', requestsSize: '5Gi')
       defaultContainer 'openjdk'
       yamlFile 'jenkins-k8s-pod.yaml'
     }
   }
 
 
-
   stages {
+    stage('Scale SolrCloud') {
+      steps {
+        container('kubectl') {}
+      }
+    }
+
     stage('Provision Gradle') {
       options {
         timeout (time: 20, unit: "MINUTES")
@@ -43,13 +47,12 @@ pipeline {
             sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/gxa-test-data ' +
                     '-PexperimentFilesLocation=/gxa-test-data/gxa ' +
+                    '-PexperimentDesignLocation=/root/expdesign-rw ' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-fast-0.scxa-zk-fast-hs ' +
-                    '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-fast-0.scxa-solrcloud-fast-hs ' +
-                    '-PsolrPort=8983 ' +
+                    '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
+                    '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
                     ':atlas-web-core:testClasses'
           }
         }
@@ -85,13 +88,12 @@ pipeline {
             sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/test-data ' +
                     '-PexperimentFilesLocation=/test-data/scxa ' +
+                    '-PexperimentDesignLocation=/root/expdesign-rw ' +
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHost=scxa-zk-fast-0.scxa-zk-fast-hs ' +
-                    '-PzkPort=2181 ' +
-                    '-PsolrHost=scxa-solrcloud-fast-0.scxa-solrcloud-fast-hs ' +
-                    '-PsolrPort=8983 ' +
+                    '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
+                    '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
                     ':app:testClasses'
           }
         }
@@ -103,15 +105,14 @@ pipeline {
           steps {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
             sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-            sh './gradlew --no-watch-fs -PtestResultsPath=e2e -PexcludeTests=**/FileDownloadControllerWIT.class :app:test --tests *WIT'
+            sh './gradlew --no-watch-fs -PtestResultsPath=e2e :app:test --tests *WIT'
             sh './gradlew --no-watch-fs :app:jacocoTestReport'
           }
         }
 
         stage('–– Build ––') {
           when { anyOf {
-            branch 'develop'
-            branch 'main'
+            branch 'develop'; branch 'main'
           } }
           stages {
             stage('Provision Node.js build environment') {
@@ -145,7 +146,7 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh 'if [ env.BRANCH_NAME = main ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
+                sh 'if [ env.BRANCH_NAME = "main" ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
                         '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }
@@ -170,7 +171,7 @@ pipeline {
   post {
     always {
       junit 'atlas-web-core/build/ut/**/*.xml'
-      // junit 'atlas-web-core/build/it/**/*.xml'
+      //junit 'atlas-web-core/build/it/**/*.xml'
 
       junit 'app/build/ut/**/*.xml'
       junit 'app/build/it/**/*.xml'

@@ -57,7 +57,7 @@ class CellPlotGenericDaoIT {
 
     @Test
     void returnValidPlotOptionForValidPlotMethod() {
-        assertThat(subject.getQueryParams("UMAP", "E-CURD-4"))
+        assertThat(subject.getQueryParams("umap", "E-CURD-4"))
                 .isNotEmpty()
                 .doesNotHaveDuplicates();
 

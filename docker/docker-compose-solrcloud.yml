@@ -63,7 +63,7 @@ services:
       - solrcloud-0-data:/var/solr/data
     environment:
       SOLR_HEAP: 3g
-      SOLR_OPTS: -Denable.packages=true
+      SOLR_OPTS: -Denable.packages=true -Dsolr.max.booleanClauses=100000000
       ZK_HOST: ${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
     secrets:
       - scxa-solrcloud.der
@@ -83,7 +83,7 @@ services:
       - solrcloud-1-data:/var/solr/data
     environment:
       SOLR_HEAP: 3g
-      SOLR_OPTS: -Denable.packages=true
+      SOLR_OPTS: -Denable.packages=true -Dsolr.max.booleanClauses=100000000
       ZK_HOST: ${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
     secrets:
       - scxa-solrcloud.der

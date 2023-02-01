@@ -41,12 +41,13 @@ public class TsnePlotServiceIT {
 
     private TSnePlotService subject;
 
-    private static final String EXPERIMENT_ACCESSION_WITH_MISSING_INFERRED_CELL_TYPE = "E-GEOD-71585";
+    private static final String EXPERIMENT_ACCESSION_WITH_MISSING_INFERRED_CELL_TYPE = "E-EHCA-2";
 
     @BeforeAll
     void populateDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"),
                 new ClassPathResource("fixtures/scxa_coords.sql"));
         populator.execute(dataSource);
     }
@@ -55,7 +56,8 @@ public class TsnePlotServiceIT {
     void cleanDatabaseTables() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_coords-delete.sql"));
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -76,5 +78,4 @@ public class TsnePlotServiceIT {
                         metadataType))
                 .containsKeys(StringUtils.capitalize(MISSING_METADATA_VALUE_PLACEHOLDER));
     }
-
 }

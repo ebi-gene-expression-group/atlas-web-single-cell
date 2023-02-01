@@ -93,8 +93,9 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                 requestParams.getOrDefault("accessKey", ""));
     }
 
-
-    @GetMapping(value = "/expression/{geneId}",
+    // Remember that gene IDs can have dots, e.g. Solyc09g014380.3 in E-ENAD-53
+    // See also JsonBioentityInformationController.java
+    @GetMapping(value = "/expression/{geneId:.+}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String expressionPlot(@PathVariable String experimentAccession,
                                  @PathVariable String geneId,

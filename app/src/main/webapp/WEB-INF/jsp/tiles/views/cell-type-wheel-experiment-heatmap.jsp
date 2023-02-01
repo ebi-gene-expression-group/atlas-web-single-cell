@@ -1,4 +1,5 @@
 <%--@elvariable id="cellTypeWheelSearchTerm" type="String"--%>
+<%--@elvariable id="species" type="String"--%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -13,7 +14,8 @@
     cellTypeWheelHeatmap.render(
       {
         host: '${pageContext.request.contextPath}/',
-        searchTerm: '${cellTypeWheelSearchTerm}'
+        searchTerm: '${cellTypeWheelSearchTerm}',
+        species: '${species}'
       },
       'cellTypeWheelHeatmap');
   });

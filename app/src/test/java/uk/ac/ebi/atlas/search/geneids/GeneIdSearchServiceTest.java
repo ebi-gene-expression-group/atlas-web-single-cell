@@ -31,7 +31,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static uk.ac.ebi.atlas.search.geneids.GeneIdSearchService.VALID_QUERY_FIELDS;
-import static uk.ac.ebi.atlas.solr.bioentities.BioentityPropertyName.SYMBOL;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.BIOENTITY_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES_OVERRIDE_PROPERTY_NAMES;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomKnownBioentityPropertyName;
@@ -86,7 +85,7 @@ class GeneIdSearchServiceTest {
 
     @Test
     void multiSpeciesCategoriesHonourSpecies() {
-        BioentityPropertyName propertyName = generateRandomKnownBioentityPropertyName();
+        var propertyName = generateRandomKnownBioentityPropertyName();
         while (SPECIES_OVERRIDE_PROPERTY_NAMES.contains(propertyName)) {
             propertyName = generateRandomKnownBioentityPropertyName();
         }
@@ -104,7 +103,7 @@ class GeneIdSearchServiceTest {
 
     @Test
     void ifAtLeastOneIdMatchesWeGetNonEmptyOptional() {
-        BioentityPropertyName randomIdPropertyName = generateRandomKnownBioentityPropertyName();
+        var randomIdPropertyName = generateRandomKnownBioentityPropertyName();
         while (!SPECIES_OVERRIDE_PROPERTY_NAMES.contains(randomIdPropertyName)) {
             randomIdPropertyName = generateRandomKnownBioentityPropertyName();
         }
@@ -129,15 +128,15 @@ class GeneIdSearchServiceTest {
 
     @Test
     void resultsOfFirstIdThatMatchesAreReturned() {
-        BioentityPropertyName randomIdPropertyName = generateRandomKnownBioentityPropertyName();
+        var randomIdPropertyName = generateRandomKnownBioentityPropertyName();
         while (!BIOENTITY_PROPERTY_NAMES.contains(randomIdPropertyName)) {
             randomIdPropertyName = generateRandomKnownBioentityPropertyName();
         }
 
-        ImmutableList<BioentityPropertyName> idPropertyNamesBefore =
+        var idPropertyNamesBefore =
                 BIOENTITY_PROPERTY_NAMES.subList(0, BIOENTITY_PROPERTY_NAMES.indexOf(randomIdPropertyName));
 
-        ImmutableList<BioentityPropertyName> idPropertyNamesAfter =
+        var idPropertyNamesAfter =
                 BIOENTITY_PROPERTY_NAMES.subList(
                         BIOENTITY_PROPERTY_NAMES.indexOf(randomIdPropertyName) + 1, BIOENTITY_PROPERTY_NAMES.size());
 
@@ -195,7 +194,7 @@ class GeneIdSearchServiceTest {
     @Test
     void whenEmptyQueryFieldsGivenThenReturnsError() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String emptyValue = "";
+        var emptyValue = "";
         var aRandomCategory = getCategoriesInRandomOrder().get(0);
         requestParams.add(aRandomCategory, emptyValue);
 
@@ -209,7 +208,7 @@ class GeneIdSearchServiceTest {
         var categoriesInRandomOrder = getCategoriesInRandomOrder();
         var aRandomCategory = categoriesInRandomOrder.get(0);
         var anotherRandomCategory = categoriesInRandomOrder.get(1);
-        final String emptyValue = "";
+        var emptyValue = "";
         requestParams.add(aRandomCategory, emptyValue);
         requestParams.add(anotherRandomCategory, emptyValue);
 
@@ -220,16 +219,15 @@ class GeneIdSearchServiceTest {
     @Test
     void when2DifferentTypeOfValidQueryFieldsGivenThenReturnsThe1stOne() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String geneId = randomAlphabetic(1, 12);
+        var geneId = randomAlphabetic(1, 12);
         var categoriesInRandomOrder = getCategoriesInRandomOrder();
         var aRandomCategory = categoriesInRandomOrder.get(0);
         var anotherRandomCategory = categoriesInRandomOrder.get(1);
         requestParams.add(aRandomCategory, geneId);
         requestParams.add(anotherRandomCategory, geneId);
 
-        String expectedCategory = aRandomCategory;
-
-        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+        var expectedCategory = aRandomCategory;
+        var actualCategory = subject.getCategoryFromRequestParams(requestParams);
 
         assertThat(actualCategory).isEqualTo(expectedCategory);
     }
@@ -237,17 +235,16 @@ class GeneIdSearchServiceTest {
     @Test
     void when2DifferentTypeOfQueryFieldsGivenBut1stIsEmptyAnd2ndIsValidThenReturnsTheSecond() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String emptyValue = "";
-        final String geneId = randomAlphabetic(1, 12);
+        var emptyValue = "";
+        var geneId = randomAlphabetic(1, 12);
         var categoriesInRandomOrder = getCategoriesInRandomOrder();
         var aRandomCategory = categoriesInRandomOrder.get(0);
         var anotherRandomCategory = categoriesInRandomOrder.get(1);
         requestParams.add(aRandomCategory, emptyValue);
         requestParams.add(anotherRandomCategory, geneId);
 
-        String expectedCategory = anotherRandomCategory;
-
-        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+        var expectedCategory = anotherRandomCategory;
+        var actualCategory = subject.getCategoryFromRequestParams(requestParams);
 
         assertThat(actualCategory).isEqualTo(expectedCategory);
     }
@@ -255,16 +252,15 @@ class GeneIdSearchServiceTest {
     @Test
     void whenSameTypeOfQueryFieldsGivenTwiceBut1stIsEmptyAnd2ndIsValidThenReturnsTheSecond() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String emptyValue = "";
-        final String geneId = randomAlphabetic(1, 12);
+        var emptyValue = "";
+        var geneId = randomAlphabetic(1, 12);
         var categoriesInRandomOrder = getCategoriesInRandomOrder();
         var aRandomCategory = categoriesInRandomOrder.get(0);
         requestParams.add(aRandomCategory, emptyValue);
         requestParams.add(aRandomCategory, geneId);
 
-        String expectedCategory = aRandomCategory;
-
-        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+        var expectedCategory = aRandomCategory;
+        var actualCategory = subject.getCategoryFromRequestParams(requestParams);
 
         assertThat(actualCategory).isEqualTo(expectedCategory);
     }
@@ -272,16 +268,15 @@ class GeneIdSearchServiceTest {
     @Test
     void whenSameTypeOfValidQueryFieldsGivenTwiceThenReturnsTheFirst() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-        final String geneId1 = randomAlphabetic(1, 12);
-        final String geneId2 = randomAlphabetic(1, 12);
+        var geneId1 = randomAlphabetic(1, 12);
+        var geneId2 = randomAlphabetic(1, 12);
         var categoriesInRandomOrder = getCategoriesInRandomOrder();
         var aRandomCategory = categoriesInRandomOrder.get(0);
         requestParams.add(aRandomCategory, geneId1);
         requestParams.add(aRandomCategory, geneId2);
 
-        String expectedCategory = aRandomCategory;
-
-        String actualCategory = subject.getCategoryFromRequestParams(requestParams);
+        var expectedCategory = aRandomCategory;
+        var actualCategory = subject.getCategoryFromRequestParams(requestParams);
 
         assertThat(actualCategory).isEqualTo(expectedCategory);
     }
@@ -302,31 +297,32 @@ class GeneIdSearchServiceTest {
 
         var requestParams = getRequestParams(searchText, "", aRandomCategory);
 
-        GeneQuery expectedGeneQuery =
+        var expectedGeneQuery = aRandomCategory.equals("q") ?
+                GeneQuery.create(searchText) :
                 GeneQuery.create(searchText, BioentityPropertyName.getByName(aRandomCategory));
-
-        GeneQuery actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
+        var actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
 
         assertThat(actualGeneQuery).isEqualTo(expectedGeneQuery);
     }
 
     @Test
     void whenRequestParamsHasSpeciesThenGotProperGeneQuery() {
-        final Species randomSpecies = generateRandomSpecies();
+        var randomSpecies = generateRandomSpecies();
         var searchText = randomAlphabetic(1, 12);
-        final String speciesText = randomSpecies.getName();
+        var speciesText = randomSpecies.getName();
         var categoriesInRandomOrder = getCategoriesInRandomOrder();
         var aRandomCategory = categoriesInRandomOrder.get(0);
 
         var requestParams =
                 getRequestParams(searchText, speciesText, aRandomCategory);
 
-        GeneQuery expectedGeneQuery = GeneQuery.create(
-                searchText, BioentityPropertyName.getByName(aRandomCategory), randomSpecies);
+        var expectedGeneQuery = aRandomCategory.equals("q") ?
+                GeneQuery.create(searchText, randomSpecies) :
+                GeneQuery.create(searchText, BioentityPropertyName.getByName(aRandomCategory), randomSpecies);
 
         when(speciesFactory.create(speciesText)).thenReturn(randomSpecies);
 
-        GeneQuery actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
+        var actualGeneQuery = subject.getGeneQueryByRequestParams(requestParams);
 
         assertThat(actualGeneQuery).isEqualTo(expectedGeneQuery);
     }

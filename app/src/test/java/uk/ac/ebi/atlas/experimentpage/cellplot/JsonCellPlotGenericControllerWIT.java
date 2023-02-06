@@ -77,7 +77,7 @@ class JsonCellPlotGenericControllerWIT {
 
     @Test
     void returnPlotOptionForValidParam() throws Exception {
-        mockMvc.perform(get(URL, "E-CURD-4", "UMAP"))
+        mockMvc.perform(get(URL, "E-CURD-4", "umap"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$").isArray())

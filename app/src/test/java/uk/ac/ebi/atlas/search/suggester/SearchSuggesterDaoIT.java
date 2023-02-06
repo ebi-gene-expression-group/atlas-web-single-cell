@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
-class SuggesterDaoIT {
+class SearchSuggesterDaoIT {
     @Inject
     private SpeciesUtils speciesUtils;
 

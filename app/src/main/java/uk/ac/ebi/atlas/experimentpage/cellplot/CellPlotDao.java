@@ -130,7 +130,7 @@ public class CellPlotDao {
                     "FROM scxa_dimension_reduction dr " +
                     "JOIN (SELECT method,  max(priority) as prt " +
                         "FROM scxa_dimension_reduction " +
-                        "WHERE  priority<>0 AND experiment_accession=:experiment_accession " +
+                        "WHERE experiment_accession=:experiment_accession " +
                         " GROUP BY method) fi " +
                     "ON dr.method = fi.method " +
                     "AND dr.priority = fi.prt";

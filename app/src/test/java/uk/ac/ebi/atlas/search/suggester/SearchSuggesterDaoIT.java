@@ -1,8 +1,11 @@
 package uk.ac.ebi.atlas.search.suggester;
 
 import org.apache.solr.client.solrj.response.Suggestion;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -10,6 +13,9 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.testutils.SpeciesUtils;
 
 import javax.inject.Inject;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -19,6 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
 class SearchSuggesterDaoIT {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchSuggesterDaoIT.class);
+
     @Inject
     private SpeciesUtils speciesUtils;
 
@@ -89,11 +98,52 @@ class SearchSuggesterDaoIT {
         String twoCharSymbol = "AR";
 
         // Suggestion::equals is established only by term and payload, weight isn’t considered
-        assertThat(subject.fetchBioentityProperties(twoCharSymbol, 10, false))
-                .isNotEmpty()
-                .startsWith(new Suggestion(twoCharSymbol, 0, "symbol"));
-        assertThat(subject.fetchBioentityProperties("ar", 10, false, speciesUtils.getHuman()))
-                .isNotEmpty()
-                .startsWith(new Suggestion(twoCharSymbol, 0, "symbol"));
+        var bioEntitiesProps1 =
+                subject.fetchBioentityProperties(twoCharSymbol, 10, false).
+                        collect(Collectors.toList());
+        var bioEntitiesProps2 =
+                subject.fetchBioentityProperties("ar", 10, false, speciesUtils.getHuman())
+                        .collect(Collectors.toList());
+        var closestMatchingSuggestion = new Suggestion(twoCharSymbol, 0, "symbol");
+
+        logListOfSuggestions("bioEntitiesProps1", bioEntitiesProps1);
+
+        assertThat(bioEntitiesProps1).isNotEmpty();
+
+        var firstBioEntitiesProp1 = bioEntitiesProps1.get(0);
+
+        logSuggestion(firstBioEntitiesProp1, closestMatchingSuggestion);
+
+        assertThat(firstBioEntitiesProp1).isEqualTo(closestMatchingSuggestion);
+
+        logListOfSuggestions("bioEntitiesProps2", bioEntitiesProps2);
+
+        assertThat(bioEntitiesProps2).isNotEmpty();
+
+        var firstBioEntitiesProp2 = bioEntitiesProps2.get(0);
+
+        logSuggestion(firstBioEntitiesProp2, closestMatchingSuggestion);
+
+        assertThat(firstBioEntitiesProp2).isEqualTo(closestMatchingSuggestion);
+    }
+
+    private void logListOfSuggestions(String name, List<Suggestion> suggestions) {
+        LOGGER.info(name);
+        suggestions.forEach(suggestion -> logSuggestion(suggestion, null));
+    }
+    private void logSuggestion(Suggestion suggestion, Suggestion closestMatchSuggestion) {
+        if (closestMatchSuggestion != null) {
+            LOGGER.info("Closest match should be: {}", getSuggestionProps(closestMatchSuggestion));
+            LOGGER.info("1st suggestion:          {}" , getSuggestionProps(suggestion));
+        } else {
+            LOGGER.info(getSuggestionProps(suggestion));
+        }
+    }
+
+    @NotNull
+    private static String getSuggestionProps(Suggestion suggestion) {
+        return "[term=" + suggestion.getTerm() +
+                ", weight=" + suggestion.getWeight() +
+                ", payload=" + suggestion.getPayload() + "]";
     }
 }

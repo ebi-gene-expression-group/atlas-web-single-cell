@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.search.suggester;
 
 import org.apache.solr.client.solrj.response.Suggestion;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -93,7 +94,7 @@ class SearchSuggesterDaoIT {
                 .isNotEmpty();
     }
 
-    @Test
+    @RepeatedTest(100)
     void closestMatchIsFirst() {
         String twoCharSymbol = "AR";
 

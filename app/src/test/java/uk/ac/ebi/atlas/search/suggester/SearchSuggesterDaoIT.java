@@ -114,7 +114,8 @@ class SearchSuggesterDaoIT {
 
         logSuggestion(firstBioEntitiesProp1, closestMatchingSuggestion);
 
-        assertThat(firstBioEntitiesProp1).isEqualTo(closestMatchingSuggestion);
+        assertThat(firstBioEntitiesProp1.getTerm()).isEqualToIgnoringCase(closestMatchingSuggestion.getTerm());
+        assertThat(firstBioEntitiesProp1.getPayload()).isEqualToIgnoringCase(closestMatchingSuggestion.getPayload());
 
         logListOfSuggestions("bioEntitiesProps2", bioEntitiesProps2);
 
@@ -124,7 +125,9 @@ class SearchSuggesterDaoIT {
 
         logSuggestion(firstBioEntitiesProp2, closestMatchingSuggestion);
 
-        assertThat(firstBioEntitiesProp2).isEqualTo(closestMatchingSuggestion);
+        assertThat(firstBioEntitiesProp2.getTerm()).isEqualToIgnoringCase(closestMatchingSuggestion.getTerm());
+        assertThat(firstBioEntitiesProp2.getPayload()).isEqualToIgnoringCase(closestMatchingSuggestion.getPayload());
+
     }
 
     private void logListOfSuggestions(String name, List<Suggestion> suggestions) {

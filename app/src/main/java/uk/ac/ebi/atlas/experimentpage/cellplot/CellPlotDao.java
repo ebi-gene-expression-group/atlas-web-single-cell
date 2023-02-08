@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -135,20 +137,22 @@ public class CellPlotDao {
                     "ON dr.method = fi.method " +
                     "AND dr.priority = fi.prt";
 
-    public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
+    public Map<String, List<JsonObject>> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
 
         return namedParameterJdbcTemplate.query(
                 SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION,
                 namedParameters,
                 (ResultSet resultSet) -> {
-                    ImmutableMap.Builder<String, JsonObject> plotTypeAndOption = new ImmutableMap.Builder<>();
+                    Map<String, List<JsonObject>> plotTypeAndOptions = new HashMap<>();
                     while (resultSet.next()) {
-                        var plotType = resultSet.getString("method");
+                        var plotMethod = resultSet.getString("method");
                         var plotOption = new Gson().fromJson(resultSet.getString("parameterisation"), JsonObject.class);
-                        plotTypeAndOption.put(plotType,plotOption);
+                        var plotOptions = plotTypeAndOptions.getOrDefault(plotMethod, new ArrayList<>());
+                        plotOptions.add(plotOption);
+                        plotTypeAndOptions.put(plotMethod, plotOptions);
                     }
-                    return plotTypeAndOption.build();
+                    return plotTypeAndOptions;
                 });
     }
 }

@@ -97,16 +97,16 @@ public class CellPlotService {
     public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
         var umap = "umap";
         var tsne = "tsne";
-        var result = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
-        ImmutableMap.Builder<String, JsonObject> plotTypeAndOption = new ImmutableMap.Builder<>();
+        var daoResult = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
+        ImmutableMap.Builder<String, JsonObject> defaultPlotTypeAndOptions = new ImmutableMap.Builder<>();
 
-        JsonObject umapOptionObject = getMiddleElement(result.get(umap));
-        JsonObject tsneOptionObject = getMiddleElement(result.get(tsne));
+        JsonObject umapOptionObject = getMiddleElement(daoResult.get(umap));
+        JsonObject tsneOptionObject = getMiddleElement(daoResult.get(tsne));
 
-        plotTypeAndOption.put(umap, umapOptionObject);
-        plotTypeAndOption.put(tsne, tsneOptionObject);
+        defaultPlotTypeAndOptions.put(umap, umapOptionObject);
+        defaultPlotTypeAndOptions.put(tsne, tsneOptionObject);
 
-        return plotTypeAndOption.build();
+        return defaultPlotTypeAndOptions.build();
     }
 
     private static JsonObject getMiddleElement(List plotOptions) {

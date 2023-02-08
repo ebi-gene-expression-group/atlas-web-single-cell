@@ -10,6 +10,7 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
@@ -94,6 +95,29 @@ public class CellPlotService {
     }
 
     public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
-        return cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
+        var umap = "umap";
+        var tsne = "tsne";
+        var result = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
+        ImmutableMap.Builder<String, JsonObject> plotTypeAndOption = new ImmutableMap.Builder<>();
+
+        JsonObject umapOptionObject = getMiddleElement(result.get(umap));
+        JsonObject tsneOptionObject = getMiddleElement(result.get(tsne));
+
+        plotTypeAndOption.put(umap, umapOptionObject);
+        plotTypeAndOption.put(tsne, tsneOptionObject);
+
+        return plotTypeAndOption.build();
     }
+
+    private static JsonObject getMiddleElement(List plotOptions) {
+
+        if (plotOptions.size() % 2 == 0) { // even number
+            Object umapEvenItem = plotOptions.get((plotOptions.size() / 2 - 1));
+            return (JsonObject) umapEvenItem;
+        } else { //odd number
+            Object umapOddItem = plotOptions.get((plotOptions.size() / 2));
+            return (JsonObject) umapOddItem;
+        }
+    }
+
 }

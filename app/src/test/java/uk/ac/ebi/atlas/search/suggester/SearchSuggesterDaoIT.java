@@ -10,6 +10,7 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.testutils.SpeciesUtils;
 
 import javax.inject.Inject;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -18,7 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
-class SuggesterDaoIT {
+class SearchSuggesterDaoIT {
+
     @Inject
     private SpeciesUtils speciesUtils;
 
@@ -86,14 +88,30 @@ class SuggesterDaoIT {
 
     @Test
     void closestMatchIsFirst() {
-        String twoCharSymbol = "AR";
+        var twoCharSymbolWithAllCaps = "AR";
+        var twoCharSymbolWithLowercase = "ar";
 
         // Suggestion::equals is established only by term and payload, weight isn’t considered
-        assertThat(subject.fetchBioentityProperties(twoCharSymbol, 10, false))
-                .isNotEmpty()
-                .startsWith(new Suggestion(twoCharSymbol, 0, "symbol"));
-        assertThat(subject.fetchBioentityProperties("ar", 10, false, speciesUtils.getHuman()))
-                .isNotEmpty()
-                .startsWith(new Suggestion(twoCharSymbol, 0, "symbol"));
+        var bioEntitiesPropsWithAllCaps =
+                subject.fetchBioentityProperties(twoCharSymbolWithAllCaps, 10, false).
+                        collect(Collectors.toList());
+        var bioEntitiesPropsWithAllLowercase =
+                subject.fetchBioentityProperties(twoCharSymbolWithLowercase, 10, false, speciesUtils.getHuman())
+                        .collect(Collectors.toList());
+        var closestMatchingSuggestion = new Suggestion(twoCharSymbolWithAllCaps, 0, "symbol");
+        var firstBioEntitiesSuggestionFromAllCapsQueryResult = bioEntitiesPropsWithAllCaps.get(0);
+        var firstBioEntitiesSuggestionFromLowercaseQueryResult = bioEntitiesPropsWithAllLowercase.get(0);
+
+        assertThat(bioEntitiesPropsWithAllCaps).isNotEmpty();
+        assertThat(firstBioEntitiesSuggestionFromAllCapsQueryResult.getTerm())
+                .isEqualToIgnoringCase(closestMatchingSuggestion.getTerm());
+        assertThat(firstBioEntitiesSuggestionFromAllCapsQueryResult.getPayload())
+                .isEqualToIgnoringCase(closestMatchingSuggestion.getPayload());
+
+        assertThat(bioEntitiesPropsWithAllLowercase).isNotEmpty();
+        assertThat(firstBioEntitiesSuggestionFromLowercaseQueryResult.getTerm())
+                .isEqualToIgnoringCase(closestMatchingSuggestion.getTerm());
+        assertThat(firstBioEntitiesSuggestionFromLowercaseQueryResult.getPayload())
+                .isEqualToIgnoringCase(closestMatchingSuggestion.getPayload());
     }
 }

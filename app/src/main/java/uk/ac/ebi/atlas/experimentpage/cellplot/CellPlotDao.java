@@ -139,12 +139,11 @@ public class CellPlotDao {
 
     public Map<String, List<JsonObject>> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
-
+        Map<String, List<JsonObject>> plotTypeAndOptions = new HashMap<>();
         return namedParameterJdbcTemplate.query(
                 SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION,
                 namedParameters,
                 (ResultSet resultSet) -> {
-                    Map<String, List<JsonObject>> plotTypeAndOptions = new HashMap<>();
                     while (resultSet.next()) {
                         var plotMethod = resultSet.getString("method");
                         var plotOption = new Gson().fromJson(resultSet.getString("parameterisation"), JsonObject.class);

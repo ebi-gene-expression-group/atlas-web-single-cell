@@ -15,6 +15,7 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
@@ -113,11 +114,13 @@ class CellPlotServiceTest {
     @Test
     void fetchDefaultPlotMethodWithParameterisation(){
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("UMAP",new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)));
+                .thenReturn(ImmutableMap.of("umap",
+                        List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
+                        "tsne",
+                        List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
 
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
-                .get("UMAP")
-                .getAsJsonObject()
+                .get("umap").getAsJsonObject()
                 .has("n_neighbors"));
     }
 

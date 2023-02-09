@@ -98,14 +98,15 @@ public class CellPlotService {
         var umap = "umap";
         var tsne = "tsne";
         var daoResult = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
+
         ImmutableMap.Builder<String, JsonObject> defaultPlotTypeAndOptions = new ImmutableMap.Builder<>();
+        if (!daoResult.isEmpty()) {
+            var umapOptionObject = getMiddleElement(daoResult.get(umap));
+            var tsneOptionObject = getMiddleElement(daoResult.get(tsne));
 
-        JsonObject umapOptionObject = getMiddleElement(daoResult.get(umap));
-        JsonObject tsneOptionObject = getMiddleElement(daoResult.get(tsne));
-
-        defaultPlotTypeAndOptions.put(umap, umapOptionObject);
-        defaultPlotTypeAndOptions.put(tsne, tsneOptionObject);
-
+            defaultPlotTypeAndOptions.put(umap, umapOptionObject);
+            defaultPlotTypeAndOptions.put(tsne, tsneOptionObject);
+        }
         return defaultPlotTypeAndOptions.build();
     }
 

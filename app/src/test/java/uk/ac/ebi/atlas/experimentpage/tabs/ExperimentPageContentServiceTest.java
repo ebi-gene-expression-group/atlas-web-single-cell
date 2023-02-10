@@ -207,8 +207,8 @@ class ExperimentPageContentServiceTest {
     @Test
     void getEmptyDefaultPlotMethodAndParamsForTheValidExperiment(){
         when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("UMAP",new Gson().fromJson("{\"n_neighbors\":100}",JsonObject.class),
-                                            "t-SNE",new Gson().fromJson("{\"perplexity\":50}",JsonObject.class)));
+                .thenReturn(ImmutableMap.of("umap",new Gson().fromJson("{\"n_neighbors\":100}",JsonObject.class),
+                                            "tsne",new Gson().fromJson("{\"perplexity\":50}",JsonObject.class)));
 
         assertThat(subject.fetchDefaultPlotMethodAndParameterisation("E-CURD-4")).isNotEmpty();
     }

@@ -112,6 +112,23 @@ class CellPlotServiceTest {
     }
 
     @Test
+    void getCellPlotParameter() {
+        var cellCount = RNG.nextInt(MAX_CELL_COUNT) + 1;
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        var plotMethod = "umap";
+        var geneId = RandomDataTestUtils.generateRandomEnsemblGeneId();
+        var points = RandomDataTestUtils.generateRandomTSnePointDtosWithExpression(RNG.nextInt(cellCount));
+
+        when(cellPlotDaoMock.fetchCellPlotWithExpression(experimentAccession, plotMethod, geneId, ImmutableMap.of()))
+                .thenReturn(ImmutableList.copyOf(points));
+
+        var result = subject.expressionPlot(experimentAccession, plotMethod, geneId, ImmutableMap.of());
+
+        assertThat(result)
+                .hasSize(points.size());
+    }
+
+    @Test
     void fetchDefaultPlotMethodWithParameterisation(){
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
                 .thenReturn(ImmutableMap.of("umap",

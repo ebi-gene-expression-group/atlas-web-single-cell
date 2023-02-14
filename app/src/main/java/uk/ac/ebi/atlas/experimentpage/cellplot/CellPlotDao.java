@@ -127,6 +127,35 @@ public class CellPlotDao {
                                 rs.getString("cell_id")));
     }
 
+    private static final String SELECT_DISTINCT_PLOT_METHODS_STATEMENT =
+            "SELECT DISTINCT method " +
+            "FROM scxa_dimension_reduction " +
+            "WHERE experiment_accession=:experiment_accession";
+
+    public List<String> fetchCellPlotMethods(String experimentAccession) {
+        var namedParameters = ImmutableMap.of(
+                "experiment_accession", experimentAccession);
+
+        return namedParameterJdbcTemplate.queryForList(SELECT_DISTINCT_PLOT_METHODS_STATEMENT, namedParameters,
+                String.class);
+    }
+
+    private static final String SELECT_DISTINCT_PLOT_TYPE_STATEMENT =
+            "SELECT DISTINCT parameterisation " +
+                    "FROM scxa_dimension_reduction " +
+                    "WHERE method=:method " +
+                    "AND experiment_accession=:experiment_accession";
+
+    public List<String> fetchCellPlotParameter(String experimentAccession, String method) {
+        var namedParameters = ImmutableMap.of(
+                "experiment_accession", experimentAccession,
+                "method", method);
+
+        return namedParameterJdbcTemplate.queryForList(SELECT_DISTINCT_PLOT_TYPE_STATEMENT, namedParameters,
+                String.class);
+    }
+
+
     private static final String SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION =
             "SELECT dr.method, jsonb_array_elements(dr.parameterisation) parameterisation " +
                     "FROM scxa_dimension_reduction dr " +

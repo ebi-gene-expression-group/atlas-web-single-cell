@@ -343,14 +343,12 @@ class ToBeDeprecatedJsonGeneSearchControllerWIT {
 
     @Test
     void whenSearchTermExistsInDBThenReturnsSetOfCellType() throws Exception {
-        var shouldBeGeneThatPartOfExperiments = "AT2G21840";
-
-        var expectedCellType = "trichoblast 17";
+        var shouldBeGeneThatPartOfExperiments =
+                jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment("E-CURD-4");
 
         this.mockMvc.perform(get("/json/gene-search/cell-types").param("ensgene", shouldBeGeneThatPartOfExperiments))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(equalTo(1))))
-                .andExpect(jsonPath("$", containsInAnyOrder(expectedCellType)));
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
     }
 }

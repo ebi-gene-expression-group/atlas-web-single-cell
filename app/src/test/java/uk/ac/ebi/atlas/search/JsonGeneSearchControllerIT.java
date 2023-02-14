@@ -90,6 +90,25 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
+    void ifSpeciesIsNotPresentUsingGeneSearchGeneQueryHasEmptySpeciesField() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId = randomAlphabetic(1, 12);
+        requestParams.add("q", geneId);
+
+        GeneQuery geneQuery = GeneQuery.create(geneId);
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenReturn(geneQuery);
+
+        subject.searchForGene(requestParams);
+
+        var geneQueryArgCaptor = ArgumentCaptor.forClass(GeneQuery.class);
+        verify(geneIdSearchServiceMock).search(geneQueryArgCaptor.capture());
+
+        assertThat(geneQueryArgCaptor.getValue().species()).isEmpty();
+    }
+
+    @Test
     void whenRequestParamIsEmptyMarkerGeneSearchReturnsFalse() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 

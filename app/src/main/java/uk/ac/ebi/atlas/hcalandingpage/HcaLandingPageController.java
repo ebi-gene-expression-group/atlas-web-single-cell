@@ -1,4 +1,6 @@
 package uk.ac.ebi.atlas.hcalandingpage;
+
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +17,7 @@ public class HcaLandingPageController extends HtmlExceptionHandlingController {
         this.experimentSearchService = experimentSearchService;
     }
 
-    @GetMapping(value = "/alpha/hca", produces = "text/html;charset=UTF-8")
+    @GetMapping(value = "json/alpha/hca", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getHCAlandingpage(Model model) {
         model.addAttribute(
                 "hcaExperimentsCount",

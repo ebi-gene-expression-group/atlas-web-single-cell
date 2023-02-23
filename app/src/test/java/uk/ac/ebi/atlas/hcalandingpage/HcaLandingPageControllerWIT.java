@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HcaLandingPageControllerWIT {
-    private static final String URL = "json/hca/experiments/count";
+    private static final String URL = "/json/hca/experiments/count";
 
     @Inject
     private DataSource dataSource;
@@ -64,11 +64,11 @@ public class HcaLandingPageControllerWIT {
     }
 
     @Test
-    void validExperimentAccession() throws Exception {
+    void homoSapiensAndHCAExperimentsCountShouldBeNonZero() throws Exception {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$..humanExperimentsCount", is(greaterThan(0))))
-                .andExpect(jsonPath("$..hcaExperimentsCount", is(greaterThan(0))));
+                .andExpect(jsonPath("$.humanExperimentsCount", is(greaterThan(0))))
+                .andExpect(jsonPath("$.hcaExperimentsCount", is(greaterThan(0))));
     }
 }

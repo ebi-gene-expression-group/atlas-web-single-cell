@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -18,23 +18,22 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 
-
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class HcaLandingPageControllerWIT {
-    private static final String URL = "/alpha/hca";
+    private static final String URL = "/json/hca/experiments/count";
 
     @Inject
     private DataSource dataSource;
@@ -65,11 +64,11 @@ public class HcaLandingPageControllerWIT {
     }
 
     @Test
-    void validExperimentAccession() throws Exception {
+    void homoSapiensAndHCAExperimentsCountShouldBeNonZero() throws Exception {
         mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
-                .andExpect(view().name("hca-landing-page"))
-                .andExpect(model().attribute("hcaExperimentsCount", is(greaterThan(0))))
-                .andExpect(model().attribute("humanExperimentsCount", is(greaterThan(0))));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.humanExperimentsCount", is(greaterThan(0))))
+                .andExpect(jsonPath("$.hcaExperimentsCount", is(greaterThan(0))));
     }
 }

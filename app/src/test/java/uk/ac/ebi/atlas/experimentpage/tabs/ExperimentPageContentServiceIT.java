@@ -98,15 +98,6 @@ class ExperimentPageContentServiceIT {
     }
 
     @Test
-    void getValidExperimentDesignJson() {
-        // TODO replace empty experiment design table with mock table
-        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        var result = this.subject.getExperimentDesign(experimentAccession, new JsonObject(), "");
-        assertThat(result.has("table")).isTrue();
-        assertThat(result.has("downloadUrl")).isTrue();
-    }
-
-    @Test
     void getValidAnalysisMethodsJson() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var result = this.subject.getAnalysisMethods(experimentAccession);

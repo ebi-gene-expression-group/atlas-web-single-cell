@@ -42,7 +42,8 @@ public class JsonExperimentMetadataController extends JsonExperimentController {
 
         return GSON.toJson(
                 ImmutableMap.of(
-                        "plotTypesAndOptions", GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(experimentAccession)),
+                        "plotTypesAndOptions", GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(
+                                experiment.getAccession())),
                         "metadata", experimentPageContentService.getMetadata(experiment.getAccession()),
                         "defaultPlotMethodAndParameterisation", experimentPageContentService.fetchDefaultPlotMethodAndParameterisation(
                                 experiment.getAccession())));

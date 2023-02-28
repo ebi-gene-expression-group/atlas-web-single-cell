@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +39,7 @@ JsonCellPlotController extends JsonExceptionHandlingController {
 
         // Check that no param is missing
         var requiredParametersBuilder = ImmutableMap.<String, Integer>builder();
-        for (var requiredParameter : requiredParameters) {
+        var requiredParameter = StringUtils.substringsBetween(requiredParameters.get(0) , "\"", "\"")[0];
             if (!requestParams.containsKey(requiredParameter)) {
                 throw new IllegalArgumentException("Missing parameter " + requiredParameter);
             } else {
@@ -51,7 +52,6 @@ JsonCellPlotController extends JsonExceptionHandlingController {
                                     requiredParameter + "=" + requestParams.get(requiredParameter));
                 }
             }
-        }
 
         return requiredParametersBuilder.build();
     }

@@ -35,10 +35,10 @@ public class ExperimentPageContentSerializer {
         var results = experimentPageContentService.getTsnePlotData(experiment.getAccession());
         availableTabs.add(customContentTab("results", "Results", results));
 
-        var experimentDesignJson =
+        /*var experimentDesignJson =
                 experimentPageContentService.getExperimentDesign(
-                        experiment.getAccession(), new ExperimentDesignTable(experiment).asJson(), accessKey);
-        availableTabs.add(customContentTab("experiment-design", "Experiment Design", experimentDesignJson));
+                        experiment.getAccession(), new ExperimentDesignTable(experiment).asJson(), accessKey);*/
+        availableTabs.add(customContentTab("experiment-design", "Experiment Design", new JsonObject()));
 
         var sections = new JsonObject();
         sections.add("sections", experimentPageContentService.getSupplementaryInformation(experiment.getAccession()));

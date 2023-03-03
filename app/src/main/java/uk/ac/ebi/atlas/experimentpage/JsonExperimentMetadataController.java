@@ -39,7 +39,9 @@ public class JsonExperimentMetadataController extends JsonExperimentController {
         return GSON.toJson(
                 ImmutableMap.of(
                         "perplexities", experimentPageContentService.getPerplexities(experiment.getAccession()),
-                        "metadata", experimentPageContentService.getMetadata(experiment.getAccession())));
+                        "metadata", experimentPageContentService.getMetadata(experiment.getAccession()),
+                        "defaultPlotMethodAndParameterisation", experimentPageContentService.fetchDefaultPlotMethodAndParameterisation(
+                                experiment.getAccession())));
     }
 
     @Caching(evict = {

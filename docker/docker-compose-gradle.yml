@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   scxa-gradle:
-    image: openjdk:11
+    image: gradle:7.0-jdk11
     container_name: scxa-gradle
     networks:
       - atlas-test-net
@@ -18,8 +18,6 @@ services:
       - scxa-expdesign:/atlas-data/expdesign
 
     depends_on:
-      - scxa-solrcloud-0
-      - scxa-solrcloud-1
       - scxa-flyway-test
     environment:
       POSTGRES_HOST: $POSTGRES_HOST
@@ -31,8 +29,8 @@ services:
       - sh
       - -c
       - >
-        ./gradlew :app:clean &&
-        ./gradlew
+        gradle :app:clean &&
+        gradle
         -PdataFilesLocation=/atlas-data
         -PexperimentFilesLocation=/atlas-data/scxa
         -PexperimentDesignLocation=/atlas-data/expdesign
@@ -42,10 +40,10 @@ services:
         -PzkHosts=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
         -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr
         :app:testClasses &&
-        ./gradlew -PtestResultsPath=ut :app:test --tests *Test &&
-        ./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
-        ./gradlew -PtestResultsPath=e2e :app:test --tests *WIT &&
-        ./gradlew :app:jacocoTestReport
+        gradle -PtestResultsPath=ut :app:test --tests *Test &&
+        gradle -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
+        gradle -PtestResultsPath=e2e :app:test --tests *WIT &&
+        gradle :app:jacocoTestReport
 
 volumes:
   gradle-wrapper-dists:

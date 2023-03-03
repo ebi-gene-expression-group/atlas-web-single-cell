@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
+import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
@@ -59,6 +60,9 @@ class ExperimentPageContentServiceIT {
     @Inject
     private ExperimentTrader experimentTrader;
 
+    @Inject
+    private CellPlotService cellPlotService;
+
     private ExperimentPageContentService subject;
 
     @BeforeAll
@@ -94,7 +98,8 @@ class ExperimentPageContentServiceIT {
                         tsnePlotSettingsService,
                         cellMetadataService,
                         ontologyAccessionsSearchService,
-                        experimentTrader);
+                        experimentTrader,
+                        cellPlotService);
     }
 
     @Test

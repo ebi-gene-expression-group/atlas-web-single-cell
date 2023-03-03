@@ -9,12 +9,9 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;

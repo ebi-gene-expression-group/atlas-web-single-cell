@@ -2,11 +2,14 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+export SOLR_PUBLIC_KEY=${SCRIPT_DIR}/docker/prepare-dev-environment/solr/scxa-solrcloud.der
+
 source ${SCRIPT_DIR}/docker/dev.env
 
 function print_usage() {
   printf '\n%b\n\n' "Usage: ${0} [ -a APPLICATION_NAME ] [ -s SCHEMA_VERSION ]"
-  printf '%b\n' "Debugging a given unit/integration test from the given application using the given schema version"
+  printf '%b\n' "Debug a unit/integration test in a module with the given schema version"
+  printf '\n%b\n' "-n\tName of the unit/integration test to debug.\tfor example: CellPlotDaoIT"
   printf '\n%b\n' "-p\tName of the project the test can be found\tfor example: app or atlas-web-core"
   printf '\n%b\n' "-s\tNumeric version of the schema or latest\tfor example: 18 (default is latest)"
   printf '%b\n\n' "-h\tShow usage instructions"

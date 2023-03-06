@@ -2,8 +2,6 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-export SOLR_PUBLIC_KEY=${SCRIPT_DIR}/docker/prepare-dev-environment/solr/scxa-solrcloud.der
-
 source ${SCRIPT_DIR}/docker/dev.env
 
 function print_usage() {

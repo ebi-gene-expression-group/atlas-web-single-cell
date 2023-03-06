@@ -5,9 +5,10 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source ${SCRIPT_DIR}/docker/dev.env
 
 function print_usage() {
-  printf '\n%b\n\n' "Usage: ${0} [ -a APPLICATION_NAME ] [ -s SCHEMA_VERSION ]"
-  printf '%b\n' "Executing a given unit/integration test from the given application using the given schema version"
-  printf '\n%b\n' "-p\tName of the project the test can be found\tfor example: app or atlas-web-core"
+  printf '\n%b\n\n' "Usage: ${0} [ -p SUBPROJECT_NAME ] [ -s SCHEMA_VERSION ] -n TEST_NAME"
+  printf '%b\n' "Executing a unit/integration test in a module with the given schema version"
+  printf '\n%b\n' "-n\tName of the unit/integration test to execute.\tfor example: CellPlotDaoIT"
+  printf '\n%b\n' "-p\tName of the sub-project the test can be found;\n\tfor example: app or atlas-web-core (default is app)"
   printf '\n%b\n' "-s\tNumeric version of the schema or latest\tfor example: 18 (default is latest)"
   printf '%b\n\n' "-h\tShow usage instructions"
 }

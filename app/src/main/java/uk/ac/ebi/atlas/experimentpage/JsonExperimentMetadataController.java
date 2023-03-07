@@ -13,17 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.experimentpage.json.JsonExperimentController;
 import uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
 public class JsonExperimentMetadataController extends JsonExperimentController {
     private final ExperimentPageContentService experimentPageContentService;
+    private final TSnePlotSettingsService tsnePlotSettingsService;
 
     public JsonExperimentMetadataController(ExperimentTrader experimentTrader,
-                                            ExperimentPageContentService experimentPageContentService) {
+                                            ExperimentPageContentService experimentPageContentService,
+                                            TSnePlotSettingsService tsnePlotSettingsService) {
         super(experimentTrader);
         this.experimentPageContentService = experimentPageContentService;
+        this.tsnePlotSettingsService = tsnePlotSettingsService;
     }
 
     // TODO In time this should be part of a larger experiment API which we can query to get useful info about it
@@ -38,7 +42,8 @@ public class JsonExperimentMetadataController extends JsonExperimentController {
 
         return GSON.toJson(
                 ImmutableMap.of(
-                        "perplexities", experimentPageContentService.getPerplexities(experiment.getAccession()),
+                        "plotTypesAndOptions", GSON.toJsonTree(tsnePlotSettingsService.getAvailablePlotTypesAndPlotOptions(
+                                experiment.getAccession())),
                         "metadata", experimentPageContentService.getMetadata(experiment.getAccession()),
                         "defaultPlotMethodAndParameterisation", experimentPageContentService.fetchDefaultPlotMethodAndParameterisation(
                                 experiment.getAccession())));

@@ -2,6 +2,8 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +15,7 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
@@ -123,5 +126,27 @@ class CellPlotServiceTest {
 
         assertThat(result)
                 .hasSize(points.size());
+    }
+
+    @Test
+    void fetchDefaultPlotMethodWithParameterisation(){
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
+                .thenReturn(ImmutableMap.of("umap",
+                        List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
+                        "tsne",
+                        List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
+
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
+                .get("umap").getAsJsonObject()
+                .has("n_neighbors"));
+    }
+
+    @Test
+    void returnEmptyResultIfThereIsNoDefaultPlotMethodAndParameterisation(){
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("fooBar"))
+                .thenReturn(ImmutableMap.of());
+
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
+                .isEmpty();
     }
 }

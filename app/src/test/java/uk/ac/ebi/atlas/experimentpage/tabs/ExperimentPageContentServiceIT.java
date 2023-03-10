@@ -17,8 +17,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
+import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
@@ -59,6 +60,9 @@ class ExperimentPageContentServiceIT {
     @Inject
     private ExperimentTrader experimentTrader;
 
+    @Inject
+    private CellPlotService cellPlotService;
+
     private ExperimentPageContentService subject;
 
     @BeforeAll
@@ -80,6 +84,7 @@ class ExperimentPageContentServiceIT {
         populator.setScripts(
                 new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"),
                 new ClassPathResource("fixtures/scxa_coords-delete.sql"),
                 new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"),
                 new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
@@ -96,7 +101,8 @@ class ExperimentPageContentServiceIT {
                         tsnePlotSettingsService,
                         cellMetadataService,
                         ontologyAccessionsSearchService,
-                        experimentTrader);
+                        experimentTrader,
+                        cellPlotService);
     }
 
     @Test
@@ -178,6 +184,14 @@ class ExperimentPageContentServiceIT {
         assertThat(result.has("plotTypesAndOptions")).isTrue();
         assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("tsne").getAsJsonArray()).isNotEmpty();
         assertThat(result.get("plotTypesAndOptions").getAsJsonObject().get("umap").getAsJsonArray()).isNotEmpty();
+
+        // Not all experiments have defaultPlotTypeAndParameterisation
+        if (result.has("defaultPlotTypeAndParameterisation")){
+            assertThat(result.get("defaultPlotTypeAndParameterisation")
+                    .getAsJsonObject()
+                    .getAsJsonArray())
+                    .isNotEmpty();
+        }
 
         // Not all experiments have metadata, see E-GEOD-99058
         if (result.has("metadata")) {

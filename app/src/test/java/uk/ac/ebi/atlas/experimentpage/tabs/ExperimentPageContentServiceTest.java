@@ -3,6 +3,7 @@ package uk.ac.ebi.atlas.experimentpage.tabs;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.download.IconType;
+import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experiments.ExperimentBuilder;
@@ -61,6 +63,9 @@ class ExperimentPageContentServiceTest {
 
     @Mock
     private ExperimentTrader experimentTraderMock;
+
+    @Mock
+    private CellPlotService cellPlotServiceMock;
 
     private final JsonObject tpmsDownloadJsonObject = new JsonObject();
 
@@ -129,7 +134,8 @@ class ExperimentPageContentServiceTest {
                 tsnePlotSettingsServiceMock,
                 cellMetadataServiceMock,
                 ontologyAccessionsSearchService,
-                experimentTraderMock);
+                experimentTraderMock,
+                cellPlotServiceMock);
 
         tpmsDownloadJsonObject.addProperty("url", EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE);
         tpmsDownloadJsonObject.addProperty("type", IconType.TSV.getName());
@@ -188,5 +194,22 @@ class ExperimentPageContentServiceTest {
         var result = this.subject.getTsnePlotData(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION);
 
         assertThat(result.getAsJsonObject("anatomogram").size()).isEqualTo(0);
+    }
+
+    @Test
+    void getEmptyDefaultPlotMethodAndParamsForTheInvalidExperiment(){
+        when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("FooBar"))
+                .thenReturn(ImmutableMap.of());
+
+        assertThat(subject.fetchDefaultPlotMethodAndParameterisation("FooBar")).isEmpty();
+    }
+
+    @Test
+    void getEmptyDefaultPlotMethodAndParamsForTheValidExperiment(){
+        when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
+                .thenReturn(ImmutableMap.of("umap",new Gson().fromJson("{\"n_neighbors\":100}",JsonObject.class),
+                                            "tsne",new Gson().fromJson("{\"perplexity\":50}",JsonObject.class)));
+
+        assertThat(subject.fetchDefaultPlotMethodAndParameterisation("E-CURD-4")).isNotEmpty();
     }
 }

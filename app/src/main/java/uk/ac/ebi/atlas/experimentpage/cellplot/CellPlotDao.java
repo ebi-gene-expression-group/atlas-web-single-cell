@@ -2,11 +2,15 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
+import com.google.gson.Gson;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
-
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -151,4 +155,32 @@ public class CellPlotDao {
                 String.class);
     }
 
+
+    private static final String SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION =
+            "SELECT dr.method, jsonb_array_elements(dr.parameterisation) parameterisation " +
+                    "FROM scxa_dimension_reduction dr " +
+                    "JOIN (SELECT method,  max(priority) as prt " +
+                        "FROM scxa_dimension_reduction " +
+                        "WHERE experiment_accession=:experiment_accession " +
+                        " GROUP BY method) fi " +
+                    "ON dr.method = fi.method " +
+                    "AND dr.priority = fi.prt";
+
+    public Map<String, List<JsonObject>> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
+        var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);
+        Map<String, List<JsonObject>> plotTypeAndOptions = new HashMap<>();
+        return namedParameterJdbcTemplate.query(
+                SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION,
+                namedParameters,
+                (ResultSet resultSet) -> {
+                    while (resultSet.next()) {
+                        var plotMethod = resultSet.getString("method");
+                        var plotOption = new Gson().fromJson(resultSet.getString("parameterisation"), JsonObject.class);
+                        var plotOptions = plotTypeAndOptions.getOrDefault(plotMethod, new ArrayList<>());
+                        plotOptions.add(plotOption);
+                        plotTypeAndOptions.put(plotMethod, plotOptions);
+                    }
+                    return plotTypeAndOptions;
+                });
+    }
 }

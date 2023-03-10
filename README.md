@@ -245,6 +245,7 @@ scxa-gradle bash -c '
 ./gradlew \
 -PdataFilesLocation=/atlas-data \
 -PexperimentFilesLocation=/atlas-data/scxa \
+-PexperimentDesignLocation=/atlas-data/expdesign \
 -PjdbcUrl=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB} \
 -PjdbcUsername=${POSTGRES_USER} \
 -PjdbcPassword=${POSTGRES_PASSWORD} \

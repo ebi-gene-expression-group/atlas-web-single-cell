@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value="/json/cell-plots/{experimentAccession}", method= RequestMethod.GET)
@@ -40,19 +41,20 @@ JsonCellPlotController extends JsonExceptionHandlingController {
         // Check that no param is missing
         var requiredParametersBuilder = ImmutableMap.<String, Integer>builder();
         var requiredParameter = StringUtils.substringsBetween(requiredParameters.get(0) , "\"", "\"")[0];
-            if (!requestParams.containsKey(requiredParameter)) {
-                throw new IllegalArgumentException("Missing parameter " + requiredParameter);
-            } else {
-                try {
-                    requiredParametersBuilder.put(
-                            requiredParameter, Integer.parseInt(requestParams.get(requiredParameter)));
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException(
-                            "Invalid plot parameter value " +
-                                    requiredParameter + "=" + requestParams.get(requiredParameter));
-                }
-            }
-
+        List<String> parameterisations = requiredParameters.stream().map(parameter ->
+                StringUtils.substringsBetween(parameter, ":","}")[0]).collect(Collectors.toList());
+        if (!requestParams.containsKey(requiredParameter)) {
+            throw new IllegalArgumentException("Missing parameter " + requiredParameter);
+        }
+        else if (!parameterisations.contains(requestParams.get(requiredParameter))) {
+            throw new IllegalArgumentException(
+                    "Invalid plot parameter value " +
+                            requiredParameter + "=" + requestParams.get(requiredParameter));
+        }
+        else {
+            requiredParametersBuilder.put(
+                    requiredParameter, Integer.parseInt(requestParams.get(requiredParameter)));
+        }
         return requiredParametersBuilder.build();
     }
 

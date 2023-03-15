@@ -41,8 +41,8 @@ JsonCellPlotController extends JsonExceptionHandlingController {
         // Check that no param is missing
         var requiredParametersBuilder = ImmutableMap.<String, Integer>builder();
         var requiredParameter = StringUtils.substringsBetween(requiredParameters.get(0) , "\"", "\"")[0];
-        List<String> parameterisations = requiredParameters.stream().map(parameter ->
-                StringUtils.substringsBetween(parameter, ":","}")[0]).collect(Collectors.toList());
+        var parameterisations = requiredParameters.stream().map(parameter ->
+                StringUtils.substringsBetween(parameter, " ","}")[0]).collect(Collectors.toList());
         if (!requestParams.containsKey(requiredParameter)) {
             throw new IllegalArgumentException("Missing parameter " + requiredParameter);
         }

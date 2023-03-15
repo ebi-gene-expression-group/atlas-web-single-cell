@@ -1,0 +1,1 @@
+DELETE FROM exp_design_column;

@@ -38,7 +38,7 @@ public class GeneIdSearchDao {
         this.experimentTraderDao = experimentTraderDao;
     }
 
-    // This is one of the edge cases where an empty optional is semantically different than an empty collection. The
+    // This is one of the few cases where an empty optional is semantically different from an empty collection. The
     // former signals that there were no matching gene IDs in the “Atlas knowledge base” (aka bioentities collection),
     // whereas the latter means that a known gene ID couldn’t be found in any SC experiment. Another alternative could
     // be to return a Pair<String, Set> where the left would contain a message if the right is empty or null (like
@@ -48,9 +48,7 @@ public class GeneIdSearchDao {
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
                         .addFilterFieldByTerm(SPECIES, species)
                         .addQueryFieldByTerm(PROPERTY_VALUE, propertyValue)
-                        .addQueryFieldByTerm(PROPERTY_NAME, propertyName)
-                        .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER)
-                        .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
+                        .addQueryFieldByTerm(PROPERTY_NAME, propertyName);
         return searchInTwoSteps(bioentitiesQueryBuilder);
     }
 
@@ -58,15 +56,17 @@ public class GeneIdSearchDao {
         var bioentitiesQueryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
                         .addQueryFieldByTerm(PROPERTY_VALUE, propertyValue)
-                        .addQueryFieldByTerm(PROPERTY_NAME, propertyName)
-                        .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER)
-                        .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
+                        .addQueryFieldByTerm(PROPERTY_NAME, propertyName);
         return searchInTwoSteps(bioentitiesQueryBuilder);
     }
 
     private Optional<ImmutableSet<String>> searchInTwoSteps(
             SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder) {
-        bioentitiesQueryBuilder.setRows(1);
+        bioentitiesQueryBuilder
+                .setRows(1)
+                .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER_DV)
+                .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER_DV, SolrQuery.ORDER.asc);
+
 
         var bioentitiesSearchBuilder =
                 new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder);

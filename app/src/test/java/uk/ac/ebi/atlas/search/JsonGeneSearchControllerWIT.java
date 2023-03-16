@@ -126,9 +126,10 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void validJsonForValidGeneId() throws Exception {
-        var geneId = jdbcTestUtils.fetchRandomGene();
+        var shouldBeMarkerGene =
+                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
 
-        this.mockMvc.perform(get("/json/search").param("ensgene", geneId))
+        this.mockMvc.perform(get("/json/search").param("ensgene", shouldBeMarkerGene))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results", hasSize(greaterThanOrEqualTo(1))))
@@ -144,23 +145,24 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void ifSymbolQueryMatchesUniqueGeneIdIncludeIt() throws Exception {
-        var geneId = jdbcTestUtils.fetchRandomGene();
+        var shouldBeMarkerGene =
+                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
 
         // Some gene IDs don’t have a symbol, e.g. ERCC-00044
         // Also, it turns out that some gene symbols like Vmn1r216 match more than one gene ID within the same species:
         // ENSMUSG00000115697 and ENSMUSG00000116057
         // We don’t want any of those pesky gene IDs!
-        var matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(geneId, SYMBOL);
+        var matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(shouldBeMarkerGene, SYMBOL);
         while (matchingSymbols.isEmpty() ||
                 bioEntityPropertyDao.fetchGeneIdsForPropertyValue(
                         SYMBOL, matchingSymbols.iterator().next()).size() > 1) {
-            geneId = jdbcTestUtils.fetchRandomGene();
-            matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(geneId, SYMBOL);
+            shouldBeMarkerGene = jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
+            matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(shouldBeMarkerGene, SYMBOL);
         }
 
         var solrQueryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
-                        .addQueryFieldByTerm(BIOENTITY_IDENTIFIER, geneId)
+                        .addQueryFieldByTerm(BIOENTITY_IDENTIFIER, shouldBeMarkerGene)
                         .addQueryFieldByTerm(PROPERTY_NAME, "symbol")
                         .setFieldList(PROPERTY_VALUE)
                         .setFieldList(SPECIES)
@@ -180,14 +182,15 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(jsonPath("$.results[0].facets[0].value", isA(String.class)))
                 .andExpect(jsonPath("$.results[0].facets[0].label", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")))
-                .andExpect(jsonPath("$.matchingGeneId", equalTo("(" + geneId + ")")));
+                .andExpect(jsonPath("$.matchingGeneId", equalTo("(" + shouldBeMarkerGene + ")")));
     }
 
     @Test
     void jsonPayloadContainsFacetDescription() throws Exception {
-        var geneId = jdbcTestUtils.fetchRandomGene();
+        var shouldBeMarkerGene =
+                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
 
-        this.mockMvc.perform(get("/json/search").param("ensgene", geneId))
+        this.mockMvc.perform(get("/json/search").param("ensgene", shouldBeMarkerGene))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results", hasSize(greaterThanOrEqualTo(1))))

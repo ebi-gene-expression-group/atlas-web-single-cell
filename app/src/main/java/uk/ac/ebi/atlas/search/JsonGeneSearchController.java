@@ -86,9 +86,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         for (var expressedGeneIdEntry : expressedGeneIdEntries) {
             var geneId = expressedGeneIdEntry.getKey();
 
-            var exp2cellsIt = expressedGeneIdEntry.getValue().entrySet().iterator();
-            while (exp2cellsIt.hasNext()) {
-                var exp2cells = exp2cellsIt.next();
+            for (var exp2cells : expressedGeneIdEntry.getValue().entrySet()) {
                 var experimentAccession = exp2cells.getKey();
 
                 stopWatch.start("Get facets iteration for " + geneId + " in " + experimentAccession);

@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.search.geneids;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.collections.Gene2ExperimentCollectionProxy;
 import uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.IntersectStreamBuilder;
+import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.decorator.SelectStreamBuilder;
 import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStreamBuilder;
 import uk.ac.ebi.atlas.trader.ExperimentTraderDao;
 
@@ -20,7 +22,6 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES;
-import static uk.ac.ebi.atlas.solr.cloud.search.SolrQueryBuilder.SOLR_MAX_ROWS;
 
 // Search gene IDs in scxa-gene2experiment by gene property name/value and species (bioentities collection)
 @Component
@@ -38,7 +39,7 @@ public class GeneIdSearchDao {
         this.experimentTraderDao = experimentTraderDao;
     }
 
-    // This is one of the edge cases where an empty optional is semantically different than an empty collection. The
+    // This is one of the few cases where an empty optional is semantically different from an empty collection. The
     // former signals that there were no matching gene IDs in the “Atlas knowledge base” (aka bioentities collection),
     // whereas the latter means that a known gene ID couldn’t be found in any SC experiment. Another alternative could
     // be to return a Pair<String, Set> where the left would contain a message if the right is empty or null (like
@@ -48,9 +49,7 @@ public class GeneIdSearchDao {
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
                         .addFilterFieldByTerm(SPECIES, species)
                         .addQueryFieldByTerm(PROPERTY_VALUE, propertyValue)
-                        .addQueryFieldByTerm(PROPERTY_NAME, propertyName)
-                        .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER)
-                        .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
+                        .addQueryFieldByTerm(PROPERTY_NAME, propertyName);
         return searchInTwoSteps(bioentitiesQueryBuilder);
     }
 
@@ -58,15 +57,17 @@ public class GeneIdSearchDao {
         var bioentitiesQueryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
                         .addQueryFieldByTerm(PROPERTY_VALUE, propertyValue)
-                        .addQueryFieldByTerm(PROPERTY_NAME, propertyName)
-                        .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER)
-                        .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
+                        .addQueryFieldByTerm(PROPERTY_NAME, propertyName);
         return searchInTwoSteps(bioentitiesQueryBuilder);
     }
 
     private Optional<ImmutableSet<String>> searchInTwoSteps(
             SolrQueryBuilder<BioentitiesCollectionProxy> bioentitiesQueryBuilder) {
-        bioentitiesQueryBuilder.setRows(1);
+        bioentitiesQueryBuilder
+                .setRows(1)
+                .setFieldList(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER_DV)
+                .sortBy(BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER_DV, SolrQuery.ORDER.asc);
+
 
         var bioentitiesSearchBuilder =
                 new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder);
@@ -75,9 +76,8 @@ public class GeneIdSearchDao {
         try (var tupleStreamer = TupleStreamer.of(bioentitiesSearchBuilder.build())) {
             return tupleStreamer.get()
                     .findFirst()
-                    .map((x) ->
-                            searchWithinGeneIdsExpressedInExperiments(
-                                    bioentitiesQueryBuilder.setRows(SolrQueryBuilder.DEFAULT_ROWS)));
+                    // If there’s at least one result, search again across all docs (see comment below)
+                    .map(__ -> searchWithinGeneIdsExpressedInExperiments(bioentitiesQueryBuilder));
         }
 
     }
@@ -89,17 +89,25 @@ public class GeneIdSearchDao {
         var g2eQueryBuilder =
                 new SolrQueryBuilder<Gene2ExperimentCollectionProxy>()
                         .setFieldList(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER)
-                        .sortBy(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc)
-                        .setRows(SOLR_MAX_ROWS);
+                        .sortBy(Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER, SolrQuery.ORDER.asc);
 
-        //Ignores(skip) negative filter if we don't have any private experiments
+        // Skip negative filter if we don't have any private experiments
         if(!privateExperimentAccessions.isEmpty()){
             g2eQueryBuilder.addNegativeFilterFieldByTerm(Gene2ExperimentCollectionProxy.EXPERIMENT_ACCESSION,
                     experimentTraderDao.fetchPrivateExperimentAccessions());
         }
 
-        var bioentitiesSearchBuilder = new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder);
-        var g2eSearchBuilder = new SearchStreamBuilder<>(gene2ExperimentCollectionProxy, g2eQueryBuilder);
+        // IMPORTANT TO RETURN ALL DOCS!
+        var bioentitiesSearchBuilder =
+                new SelectStreamBuilder(
+                        new SearchStreamBuilder<>(bioentitiesCollectionProxy, bioentitiesQueryBuilder).returnAllDocs())
+                        .addFieldMapping(
+                                ImmutableMap.of(
+                                        BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER_DV.name(),
+                                        Gene2ExperimentCollectionProxy.BIOENTITY_IDENTIFIER.name()));
+
+        var g2eSearchBuilder =
+                new SearchStreamBuilder<>(gene2ExperimentCollectionProxy, g2eQueryBuilder).returnAllDocs();
 
         var sortField = BioentitiesCollectionProxy.BIOENTITY_IDENTIFIER.name();
         var intersectBuilder = new IntersectStreamBuilder(bioentitiesSearchBuilder, g2eSearchBuilder, sortField);

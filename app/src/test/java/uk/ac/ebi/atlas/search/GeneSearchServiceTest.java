@@ -66,7 +66,7 @@ class GeneSearchServiceTest {
 
         when(geneSearchDaoMock.fetchCellIds(geneId)).thenReturn(ensg00000104957Cells);
 
-        Map<String, Map<String, List<String>>> result = subject.getCellIdsInExperiments(geneId);
+        Map<String, Map<String, List<String>>> result = subject.getCellIdsInExperiments(ImmutableSet.of(geneId));
 
         assertThat(result)
                 .containsOnlyKeys(geneId)
@@ -98,7 +98,7 @@ class GeneSearchServiceTest {
         when(geneSearchDaoMock.fetchCellIds(geneId1)).thenReturn(ensfoobar1Cells);
         when(geneSearchDaoMock.fetchCellIds(geneId2)).thenReturn(ensfoobar2Cells);
 
-        assertThat(subject.getCellIdsInExperiments(geneId1, geneId2))
+        assertThat(subject.getCellIdsInExperiments(ImmutableSet.of(geneId1, geneId2)))
                 .containsAllEntriesOf(ImmutableMap.of(geneId1, ensfoobar1Cells, geneId2, ensfoobar2Cells));
     }
 
@@ -126,7 +126,7 @@ class GeneSearchServiceTest {
                 .fetchExperimentAccessionsWhereGeneIsMarker(geneId))
                 .thenReturn(ImmutableList.of(experimentAccession1, experimentAccession2));
 
-        Map<String, Map<String, Map<Integer, List<Integer>>>> result = subject.getMarkerGeneProfile(geneId);
+        Map<String, Map<String, Map<Integer, List<Integer>>>> result = subject.getMarkerGeneProfile(ImmutableSet.of(geneId));
 
         assertThat(result)
                 .isNotEmpty()
@@ -183,7 +183,7 @@ class GeneSearchServiceTest {
         when(geneSearchDaoMock.fetchExperimentAccessionsWhereGeneIsMarker(geneId2))
                 .thenReturn(ImmutableList.of(experimentAccession3, experimentAccession4));
 
-        assertThat(subject.getMarkerGeneProfile(geneId1, geneId2))
+        assertThat(subject.getMarkerGeneProfile(ImmutableSet.of(geneId1, geneId2)))
                 .containsAllEntriesOf(
                         ImmutableMap.of(
                                 geneId1,
@@ -227,7 +227,7 @@ class GeneSearchServiceTest {
         doThrow(new UncheckedIOException(new IOException())).when(geneSearchDaoMock).fetchCellIds(anyString());
 
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(
-                () -> subject.getCellIdsInExperiments(generateRandomExperimentAccession()))
+                () -> subject.getCellIdsInExperiments(ImmutableSet.of(generateRandomExperimentAccession())))
                 .withCauseInstanceOf(ExecutionException.class);
     }
 

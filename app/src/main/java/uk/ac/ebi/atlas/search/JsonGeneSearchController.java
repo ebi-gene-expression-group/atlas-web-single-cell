@@ -83,10 +83,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         var resultsBuilder = ImmutableList.builder();
         // This was a very expressive stream chain (look it up in the history), but to filter by results where the gene
         // is a marker, making it a for loop is more readable IMHO; I also noticed a 10% performance improvement
-        for (var i = 0; i < expressedGeneIdEntries.size(); i++) {
-            var geneId = expressedGeneIdEntries.get(i).getKey();
+        for (var expressedGeneIdEntry : expressedGeneIdEntries) {
+            var geneId = expressedGeneIdEntry.getKey();
 
-            var exp2cellsIt = expressedGeneIdEntries.get(i).getValue().entrySet().iterator();
+            var exp2cellsIt = expressedGeneIdEntry.getValue().entrySet().iterator();
             while (exp2cellsIt.hasNext()) {
                 var exp2cells = exp2cellsIt.next();
                 var experimentAccession = exp2cells.getKey();

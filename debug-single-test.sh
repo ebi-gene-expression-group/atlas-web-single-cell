@@ -2,14 +2,14 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-source ${SCRIPT_DIR}/docker/dev.env
+source ${SCRIPT_DIR}/docker/dev-test.env
 
 TEST_CASE_NAME=$1
 echo "Testing ${TEST_CASE_NAME}"
 
 SCHEMA_VERSION=${2:-latest} \
 docker-compose \
---env-file ${SCRIPT_DIR}/docker/dev.env \
+--env-file ${SCRIPT_DIR}/docker/dev-test.env \
 -f docker/docker-compose-postgres-test.yml \
 -f docker/docker-compose-solrcloud.yml \
 -f docker/docker-compose-gradle.yml \

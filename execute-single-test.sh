@@ -2,7 +2,7 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-source ${SCRIPT_DIR}/docker/dev.env
+source ${SCRIPT_DIR}/docker/dev-test.env
 
 function print_usage() {
   printf '\n%b\n\n' "Usage: ${0} [ -p SUBPROJECT_NAME ] [ -s SCHEMA_VERSION ] -n TEST_NAME"
@@ -56,7 +56,7 @@ echo "Testing ${TEST_CASE_NAME}"
 
 SCHEMA_VERSION={SCHEMA_VERSION} \
 docker-compose \
---env-file ${SCRIPT_DIR}/docker/dev.env \
+--env-file ${SCRIPT_DIR}/docker/dev-test.env \
 -f docker/docker-compose-postgres-test.yml \
 -f docker/docker-compose-solrcloud.yml \
 -f docker/docker-compose-gradle.yml \
@@ -74,8 +74,10 @@ gradle \
 -PjdbcPassword=${POSTGRES_PASSWORD} \
 -PzkHosts=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181 \
 -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr \
+-PsolrUser=${SOLR_USER} \
+-PsolrPassword=${SOLR_PASSWORD} \
 --stacktrace \
 ${PROJECT_NAME}:testClasses
 
-gradle --continuous :${PROJECT_NAME}:test --tests $TEST_CASE_NAME
+gradle -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} --continuous :${PROJECT_NAME}:test --tests $TEST_CASE_NAME
 "

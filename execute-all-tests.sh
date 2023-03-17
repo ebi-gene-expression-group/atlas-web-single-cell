@@ -27,6 +27,8 @@ set -e
 -PjdbcPassword=${POSTGRES_PASSWORD} \
 -PzkHosts=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181 \
 -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr \
+-PsolrUser=${SOLR_USER} \
+-PsolrPassword=${SOLR_PASSWORD} \
 atlas-web-core:testClasses
 
 ./gradlew -PtestResultsPath=ut :atlas-web-core:test --tests *Test
@@ -42,10 +44,12 @@ atlas-web-core:testClasses
 -PjdbcPassword=${POSTGRES_PASSWORD} \
 -PzkHosts=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181 \
 -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr \
+-PsolrUser=${SOLR_USER} \
+-PsolrPassword=${SOLR_PASSWORD} \
 app:testClasses
 
 ./gradlew -PtestResultsPath=ut :app:test --tests *Test
-./gradlew -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT
-./gradlew -PtestResultsPath=e2e :app:test --tests *WIT
+./gradlew -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT
+./gradlew -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} -PtestResultsPath=e2e :app:test --tests *WIT
 ./gradlew :app:jacocoTestReport
 "

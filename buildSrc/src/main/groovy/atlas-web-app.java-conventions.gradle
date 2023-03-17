@@ -117,6 +117,12 @@ processTestResources {
 }
 
 test {
+  if (project.hasProperty('solrUser') && project.hasProperty('solrPassword')) {
+    jvmArgs '-Dsolr.httpclient.builder.factory=org.apache.solr.client.solrj.impl.PreemptiveBasicAuthClientBuilderFactory',
+            "-Dbasicauth=${project.property('solrUser') ?: ''}:${project.property('solrPassword') ?: ''}"
+
+  }
+
   if (project.hasProperty('remoteDebug')) {
     jvmArgs '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005'
   }

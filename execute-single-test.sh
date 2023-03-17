@@ -27,7 +27,9 @@ set -e
 -PjdbcPassword=${POSTGRES_PASSWORD} \
 -PzkHosts=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181 \
 -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr \
-app:testClasses
+-PsolrUser=${SOLR_USER} \
+-PsolrPassword=${SOLR_PASSWORD} \
+:app:testClasses
 
-./gradlew --continuous :app:test --tests $TEST_CASE_NAME
+./gradlew -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} --continuous :app:test --tests $TEST_CASE_NAME
 "

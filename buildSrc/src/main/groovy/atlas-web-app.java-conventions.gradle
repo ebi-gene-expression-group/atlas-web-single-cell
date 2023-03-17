@@ -84,19 +84,19 @@ processTestResources {
             dataFilesLocation: dataFilesLocation,
             experimentFilesLocation: experimentFilesLocation,
             experimentDesignLocation: experimentDesignLocation,
-            buildNumber: project.hasProperty('buildNumber') ? buildNumber : '42',
-            buildBranch: project.hasProperty('buildBranch') ? buildBranch : 'dev',
-            buildRevision: project.hasProperty('buildRevision') ? buildRevision : 'dev',
-            tomcatHostname: project.hasProperty('tomcatHostname') ? tomcatHostname : 'localhost'
+            buildNumber: project.findProperty('buildNumber') ?: '42',
+            buildBranch: project.findProperty('buildBranch') ?: 'dev',
+            buildRevision: project.findProperty('buildRevision') ?: 'dev',
+            tomcatHostname: project.findProperty('tomcatHostname') ?: 'localhost'
     )
   }
 
   filesMatching('solr.properties') {
     expand(
-            zkHosts: project.hasProperty('zkHosts') ? zkHosts : 'localhost',
-            solrHosts: project.hasProperty('solrHosts') ? solrHosts : 'localhost',
-            solrUser: project.hasProperty('solrUser') ? solrUser : '',
-            solrPass: project.hasProperty('solrPass') ? solrPass : '',
+            zkHosts: project.findProperty('zkHosts') ?: 'localhost',
+            solrHosts: project.findProperty('solrHosts') ?: 'localhost',
+            solrUser: project.findProperty('solrUser') ?: '',
+            solrPassword: project.findProperty('solrPassword') ?: '',
     )
   }
 
@@ -111,7 +111,7 @@ processTestResources {
   filesMatching('logback-test.xml') {
     expand(
             buildDir: buildDir,
-            testLogs: project.hasProperty('testLogs') ? testLogs : 'STDOUT',
+            testLogs: project.findProperty('testLogs') ?: 'STDOUT',
     )
   }
 }

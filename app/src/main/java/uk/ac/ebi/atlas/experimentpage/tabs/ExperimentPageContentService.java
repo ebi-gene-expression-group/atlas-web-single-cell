@@ -96,22 +96,6 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    public JsonObject getExperimentDesign(String experimentAccession,
-                                          JsonObject experimentDesignTableAsJson,
-                                          String accessKey) {
-        var result = new JsonObject();
-
-        result.add("table", experimentDesignTableAsJson);
-
-        var fileUri =
-                experimentFileLocationService.getFileUri(
-                        experimentAccession, ExperimentFileType.EXPERIMENT_DESIGN, accessKey).toString();
-
-        result.addProperty("downloadUrl", fileUri);
-
-        return result;
-    }
-
     public JsonArray getDownloads(String experimentAccession, String accessKey) {
         var result = new JsonArray();
         var experiment = experimentTrader.getExperiment(experimentAccession, accessKey);

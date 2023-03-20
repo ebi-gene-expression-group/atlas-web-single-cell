@@ -53,6 +53,8 @@ pipeline {
                     '-PjdbcPassword=postgres ' +
                     '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
                     '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PsolrUser=solr ' +
+                    '-PsolrPassword=SolrRocks ' +
                     ':atlas-web-core:testClasses'
           }
         }
@@ -95,6 +97,8 @@ pipeline {
                     '-PjdbcPassword=postgres ' +
                     '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
                     '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PsolrUser=solr ' +
+                    '-PsolrPassword=SolrRocks ' +
                     ':app:testClasses'
           }
         }

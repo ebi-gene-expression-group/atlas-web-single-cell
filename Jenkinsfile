@@ -1,6 +1,7 @@
 pipeline {
   options {
     buildDiscarder(logRotator(numToKeepStr: '10'))
+    disableConcurrentBuilds()
   }
   
   agent {
@@ -51,8 +52,10 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHosts=scxa-zk-fast-0.scxa-zk-hs.jenkins-gene-expression.svc.cluster.local:2181,scxa-zk-fast-1.scxa-zk-hs.jenkins-gene-expression.svc.cluster.local:2181,scxa-zk-fast-2.scxa-zk-hs.jenkins-gene-expression.svc.cluster.local:2181 ' +
-                    '-PsolrHosts=http://scxa-solrcloud-fast-0.scxa-solrcloud-fast-hs.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-fast-1.scxa-solrcloud-fast-hs.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
+                    '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PsolrUser=solr ' +
+                    '-PsolrPassword=SolrRocks ' +
                     ':atlas-web-core:testClasses'
           }
         }
@@ -94,6 +97,8 @@ pipeline {
                     '-PjdbcPassword=postgres ' +
                     '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
                     '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PsolrUser=solr ' +
+                    '-PsolrPassword=SolrRocks ' +
                     ':app:testClasses'
           }
         }
@@ -104,8 +109,8 @@ pipeline {
           }
           steps {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
-            sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-            sh './gradlew --no-watch-fs -PtestResultsPath=e2e :app:test --tests *WIT'
+            sh './gradlew -PsolrUser=solr -PsolrPassword=SolrRocks --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+            sh './gradlew -PsolrUser=solr -PsolrPassword=SolrRocks --no-watch-fs -PtestResultsPath=e2e :app:test --tests *WIT'
             sh './gradlew --no-watch-fs :app:jacocoTestReport'
           }
         }

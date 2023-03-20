@@ -18,7 +18,9 @@ services:
       - scxa-expdesign:/atlas-data/expdesign
 
     depends_on:
-      - scxa-flyway-test
+      - scxa-solrcloud-0
+      - scxa-solrcloud-1
+      - scxa-postgres-test
     environment:
       POSTGRES_HOST: $POSTGRES_HOST
       POSTGRES_DB: $POSTGRES_DB
@@ -39,10 +41,12 @@ services:
         -PjdbcPassword=$POSTGRES_PASSWORD
         -PzkHosts=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
         -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr
+        -PsolrUser=${SOLR_USER}
+        -PsolrPassword=${SOLR_PASSWORD}
         :app:testClasses &&
         gradle -PtestResultsPath=ut :app:test --tests *Test &&
-        gradle -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
-        gradle -PtestResultsPath=e2e :app:test --tests *WIT &&
+        gradle -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
+        gradle -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} -PtestResultsPath=e2e :app:test --tests *WIT &&
         gradle :app:jacocoTestReport
 
 volumes:

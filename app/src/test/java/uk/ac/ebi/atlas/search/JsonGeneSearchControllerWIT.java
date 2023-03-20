@@ -142,18 +142,21 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void ifSymbolQueryMatchesUniqueGeneIdIncludeIt() throws Exception {
-        var shouldBeMarkerGene =
-                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
-
         // Some gene IDs don’t have a symbol, e.g. ERCC-00044
         // Also, it turns out that some gene symbols like Vmn1r216 match more than one gene ID within the same species:
         // ENSMUSG00000115697 and ENSMUSG00000116057
-        // We don’t want any of those pesky gene IDs!
+        // We want an experiment that has symbols which match a single marker gene ID
+        var experimentAccession = "E-GEOD-81547";
+        var speciesName = "Homo_sapiens";
+
+        var shouldBeMarkerGene =
+                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment(experimentAccession);
+
         var matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(shouldBeMarkerGene, SYMBOL);
         while (matchingSymbols.isEmpty() ||
                 bioEntityPropertyDao.fetchGeneIdsForPropertyValue(
-                        SYMBOL, matchingSymbols.iterator().next()).size() > 1) {
-            shouldBeMarkerGene = jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
+                        SYMBOL, matchingSymbols.iterator().next(), speciesName).size() > 1) {
+            shouldBeMarkerGene = jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment(experimentAccession);
             matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(shouldBeMarkerGene, SYMBOL);
         }
 

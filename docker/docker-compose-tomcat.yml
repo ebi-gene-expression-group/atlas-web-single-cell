@@ -8,6 +8,7 @@ services:
       - atlas-test-net
     environment:
       JPDA_ADDRESS: "*:8000"
+      JAVA_OPTS: "-Dsolr.httpclient.builder.factory=org.apache.solr.client.solrj.impl.PreemptiveBasicAuthClientBuilderFactory -Dbasicauth=${SOLR_USER}:${SOLR_PASSWORD}"
     ports:
       - "8080:8080"
       - "8000:8000"

@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 
 import java.io.IOException;
@@ -33,7 +31,6 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemb
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class GeneSearchServiceTest {
     @Mock
     private GeneSearchDao geneSearchDaoMock;
@@ -50,13 +47,13 @@ class GeneSearchServiceTest {
 
     @Test
     void returnsCellIdsPerExperiment() {
-        String experimentAccession1 = generateRandomExperimentAccession();
-        String experimentAccession2 = generateRandomExperimentAccession();
-        String experimentAccession3 = generateRandomExperimentAccession();
-        String geneId = generateRandomEnsemblGeneId();
+        var experimentAccession1 = generateRandomExperimentAccession();
+        var experimentAccession2 = generateRandomExperimentAccession();
+        var experimentAccession3 = generateRandomExperimentAccession();
+        var geneId = generateRandomEnsemblGeneId();
 
-        Map<String, List<String>> ensg00000104957Cells =
-                    ImmutableMap.of(
+        var ensg00000104957Cells =
+                    ImmutableMap.<String, List<String>>of(
                             experimentAccession1,
                             ImmutableList.of("cell_id_1", "cell_id_2", "cell_id_3", "cell_id_4", "cell_id_5"),
                             experimentAccession2,
@@ -66,7 +63,7 @@ class GeneSearchServiceTest {
 
         when(geneSearchDaoMock.fetchCellIds(geneId)).thenReturn(ensg00000104957Cells);
 
-        Map<String, Map<String, List<String>>> result = subject.getCellIdsInExperiments(ImmutableSet.of(geneId));
+        var result = subject.getCellIdsInExperiments(geneId);
 
         assertThat(result)
                 .containsOnlyKeys(geneId)
@@ -75,15 +72,15 @@ class GeneSearchServiceTest {
 
     @Test
     void cellIdsPerExperimentForMultipleGeneIds() {
-        String experimentAccession1 = generateRandomExperimentAccession();
-        String experimentAccession2 = generateRandomExperimentAccession();
-        String experimentAccession3 = generateRandomExperimentAccession();
-        String experimentAccession4 = generateRandomExperimentAccession();
-        String experimentAccession5 = generateRandomExperimentAccession();
-        String geneId1 = generateRandomEnsemblGeneId();
-        String geneId2 = generateRandomEnsemblGeneId();
+        var experimentAccession1 = generateRandomExperimentAccession();
+        var experimentAccession2 = generateRandomExperimentAccession();
+        var experimentAccession3 = generateRandomExperimentAccession();
+        var experimentAccession4 = generateRandomExperimentAccession();
+        var experimentAccession5 = generateRandomExperimentAccession();
+        var geneId1 = generateRandomEnsemblGeneId();
+        var geneId2 = generateRandomEnsemblGeneId();
 
-        Map<String, List<String>> ensfoobar1Cells = ImmutableMap.of(
+        var ensfoobar1Cells = ImmutableMap.<String, List<String>>of(
                 experimentAccession1,
                 ImmutableList.of("cell_id_1", "cell_id_2", "cell_id_3", "cell_id_4", "cell_id_5"),
                 experimentAccession2,
@@ -91,22 +88,22 @@ class GeneSearchServiceTest {
                 experimentAccession3,
                 ImmutableList.of("cell_id_9", "cell_id_10"));
 
-        Map<String, List<String>> ensfoobar2Cells = ImmutableMap.of(
+        var ensfoobar2Cells = ImmutableMap.<String, List<String>>of(
                 experimentAccession4, ImmutableList.of("cell_id_11", "cell_id_12", "cell_id_13"),
                 experimentAccession5, ImmutableList.of("cell_id_14", "cell_id_15"));
 
         when(geneSearchDaoMock.fetchCellIds(geneId1)).thenReturn(ensfoobar1Cells);
         when(geneSearchDaoMock.fetchCellIds(geneId2)).thenReturn(ensfoobar2Cells);
 
-        assertThat(subject.getCellIdsInExperiments(ImmutableSet.of(geneId1, geneId2)))
+        assertThat(subject.getCellIdsInExperiments(geneId1, geneId2))
                 .containsAllEntriesOf(ImmutableMap.of(geneId1, ensfoobar1Cells, geneId2, ensfoobar2Cells));
     }
 
     @Test
     void markerGeneProfilesForOneGeneId() {
-        String experimentAccession1 = generateRandomExperimentAccession();
-        String experimentAccession2 = generateRandomExperimentAccession();
-        String geneId = generateRandomEnsemblGeneId();
+        var experimentAccession1 = generateRandomExperimentAccession();
+        var experimentAccession2 = generateRandomExperimentAccession();
+        var geneId = generateRandomEnsemblGeneId();
 
         when(geneSearchDaoMock.fetchMinimumMarkerProbability(experimentAccession1))
                 .thenReturn(ImmutableMap.of(geneId, 0.0));
@@ -126,7 +123,7 @@ class GeneSearchServiceTest {
                 .fetchExperimentAccessionsWhereGeneIsMarker(geneId))
                 .thenReturn(ImmutableList.of(experimentAccession1, experimentAccession2));
 
-        Map<String, Map<String, Map<Integer, List<Integer>>>> result = subject.getMarkerGeneProfile(ImmutableSet.of(geneId));
+        var result = subject.getMarkerGeneProfile(geneId);
 
         assertThat(result)
                 .isNotEmpty()
@@ -139,12 +136,12 @@ class GeneSearchServiceTest {
 
     @Test
     void markerGeneProfilesForMultipleGeneIds() {
-        String experimentAccession1 = generateRandomExperimentAccession();
-        String experimentAccession2 = generateRandomExperimentAccession();
-        String experimentAccession3 = generateRandomExperimentAccession();
-        String experimentAccession4 = generateRandomExperimentAccession();
-        String geneId1 = generateRandomEnsemblGeneId();
-        String geneId2 = generateRandomEnsemblGeneId();
+        var experimentAccession1 = generateRandomExperimentAccession();
+        var experimentAccession2 = generateRandomExperimentAccession();
+        var experimentAccession3 = generateRandomExperimentAccession();
+        var experimentAccession4 = generateRandomExperimentAccession();
+        var geneId1 = generateRandomEnsemblGeneId();
+        var geneId2 = generateRandomEnsemblGeneId();
 
         when(geneSearchDaoMock.fetchMinimumMarkerProbability(experimentAccession1))
                 .thenReturn(ImmutableMap.of(geneId1, 0.0));
@@ -183,7 +180,7 @@ class GeneSearchServiceTest {
         when(geneSearchDaoMock.fetchExperimentAccessionsWhereGeneIsMarker(geneId2))
                 .thenReturn(ImmutableList.of(experimentAccession3, experimentAccession4));
 
-        assertThat(subject.getMarkerGeneProfile(ImmutableSet.of(geneId1, geneId2)))
+        assertThat(subject.getMarkerGeneProfile(geneId1, geneId2))
                 .containsAllEntriesOf(
                         ImmutableMap.of(
                                 geneId1,
@@ -198,8 +195,8 @@ class GeneSearchServiceTest {
 
     @Test
     void returnsFacets() {
-        String experimentAccession1 = generateRandomExperimentAccession();
-        String experimentAccession2 = generateRandomExperimentAccession();
+        var experimentAccession1 = generateRandomExperimentAccession();
+        var experimentAccession2 = generateRandomExperimentAccession();
 
         when(geneSearchDaoMock.getFacets(anyList(), any(String[].class)))
                 .thenReturn(ImmutableMap.of(
@@ -209,15 +206,13 @@ class GeneSearchServiceTest {
                         experimentAccession2, ImmutableMap.of(
                                 "inferred_cell_type_-_ontology_labels", Arrays.asList("immune cell", "liver cell", "stem cell"),
                                 "organism_part", Collections.singletonList("liver"),
-                                "species", Arrays.asList("homo sapiens", "mus musculus"))
-                ));
+                                "species", Arrays.asList("homo sapiens", "mus musculus"))));
 
-        Map<String, Map<String, List<String>>> result = subject.getFacets(Arrays.asList("cell_id_1", "cell_id_2"));
+        var result = subject.getFacets(Arrays.asList("cell_id_1", "cell_id_2"));
 
         assertThat(result)
                 .isNotEmpty()
                 .containsOnlyKeys(experimentAccession1, experimentAccession2);
-
         assertThat(result.get(experimentAccession1)).containsKeys("species");
         assertThat(result.get(experimentAccession2)).containsKeys("species");
     }
@@ -227,7 +222,7 @@ class GeneSearchServiceTest {
         doThrow(new UncheckedIOException(new IOException())).when(geneSearchDaoMock).fetchCellIds(anyString());
 
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(
-                () -> subject.getCellIdsInExperiments(ImmutableSet.of(generateRandomExperimentAccession())))
+                () -> subject.getCellIdsInExperiments(generateRandomExperimentAccession()))
                 .withCauseInstanceOf(ExecutionException.class);
     }
 
@@ -244,11 +239,9 @@ class GeneSearchServiceTest {
         when(geneSearchDaoMock.fetchCellIds(anyString()))
                 .thenReturn(
                         Map.of(experimentAccession, List.of(existingCellId1)),
-                        Map.of(experimentAccession, List.of(existingCellId2))
-                );
+                        Map.of(experimentAccession, List.of(existingCellId2)));
 
-        var actualCellIds =
-                subject.getCellIdsFromGeneIds(validGeneIds);
+        var actualCellIds = subject.getCellIdsFromGeneIds(validGeneIds);
 
         assertThat(actualCellIds).containsSequence(expectedCellIds);
     }

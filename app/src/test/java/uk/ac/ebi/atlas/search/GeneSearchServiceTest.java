@@ -201,7 +201,7 @@ class GeneSearchServiceTest {
         String experimentAccession1 = generateRandomExperimentAccession();
         String experimentAccession2 = generateRandomExperimentAccession();
 
-        when(geneSearchDaoMock.getFacets(anyList(), any(String.class)))
+        when(geneSearchDaoMock.getFacets(anyList(), any(String[].class)))
                 .thenReturn(ImmutableMap.of(
                         experimentAccession1, ImmutableMap.of(
                                 "inferred_cell_type_-_ontology_labels", Arrays.asList("neuron", "stem cell"),

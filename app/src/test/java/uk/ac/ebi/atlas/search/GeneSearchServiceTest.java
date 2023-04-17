@@ -63,7 +63,7 @@ class GeneSearchServiceTest {
 
         when(geneSearchDaoMock.fetchCellIds(geneId)).thenReturn(ensg00000104957Cells);
 
-        var result = subject.getCellIdsInExperiments(ImmutableSet.of(geneId));
+        var result = subject.getCellIdsInExperiments(ImmutableList.of(geneId));
 
         assertThat(result)
                 .containsOnlyKeys(geneId)
@@ -123,7 +123,7 @@ class GeneSearchServiceTest {
                 .fetchExperimentAccessionsWhereGeneIsMarker(geneId))
                 .thenReturn(ImmutableList.of(experimentAccession1, experimentAccession2));
 
-        var result = subject.getMarkerGeneProfile(ImmutableSet.of(geneId));
+        var result = subject.getMarkerGeneProfile(ImmutableList.of(geneId));
 
         assertThat(result)
                 .isNotEmpty()

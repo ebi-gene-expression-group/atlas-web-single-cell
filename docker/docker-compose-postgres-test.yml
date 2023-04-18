@@ -6,7 +6,6 @@ services:
     container_name: ${POSTGRES_HOST}
     networks:
       - atlas-test-net
-    restart: always
     command: -c max_wal_size=1GB
     ports:
       - "5432:5432"

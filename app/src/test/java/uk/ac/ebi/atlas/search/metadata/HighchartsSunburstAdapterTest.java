@@ -75,11 +75,33 @@ class HighchartsSunburstAdapterTest {
                                 species1OrganismPart2ExperimentAccession)));
     }
 
-    @DisplayName("Make sure that 'id' and 'parent' attribute values of the CellTypeWheel result always returns different values." +
-                 "They should not be the same within the object")
+    @DisplayName("This unit test use the randomised input test data and test the functionality of the wheel")
     @Test
     void cellTypeWheelSunburstResultObjectShouldNotContainIdAndParentAttributeValuesSame() {
         ImmutableSet<ImmutableMap<String, ?>> result = subject.getCellTypeWheelSunburst(metadataSearchTerm,cellTypeWheelServiceMock
+                .search(metadataSearchTerm, species1.getName()));
+        assertThat(result).hasSize(2);
+        assertThat(result.asList().get(0).get("id")).isNotEqualTo(result.asList().get(0).get("parent"));
+        assertThat(result.asList().get(1).get("id")).isNotEqualTo(result.asList().get(1).get("parent"));
+    }
+
+    @Test
+    @DisplayName("This test uses hardcoded mock test data produced by the public server and tests the pre and post-bugfix code precisely to make sure that bug will not reappear again." +
+            "Both unit tests look the same, the only difference is in the input test data.")
+    void ShouldThrowAssertionErrorIfWheelResultIdAndParentAttributeValuesAreSame() {
+        when(cellTypeWheelServiceMock.search(metadataSearchTerm, species1.getName()))
+                .thenReturn(
+                        ImmutableSet.of(
+                                ImmutablePair.of(
+                                        ImmutableList.of("Gallus gallus"), ("E-CURD-13"))),
+                        ImmutableSet.of(
+                                ImmutablePair.of(
+                                        ImmutableList.of("Gallus gallus"), ("E-CURD-12"))),
+                        ImmutableSet.of(
+                                ImmutablePair.of(
+                                        ImmutableList.of("Gallus gallus"), ("E-GEOD-89910"))));
+
+        ImmutableSet<ImmutableMap<String, ?>> result = subject.getCellTypeWheelSunburst("Gallus gallus",cellTypeWheelServiceMock
                 .search(metadataSearchTerm, species1.getName()));
         assertThat(result).hasSize(2);
         assertThat(result.asList().get(0).get("id")).isNotEqualTo(result.asList().get(0).get("parent"));

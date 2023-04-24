@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-import uk.ac.ebi.atlas.model.experiment.ExperimentDesignTable;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
@@ -34,11 +33,6 @@ public class ExperimentPageContentSerializer {
 
         var results = experimentPageContentService.getTsnePlotData(experiment.getAccession());
         availableTabs.add(customContentTab("results", "Results", results));
-
-        var experimentDesignJson =
-                experimentPageContentService.getExperimentDesign(
-                        experiment.getAccession(), new ExperimentDesignTable(experiment).asJson(), accessKey);
-        availableTabs.add(customContentTab("experiment-design", "Experiment Design", experimentDesignJson));
 
         var sections = new JsonObject();
         sections.add("sections", experimentPageContentService.getSupplementaryInformation(experiment.getAccession()));

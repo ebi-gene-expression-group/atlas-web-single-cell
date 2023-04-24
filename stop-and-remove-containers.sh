@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-source ${SCRIPT_DIR}/docker/dev.env
+source ${SCRIPT_DIR}/docker/dev-test.env
 
 docker stop \
 ${SOLR_CLOUD_CONTAINER_1_NAME} ${SOLR_CLOUD_CONTAINER_2_NAME} \

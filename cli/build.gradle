@@ -25,26 +25,26 @@ dependencies {
 processResources {
     filesMatching('configuration.properties') {
         expand(
-                dataFilesLocation: project.hasProperty('dataFilesLocation') ? dataFilesLocation : "${System.env.ATLAS_DATA_PATH}",
-                experimentFilesLocation: project.hasProperty('experimentFilesLocation') ? experimentFilesLocation : "${System.env.ATLAS_DATA_PATH}/scxa",
-                experimentDesignLocation: project.hasProperty('experimentDesignLocation') ? experimentDesignLocation : "${System.env.ATLAS_DATA_PATH}/scxa/expdesign"
+                dataFilesLocation: project.findProperty('dataFilesLocation') ?: "${System.env.ATLAS_DATA_PATH}",
+                experimentFilesLocation: project.findProperty('experimentFilesLocation') ?: "${System.env.ATLAS_DATA_PATH}/scxa",
+                experimentDesignLocation: project.findProperty('experimentDesignLocation') ?: "${System.env.ATLAS_DATA_PATH}/scxa/expdesign"
         )
     }
 
     filesMatching('jdbc.properties') {
         expand(
-                jdbcUrl: project.hasProperty('jdbcUrl') ? jdbcUrl : "jdbc:postgresql://${System.env.ATLAS_POSTGRES_HOST}:5432/${System.env.ATLAS_POSTGRES_DB}",
-                jdbcUsername: project.hasProperty('jdbcUsername') ? jdbcUsername : "${System.env.ATLAS_POSTGRES_USER}",
-                jdbcPassword: project.hasProperty('jdbcPassword') ? jdbcPassword : "${System.env.ATLAS_POSTGRES_PASSWORD}"
+                jdbcUrl: project.findProperty('jdbcUrl') ?: "jdbc:postgresql://${System.env.ATLAS_POSTGRES_HOST}:5432/${System.env.ATLAS_POSTGRES_DB}",
+                jdbcUsername: project.findProperty('jdbcUsername') ?: "${System.env.ATLAS_POSTGRES_USER}",
+                jdbcPassword: project.findProperty('jdbcPassword') ?: "${System.env.ATLAS_POSTGRES_PASSWORD}"
         )
     }
 
     filesMatching('solr.properties') {
         expand(
-                zkHosts: project.hasProperty('zkHosts') ? zkHosts : "${System.env.ATLAS_ZK_HOSTS}",
-                solrHosts: project.hasProperty('solrHosts') ? solrHosts : "${System.env.ATLAS_SOLR_HOSTS}",
-                solrUser: project.hasProperty('solrUser') ? solrUser : "${System.env.ATLAS_SOLR_USER}",
-                solrPassword: project.hasProperty('solrPassword') ? solrPassword : "${System.env.ATLAS_SOLR_PASSWORD}"
+                zkHosts: project.findProperty('zkHosts') ?: "${System.env.ATLAS_ZK_HOSTS}",
+                solrHosts: project.findProperty('solrHosts') ?: "${System.env.ATLAS_SOLR_HOSTS}",
+                solrUser: project.findProperty('solrUser') ?: "${System.env.ATLAS_SOLR_USER}",
+                solrPassword: project.findProperty('solrPassword') ?: "${System.env.ATLAS_SOLR_PASSWORD}"
         )
     }
 }

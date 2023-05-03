@@ -12,9 +12,6 @@ import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
@@ -109,22 +106,15 @@ public class CellPlotService {
 
         var defaultcellPlots = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
 
-        var cellPlotMethods = cellPlotMethods(experimentAccession);
-
-        var filteredCellPlots = cellPlotMethods.stream()
-                .filter(Objects::nonNull)
-                .filter(Predicate.not(String::isEmpty))
-                .collect(Collectors.toList());
-
         ImmutableMap.Builder<String, JsonObject> defaultPlotTypeAndOptions = new ImmutableMap.Builder<>();
-        if (!defaultcellPlots.isEmpty()) {
-            filteredCellPlots.forEach(method ->
-                    defaultPlotTypeAndOptions.put(method, getMiddleElement(defaultcellPlots.get(method))));
-        }
+
+        defaultcellPlots.forEach((method, options) -> defaultPlotTypeAndOptions.put(method, getMiddleElement(defaultcellPlots.get(method))));
+
         return defaultPlotTypeAndOptions.build();
     }
+
     private JsonObject getMiddleElement(List plotOptions) {
-        if (!plotOptions.isEmpty()) {
+        if (!plotOptions.isEmpty() && plotOptions.size() > 0) {
             if (plotOptions.size() % 2 == 0) { // even number
                 Object umapEvenItem = plotOptions.get((plotOptions.size() / 2 - 1));
                 return (JsonObject) umapEvenItem;

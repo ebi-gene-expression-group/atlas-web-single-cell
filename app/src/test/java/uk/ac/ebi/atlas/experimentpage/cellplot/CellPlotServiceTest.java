@@ -149,4 +149,13 @@ class CellPlotServiceTest {
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .isEmpty();
     }
+
+    @Test
+    void returnEmptyValuesIfAMethodDoesNotHaveParameterisation() {
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
+                .thenReturn(ImmutableMap.of("foo", List.of(new JsonObject())));
+
+        var result = subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4");
+        assertThat(result.size()).isGreaterThan(0);
+    }
 }

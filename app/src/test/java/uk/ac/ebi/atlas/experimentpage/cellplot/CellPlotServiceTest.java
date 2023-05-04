@@ -15,6 +15,7 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -154,8 +155,16 @@ class CellPlotServiceTest {
     void returnEmptyValuesIfAMethodDoesNotHaveParameterisation() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
                 .thenReturn(ImmutableMap.of("foo", List.of(new JsonObject())));
-
         var result = subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4");
         assertThat(result.size()).isGreaterThan(0);
+    }
+
+    @Test
+    void returnEmptyJsonObjectIfParametrisationIsNull() {
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
+                .thenReturn(ImmutableMap.of("foo", null));
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
+                .get("foo"))
+                .isEqualTo(Collections.emptyList());
     }
 }

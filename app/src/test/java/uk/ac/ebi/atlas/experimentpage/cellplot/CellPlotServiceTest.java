@@ -24,6 +24,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -131,13 +132,13 @@ class CellPlotServiceTest {
     @Test
     void fetchDefaultPlotMethodWithParameterisation() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("umap",
+                .thenReturn(ImmutableMap.of("UMAP",
                         List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
-                        "tsne",
+                        "t-SNE",
                         List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
 
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
-                .get("umap").getAsJsonObject()
+                .get("UMAP").getAsJsonObject()
                 .has("n_neighbors"));
     }
 
@@ -149,22 +150,21 @@ class CellPlotServiceTest {
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .isEmpty();
     }
-
     @Test
-    void returnEmptyJsonObjectIfParameterisationIsEmpty() {
+    void throwsNullPointerExceptionIfHardCodedTestMethodIsNotSameAsDBMethod() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("foo", List.of()));
+                .thenReturn(ImmutableMap.of("UMAP",
+                        List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
+                        "t-SNE",
+                        List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
 
-        var result = subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4");
-        assertThat(result.get("foo").getAsJsonObject().toString()).isEqualTo("{}");
+        assertThrows(NullPointerException.class,
+                () -> {
+                    //We are passing method 'umap' which is small letters, But DB has capilized method 'UMAP'
+                    //This gives null List as MAP fetches from the DB, MAP keys are case-sensitive.
+                    subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
+                            .get("umap").getAsJsonObject();
+                });
     }
 
-    @Test
-    void returnEmptyJsonObjectIfParametrisationIsNull() {
-        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("foo", List.of()));
-
-        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
-                .get("foo").getAsJsonObject().toString()).isEqualTo("{}");
-    }
 }

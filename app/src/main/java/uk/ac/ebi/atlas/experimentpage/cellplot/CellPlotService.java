@@ -114,15 +114,9 @@ public class CellPlotService {
     }
 
     private JsonObject getMiddleElement(List plotOptions) {
-
-        if (plotOptions == null || plotOptions.isEmpty()) {
-            return new JsonObject();
-        } else {
             var plotOptionsSize = plotOptions.size();
             var middleOfPlotOptionsSize = plotOptionsSize % 2 == 0 ? plotOptionsSize / 2 - 1 : plotOptionsSize / 2;
             return (JsonObject) plotOptions.get(middleOfPlotOptionsSize);
-        }
-
     }
 
 }

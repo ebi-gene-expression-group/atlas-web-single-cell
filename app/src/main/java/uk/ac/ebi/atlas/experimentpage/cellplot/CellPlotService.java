@@ -104,11 +104,11 @@ public class CellPlotService {
 
     public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
 
-        var defaultcellPlots = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
+        var defaultCellPlots = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
 
         ImmutableMap.Builder<String, JsonObject> defaultPlotTypeAndOptions = new ImmutableMap.Builder<>();
 
-        defaultcellPlots.forEach((method, options) -> defaultPlotTypeAndOptions.put(method, getMiddleElement(defaultcellPlots.get(method))));
+        defaultCellPlots.forEach((method, options) -> defaultPlotTypeAndOptions.put(method, getMiddleElement(defaultCellPlots.get(method))));
 
         return defaultPlotTypeAndOptions.build();
     }

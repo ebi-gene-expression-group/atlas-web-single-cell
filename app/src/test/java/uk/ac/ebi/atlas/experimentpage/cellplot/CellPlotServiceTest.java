@@ -129,7 +129,7 @@ class CellPlotServiceTest {
     }
 
     @Test
-    void fetchDefaultPlotMethodWithParameterisation(){
+    void fetchDefaultPlotMethodWithParameterisation() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
                 .thenReturn(ImmutableMap.of("umap",
                         List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
@@ -142,7 +142,7 @@ class CellPlotServiceTest {
     }
 
     @Test
-    void returnEmptyResultIfThereIsNoDefaultPlotMethodAndParameterisation(){
+    void returnEmptyResultIfThereIsNoDefaultPlotMethodAndParameterisation() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .thenReturn(ImmutableMap.of());
 
@@ -154,14 +154,16 @@ class CellPlotServiceTest {
     void returnEmptyJsonObjectIfParameterisationIsEmpty() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
                 .thenReturn(ImmutableMap.of("foo", List.of()));
+
         var result = subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4");
-        assertThat(result .get("foo").getAsJsonObject().toString()).isEqualTo("{}");
+        assertThat(result.get("foo").getAsJsonObject().toString()).isEqualTo("{}");
     }
 
     @Test
     void returnEmptyJsonObjectIfParametrisationIsNull() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
                 .thenReturn(ImmutableMap.of("foo", List.of()));
+
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
                 .get("foo").getAsJsonObject().toString()).isEqualTo("{}");
     }

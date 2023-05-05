@@ -118,13 +118,9 @@ public class CellPlotService {
         if (plotOptions == null || plotOptions.isEmpty()) {
             return new JsonObject();
         } else {
-            if (plotOptions.size() % 2 == 0) { // even number
-                Object umapEvenItem = plotOptions.get((plotOptions.size() / 2 - 1));
-                return (JsonObject) umapEvenItem;
-            } else { //odd number
-                Object umapOddItem = plotOptions.get((plotOptions.size() / 2));
-                return (JsonObject) umapOddItem;
-            }
+            var plotOptionsSize = plotOptions.size();
+            var middleOfPlotOptionsSize = plotOptionsSize % 2 == 0 ? plotOptionsSize / 2 - 1 : plotOptionsSize / 2;
+            return (JsonObject) plotOptions.get(middleOfPlotOptionsSize);
         }
 
     }

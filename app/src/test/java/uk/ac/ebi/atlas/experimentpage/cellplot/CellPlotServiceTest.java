@@ -150,6 +150,7 @@ class CellPlotServiceTest {
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .isEmpty();
     }
+
     @Test
     void throwsNullPointerExceptionIfHardCodedTestMethodIsNotSameAsDBMethod() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
@@ -158,13 +159,11 @@ class CellPlotServiceTest {
                         "t-SNE",
                         List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
 
-        assertThrows(NullPointerException.class,
-                () -> {
-                    //We are passing method 'umap' which is small letters, But DB has capilized method 'UMAP'
-                    //This gives null List as MAP fetches from the DB, MAP keys are case-sensitive.
-                    subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
-                            .get("umap").getAsJsonObject();
-                });
+        assertThrows(NullPointerException.class, () -> {
+            //We are passing method 'umap' which is small letters, But DB has capilized method 'UMAP'
+            //This gives null List as MAP fetches from the DB, MAP keys are case-sensitive.
+            subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
+                    .get("umap").getAsJsonObject();
+        });
     }
-
 }

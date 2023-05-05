@@ -15,7 +15,6 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -152,19 +151,18 @@ class CellPlotServiceTest {
     }
 
     @Test
-    void returnEmptyValuesIfAMethodDoesNotHaveParameterisation() {
+    void returnEmptyJsonObjectIfParameterisationIsEmpty() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("foo", List.of(new JsonObject())));
+                .thenReturn(ImmutableMap.of("foo", List.of()));
         var result = subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4");
-        assertThat(result.size()).isGreaterThan(0);
+        assertThat(result .get("foo").getAsJsonObject().toString()).isEqualTo("{}");
     }
 
     @Test
     void returnEmptyJsonObjectIfParametrisationIsNull() {
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("foo", null));
+                .thenReturn(ImmutableMap.of("foo", List.of()));
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
-                .get("foo"))
-                .isEqualTo(Collections.emptyList());
+                .get("foo").getAsJsonObject().toString()).isEqualTo("{}");
     }
 }

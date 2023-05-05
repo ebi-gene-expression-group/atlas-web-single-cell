@@ -115,7 +115,7 @@ public class CellPlotService {
 
     private JsonObject getMiddleElement(List plotOptions) {
 
-        if (plotOptions.isEmpty() || plotOptions == null) {
+        if (plotOptions == null || plotOptions.isEmpty()) {
             return new JsonObject();
         } else {
             if (plotOptions.size() % 2 == 0) { // even number

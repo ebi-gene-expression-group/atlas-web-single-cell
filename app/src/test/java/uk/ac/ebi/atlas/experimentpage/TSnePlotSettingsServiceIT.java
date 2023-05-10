@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -160,9 +161,9 @@ class TSnePlotSettingsServiceIT {
         }
     }
 
-    private Stream<String> randomSingleCellExperimentAccessionProvider() {
+    private Stream<Arguments> randomSingleCellExperimentAccessionProvider() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var plotMethod = jdbcTestUtils.fetchRandomPlotMethod(experimentAccession);
-        return Stream.of(experimentAccession,plotMethod);
+        return Stream.of(Arguments.of(experimentAccession,plotMethod));
     }
 }

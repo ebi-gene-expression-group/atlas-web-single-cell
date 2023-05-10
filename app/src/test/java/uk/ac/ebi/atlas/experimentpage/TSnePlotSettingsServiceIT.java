@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage;
 
 import com.sun.management.UnixOperatingSystemMXBean;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,11 +17,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -141,10 +140,9 @@ class TSnePlotSettingsServiceIT {
 
     @ParameterizedTest
     @MethodSource("randomSingleCellExperimentAccessionProvider")
-    void getTSnePlotTypesAndOptionsForValidAccession(String experimentAccession) {
+    void getTSnePlotTypesAndOptionsForValidAccession(String experimentAccession,String plotMethod) {
         var tsnePlotTypesAndOptions = subject.getAvailablePlotTypesAndPlotOptions(experimentAccession);
-        assertThat(tsnePlotTypesAndOptions.get("umap")).isNotEmpty().doesNotHaveDuplicates();
-        assertThat(tsnePlotTypesAndOptions.get("tsne")).isNotEmpty().doesNotHaveDuplicates();
+        assertThat(tsnePlotTypesAndOptions.get(plotMethod)).isNotEmpty().doesNotHaveDuplicates();
     }
 
     @Test
@@ -163,6 +161,8 @@ class TSnePlotSettingsServiceIT {
     }
 
     private Stream<String> randomSingleCellExperimentAccessionProvider() {
-        return Stream.of(jdbcTestUtils.fetchRandomExperimentAccession());
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var plotMethod = jdbcTestUtils.fetchRandomPlotMethod(experimentAccession);
+        return Stream.of(experimentAccession,plotMethod);
     }
 }

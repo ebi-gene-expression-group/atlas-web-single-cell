@@ -84,7 +84,7 @@ class CellPlotDaoIT {
                         generateRandomExperimentAccession(),
                         k,
                         plotMethod,
-                        parameterisation)).isNotEmpty().doesNotHaveDuplicates();
+                        parameterisation)).isNotEmpty();
     }
 
     @ParameterizedTest

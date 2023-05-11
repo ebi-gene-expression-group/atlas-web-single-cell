@@ -73,18 +73,12 @@ class CellPlotDaoIT {
     }
 
 
-    @ParameterizedTest
-    @MethodSource("randomExperimentAccessionPlotWithKProvider")
-    void fetchCellPlotWithK(String experimentAccession,
-                            int k,
-                            String plotMethod,
-                            Map<String, Integer> parameterisation) {
+    @Test
+    void fetchCellPlotWithK() {
         assertThat(
-                subject.fetchCellPlotWithK(
-                        generateRandomExperimentAccession(),
-                        k,
-                        plotMethod,
-                        parameterisation)).isNotEmpty();
+                subject.fetchCellPlotWithK("E-ENAD-53", 14, "umap", Map.of("n_neighbors", 15)))
+                .isNotEmpty()
+                .doesNotHaveDuplicates();
     }
 
     @ParameterizedTest

@@ -128,7 +128,7 @@ class TSnePlotSettingsServiceIT {
     // This is the next best thing I could come up with... sorry! :(
     @Disabled // I added this annotation for now to turn this test of as we discussed this on the stand-up meeting
     @ParameterizedTest
-    @MethodSource("randomSingleCellExperimentAccessionProvider")
+    @MethodSource("randomisedAccessionAndPlotMethodProvider")
     void filesClosed(String experimentAccession) {
         long fileDescriptorsOpenBefore = getOpenFileCount();
         subject.getAvailableKs(experimentAccession);
@@ -140,7 +140,7 @@ class TSnePlotSettingsServiceIT {
     }
 
     @ParameterizedTest
-    @MethodSource("randomSingleCellExperimentAccessionProvider")
+    @MethodSource("randomisedAccessionAndPlotMethodProvider")
     void getTSnePlotTypesAndOptionsForValidAccession(String experimentAccession, String plotMethod) {
         var tsnePlotTypesAndOptions = subject.getAvailablePlotTypesAndPlotOptions(experimentAccession);
         assertThat(tsnePlotTypesAndOptions.get(plotMethod)).isNotEmpty().doesNotHaveDuplicates();
@@ -161,9 +161,9 @@ class TSnePlotSettingsServiceIT {
         }
     }
 
-    private Stream<Arguments> randomSingleCellExperimentAccessionProvider() {
+    private Stream<Arguments> randomisedAccessionAndPlotMethodProvider() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var plotMethod = jdbcTestUtils.fetchRandomPlotMethod(experimentAccession);
-        return Stream.of(Arguments.of(experimentAccession, plotMethod));
+        return Stream.of(Arguments.of(experimentAccession,plotMethod));
     }
 }

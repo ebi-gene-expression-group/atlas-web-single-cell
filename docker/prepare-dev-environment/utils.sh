@@ -1,6 +1,6 @@
 function print_stage_name() {
-  printf '%b ' "$1"
-  if [ "$LOG_FILE" = "/dev/stdout" ]; then
+Wr  printf '%b ' "${1}"
+  if [ "${LOG_FILE}" = "/dev/stdout" ]; then
     printf '\n'
   fi
 }

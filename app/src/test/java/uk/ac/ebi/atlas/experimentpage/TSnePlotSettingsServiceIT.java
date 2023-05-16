@@ -164,6 +164,6 @@ class TSnePlotSettingsServiceIT {
     private Stream<Arguments> randomSingleCellExperimentAccessionProvider() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var plotMethod = jdbcTestUtils.fetchRandomPlotMethod(experimentAccession);
-        return Stream.of(Arguments.of(experimentAccession,plotMethod));
+        return Stream.of(Arguments.of(experimentAccession, plotMethod));
     }
 }

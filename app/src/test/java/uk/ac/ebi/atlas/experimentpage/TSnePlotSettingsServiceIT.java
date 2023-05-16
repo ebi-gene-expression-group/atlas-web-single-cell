@@ -141,7 +141,7 @@ class TSnePlotSettingsServiceIT {
 
     @ParameterizedTest
     @MethodSource("randomSingleCellExperimentAccessionProvider")
-    void getTSnePlotTypesAndOptionsForValidAccession(String experimentAccession,String plotMethod) {
+    void getTSnePlotTypesAndOptionsForValidAccession(String experimentAccession, String plotMethod) {
         var tsnePlotTypesAndOptions = subject.getAvailablePlotTypesAndPlotOptions(experimentAccession);
         assertThat(tsnePlotTypesAndOptions.get(plotMethod)).isNotEmpty().doesNotHaveDuplicates();
     }

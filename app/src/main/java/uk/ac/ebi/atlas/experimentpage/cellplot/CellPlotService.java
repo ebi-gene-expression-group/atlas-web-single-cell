@@ -104,13 +104,11 @@ public class CellPlotService {
 
     public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
 
-        var defaultCellPlots = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
-
-        ImmutableMap.Builder<String, JsonObject> defaultPlotTypeAndOptions = new ImmutableMap.Builder<>();
-
-        defaultCellPlots.forEach((method, options) -> defaultPlotTypeAndOptions.put(method, getMiddleElement(defaultCellPlots.get(method))));
-
-        return defaultPlotTypeAndOptions.build();
+        return cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                .entrySet().stream()
+                .filter(defaultPlotTypeAndOptions -> !defaultPlotTypeAndOptions.getValue().isEmpty())
+                .collect(toImmutableMap(Map.Entry::getKey,
+                        options -> getMiddleElement(options.getValue())));
     }
 
     private JsonObject getMiddleElement(List plotOptions) {

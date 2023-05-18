@@ -1,7 +1,7 @@
 version: "3.6"
 
 services:
-  scxa-solrcloud-zookeeper-0:
+  solrcloud-zookeeper-0:
     container_name: ${SOLR_CLOUD_ZK_CONTAINER_1_NAME}
     image: zookeeper:3.7.0
     networks:
@@ -18,7 +18,7 @@ services:
       ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
       ZOO_CFG_EXTRA: metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true
 
-  scxa-solrcloud-zookeeper-1:
+  solrcloud-zookeeper-1:
     container_name: ${SOLR_CLOUD_ZK_CONTAINER_2_NAME}
     image: zookeeper:3.7.0
     networks:
@@ -35,7 +35,7 @@ services:
       ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
       ZOO_CFG_EXTRA: metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true
 
-  scxa-solrcloud-zookeeper-2:
+  solrcloud-zookeeper-2:
     container_name: ${SOLR_CLOUD_ZK_CONTAINER_3_NAME}
     image: zookeeper:3.7.0
     networks:
@@ -52,7 +52,7 @@ services:
       ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
       ZOO_CFG_EXTRA: metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7000 metricsProvider.exportJvmInfo=true
 
-  scxa-solrcloud-0:
+  solrcloud-0:
     container_name: ${SOLR_CLOUD_CONTAINER_1_NAME}
     image: solr:8.7.0
     networks:
@@ -67,13 +67,13 @@ services:
       SOLR_OPTS: -Denable.packages=true -Dsolr.max.booleanClauses=100000000
       ZK_HOST: ${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
     secrets:
-      - scxa-solrcloud.der
+      - solrcloud.der
     depends_on:
-      - scxa-solrcloud-zookeeper-0
-      - scxa-solrcloud-zookeeper-1
-      - scxa-solrcloud-zookeeper-2
+      - solrcloud-zookeeper-0
+      - solrcloud-zookeeper-1
+      - solrcloud-zookeeper-2
 
-  scxa-solrcloud-1:
+  solrcloud-1:
     container_name: ${SOLR_CLOUD_CONTAINER_2_NAME}
     image: solr:8.7.0
     networks:
@@ -88,35 +88,33 @@ services:
       SOLR_OPTS: -Denable.packages=true -Dsolr.max.booleanClauses=100000000
       ZK_HOST: ${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
     secrets:
-      - scxa-solrcloud.der
+      - solrcloud.der
     depends_on:
-      - scxa-solrcloud-zookeeper-0
-      - scxa-solrcloud-zookeeper-1
-      - scxa-solrcloud-zookeeper-2
+      - solrcloud-zookeeper-0
+      - solrcloud-zookeeper-1
+      - solrcloud-zookeeper-2
 
-# openssl genrsa -out scxa-solrcloud.pem 512
-# openssl rsa -in scxa-solrcloud.pem -pubout -outform DER -out scxa-solrcloud.der
 secrets:
-  scxa-solrcloud.der:
-    file: ${SOLR_PUBLIC_KEY}
+  solrcloud.der:
+    file: ${SOLR_PUBLIC_KEY:-/dev/null}
 
 volumes:
   zookeeper-0-data:
-    name: scxa-solrcloud-zookeeper-0-data-solr-8.7
+    name: ${PROJECT_NAME:?err}_solrcloud-zookeeper-0-data
   zookeeper-0-datalog:
-    name: scxa-solrcloud-zookeeper-0-datalog-solr-8.7
+    name: ${PROJECT_NAME:?err}_solrcloud-zookeeper-0-datalog
   zookeeper-1-data:
-    name: scxa-solrcloud-zookeeper-1-data-solr-8.7
+    name: ${PROJECT_NAME:?err}_solrcloud-zookeeper-1-data
   zookeeper-1-datalog:
-    name: scxa-solrcloud-zookeeper-1-datalog-solr-8.7
+    name: ${PROJECT_NAME:?err}_solrcloud-zookeeper-1-datalog
   zookeeper-2-data:
-    name: scxa-solrcloud-zookeeper-2-data-solr-8.7
+    name: ${PROJECT_NAME:?err}_solrcloud-zookeeper-2-data
   zookeeper-2-datalog:
-    name: scxa-solrcloud-zookeeper-2-datalog-solr-8.7
+    name: ${PROJECT_NAME:?err}_solrcloud-zookeeper-2-datalog
   solrcloud-0-data:
-    name: scxa-solrcloud-0-data-solr-8.7
+    name: ${PROJECT_NAME:?err}_solrcloud-0-data
   solrcloud-1-data:
-    name: scxa-solrcloud-1-data-solr-8.7
+    name: ${PROJECT_NAME:?err}_solrcloud-1-data
 
 networks:
   atlas-test-net:

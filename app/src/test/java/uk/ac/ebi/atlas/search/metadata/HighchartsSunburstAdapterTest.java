@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.search.metadata;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ebi.atlas.species.Species;
+import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,10 +75,10 @@ class HighchartsSunburstAdapterTest {
                                 species1OrganismPart2ExperimentAccession)));
     }
 
-    @DisplayName("This unit test use the randomised input test data and test the functionality of the wheel")
+    @DisplayName("Cell type wheel should not have the same value for the ID and its parent")
     @Test
     void cellTypeWheelSunburstResultObjectShouldNotContainIdAndParentAttributeValuesSame() {
-        ImmutableSet<ImmutableMap<String, ?>> result = subject.getCellTypeWheelSunburst(metadataSearchTerm,cellTypeWheelServiceMock
+        var result = subject.getCellTypeWheelSunburst(metadataSearchTerm,cellTypeWheelServiceMock
                 .search(metadataSearchTerm, species1.getName()));
         assertThat(result).hasSize(2);
         assertThat(result.asList().get(0).get("id")).isNotEqualTo(result.asList().get(0).get("parent"));
@@ -86,23 +86,27 @@ class HighchartsSunburstAdapterTest {
     }
 
     @Test
-    @DisplayName("This test uses hardcoded mock test data produced by the public server and tests the pre and post-bugfix code precisely to make sure that bug will not reappear again." +
-            "Both unit tests look the same, the only difference is in the input test data.")
     void ShouldThrowAssertionErrorIfWheelResultIdAndParentAttributeValuesAreSame() {
+        var species = generateRandomSpecies();
+        var experimentAccession1 = RandomDataTestUtils.generateRandomExperimentAccession();
+        var experimentAccession2 = RandomDataTestUtils.generateRandomExperimentAccession();
+        var experimentAccession3 = RandomDataTestUtils.generateRandomExperimentAccession();
+
         when(cellTypeWheelServiceMock.search(metadataSearchTerm, species1.getName()))
                 .thenReturn(
                         ImmutableSet.of(
                                 ImmutablePair.of(
-                                        ImmutableList.of("Gallus gallus"), ("E-CURD-13"))),
+                                        ImmutableList.of(species.getName()), (experimentAccession1))),
                         ImmutableSet.of(
                                 ImmutablePair.of(
-                                        ImmutableList.of("Gallus gallus"), ("E-CURD-12"))),
+                                        ImmutableList.of(species.getName()), (experimentAccession2))),
                         ImmutableSet.of(
                                 ImmutablePair.of(
-                                        ImmutableList.of("Gallus gallus"), ("E-GEOD-89910"))));
+                                        ImmutableList.of(species.getName()), (experimentAccession3))));
 
-        ImmutableSet<ImmutableMap<String, ?>> result = subject.getCellTypeWheelSunburst("Gallus gallus",cellTypeWheelServiceMock
-                .search(metadataSearchTerm, species1.getName()));
+        var result = subject.getCellTypeWheelSunburst(metadataSearchTerm,
+                cellTypeWheelServiceMock.search(metadataSearchTerm, species1.getName()));
+
         assertThat(result).hasSize(2);
         assertThat(result.asList().get(0).get("id")).isNotEqualTo(result.asList().get(0).get("parent"));
         assertThat(result.asList().get(1).get("id")).isNotEqualTo(result.asList().get(1).get("parent"));

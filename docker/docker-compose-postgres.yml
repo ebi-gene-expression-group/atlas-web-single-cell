@@ -10,16 +10,20 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    command: -c max_wal_size=3GB
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    command: -c max_wal_size=3GB
 
   flyway:
-    image: flyway/flyway:8
+    image: flyway/flyway
     networks:
       - atlas-test-net
+    depends_on:
+      - postgres
+    volumes:
+      - ../schemas/flyway/${PROJECT_NAME}:/flyway/sql
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -36,15 +40,13 @@ services:
       "-connectRetries=60",
       "migrate"
     ]
-    volumes:
-      - ../schemas/flyway/${PROJECT_NAME:?err}:/flyway/sql
-    depends_on:
-      - postgres
+
+
 
 volumes:
   pgdata:
     # Not strictly necessary to error out, but it avoids creating an empty `scxa_postgres-11-pgdata-` volume
-    name: ${PROJECT_NAME}_pgdata-${SCHEMA_VERSION:?err}
+    name: ${PROJECT_NAME:?err}_pgdata-${SCHEMA_VERSION:?err}
 
 networks:
   atlas-test-net:

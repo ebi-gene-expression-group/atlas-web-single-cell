@@ -1,65 +1,42 @@
 version: "3.6"
 
 services:
-  scxa-gradle:
+  gradle:
     image: gradle:7.0-jdk11
-    container_name: scxa-gradle
     networks:
       - atlas-test-net
     ports:
       - "5005:5005"
-    working_dir: /root/project
     volumes:
       - ..:/root/project
       - gradle-wrapper-dists:/root/.gradle/wrapper/dists
       - gradle-ro-dep-cache:/gradle-ro-dep-cache:ro
       - bioentity-properties:/atlas-data/bioentity_properties:ro
-      - scxa-data:/atlas-data/scxa:ro
-      - scxa-expdesign:/atlas-data/expdesign
-
+      - exp:/atlas-data/exp:ro
+      - expdesign:/atlas-data/expdesign
     depends_on:
-      - scxa-solrcloud-0
-      - scxa-solrcloud-1
-      - scxa-flyway-test
+      - solrcloud-0
+      - solrcloud-1
+      - flyway
     environment:
       POSTGRES_HOST: $POSTGRES_HOST
       POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
-    command:
-      - sh
-      - -c
-      - >
-        gradle :app:clean &&
-        gradle
-        -PdataFilesLocation=/atlas-data
-        -PexperimentFilesLocation=/atlas-data/scxa
-        -PexperimentDesignLocation=/atlas-data/expdesign
-        -PjdbcUrl=jdbc:postgresql://$POSTGRES_HOST:5432/$POSTGRES_DB
-        -PjdbcUsername=$POSTGRES_USER
-        -PjdbcPassword=$POSTGRES_PASSWORD
-        -PzkHosts=${SOLR_CLOUD_ZK_CONTAINER_1_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_2_NAME}:2181,${SOLR_CLOUD_ZK_CONTAINER_3_NAME}:2181
-        -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr
-        -PsolrUser=${SOLR_USER}
-        -PsolrPassword=${SOLR_PASSWORD}
-        :app:testClasses &&
-        gradle -PtestResultsPath=ut :app:test --tests *Test &&
-        gradle -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT &&
-        gradle -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} -PtestResultsPath=e2e :app:test --tests *WIT &&
-        gradle :app:jacocoTestReport
+    working_dir: /root/project
 
 volumes:
   gradle-wrapper-dists:
-    name: ${GRADLE_WRAPPER_DISTS_VOL_NAME}
+    name: ${PROJECT_NAME}_${GRADLE_WRAPPER_DISTS_VOL_NAME}
   gradle-ro-dep-cache:
-    name: ${GRADLE_RO_DEP_CACHE_VOL_NAME}
+    name: ${PROJECT_NAME}_${GRADLE_RO_DEP_CACHE_VOL_NAME}
   bioentity-properties:
-    name: ${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
-  scxa-data:
-    name: ${ATLAS_DATA_SCXA_VOL_NAME}
-  scxa-expdesign:
-    name: ${ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME}
+    name: ${PROJECT_NAME}_${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
+  exp:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXP_VOL_NAME}
+  expdesign:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXPDESIGN_VOL_NAME}
 
 networks:
   atlas-test-net:

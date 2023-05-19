@@ -27,6 +27,8 @@ services:
       - atlas-data-bioentity-properties:/atlas-data/bioentity_properties
       - atlas-data-exp:/atlas-data/exp
       - atlas-data-expdesign:/atlas-data/expdesign
+    secrets:
+      - solrcloud.pem
     environment:
       JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF8"
       EXP_IDS: ${EXP_IDS}
@@ -41,15 +43,13 @@ services:
       NUM_DOCS_PER_BATCH: 20000
       BIOSOLR_VERSION: 2.0.0
       BIOSOLR_JAR_PATH: /root/index-scxa/lib/solr-ontology-update-processor-2.0.0.jar
-      SIGNING_PRIVATE_KEY: ${SOLR_PRIVATE_KEY_DEST}
+      SIGNING_PRIVATE_KEY: /run/secrets/solrcloud.pem
       SCXA_ONTOLOGY: file://${SOLR_USERFILES_PATH}/scatlas.owl
       SOLR_COLLECTION_BIOENTITIES: bioentities
       SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION: 1
     working_dir: /root
     command:
       - |
-        #!/usr/bin/env bash
-  
         for _SPECIES in $${SPECIES}
         do
           rsync -av --include=$${_SPECIES}* --include=*/ --exclude=* /atlas-data/bioentity_properties /root
@@ -78,6 +78,8 @@ services:
         unset SOLR_COLLECTION
         unset SCHEMA_VERSION
         
+        sleep 1m
+        
         cd /root/index-scxa/bin
         export PATH=.:$${PATH}
         ./upload-biosolr-lib.sh
@@ -99,6 +101,10 @@ services:
           MATRIX_MARKT_ROWS_GENES_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.aggregated_filtered_normalised_counts.mtx_rows \
           ./load-scxa-gene2experiment.sh
         done
+
+secrets:
+  solrcloud.pem:
+    file: ${SOLR_PRIVATE_KEY:-/dev/null}
 
 volumes:
   gradle-wrapper-dists:

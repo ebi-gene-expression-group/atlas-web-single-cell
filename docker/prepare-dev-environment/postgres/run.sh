@@ -23,7 +23,7 @@ LOG_FILE=/dev/stdout
 REMOVE_VOLUMES=false
 SCHEMA_VERSION=latest
 function print_usage() {
-  printf '\n%b\n' "Usage: ${0} [ -v NUMBER ] [ -l FILE ]"
+  printf '\n%b\n' "Usage: ${0} [ -r] [ -v NUMBER ] [ -l FILE ]"
   printf '\n%b\n' "Populate a Single Cell Expression Atlas Postgres 11 database."
   printf '\n%b\n' "-a\tdisable anndata support (i.e. migrates database to v18)"
   printf '\n%b\n' "-r\tRemove volumes before creating them"
@@ -72,26 +72,8 @@ if [ "${REMOVE_VOLUMES}" = "true" ]; then
   eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_COMMAND}" "down --volumes >> ${LOG_FILE} 2>&1"
   print_done
 fi
-# Because Flyway (in docker-compose-postgres.yml) is mounting a bind volume with a relative path, it needs to be
-# declared first; see https://github.com/docker/compose/issues/3874
-DOCKER_COMPOSE_COMMAND="docker compose \
---project-name ${PROJECT_NAME} \
---env-file ${ENV_FILE} \
---env-file ${SCRIPT_DIR}/../test-data.env \
---file ${SCRIPT_DIR}/../../docker-compose-postgres.yml \
---file ${SCRIPT_DIR}/docker-compose.yml"
-
-DOCKER_COMPOSE_COMMAND_VARS="SCHEMA_VERSION=${SCHEMA_VERSION} DOCKERFILE_PATH=${SCRIPT_DIR}"
-
-if [ "${REMOVE_VOLUMES}" = "true" ]; then
-  countdown "🗑 Remove Docker volumes"
-  eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_COMMAND}" "down --volumes >> ${LOG_FILE} 2>&1"
-  print_done
-fi
 
 print_stage_name "🛫 Spin up service to load test experiments in Postgres"
-eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_COMMAND}" "up --build >> ${LOG_FILE} 2>&1"
-print_stage_name "🛫 Spin up containers to load test experiments in Postgres"
 eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_COMMAND}" "up --build >> ${LOG_FILE} 2>&1"
 print_done
 

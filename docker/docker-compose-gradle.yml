@@ -19,7 +19,7 @@ services:
         condition: service_started
       solrcloud-1:
         condition: service_started
-      flyway-test:
+      flyway:
         condition: service_completed_successfully
     environment:
       POSTGRES_HOST: $POSTGRES_HOST

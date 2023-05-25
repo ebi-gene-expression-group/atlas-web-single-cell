@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.experimentpage;
 
 import com.sun.management.UnixOperatingSystemMXBean;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

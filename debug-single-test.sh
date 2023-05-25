@@ -2,8 +2,6 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-source ${SCRIPT_DIR}/docker/dev-test.env
-
 function print_usage() {
   printf '\n%b\n\n' "Usage: ${0} [ -p SUBPROJECT_NAME ] [ -s SCHEMA_VERSION ] -n TEST_NAME"
   printf '%b\n' "Debug a unit/integration test in a module with the given schema version"
@@ -13,7 +11,7 @@ function print_usage() {
   printf '%b\n\n' "-h\tShow usage instructions"
 }
 
-PROJECT_NAME=app
+SUBPROJECT_NAME=app
 SCHEMA_VERSION=latest
 mandatory_name=false
 
@@ -24,9 +22,13 @@ do
       mandatory_name=true; TEST_CASE_NAME=${OPTARG}
       ;;
     p )
-      PROJECT_NAME=${OPTARG}
-      if ! [[ "$PROJECT_NAME" =~ ^(app|atlas-web-core)$ ]]; then
-        echo "Project name is not valid: $OPTARG" >&2
+      SUBPROJECT_NAME=${OPTARG}
+      if [[ "$SUBPROJECT_NAME" == "app" ]]; then
+        ENV_FILE=${SCRIPT_DIR}/docker/dev-test.env
+      elif [[ "$SUBPROJECT_NAME" == "atlas-web-core" ]]; then
+        ENV_FILE=${SCRIPT_DIR}/atlas-web-core/docker/dev.env
+      else
+        echo "Project name is not valid: ${OPTARG}" >&2
         exit 1
       fi
       ;;
@@ -42,33 +44,37 @@ do
       print_usage
       exit 2
       ;;
-    : ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
+    : ) echo "Missing option argument for -${OPTARG}" >&2; exit 1;;
   esac
 done
 
 if ! $mandatory_name
 then
     echo "-n must be provided with the name of the test to execute" >&2
+    print_usage
     exit 1
 fi
 
 echo "Debugging ${TEST_CASE_NAME}"
 
-SCHEMA_VERSION={SCHEMA_VERSION} \
-docker-compose \
---env-file ${SCRIPT_DIR}/docker/dev-test.env \
+source ${ENV_FILE}
+
+SUBPROJECT_NAME=${SUBPROJECT_NAME} \
+SCHEMA_VERSION=${SCHEMA_VERSION} \
+docker compose \
+--env-file ${ENV_FILE} \
 -f docker/docker-compose-postgres-test.yml \
 -f docker/docker-compose-solrcloud.yml \
 -f docker/docker-compose-gradle.yml \
 run --rm --service-ports \
-scxa-gradle bash -c "
+gradle bash -c "
 set -e
 
 gradle clean
 
 gradle \
 -PdataFilesLocation=/atlas-data \
--PexperimentFilesLocation=/atlas-data/scxa \
+-PexperimentFilesLocation=/atlas-data/exp \
 -PexperimentDesignLocation=/atlas-data/expdesign \
 -PjdbcUrl=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB} \
 -PjdbcUsername=${POSTGRES_USER} \
@@ -77,7 +83,16 @@ gradle \
 -PsolrHosts=http://${SOLR_CLOUD_CONTAINER_1_NAME}:8983/solr,http://${SOLR_CLOUD_CONTAINER_2_NAME}:8983/solr \
 -PsolrUser=${SOLR_USER} \
 -PsolrPassword=${SOLR_PASSWORD} \
-${PROJECT_NAME}:testClasses
+${SUBPROJECT_NAME}:testClasses
 
-gradle -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} --continuous -PremoteDebug :${PROJECT_NAME}:test --tests $TEST_CASE_NAME
+gradle -PjdbcUrl=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB} -PsolrUser=${SOLR_USER} -PsolrPassword=${SOLR_PASSWORD} --continuous -PremoteDebug :${SUBPROJECT_NAME}:test --tests $TEST_CASE_NAME
 "
+
+SUBPROJECT_NAME=${SUBPROJECT_NAME} \
+SCHEMA_VERSION={SCHEMA_VERSION} \
+docker compose \
+--env-file ${ENV_FILE} \
+-f docker/docker-compose-postgres-test.yml \
+-f docker/docker-compose-solrcloud.yml \
+-f docker/docker-compose-gradle.yml \
+down

@@ -15,9 +15,12 @@ services:
       - exp:/atlas-data/exp:ro
       - expdesign:/atlas-data/expdesign
     depends_on:
-      - solrcloud-0
-      - solrcloud-1
-      - flyway
+      solrcloud-0:
+        condition: service_started
+      solrcloud-1:
+        condition: service_started
+      flyway-test:
+        condition: service_completed_successfully
     environment:
       POSTGRES_HOST: $POSTGRES_HOST
       POSTGRES_DB: $POSTGRES_DB

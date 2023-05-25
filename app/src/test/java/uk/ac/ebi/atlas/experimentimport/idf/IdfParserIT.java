@@ -30,24 +30,21 @@ class IdfParserIT {
     private DataSource dataSource;
 
     @Inject
-    private Path dataFilesPath;
-
-    @Inject
-    private Path experimentDesignDirPath;
-
-    @Inject
     private JdbcUtils jdbcUtils;
+
+    @Inject
+    private DataFileHub dataFileHub;
 
     @BeforeAll
     void populateDatabaseTables() {
-        ResourceDatabasePopulator bulkPopulator = new ResourceDatabasePopulator();
-        bulkPopulator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
-        bulkPopulator.execute(dataSource);
+        var populator = new ResourceDatabasePopulator();
+        populator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
+        populator.execute(dataSource);
     }
 
     @AfterAll
     void cleanDatabaseTables() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        var populator = new ResourceDatabasePopulator();
         populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
@@ -55,8 +52,8 @@ class IdfParserIT {
     @ParameterizedTest
     @MethodSource("singleCellExperimentsProvider")
     void testParserForSingleCell(String experimentAccession) {
-        IdfParser idfParser = new IdfParser(new DataFileHub(dataFilesPath.resolve("scxa"), experimentDesignDirPath));
-        IdfParserOutput result = idfParser.parse(experimentAccession);
+        var idfParser = new IdfParser(dataFileHub);
+        var result = idfParser.parse(experimentAccession);
 
         assertThat(result.getExpectedClusters()).isGreaterThanOrEqualTo(0);
         assertThat(result.getTitle()).isNotEmpty();

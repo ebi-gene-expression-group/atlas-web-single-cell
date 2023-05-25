@@ -15,7 +15,7 @@ services:
         ftp.ebi.ac.uk
         
         # Create a directory for MAGETAB files
-        mkdir -p /atlas-data/scxa/magetab
+        mkdir -p /atlas-data/exp/magetab
         for EXP_ID in $${EXP_IDS}
         do
           lftp -e \

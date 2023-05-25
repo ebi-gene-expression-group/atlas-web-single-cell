@@ -21,7 +21,7 @@ SOLR_KEYS_DIRECTORY=${SCRIPT_DIR}
 REMOVE_VOLUMES=false
 LOG_FILE=/dev/stdout
 function print_usage() {
-  printf '\n%b\n' "Usage: ${0} [ -k DIRECTORY ] [ -o FILE ] [ -l FILE ]"
+  printf '\n%b\n' "Usage: ${0} [ -r] [ -k DIRECTORY ] [ -o FILE ] [ -l FILE ]"
   printf '\n%b\n' "Populate a Docker Compose SolrCloud 8 cluster with Single Cell Expression Atlas data."
 
   printf '\n%b\n' "-k DIRECTORY\tDirectory where RSA private/public keypair"

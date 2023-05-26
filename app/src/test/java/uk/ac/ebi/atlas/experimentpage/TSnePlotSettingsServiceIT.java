@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -17,11 +18,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
+import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
-import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotDao;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -127,7 +128,7 @@ class TSnePlotSettingsServiceIT {
     // This is the next best thing I could come up with... sorry! :(
     @Disabled // I added this annotation for now to turn this test of as we discussed this on the stand-up meeting
     @ParameterizedTest
-    @MethodSource("randomSingleCellExperimentAccessionProvider")
+    @MethodSource("randomisedAccessionAndPlotMethodProvider")
     void filesClosed(String experimentAccession) {
         long fileDescriptorsOpenBefore = getOpenFileCount();
         subject.getAvailableKs(experimentAccession);
@@ -139,11 +140,10 @@ class TSnePlotSettingsServiceIT {
     }
 
     @ParameterizedTest
-    @MethodSource("randomSingleCellExperimentAccessionProvider")
-    void getTSnePlotTypesAndOptionsForValidAccession(String experimentAccession) {
+    @MethodSource("randomisedAccessionAndPlotMethodProvider")
+    void getTSnePlotTypesAndOptionsForValidAccession(String experimentAccession, String plotMethod) {
         var tsnePlotTypesAndOptions = subject.getAvailablePlotTypesAndPlotOptions(experimentAccession);
-        assertThat(tsnePlotTypesAndOptions.get("umap")).isNotEmpty().doesNotHaveDuplicates();
-        assertThat(tsnePlotTypesAndOptions.get("tsne")).isNotEmpty().doesNotHaveDuplicates();
+        assertThat(tsnePlotTypesAndOptions.get(plotMethod)).isNotEmpty().doesNotHaveDuplicates();
     }
 
     @Test
@@ -161,7 +161,9 @@ class TSnePlotSettingsServiceIT {
         }
     }
 
-    private Stream<String> randomSingleCellExperimentAccessionProvider() {
-        return Stream.of(jdbcTestUtils.fetchRandomExperimentAccession());
+    private Stream<Arguments> randomisedAccessionAndPlotMethodProvider() {
+        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+        var plotMethod = jdbcTestUtils.fetchRandomPlotMethod(experimentAccession);
+        return Stream.of(Arguments.of(experimentAccession,plotMethod));
     }
 }

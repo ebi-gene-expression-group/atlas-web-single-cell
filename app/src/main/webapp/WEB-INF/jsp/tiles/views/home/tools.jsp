@@ -20,7 +20,7 @@
         </div>
     </a>
 
-    <a href="https://github.com/ebi-gene-expression-group/scxa-tsne-widget" target="_blank">
+    <a href="https://github.com/ebi-gene-expression-group/atlas-components/tree/master/packages/scxa-tsne-widget" target="_blank">
         <div class="media-object">
             <div class="media-object-section middle">
                 <h3 class="icon icon-conceptual" data-icon="g"/>

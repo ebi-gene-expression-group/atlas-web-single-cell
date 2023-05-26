@@ -169,7 +169,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                 geneSearchService.getMarkerGeneProfile(
                         expressedGeneIdEntries.stream()
                                 .map(Map.Entry::getKey)
-                                .toArray(String[]::new));
+                                .collect(toImmutableSet()));
 
         // geneSearchServiceDao guarantees that values in the inner maps can’t be empty. The map itself may be empty
         // but if there’s an entry the list will have at least one element

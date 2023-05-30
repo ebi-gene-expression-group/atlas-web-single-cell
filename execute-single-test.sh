@@ -54,7 +54,7 @@ fi
 
 echo "Testing ${TEST_CASE_NAME}"
 
-SCHEMA_VERSION={SCHEMA_VERSION} \
+SCHEMA_VERSION=${SCHEMA_VERSION} \
 docker-compose \
 --env-file ${SCRIPT_DIR}/docker/dev-test.env \
 -f docker/docker-compose-postgres-test.yml \

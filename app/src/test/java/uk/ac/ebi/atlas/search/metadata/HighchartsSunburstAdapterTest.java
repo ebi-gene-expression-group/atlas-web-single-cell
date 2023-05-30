@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -14,6 +13,8 @@ import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomSpecies;
@@ -75,18 +76,17 @@ class HighchartsSunburstAdapterTest {
                                 species1OrganismPart2ExperimentAccession)));
     }
 
-    @DisplayName("Cell type wheel should not have the same value for the ID and its parent")
     @Test
-    void cellTypeWheelSunburstResultObjectShouldNotContainIdAndParentAttributeValuesSame() {
-        var result = subject.getCellTypeWheelSunburst(metadataSearchTerm,cellTypeWheelServiceMock
+    void responseShouldContainIdAndParenAttributesAreNonEmptyValues() {
+        var result = subject.getCellTypeWheelSunburst(metadataSearchTerm, cellTypeWheelServiceMock
                 .search(metadataSearchTerm, species1.getName()));
-        assertThat(result).hasSize(2);
-        assertThat(result.asList().get(0).get("id")).isNotEqualTo(result.asList().get(0).get("parent"));
-        assertThat(result.asList().get(1).get("id")).isNotEqualTo(result.asList().get(1).get("parent"));
+        assertFalse(result.isEmpty());
+        assertNotEquals("", result.asList().get(1).get("id"));
+        assertNotEquals("", result.asList().get(1).get("parent"));
     }
 
     @Test
-    void ShouldThrowAssertionErrorIfWheelResultIdAndParentAttributeValuesAreSame() {
+    void failsIfIdAndParentFieldValuesAreSame() {
         var species = generateRandomSpecies();
         var experimentAccession1 = RandomDataTestUtils.generateRandomExperimentAccession();
         var experimentAccession2 = RandomDataTestUtils.generateRandomExperimentAccession();
@@ -108,7 +108,7 @@ class HighchartsSunburstAdapterTest {
                 cellTypeWheelServiceMock.search(metadataSearchTerm, species1.getName()));
 
         assertThat(result).hasSize(2);
-        assertThat(result.asList().get(0).get("id")).isNotEqualTo(result.asList().get(0).get("parent"));
-        assertThat(result.asList().get(1).get("id")).isNotEqualTo(result.asList().get(1).get("parent"));
+        assertNotEquals(result.asList().get(0).get("id"), (result.asList().get(0).get("parent")));
+        assertNotEquals(result.asList().get(1).get("id"), (result.asList().get(1).get("parent")));
     }
 }

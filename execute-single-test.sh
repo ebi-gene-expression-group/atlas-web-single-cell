@@ -4,7 +4,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 SUBPROJECT_NAME=app
 DOCKER_COMPOSE_PROJECT_NAME=scxa
-ENV_FILE=${SCRIPT_DIR}/docker/dev-test.env
+ENV_FILE=${SCRIPT_DIR}/docker/dev.env
 SCHEMA_VERSION=latest
 function print_usage() {
   printf '\n%b\n\n' "Usage: ${0} [ -p SUBPROJECT_NAME ] [ -s SCHEMA_VERSION ] -n TEST_NAME"

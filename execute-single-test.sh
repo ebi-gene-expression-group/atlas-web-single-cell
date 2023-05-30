@@ -28,7 +28,7 @@ do
         # Default values
         :
       elif [[ "$SUBPROJECT_NAME" == "atlas-web-core" ]]; then
-        ENV_FILE=${SCRIPT_DIR}/atlas-web-core/dev.env
+        ENV_FILE=${SCRIPT_DIR}/atlas-web-core/docker/dev.env
         DOCKER_COMPOSE_PROJECT_NAME=gxa
       else
         echo "Project name is not valid: ${OPTARG}" >&2

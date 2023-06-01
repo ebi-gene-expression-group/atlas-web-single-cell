@@ -31,13 +31,7 @@ services:
       - solrcloud.pem
     environment:
       JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF8"
-      EXP_IDS: ${EXP_IDS}
-      SPECIES: ${SPECIES}
       GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       SOLR_HOST: ${SOLR_CLOUD_CONTAINER_1_NAME}:8983
       SOLR_NUM_SHARDS: 2
       NUM_DOCS_PER_BATCH: 20000
@@ -50,7 +44,7 @@ services:
     working_dir: /root
     command:
       - |
-        for _SPECIES in $${SPECIES}
+        for _SPECIES in ${SPECIES}
         do
           rsync -av --include=$${_SPECIES}* --include=*/ --exclude=* /atlas-data/bioentity_properties /root
         done
@@ -58,9 +52,9 @@ services:
         cd /root/atlas-web-bulk
         ./gradlew -PdataFilesLocation=/root \
         -PexperimentFilesLocation=/atlas-data/exp \
-        -PjdbcUrl=jdbc:postgresql://$${POSTGRES_HOST}:5432/postgres \
-        -PjdbcUsername=$${POSTGRES_USER} \
-        -PjdbcPassword=$${POSTGRES_PASSWORD} \
+        -PjdbcUrl=jdbc:postgresql://${POSTGRES_HOST}:5432/postgres \
+        -PjdbcUsername=${POSTGRES_USER} \
+        -PjdbcPassword=${POSTGRES_PASSWORD} \
         :cli:bootRun --args="bioentities-json --output=/root/bioentity-properties-jsonl"
         
         cd /root/index-bioentities/bin
@@ -68,8 +62,8 @@ services:
         ./create-bioentities-schema.sh
         ./create-bioentities-suggesters.sh
         
-        export SOLR_COLLECTION=$${SOLR_COLLECTION_BIOENTITIES}
-        export SCHEMA_VERSION=$${SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION}
+        export SOLR_COLLECTION=${SOLR_COLLECTION_BIOENTITIES}
+        export SCHEMA_VERSION=${SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION}
         for FILE in `ls /root/bioentity-properties-jsonl/*.jsonl`
         do
           INPUT_JSONL=$${FILE} ./solr-jsonl-chunk-loader.sh >> /dev/stdout 2>&1
@@ -86,7 +80,7 @@ services:
         ./create-scxa-analytics-collection.sh
         ./create-scxa-analytics-schema.sh
         ./create-scxa-analytics-suggesters.sh
-        for EXP_ID in $${EXP_IDS}
+        for EXP_ID in ${EXP_IDS}
         do
           CONDENSED_SDRF_TSV=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.condensed-sdrf.tsv \
           ./load-scxa-analytics.sh
@@ -95,7 +89,7 @@ services:
         
         ./create-scxa-gene2experiment-collection.sh
         ./create-scxa-gene2experiment-schema.sh
-        for EXP_ID in $${EXP_IDS}
+        for EXP_ID in ${EXP_IDS}
         do
           EXP_ID=$${EXP_ID} \
           MATRIX_MARKT_ROWS_GENES_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.aggregated_filtered_normalised_counts.mtx_rows \

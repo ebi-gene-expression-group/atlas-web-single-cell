@@ -24,12 +24,6 @@ services:
       - postgres
     volumes:
       - ../schemas/flyway/${PROJECT_NAME}:/flyway/sql
-    environment:
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      SCHEMA_VERSION: ${SCHEMA_VERSION}
     command: [
       "-X",
       "-url=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}",
@@ -40,8 +34,6 @@ services:
       "-connectRetries=60",
       "migrate"
     ]
-
-
 
 volumes:
   pgdata:

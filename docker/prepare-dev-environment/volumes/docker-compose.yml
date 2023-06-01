@@ -6,8 +6,6 @@ services:
     volumes:
       - atlas-data-bioentity-properties:/atlas-data/bioentity_properties
       - atlas-data-exp:/atlas-data/exp
-    environment:
-      EXP_IDS: ${EXP_IDS}
     command:
       - |
         lftp -e \
@@ -16,7 +14,7 @@ services:
         
         # Create a directory for MAGETAB files
         mkdir -p /atlas-data/exp/magetab
-        for EXP_ID in $${EXP_IDS}
+        for EXP_ID in ${EXP_IDS}
         do
           lftp -e \
           "mirror -vvv /pub/databases/arrayexpress/data/atlas/sc_experiments/$${EXP_ID} /atlas-data/exp/magetab/$${EXP_ID}; exit" \

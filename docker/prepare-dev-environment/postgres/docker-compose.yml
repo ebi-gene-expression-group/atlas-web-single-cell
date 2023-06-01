@@ -15,12 +15,7 @@ services:
       - atlas-data-expdesign:/atlas-data/expdesign
     environment:
       JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF8"
-      EXP_IDS: ${EXP_IDS}
       GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     working_dir: /root
     command:
       - |
@@ -31,28 +26,28 @@ services:
         ./gradlew \
         -PexperimentFilesLocation=/atlas-data/exp \
         -PexperimentDesignLocation=/atlas-data/expdesign \
-        -PjdbcUrl=jdbc:postgresql://$${POSTGRES_HOST}:5432/$${POSTGRES_DB} \
-        -PjdbcUsername=$${POSTGRES_USER} \
-        -PjdbcPassword=$${POSTGRES_PASSWORD} \
-        :cli:bootRun --args="create-update-experiment -e $(echo $${EXP_IDS} | sed -e "s/ /,/g")"
+        -PjdbcUrl=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB} \
+        -PjdbcUsername=${POSTGRES_USER} \
+        -PjdbcPassword=${POSTGRES_PASSWORD} \
+        :cli:bootRun --args="create-update-experiment -e $(echo ${EXP_IDS} | sed -e "s/ /,/g")"
           
         # The last commit before v19 was introduced...
-        if [ "$${SCHEMA_VERSION}" == "18" ] ; then
+        if [ "${SCHEMA_VERSION}" = "18" ] ; then
           cd /root/db-scxa
           git checkout 1236753d3d799effa4d24fa9bdfb9292c66309ab
         fi
           
         cd /root/db-scxa/bin
         export PATH=.:$${PATH}
-        export dbConnection=postgresql://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:5432/$${POSTGRES_DB}
+        export dbConnection=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
           
-        for EXP_ID in $${EXP_IDS}
+        for EXP_ID in ${EXP_IDS}
         do
           EXPRESSION_TYPE=aggregated_filtered_normalised_counts \
           EXP_ID=$${EXP_ID} \
           EXPERIMENT_MATRICES_PATH=/atlas-data/exp/magetab/$${EXP_ID} ./load_db_scxa_analytics.sh
         
-          if [ $${SCHEMA_VERSION} = 18 ]; then
+          if [ "${SCHEMA_VERSION}" = "18" ]; then
             EXP_ID=$${EXP_ID} EXPERIMENT_DIMRED_PATH=/atlas-data/exp/magetab/$${EXP_ID} ./load_db_scxa_dimred.sh
           else
             # Copied from db-scxa/tests/test-dimred-load.sh
@@ -85,7 +80,7 @@ services:
         ./reindex_tables.sh
         
         # Hackerman approves of this way to shut down a Postgres database remotely
-        PGPASSWORD=$${POSTGRES_PASSWORD} psql -h ${POSTGRES_HOST} -U $${POSTGRES_USER} -d $${POSTGRES_DB} -c "COPY (SELECT 1) TO PROGRAM 'pg_ctl stop -m smart --no-wait';"
+        PGPASSWORD=${POSTGRES_PASSWORD} psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c "COPY (SELECT 1) TO PROGRAM 'pg_ctl stop -m smart --no-wait';"
 
 volumes:
   gradle-wrapper-dists:

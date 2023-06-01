@@ -22,10 +22,6 @@ services:
       flyway:
         condition: service_completed_successfully
     environment:
-      POSTGRES_HOST: $POSTGRES_HOST
-      POSTGRES_DB: $POSTGRES_DB
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
     working_dir: /root/project
 

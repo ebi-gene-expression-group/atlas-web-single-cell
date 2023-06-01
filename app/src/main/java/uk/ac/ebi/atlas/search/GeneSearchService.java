@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.search;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
@@ -32,10 +33,8 @@ public class GeneSearchService {
     }
 
     // Map<Gene ID, Map<Experiment accession, List<Cell IDs>>>
-    public Map<String, Map<String, List<String>>> getCellIdsInExperiments(String... geneIds) {
-        return fetchInParallel(
-                ImmutableSet.copyOf(geneIds),
-                geneSearchDao::fetchCellIds);
+    public Map<String, Map<String, List<String>>> getCellIdsInExperiments(ImmutableCollection<String> geneIds) {
+        return fetchInParallel(geneIds, geneSearchDao::fetchCellIds);
     }
 
     // Returns inferred cell types and organism parts for each experiment accession
@@ -46,10 +45,10 @@ public class GeneSearchService {
     }
 
     // Map<Gene ID, Map<Experiment accession, Map<K, Cluster ID>>>
-    public ImmutableMap<String, Map<String, Map<Integer, List<Integer>>>> getMarkerGeneProfile(String... geneIds) {
-
+    public ImmutableMap<String, Map<String, Map<Integer, List<Integer>>>>
+    getMarkerGeneProfile(ImmutableCollection<String> geneIds) {
         return fetchInParallel(
-                ImmutableSet.copyOf(geneIds),
+                geneIds,
                 geneId -> fetchClusterIDWithPreferredKAndMinPForGeneID(
                         geneSearchDao.fetchExperimentAccessionsWhereGeneIsMarker(geneId),
                         geneId));
@@ -63,7 +62,8 @@ public class GeneSearchService {
                 .collect(toImmutableSet());
     }
 
-    private <T> ImmutableMap<String, T> fetchInParallel(Set<String> geneIds, Function<String, T> geneIdInfoProvider) {
+    private <T> ImmutableMap<String, T>
+    fetchInParallel(ImmutableCollection<String> geneIds, Function<String, T> geneIdInfoProvider) {
         // If this becomes a resource hog, consider having the pool as a member of the class and reuse it every time
         var forkJoinPool = new ForkJoinPool();
         try {

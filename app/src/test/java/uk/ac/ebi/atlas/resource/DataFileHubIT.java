@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.resource;
 
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
+import java.nio.file.Path;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +46,7 @@ class DataFileHubIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(new ClassPathResource("fixtures/experiment.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/scxa_cell_group.sql"));
         populator.execute(dataSource);
     }
 
@@ -51,6 +54,7 @@ class DataFileHubIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(new ClassPathResource("fixtures/experiment-delete.sql"));
+        populator.addScripts(new ClassPathResource("fixtures/scxa_cell_group-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -68,18 +72,17 @@ class DataFileHubIT {
         assertAtlasResourceExists(subject.getSingleCellExperimentFiles(experimentAccession).markerGeneTsvs.values());
     }
 
-// TODO Rethink this test since not all experiments have inferred cell type annotations
-//    @Test
-//    void findsCellTypeMarkerGeneFiles(@Value("${data.files.location}") String dataFilesLocation) {
-//        var experimentAccession = jdbcUtils.fetchRandomExperimentAccession();
-//        var subject = new DataFileHub(dataFilesPath.resolve("scxa"));
-//        LOGGER.info("Test cell type marker gene files for experiment {}", experimentAccession);
-//        assertThat(subject.getSingleCellExperimentFiles(experimentAccession).markerGeneTsvs.values()
-//                .stream().map(AtlasResource::getPath))
-//                .contains(Path.of(dataFilesLocation +
-//                        "/scxa/magetab/" + experimentAccession + "/" + experimentAccession +
-//                        ".marker_genes_inferred_cell_type_-_ontology_labels.tsv"));
-//    }
+    @Test
+    void findsCellTypeMarkerGeneFiles() {
+        var experimentAccession = jdbcUtils.fetchRandomSingleCellExperimentAccessionWithInferredCellType();
+        LOGGER.info("Test cell type marker gene files for experiment {}", experimentAccession);
+        assertThat(subject.getSingleCellExperimentFiles(experimentAccession).markerGeneTsvs.values())
+                .extracting("path")
+                .haveAtLeastOne(
+                        new Condition<>(
+                                path -> path.toString().matches(".*/" + experimentAccession + "\\.marker_genes_inferred_cell_type.*\\.tsv"),
+                                "path matches a marker genes inferred cell type TSV file"));
+    }
 
     @Test
     void findsRawFilteredCountsFiles() {

@@ -2,14 +2,10 @@ version: "3.6"
 
 services:
   postgres-test:
-    container_name: ${POSTGRES_HOST:?err}
+    container_name: ${POSTGRES_HOST}
     image: postgres:11-alpine
     networks:
       - atlas-test-net
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:?err}
-      POSTGRES_USER: ${POSTGRES_USER:?err}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?err}
     ports:
       - "5432:5432"
     command: -c max_wal_size=1GB

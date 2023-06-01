@@ -14,31 +14,26 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentimport.sdrf.SdrfParser;
-import uk.ac.ebi.atlas.resource.DataFileHub;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
+@ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SdrfParserIT {
     @Inject
     private DataSource dataSource;
 
     @Inject
-    private Path dataFilesPath;
-
-    @Inject
-    private Path experimentDesignDirPath;
-
-    @Inject
     private JdbcUtils jdbcUtils;
+
+    @Inject
+    private SdrfParser subject;
 
     @BeforeAll
     void populateDatabaseTables() {
@@ -58,8 +53,7 @@ class SdrfParserIT {
     @MethodSource("singleCellExperimentsProvider")
     @DisplayName("parses technology type")
     void testIfTechnologyTypePresentInSingleCellExperiment(String experimentAccession) {
-        var sdrfParser = new SdrfParser(new DataFileHub(dataFilesPath.resolve("scxa"), experimentDesignDirPath));
-        assertThat(sdrfParser.parseSingleCellTechnologyType(experimentAccession)).isNotEmpty();
+        assertThat(subject.parseSingleCellTechnologyType(experimentAccession)).isNotEmpty();
     }
 
     private Iterable<String> singleCellExperimentsProvider() {

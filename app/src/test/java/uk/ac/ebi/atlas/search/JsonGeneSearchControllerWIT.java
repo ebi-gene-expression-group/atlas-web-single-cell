@@ -82,7 +82,7 @@ class JsonGeneSearchControllerWIT {
                 new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql")
         );
 
-                populator.execute(dataSource);
+        populator.execute(dataSource);
     }
 
     @AfterAll

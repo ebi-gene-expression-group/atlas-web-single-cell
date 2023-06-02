@@ -10,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.model.resource.AtlasResource;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional(transactionManager = "txManager")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
+@WebAppConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DataFileHubIT {
     @Inject

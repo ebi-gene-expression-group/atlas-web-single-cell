@@ -31,24 +31,13 @@ const RedirectWithLocation = withRouter(RedirectWithSearchAndHash)
 class TSnePlotViewRoute extends React.Component {
   constructor(props) {
       super(props)
-      let plotTypeDropdown =  [
-        {
-          plotType: `UMAP`,
-          plotOptions: this.props.plotTypesAndOptions.umap
-        },
-        {
-          plotType: `tSNE`,
-          plotOptions: this.props.plotTypesAndOptions.tsne
-        }
-     ]
     const cellTypeValue = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
-
     this.state = {
-      selectedPlotType: plotTypeDropdown[0].plotType.toLowerCase(),
+      selectedPlotType: Object.keys(this.props.defaultPlotMethodAndParameterisation)[0],
       geneId: ``,
-      selectedPlotOption: Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
-      selectedPlotOptionLabel: Object.keys(plotTypeDropdown[0].plotOptions[0])[0] + `: ` +
-        Object.values(plotTypeDropdown[0].plotOptions[Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)])[0],
+      selectedPlotOption: Object.values(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0],
+      selectedPlotOptionLabel: Object.keys(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0] + ": " +
+          Object.values(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0],
       selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
@@ -65,22 +54,20 @@ class TSnePlotViewRoute extends React.Component {
 
   render() {
     const { location, match, history } = this.props
-    const { atlasUrl, suggesterEndpoint, initialCellTypeValues } = this.props
+    const { atlasUrl, suggesterEndpoint, initialCellTypeValues, defaultPlotMethodAndParameterisation } = this.props
     const { species, experimentAccession, accessKey, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
 
-      const plotTypeDropdown =  [
-        {
-          plotType: `UMAP`,
-          plotOptions: plotTypesAndOptions.umap
-        },
-        {
-          plotType: `tSNE`,
-          plotOptions: plotTypesAndOptions.tsne
-        }
-      ]
-
-    let preferredPlotOptionsIndex = Math.round((plotTypeDropdown[0].plotOptions.length - 1) / 2)
+    const plotTypeDropdown =  [
+      {
+        plotType: `UMAP`,
+        plotOptions: plotTypesAndOptions.umap
+      },
+      {
+        plotType: `tSNE`,
+        plotOptions: plotTypesAndOptions.tsne
+      }
+    ]
 
     let organWithMostOntologies = Object.keys(anatomogram)[0]
     for (let availableOrgan in anatomogram) {
@@ -120,31 +107,20 @@ class TSnePlotViewRoute extends React.Component {
             }
           }
           plotTypeDropdown={plotTypeDropdown}
-          selectedPlotOptionLabel={search.plotOption ?
-                    search.plotType ?
-                    Object.keys(_find(plotTypeDropdown,
-                     (plot) => plot.plotType.toLowerCase() === search.plotType).plotOptions[0])[0] + `: ` + search.plotOption
-                     :
-                     Object.keys(_find(plotTypeDropdown,
-                                      (plot) => plot.plotType.toLowerCase() === this.state.selectedPlotType).plotOptions[0])[0] + `: ` + search.plotOption
-                     :
-                 this.state.selectedPlotOptionLabel}
-           onChangePlotTypes={
-              (plotType) => {
-                this.setState({
-                  selectedPlotType: plotType,
-                  selectedPlotOption: Object.values(_find(plotTypeDropdown,
-                      (plot) => plot.plotType.toLowerCase() === plotType).plotOptions[preferredPlotOptionsIndex])[0],
-                  selectedPlotOptionLabel: Object.keys(_find(plotTypeDropdown,
-                      (plot) => plot.plotType.toLowerCase() === plotType).plotOptions[0])[0] + `: ` +
-                      Object.values(_find(plotTypeDropdown,
-                      (plot) => plot.plotType.toLowerCase() === plotType).plotOptions[preferredPlotOptionsIndex])[0]
-                })
+          selectedPlotOptionLabel={this.state.selectedPlotOptionLabel}
+          onChangePlotTypes={
+            (plotOption) => {
+              console.log(plotOption)
+              this.setState({
+                selectedPlotType: plotOption.value,
+                selectedPlotOption: defaultPlotMethodAndParameterisation[plotOption.value],
+                selectedPlotOptionLabel: Object.keys(defaultPlotMethodAndParameterisation[plotOption.value])[0]
+                    + ": " + Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0],
+              })
+
               const query = new URLSearchParams(history.location.search)
-              query.set(`plotType`, plotType)
-              query.set(`plotOption`,
-                Object.values(_find(plotTypeDropdown,
-                                      (plot) => plot.plotType.toLowerCase() === plotType).plotOptions[preferredPlotOptionsIndex])[0])
+              query.set(`plotType`, plotOption.value)
+              query.set(`plotOption`, defaultPlotMethodAndParameterisation[plotOption.value])
               resetHighlightClusters(query)
               updateUrlWithParams(query)
               }

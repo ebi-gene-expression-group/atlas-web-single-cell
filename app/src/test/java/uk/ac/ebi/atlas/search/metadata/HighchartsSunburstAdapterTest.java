@@ -77,7 +77,7 @@ class HighchartsSunburstAdapterTest {
     }
 
     @Test
-    void responseShouldContainIdAndParenAttributesAreNonEmptyValues() {
+    void wheelResponseShouldContainIdAndParenAttributesAreNonEmptyValues() {
         var result = subject.getCellTypeWheelSunburst(metadataSearchTerm, cellTypeWheelServiceMock
                 .search(metadataSearchTerm, species1.getName()));
         assertFalse(result.isEmpty());
@@ -86,7 +86,7 @@ class HighchartsSunburstAdapterTest {
     }
 
     @Test
-    void failsIfIdAndParentFieldValuesAreSame() {
+    void wheelRingsResultShouldContainsIdAndParentValuesAreDifferentAfterAppendingUUIDToRight() {
         var species = generateRandomSpecies();
         var experimentAccession1 = RandomDataTestUtils.generateRandomExperimentAccession();
         var experimentAccession2 = RandomDataTestUtils.generateRandomExperimentAccession();

@@ -2,14 +2,17 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math.util.MathUtils;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
 
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.function.Function.identity;
@@ -27,6 +30,14 @@ public class CellPlotService {
     public CellPlotService(CellPlotDao cellPlotDao, CellMetadataDao cellMetadataDao) {
         this.cellPlotDao = cellPlotDao;
         this.cellMetadataDao = cellMetadataDao;
+    }
+
+    public List<String> cellPlotMethods(String experimentAccession) {
+        return cellPlotDao.fetchCellPlotMethods(experimentAccession);
+    }
+
+    public List<String> cellPlotParameter(String experimentAccession, String method) {
+        return cellPlotDao.fetchCellPlotParameter(experimentAccession, method);
     }
 
     public ImmutableMap<String, ImmutableSet<TSnePoint>> clusterPlotWithK(String experimentAccession,
@@ -90,4 +101,20 @@ public class CellPlotService {
                                         pointDto.name()))
                 .collect(toImmutableSet());
     }
+
+    public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
+
+        return cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                .entrySet().stream()
+                .filter(defaultPlotTypeAndOptions -> !defaultPlotTypeAndOptions.getValue().isEmpty())
+                .collect(toImmutableMap(Map.Entry::getKey,
+                        options -> getMiddleElement(options.getValue())));
+    }
+
+    private JsonObject getMiddleElement(List plotOptions) {
+            var plotOptionsSize = plotOptions.size();
+            var middleOfPlotOptionsSize = plotOptionsSize % 2 == 0 ? plotOptionsSize / 2 - 1 : plotOptionsSize / 2;
+            return (JsonObject) plotOptions.get(middleOfPlotOptionsSize);
+    }
+
 }

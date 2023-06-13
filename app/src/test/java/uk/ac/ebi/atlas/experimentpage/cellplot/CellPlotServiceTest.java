@@ -2,6 +2,8 @@ package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +15,7 @@ import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
@@ -21,6 +24,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,5 +110,68 @@ class CellPlotServiceTest {
 
         assertThat(result)
                 .hasSize(points.size());
+    }
+
+    @Test
+    void getCellPlotParameter() {
+        var cellCount = RNG.nextInt(MAX_CELL_COUNT) + 1;
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        var plotMethod = "umap";
+        var geneId = RandomDataTestUtils.generateRandomEnsemblGeneId();
+        var points = RandomDataTestUtils.generateRandomTSnePointDtosWithExpression(RNG.nextInt(cellCount));
+
+        when(cellPlotDaoMock.fetchCellPlotWithExpression(experimentAccession, plotMethod, geneId, ImmutableMap.of()))
+                .thenReturn(ImmutableList.copyOf(points));
+
+        var result = subject.expressionPlot(experimentAccession, plotMethod, geneId, ImmutableMap.of());
+
+        assertThat(result)
+                .hasSize(points.size());
+    }
+
+    @Test
+    void fetchDefaultPlotMethodWithParameterisation() {
+        var tsne = randomAlphabetic(10);
+        var umap = randomAlphabetic(10);
+        var experimentAccession =  RandomDataTestUtils.generateRandomExperimentAccession();
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(experimentAccession))
+                .thenReturn(ImmutableMap.of(
+                        umap,
+                        List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
+                        tsne,
+                        List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
+
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                .get(umap).getAsJsonObject()
+                .has("n_neighbors"));
+    }
+
+    @Test
+    void returnEmptyResultIfThereIsNoDefaultPlotMethodAndParameterisation() {
+        var noDefaultPlotMethodAndParameterisationAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(noDefaultPlotMethodAndParameterisationAccession))
+                .thenReturn(ImmutableMap.of());
+
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation(noDefaultPlotMethodAndParameterisationAccession))
+                .isEmpty();
+    }
+
+    @Test
+    void throwsNullPointerExceptionIfHardCodedTestMethodIsNotSameAsDBMethod() {
+        var tsne = randomAlphabetic(10);
+        var umap = randomAlphabetic(10);
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(experimentAccession))
+                .thenReturn(ImmutableMap.of(umap.toUpperCase(),
+                        List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
+                        tsne,
+                        List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
+
+        assertThrows(NullPointerException.class, () -> {
+            //We are passing method 'umap' which is small letters, But DB has capilized method 'UMAP'
+            //This gives null List as MAP fetches from the DB, MAP keys are case-sensitive.
+            subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                    .get(umap).getAsJsonObject();
+        });
     }
 }

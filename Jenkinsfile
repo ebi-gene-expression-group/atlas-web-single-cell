@@ -1,6 +1,7 @@
 pipeline {
   options {
     buildDiscarder(logRotator(numToKeepStr: '10'))
+    disableConcurrentBuilds()
   }
   
   agent {
@@ -53,6 +54,8 @@ pipeline {
                     '-PjdbcPassword=postgres ' +
                     '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
                     '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PsolrUser=solr ' +
+                    '-PsolrPassword=SolrRocks ' +
                     ':atlas-web-core:testClasses'
           }
         }
@@ -94,6 +97,8 @@ pipeline {
                     '-PjdbcPassword=postgres ' +
                     '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
                     '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PsolrUser=solr ' +
+                    '-PsolrPassword=SolrRocks ' +
                     ':app:testClasses'
           }
         }
@@ -104,15 +109,15 @@ pipeline {
           }
           steps {
             sh './gradlew --no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'
-            sh './gradlew --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
-            sh './gradlew --no-watch-fs -PtestResultsPath=e2e :app:test --tests *WIT'
+            sh './gradlew -PsolrUser=solr -PsolrPassword=SolrRocks --no-watch-fs -PtestResultsPath=it -PexcludeTests=**/*WIT.class :app:test --tests *IT'
+            sh './gradlew -PsolrUser=solr -PsolrPassword=SolrRocks --no-watch-fs -PtestResultsPath=e2e :app:test --tests *WIT'
             sh './gradlew --no-watch-fs :app:jacocoTestReport'
           }
         }
 
         stage('–– Build ––') {
           when { anyOf {
-            branch 'develop'; branch 'main'
+            branch 'develop'; branch 'main'; branch 'release/*'
           } }
           stages {
             stage('Provision Node.js build environment') {
@@ -146,7 +151,7 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh 'if [ env.BRANCH_NAME = "main" ]; then WEBPACK_OPTS=-ip; else WEBPACK_OPTS=-i; fi; ' +
+                sh 'if [ env.BRANCH_NAME = "develop" ]; then WEBPACK_OPTS=-i; else WEBPACK_OPTS=-ip; fi; ' +
                         '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }

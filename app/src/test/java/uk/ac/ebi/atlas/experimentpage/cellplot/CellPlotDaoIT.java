@@ -174,6 +174,20 @@ class CellPlotDaoIT {
                 .allSatisfy(dto -> assertThat(dto).hasFieldOrPropertyWithValue("expressionLevel", 0.0));
     }
 
+    @Test
+    void fetchDefaultPlotMethodAndParameterisationForTheExistingExperiment() {
+        var defaultPlotMethodResult = subject.fetchDefaultPlotMethodWithParameterisation(
+                jdbcTestUtils.fetchExperimentAccessionByMaxPriority());
+
+        assertThat(defaultPlotMethodResult.keySet()).contains("umap","tsne");
+    }
+
+    @Test
+    void fetchEmptyResultsIfExperimentDoesNotHaveDefaultPlotMethod(){
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
+                .isEmpty();
+    }
+
     private Stream<Arguments> randomExperimentAccessionPlotWithKProvider() {
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
         var k = 0;

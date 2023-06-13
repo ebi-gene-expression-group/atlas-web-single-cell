@@ -60,12 +60,12 @@ class TSnePlotViewRoute extends React.Component {
 
     const plotTypeDropdown =  [
       {
-        plotType: `UMAP`,
-        plotOptions: plotTypesAndOptions[`UMAP`]
+        plotType: Object.keys(defaultPlotMethodAndParameterisation)[0],
+        plotOptions: plotTypesAndOptions[Object.keys(defaultPlotMethodAndParameterisation)[0]]
       },
       {
-        plotType: `t-SNE`,
-        plotOptions: plotTypesAndOptions[`t-SNE`]
+        plotType: Object.keys(defaultPlotMethodAndParameterisation)[1],
+        plotOptions: plotTypesAndOptions[Object.keys(defaultPlotMethodAndParameterisation)[1]]
       }
     ]
 

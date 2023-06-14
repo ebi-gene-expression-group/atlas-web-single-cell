@@ -122,8 +122,9 @@ public class CellPlotService {
                 Object umapOddItem = plotOptions.get((plotOptions.size() / 2));
                 return (JsonObject) umapOddItem;
             }
-        } else
+        } else {
             return new JsonObject();
+        }
     }
 
 }

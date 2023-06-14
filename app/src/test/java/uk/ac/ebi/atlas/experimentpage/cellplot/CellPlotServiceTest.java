@@ -130,24 +130,29 @@ class CellPlotServiceTest {
     }
 
     @Test
-    void fetchDefaultPlotMethodWithParameterisation(){
-        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("umap",
+    void fetchDefaultPlotMethodWithParameterisation() {
+        var tsne = randomAlphabetic(10);
+        var umap = randomAlphabetic(10);
+        var experimentAccession =  RandomDataTestUtils.generateRandomExperimentAccession();
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(experimentAccession))
+                .thenReturn(ImmutableMap.of(
+                        umap,
                         List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
-                        "tsne",
+                        tsne,
                         List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
 
-        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("E-CURD-4")
-                .get("umap").getAsJsonObject()
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                .get(umap).getAsJsonObject()
                 .has("n_neighbors"));
     }
 
     @Test
-    void returnEmptyResultIfThereIsNoDefaultPlotMethodAndParameterisation(){
-        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation("fooBar"))
+    void returnEmptyResultIfThereIsNoDefaultPlotMethodAndParameterisation() {
+        var noDefaultPlotMethodAndParameterisationAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(noDefaultPlotMethodAndParameterisationAccession))
                 .thenReturn(ImmutableMap.of());
 
-        assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
+        assertThat(subject.fetchDefaultPlotMethodWithParameterisation(noDefaultPlotMethodAndParameterisationAccession))
                 .isEmpty();
     }
 

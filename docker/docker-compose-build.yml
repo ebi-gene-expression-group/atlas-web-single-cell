@@ -1,0 +1,43 @@
+version: "3.6"
+
+services:
+  node-webpack:
+    image: node:16
+    volumes:
+      - ..:/root/project
+    working_dir: /root/project
+    command: ["sh", "-c", "npm install -g npm-check-updates && ./compile-front-end-packages.sh -ui" ]
+
+  gradle-build:
+    depends_on:
+      node-webpack:
+        condition: service_completed_successfully
+    extends:
+      service: gradle
+      file: docker-compose-gradle.yml
+    command: ["sh", "-c", "gradle clean :app:war"]
+
+  gradle-shell:
+    extends:
+      service: gradle
+      file: docker-compose-gradle.yml
+    tty: true
+    stdin_open: true
+    command: [ "sh", "-c", "gradle && /bin/bash" ]
+    depends_on:
+      gradle-build:
+        condition: service_completed_successfully
+
+  tomcat:
+    extends:
+      service: tomcat
+      file: docker-compose-tomcat.yml
+    depends_on:
+      gradle-build:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_started
+      solrcloud-0:
+        condition: service_started
+      solrcloud-1:
+        condition: service_started

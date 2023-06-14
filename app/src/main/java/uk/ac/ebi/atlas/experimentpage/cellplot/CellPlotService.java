@@ -104,27 +104,17 @@ public class CellPlotService {
 
     public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
 
-        var defaultcellPlots = cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
-
-        ImmutableMap.Builder<String, JsonObject> defaultPlotTypeAndOptions = new ImmutableMap.Builder<>();
-
-        defaultcellPlots.forEach((method, options) -> defaultPlotTypeAndOptions.put(method, getMiddleElement(defaultcellPlots.get(method))));
-
-        return defaultPlotTypeAndOptions.build();
+        return cellPlotDao.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                .entrySet().stream()
+                .filter(defaultPlotTypeAndOptions -> !defaultPlotTypeAndOptions.getValue().isEmpty())
+                .collect(toImmutableMap(Map.Entry::getKey,
+                        options -> getMiddleElement(options.getValue())));
     }
 
     private JsonObject getMiddleElement(List plotOptions) {
-        if (!plotOptions.isEmpty() && plotOptions.size() > 0) {
-            if (plotOptions.size() % 2 == 0) { // even number
-                Object umapEvenItem = plotOptions.get((plotOptions.size() / 2 - 1));
-                return (JsonObject) umapEvenItem;
-            } else { //odd number
-                Object umapOddItem = plotOptions.get((plotOptions.size() / 2));
-                return (JsonObject) umapOddItem;
-            }
-        } else {
-            return new JsonObject();
-        }
+            var plotOptionsSize = plotOptions.size();
+            var middleOfPlotOptionsSize = plotOptionsSize % 2 == 0 ? plotOptionsSize / 2 - 1 : plotOptionsSize / 2;
+            return (JsonObject) plotOptions.get(middleOfPlotOptionsSize);
     }
 
 }

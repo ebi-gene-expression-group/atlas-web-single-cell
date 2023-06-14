@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.search;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -69,7 +70,7 @@ class GeneSearchServiceIT {
 	@ParameterizedTest
     void experimentsWithoutPreferredKReturnASingleProfile(String experimentAccession) {
         String geneId = jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment(experimentAccession);
-        assertThat(subject.getMarkerGeneProfile(geneId)).hasSize(1);
+        assertThat(subject.getMarkerGeneProfile(ImmutableSet.of(geneId))).hasSize(1);
     }
 
     private Stream<String> experimentAccesionWithoutPreferredKProvider() {

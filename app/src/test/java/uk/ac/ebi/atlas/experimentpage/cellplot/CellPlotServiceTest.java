@@ -24,6 +24,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -148,5 +149,25 @@ class CellPlotServiceTest {
 
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .isEmpty();
+    }
+
+    // Throws NullPointerException if you try to fetch JSON Object from the Map with invalid key.
+    // (ex:Map.get('umap')->returns null, Because Map does have only capitalized 'UMAP' method as MAP fetches from the DB,
+    // DB contains only capital 'UMAP' plot method ).
+    @Test
+    void throwsNullPointerExceptionWhenYouFetchDefaultPlotMethodAndParameterisationWithNonExistKeyFromTheMap() {
+        var tsne = randomAlphabetic(10);
+        var umap = randomAlphabetic(10);
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(experimentAccession))
+                .thenReturn(ImmutableMap.of(umap.toUpperCase(),
+                        List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
+                        tsne,
+                        List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
+
+        assertThrows(NullPointerException.class, () -> {
+            subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                    .get(umap).getAsJsonObject();
+        });
     }
 }

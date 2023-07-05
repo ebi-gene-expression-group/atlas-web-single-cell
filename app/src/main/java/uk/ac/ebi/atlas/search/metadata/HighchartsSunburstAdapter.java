@@ -7,6 +7,8 @@ import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
@@ -44,7 +46,7 @@ public class HighchartsSunburstAdapter {
                         entry -> ImmutableMap.of(
                                 "name", entry.getKey().getRight(),
                                 "id", entry.getKey().getLeft().isEmpty() ?
-                                        entry.getKey().getRight() :
+                                        entry.getKey().getRight() + "#" + UUID.randomUUID() :
                                         entry.getKey().getLeft() + "#" + entry.getKey().getRight(),
                                 "parent", entry.getKey().getLeft().isEmpty() ?
                                         searchTerm :

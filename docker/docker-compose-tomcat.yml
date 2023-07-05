@@ -1,9 +1,8 @@
 version: "3.6"
 
 services:
-  scxa-tomcat:
+  tomcat:
     image: tomcat:9-jdk11
-    container_name: scxa-tomcat
     networks:
       - atlas-test-net
     environment:
@@ -14,28 +13,35 @@ services:
       - "8000:8000"
     volumes:
       - ../webapps:/usr/local/tomcat/webapps
-      - webapp-properties:/webapp-properties
-      - bioentity-properties:/atlas-data/bioentity_properties
-      - scxa-data:/atlas-data/scxa
-      - scxa-expdesign:/atlas-data/scxa-expdesign
+      - ./webapp-properties:/webapp-properties
       - scxa-tomcat-conf:/usr/local/tomcat/conf
+      - bioentity-properties:/atlas-data/bioentity_properties
+      - exp:/atlas-data/exp
+      - expdesign:/atlas-data/expdesign
     depends_on:
-      - scxa-postgres
-      - scxa-solrcloud-0
-      - scxa-solrcloud-1
+      gradle-build:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_started
+      solrcloud-0:
+        condition: service_started
+      solrcloud-1:
+        condition: service_started
     command: ["catalina.sh", "jpda", "run"]
 
 volumes:
-  webapp-properties:
-    name: ${WEBAPP_PROPERTIES_VOL_NAME}
-  bioentity-properties:
-    name: ${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
-  scxa-data:
-    name: ${ATLAS_DATA_SCXA_VOL_NAME}
-  scxa-expdesign:
-    name: ${ATLAS_DATA_SCXA_EXPDESIGN_VOL_NAME}
+  gradle-wrapper-dists:
+    name: ${PROJECT_NAME:?err}_${GRADLE_WRAPPER_DISTS_VOL_NAME}
+  gradle-ro-dep-cache:
+    name: ${PROJECT_NAME}_${GRADLE_RO_DEP_CACHE_VOL_NAME}
   scxa-tomcat-conf:
-    name: scxa-tomcat-conf
+    name: ${PROJECT_NAME}_tomcat-conf
+  bioentity-properties:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
+  exp:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXP_VOL_NAME}
+  expdesign:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXPDESIGN_VOL_NAME}
 
 networks:
   atlas-test-net:

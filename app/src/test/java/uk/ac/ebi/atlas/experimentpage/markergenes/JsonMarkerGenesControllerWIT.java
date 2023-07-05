@@ -1,7 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import com.google.common.collect.ImmutableSet;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

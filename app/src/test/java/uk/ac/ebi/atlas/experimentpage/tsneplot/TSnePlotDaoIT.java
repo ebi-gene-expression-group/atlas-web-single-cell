@@ -181,13 +181,4 @@ class TSnePlotDaoIT {
 
         return Stream.of(Arguments.of(experimentAccession, perplexity));
     }
-
-    // TODO Re-think this provider with scxa_coords
-    private Stream<Arguments> randomExperimentAccessionKAndPerplexityProvider() {
-        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        var allKs = jdbcTestUtils.fetchKsFromCellGroups(experimentAccession);
-        var perplexity = jdbcTestUtils.fetchRandomPerplexityFromExperimentTSne(experimentAccession);
-
-        return Stream.of(Arguments.of(experimentAccession, allKs.get(RNG.nextInt(allKs.size())), perplexity));
-    }
 }

@@ -1,0 +1,33 @@
+version: "3.6"
+
+services:
+  volumes-populator:
+    build: ${DOCKERFILE_PATH}
+    volumes:
+      - atlas-data-bioentity-properties:/atlas-data/bioentity_properties
+      - atlas-data-exp:/atlas-data/exp
+    command:
+      - |
+        lftp -e \
+        "mirror -vvv /pub/databases/microarray/data/atlas/bioentity_properties /atlas-data/bioentity_properties; exit" \
+        ftp.ebi.ac.uk
+        
+        # Create a directory for MAGETAB files
+        mkdir -p /atlas-data/exp/magetab
+        for EXP_ID in ${EXP_IDS}
+        do
+          lftp -e \
+          "mirror -vvv /pub/databases/arrayexpress/data/atlas/sc_experiments/$${EXP_ID} /atlas-data/exp/magetab/$${EXP_ID}; exit" \
+          ftp.ebi.ac.uk
+        done
+        
+        lftp -e \
+        "set xfer:clobber on; \
+        get /pub/databases/arrayexpress/data/atlas/sc_experiments/cell_stats.json -o /atlas-data/exp/magetab; exit" \
+        ftp.ebi.ac.uk
+
+volumes:
+  atlas-data-bioentity-properties:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
+  atlas-data-exp:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXP_VOL_NAME}

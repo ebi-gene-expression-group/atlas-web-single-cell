@@ -41,7 +41,9 @@ class TSnePlotViewRoute extends React.Component {
           plotOptions: this.props.plotTypesAndOptions.tsne
         }
      ]
+
     const cellTypeValue = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
+    const search = URI(this.props.location.search).search(true)
 
     this.state = {
       selectedPlotType: plotTypeDropdown[0].plotType.toLowerCase(),
@@ -52,15 +54,11 @@ class TSnePlotViewRoute extends React.Component {
       selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: ``
+      selectedColourByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`,
+      selectedClusterByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`,
+      selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      selectedClusterIdOption: ``
     }
-  }
-
-  componentDidMount() {
-    const search = URI(this.props.location.search).search(true)
-    this.setState({
-      selectedColourByCategory: !isNaN(search.colourBy) || !isNaN(this.state.selectedColourBy) ? `clusters` : `metadata`
-    })
   }
 
   render() {
@@ -182,27 +180,38 @@ class TSnePlotViewRoute extends React.Component {
         main: () => <ClustersHeatmapView
           host={atlasUrl}
           resource={
-            URI(`json/experiments/${experimentAccession}/marker-genes/clusters`)
-              .search({k: search.markerGeneK || preferredK})
-              .toString()
+            this.state.selectedColourByCategory == `metadata` ?
+                URI(`json/experiments/${this.state.experimentAccession}/marker-genes-heatmap/cell-types`)
+                    .search({cellGroupType: this.state.selectedClusterId})
+                    .toString() :
+                URI(`json/experiments/${this.state.experimentAccession}/marker-genes/clusters`)
+                    .search({k: this.state.selectedClusterId})
+                    .toString()
           }
           wrapperClassName={`row expanded`}
           ks={ks}
-          selectedK={search.markerGeneK || preferredK}
-          onSelectK={
-            (k) => {
+          selectedClusterByCategory={search.cellGroupType || search.k || preferredK}
+          selectedClusterId={this.state.selectedClusterId}
+          onChangeClusterId={(colourByCategory, colourByValue) => {
               const query = new URLSearchParams(history.location.search)
-              query.set(`markerGeneK`, k)
               // If tsne plot is coloured by k
               if (!query.has(`metadata`)) {
-                query.set(`k`, k)
-                query.set(`colourBy`, `clusters`)
+                query.set(`k`, colourByValue)
+              } else {
+                query.set(`cellGroupType`, colourByValue)
               }
+              query.set(`colourBy`, colourByCategory)
               resetHighlightClusters(query)
               updateUrlWithParams(query)
             }
           }
+          onChangeMarkerGeneFor={(selectedOption) => {
+            this.setState((state) => ({
+              selectedClusterIdOption: selectedOption
+            }))
+          }}
           ksWithMarkers={ksWithMarkerGenes}
+          metadata={metadata}
           species={species}
         />
       },

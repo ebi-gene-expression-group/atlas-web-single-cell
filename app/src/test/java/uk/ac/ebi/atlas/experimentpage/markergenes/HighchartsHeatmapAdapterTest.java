@@ -3,7 +3,6 @@ package uk.ac.ebi.atlas.experimentpage.markergenes;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import org.apache.calcite.adapter.java.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,12 +12,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
 
-import java.util.Arrays;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemblGeneId;

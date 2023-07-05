@@ -118,7 +118,7 @@ class MarkerGeneServiceIT {
 	@Test
 	void getCellTypeMarkerGeneHeatmapForValidExperimentAccesion() {
 		assertThat(subject.getCellTypeMarkerGeneHeatmapData(
-				"E-MTAB-5061", "inferred cell type - ontology labels", ImmutableSet.of("co-expression cell")))
+				"E-MTAB-5061", "inferred cell type - ontology labels"))
 				.isNotEmpty();
 	}
 }

@@ -165,7 +165,7 @@ class CellPlotServiceTest {
     void defaultResultedPlotMethodAlwaysMatchesWithDBPlotMethods() {
 
         var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        var plotMethods = jdbcTestUtils.fetchPlotMethodsForTheExperiment(experimentAccession);
+        var dBPlotMethods = jdbcTestUtils.fetchPlotMethodsForTheExperiment(experimentAccession);
 
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(experimentAccession))
                 .thenReturn(ImmutableMap.of("UMAP",
@@ -174,6 +174,6 @@ class CellPlotServiceTest {
                         List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
 
             assertTrue(subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession).keySet()
-                    .contains(plotMethods));
+                    .contains(dBPlotMethods));
     }
 }

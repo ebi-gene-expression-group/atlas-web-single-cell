@@ -32,7 +32,7 @@ class TSnePlotViewRoute extends React.Component {
   constructor(props) {
       super(props)
     const cellTypeValue = _first(_intersection(_map(this.props.metadata,`label`), this.props.initialCellTypeValues))
-
+    const search = URI(this.props.location.search).search(true)
     this.state = {
       selectedPlotType: Object.keys(this.props.defaultPlotMethodAndParameterisation)[0],
       geneId: ``,

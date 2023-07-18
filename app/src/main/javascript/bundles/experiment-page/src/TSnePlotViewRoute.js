@@ -107,7 +107,6 @@ class TSnePlotViewRoute extends React.Component {
           selectedPlotOptionLabel={this.state.selectedPlotOptionLabel}
           onChangePlotTypes={
             (plotOption) => {
-              console.log(plotOption)
               this.setState({
                 selectedPlotType: plotOption.value,
                 selectedPlotOption: defaultPlotMethodAndParameterisation[plotOption.value],
@@ -166,16 +165,14 @@ class TSnePlotViewRoute extends React.Component {
           wrapperClassName={`row expanded`}
           ks={ks}
           selectedClusterByCategory={search.cellGroupType || search.k || preferredK}
-          selectedClusterId={this.state.selectedClusterId}
-          onChangeClusterId={(colourByCategory, colourByValue) => {
+          selectedK={this.state.selectedClusterId}
+          onSelectK={(colourByValue,colourByCategory) => {
+              this.setState({
+                selectedClusterId : colourByValue
+              })
               const query = new URLSearchParams(history.location.search)
               // If tsne plot is coloured by k
-              if (!query.has(`metadata`)) {
-                query.set(`k`, colourByValue)
-              } else {
-                query.set(`cellGroupType`, colourByValue)
-              }
-              query.set(`colourBy`, colourByCategory)
+              query.set(`k`, colourByValue)
               resetHighlightClusters(query)
               updateUrlWithParams(query)
             }

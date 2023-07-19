@@ -10,7 +10,9 @@ services:
       - "5432:5432"
 
   solr-populator:
-    build: ${DOCKERFILE_PATH}
+    build:
+      context: ${DOCKERFILE_PATH}
+      no_cache: true
     networks:
       - atlas-test-net
     depends_on:

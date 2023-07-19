@@ -2,7 +2,9 @@ version: "3.6"
 
 services:
   postgres-populator:
-    build: ${DOCKERFILE_PATH}
+    build:
+      context: ${DOCKERFILE_PATH}
+      no_cache: true
     networks:
       - atlas-test-net
     depends_on:

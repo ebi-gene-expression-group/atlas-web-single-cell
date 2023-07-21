@@ -64,8 +64,8 @@ services:
         ./create-bioentities-schema.sh
         ./create-bioentities-suggesters.sh
         
-        export SOLR_COLLECTION=${SOLR_COLLECTION_BIOENTITIES}
-        export SCHEMA_VERSION=${SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION}
+        export SOLR_COLLECTION=$${SOLR_COLLECTION_BIOENTITIES}
+        export SCHEMA_VERSION=$${SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION}
         for FILE in `ls /root/bioentity-properties-jsonl/*.jsonl`
         do
           INPUT_JSONL=$${FILE} ./solr-jsonl-chunk-loader.sh >> /dev/stdout 2>&1

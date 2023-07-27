@@ -12,10 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
-import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
-import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -42,9 +40,6 @@ class CellPlotServiceTest {
 
     @Mock
     private CellMetadataDao cellMetadataDaoMock;
-
-    @Inject
-    private JdbcUtils jdbcTestUtils;
 
     private CellPlotService subject;
 
@@ -162,10 +157,8 @@ class CellPlotServiceTest {
     }
 
     @Test
-    void defaultResultedPlotMethodAlwaysMatchesWithDBPlotMethods() {
-
-        var experimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
-        var dBPlotMethods = jdbcTestUtils.fetchPlotMethodsForTheExperiment(experimentAccession);
+    void defaultResultedPlotMethodMatchesWithDBPlotMethods() {
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
 
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(experimentAccession))
                 .thenReturn(ImmutableMap.of("UMAP",
@@ -173,7 +166,8 @@ class CellPlotServiceTest {
                         "t-SNE",
                         List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
 
-            assertTrue(subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession).keySet()
-                    .contains(dBPlotMethods));
+            assertTrue(subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                    .keySet()
+                    .contains("t-SNE"));
     }
 }

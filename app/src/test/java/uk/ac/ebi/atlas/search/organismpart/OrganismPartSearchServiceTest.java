@@ -34,24 +34,24 @@ public class OrganismPartSearchServiceTest {
     void whenEmptySetOfGeneIdsProvidedReturnEmptySetOfOrganismPart() {
         ImmutableSet<String> emptySetOfGeneIds = ImmutableSet.of();
 
-        var emptySetOfOrganismParts = subject.search(emptySetOfGeneIds);
+        var organismParts = subject.search(emptySetOfGeneIds);
 
-        assertThat(emptySetOfOrganismParts).isEmpty();
+        assertThat(organismParts).isEmpty();
     }
 
     @Test
     void whenNonExistentGeneIdsGivenReturnEmptySetOfOrganismPart() {
         var nonExistentGeneId = "nonExistentGeneId";
-        var emptySetOfGeneIds = ImmutableSet.of(nonExistentGeneId);
+        var setOfNonExistentGeneIds = ImmutableSet.of(nonExistentGeneId);
 
-        when(geneSearchService.getCellIdsFromGeneIds(emptySetOfGeneIds))
+        when(geneSearchService.getCellIdsFromGeneIds(setOfNonExistentGeneIds))
                 .thenReturn(ImmutableSet.of());
         when(organismPartSearchDao.searchOrganismPart(ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
-        var emptySetOfOrganismParts = subject.search(emptySetOfGeneIds);
+        var organismParts = subject.search(setOfNonExistentGeneIds);
 
-        assertThat(emptySetOfOrganismParts).isEmpty();
+        assertThat(organismParts).isEmpty();
 
     }
 
@@ -71,8 +71,8 @@ public class OrganismPartSearchServiceTest {
         when(organismPartSearchDao.searchOrganismPart(validCellIds))
                 .thenReturn(ImmutableSet.of(expectedOrganismPart));
 
-        var actualSetOfOrganismParts = subject.search(validGeneIds);
+        var organismParts = subject.search(validGeneIds);
 
-        assertThat(actualSetOfOrganismParts).contains(expectedOrganismPart);
+        assertThat(organismParts).contains(expectedOrganismPart);
     }
 }

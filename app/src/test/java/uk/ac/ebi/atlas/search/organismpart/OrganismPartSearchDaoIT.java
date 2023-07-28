@@ -19,7 +19,6 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.HashSet;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,31 +65,30 @@ public class OrganismPartSearchDaoIT {
 
     @Test
     void whenEmptySetOfCellIDsProvidedReturnEmptySetOfOrganismPart() {
-        ImmutableSet<String> cellIDs = ImmutableSet.of();
+        ImmutableSet<String> emptyCellIDs = ImmutableSet.of();
 
-        var organismParts = subject.searchOrganismPart(cellIDs);
+        var organismParts = subject.searchOrganismPart(emptyCellIDs);
 
         assertThat(organismParts).isEmpty();
     }
 
     @Test
     void whenInvalidCellIdsProvidedReturnEmptySetOfOrganismPart() {
-        var cellIDs =
+        var invalidCellIDs =
                 ImmutableSet.of("invalid-cellID-1", "invalid-cellID-2", "invalid-cellID-3");
 
-        var organismParts = subject.searchOrganismPart(cellIDs);
+        var organismParts = subject.searchOrganismPart(invalidCellIDs);
 
         assertThat(organismParts).isEmpty();
     }
 
     @Test
     void whenValidCellIdsProvidedReturnSetOfOrganismPart() {
-        final List<String> randomListOfCellIDs = jdbcUtils.fetchRandomListOfCells(10);
-        var cellIDs =
+        var randomListOfCellIDs =
                 ImmutableSet.copyOf(
-                        new HashSet<>(randomListOfCellIDs));
+                        new HashSet<>(jdbcUtils.fetchRandomListOfCells(10)));
 
-        var organismParts = subject.searchOrganismPart(cellIDs);
+        var organismParts = subject.searchOrganismPart(randomListOfCellIDs);
 
         assertThat(organismParts.size()).isGreaterThan(0);
     }

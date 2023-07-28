@@ -1,27 +1,32 @@
 version: "3.6"
 
 services:
-  scxa-postgres:
-    image: postgres:11-alpine
+  postgres:
     container_name: ${POSTGRES_HOST}
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    image: postgres:11-alpine
     networks:
       - atlas-test-net
-    command: -c max_wal_size=2GB
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    command: -c max_wal_size=3GB
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_DB
 
-  scxa-flyway:
+  flyway:
     image: flyway/flyway
     networks:
       - atlas-test-net
+    depends_on:
+      - postgres
+    volumes:
+      - ../schemas/flyway/${PROJECT_NAME}:/flyway/sql
     command: [
-      "-url=jdbc:postgresql://${POSTGRES_HOST}/${POSTGRES_DB}",
+      "-X",
+      "-url=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}",
       "-schemas=${POSTGRES_USER}",
       "-user=${POSTGRES_USER}",
       "-password=${POSTGRES_PASSWORD}",
@@ -29,16 +34,12 @@ services:
       "-connectRetries=60",
       "migrate"
     ]
-    volumes:
-      - ../schemas/flyway/scxa:/flyway/sql
-    depends_on:
-      - scxa-postgres
 
 volumes:
   pgdata:
-    # Not strictly necessary to error out, but it avoids creating an empty `scxa-postgres-11-pgdata-` volume
-    name: scxa-postgres-11-pgdata-${SCHEMA_VERSION:?err}
+    # Not strictly necessary to error out, but it avoids creating an empty `scxa_postgres-11-pgdata-` volume
+    name: ${PROJECT_NAME:?err}_pgdata-${SCHEMA_VERSION:?err}
 
 networks:
   atlas-test-net:
-      name: atlas-test-net
+    name: atlas-test-net

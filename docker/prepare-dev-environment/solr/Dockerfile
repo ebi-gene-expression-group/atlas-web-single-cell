@@ -1,22 +1,22 @@
 FROM ubuntu:jammy
 
-# Remove references to broken/outdated packages; otherwise we can get 404s:
-# E: Failed to fetch http://archive.ubuntu.com/ubuntu/pool/main/r/rsync/rsync_3.2.3-8ubuntu3.1_amd64.deb  404  Not Found [IP: 185.125.190.39 80
-RUN rm -rf /var/lib/apt/lists/*
-RUN apt -y -qq update
-# Beware! Python 3 is required by index-bioentities but comes as part of Ubuntu
-RUN apt -y -qq install git openjdk-11-jdk jq rsync curl
+# Update package list and install necessary tools
+# Python 3 is required by index-bioentities but comes as part of Ubuntu
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git openjdk-11-jdk jq rsync curl
 
+# Clean up APT cache and temporary files
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Create the necessary directory
 RUN mkdir -p /root/bioentity-properties-jsonl
 
+# Clone the necessary repositories
 WORKDIR /root
 RUN git clone --depth 1 https://github.com/ebi-gene-expression-group/index-bioentities.git
 RUN git clone --depth 1 --recurse-submodules https://github.com/ebi-gene-expression-group/atlas-web-bulk.git
 RUN git clone --depth 1 https://github.com/ebi-gene-expression-group/index-scxa.git
 
-VOLUME /atlas-data/bioentity_properties /atlas-data/scxa
-
-ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-
-COPY docker-entrypoint.sh /
-CMD ["/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "-c"]

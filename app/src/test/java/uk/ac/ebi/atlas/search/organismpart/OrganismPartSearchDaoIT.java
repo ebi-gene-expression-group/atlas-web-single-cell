@@ -15,6 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
+import uk.ac.ebi.atlas.solr.SingleCellSolrUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -30,6 +31,9 @@ public class OrganismPartSearchDaoIT {
 
     @Inject
     private JdbcUtils jdbcUtils;
+
+    @Inject
+    private SingleCellSolrUtils solrUtils;
 
     @Inject
     private DataSource dataSource;
@@ -64,31 +68,58 @@ public class OrganismPartSearchDaoIT {
     }
 
     @Test
-    void whenEmptySetOfCellIDsProvidedReturnEmptySetOfOrganismPart() {
+    void whenEmptySetOfCellIDsAndCellTypesProvidedReturnEmptySetOfOrganismPart() {
         ImmutableSet<String> emptyCellIDs = ImmutableSet.of();
+        ImmutableSet<String> emptySetOfCellTypes = ImmutableSet.of();
 
-        var organismParts = subject.searchOrganismPart(emptyCellIDs);
+        var organismParts = subject.searchOrganismPart(emptyCellIDs, emptySetOfCellTypes);
 
         assertThat(organismParts).isEmpty();
     }
 
     @Test
-    void whenInvalidCellIdsProvidedReturnEmptySetOfOrganismPart() {
+    void whenInvalidCellIdsAndNoCellTypesProvidedReturnEmptySetOfOrganismPart() {
         var invalidCellIDs =
                 ImmutableSet.of("invalid-cellID-1", "invalid-cellID-2", "invalid-cellID-3");
+        ImmutableSet<String> emptySetOfCellTypes = ImmutableSet.of();
 
-        var organismParts = subject.searchOrganismPart(invalidCellIDs);
+        var organismParts = subject.searchOrganismPart(invalidCellIDs, emptySetOfCellTypes);
 
         assertThat(organismParts).isEmpty();
     }
 
     @Test
-    void whenValidCellIdsProvidedReturnSetOfOrganismPart() {
+    void whenOnlyValidCellIdsButNoCellTypesProvidedReturnSetOfOrganismPart() {
         var randomListOfCellIDs =
                 ImmutableSet.copyOf(
                         new HashSet<>(jdbcUtils.fetchRandomListOfCells(10)));
+        ImmutableSet<String> emptySetOfCellTypes = ImmutableSet.of();
 
-        var organismParts = subject.searchOrganismPart(randomListOfCellIDs);
+        var organismParts = subject.searchOrganismPart(randomListOfCellIDs, emptySetOfCellTypes);
+
+        assertThat(organismParts.size()).isGreaterThan(0);
+    }
+
+    @Test
+    void whenValidCellIdsButInvalidCellTypesProvidedReturnEmptySetOfOrganismPart() {
+        var randomListOfCellIDs =
+                ImmutableSet.copyOf(
+                        new HashSet<>(jdbcUtils.fetchRandomListOfCells(10)));
+        ImmutableSet<String> invalidCellTypes = ImmutableSet.of("invalid-cellType-1", "invalid-cellType-2");
+
+        var organismParts = subject.searchOrganismPart(randomListOfCellIDs, invalidCellTypes);
+
+        assertThat(organismParts).isEmpty();
+    }
+
+    @Test
+    void whenValidCellIdsAndValidCellTypesProvidedReturnSetOfOrganismPart() {
+        var randomListOfCellIDs =
+                ImmutableSet.copyOf(
+                        new HashSet<>(jdbcUtils.fetchRandomListOfCells(3)));
+        ImmutableSet<String> cellTypes = solrUtils.fetchedRandomCellTypesByCellIDs(randomListOfCellIDs, 1);
+
+        var organismParts = subject.searchOrganismPart(randomListOfCellIDs, cellTypes);
 
         assertThat(organismParts.size()).isGreaterThan(0);
     }

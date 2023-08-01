@@ -27,6 +27,7 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -130,7 +131,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
         // If the query term matches a single Ensembl ID different to the query term, we return it in the response.
         // The most common case is a non-Ensembl gene identifier (e.g. Entrez, MGI, ...).
         var matchingGeneIds =
-                (geneIds.get().size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) ?
+                (Objects.requireNonNull(geneIds.orElse(null)).size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) ?
                         "(" + String.join(", ", geneIds.get()) + ")" :
                         "";
 
@@ -182,7 +183,6 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                             // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...
                             var geneId = entry.getKey();
                             var experimentAccession = exp2cells.getKey();
-                            var cellIds = exp2cells.getValue();
 
                             var experimentAttributes =
                                     ImmutableMap.<String, Object>builder().putAll(
@@ -236,7 +236,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                 .map(Map.Entry::getKey)
                                 .collect(toImmutableSet()));
 
-        return markerGeneFacets != null && markerGeneFacets.size() > 0;
+        return markerGeneFacets != null && !markerGeneFacets.isEmpty();
     }
 
     @GetMapping(value = "/json/gene-search/organism-parts",

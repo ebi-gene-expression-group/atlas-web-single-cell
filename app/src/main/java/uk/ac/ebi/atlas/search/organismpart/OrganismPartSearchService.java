@@ -16,7 +16,7 @@ public class OrganismPartSearchService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganismPartSearchService.class);
 
-    public ImmutableSet<String> search(ImmutableSet<String> geneIds) {
+    public ImmutableSet<String> search(ImmutableSet<String> geneIds, ImmutableSet<String> cellTypes) {
         if (geneIds.isEmpty()) {
             LOGGER.warn("Can't query for organism part as no gene IDs has given.");
             return ImmutableSet.of();
@@ -24,7 +24,7 @@ public class OrganismPartSearchService {
 
         LOGGER.info("Searching organism parts for this gene ids: {}", geneIds.asList());
 
-        return organismPartSearchDao.searchOrganismPart(geneSearchService.getCellIdsFromGeneIds(geneIds));
+        return organismPartSearchDao.searchOrganismPart(geneSearchService.getCellIdsFromGeneIds(geneIds), cellTypes);
     }
 
 }

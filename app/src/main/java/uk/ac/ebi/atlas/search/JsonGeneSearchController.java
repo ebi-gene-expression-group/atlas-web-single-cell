@@ -20,6 +20,7 @@ import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.search.analytics.AnalyticsSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
+import uk.ac.ebi.atlas.search.organismpart.OrganismPartSearchService;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
@@ -48,6 +49,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private final ExperimentAttributesService experimentAttributesService;
 
     private final AnalyticsSearchService analyticsSearchService;
+    private final OrganismPartSearchService organismPartSearchService;
     private final SpeciesSearchService speciesSearchService;
 
     @GetMapping(value = "/json/search", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -249,7 +251,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             return ImmutableSet.of();
         }
 
-        return analyticsSearchService.searchOrganismPart(geneIds.get());
+        var cellTypes = requestParams.get("cellTypes");
+
+        return organismPartSearchService.search(geneIds.get(),
+                cellTypes != null ? ImmutableSet.copyOf(cellTypes) : ImmutableSet.of());
     }
 
     @GetMapping(value = "/json/gene-search/cell-types",

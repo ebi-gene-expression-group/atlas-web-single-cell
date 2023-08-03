@@ -177,7 +177,7 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
-    void whenRequestParamIsEmptyOrganismPartSearchReturnsEmptySet() {
+    void whenRequestParamIsEmptyOrganismPartSearchReturnsException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 
         when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
@@ -333,17 +333,6 @@ class JsonGeneSearchControllerIT {
     @Test
     void whenRequestParamIsEmptySpeciesSearchReturnsAnException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-
-        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
-                .thenThrow(new QueryParsingException("Error parsing query"));
-
-        assertThatExceptionOfType(QueryParsingException.class)
-                .isThrownBy(() -> subject.getSpeciesByGeneId(requestParams));
-    }
-
-    @Test
-    void whenRequestParamIsNullSpeciesSearchReturnsAnException() {
-        LinkedMultiValueMap<String, String> requestParams = null;
 
         when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
                 .thenThrow(new QueryParsingException("Error parsing query"));

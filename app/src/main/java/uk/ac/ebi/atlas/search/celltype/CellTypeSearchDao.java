@@ -19,6 +19,8 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStrea
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_CELL_TYPE;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.EXPERIMENT_ACCESSION;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACET_CHARACTERISTIC_NAME;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.FACET_CHARACTERISTIC_VALUE;
@@ -37,9 +39,9 @@ public class CellTypeSearchDao {
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
-    public CellTypeSearchDao(SolrCloudCollectionProxyFactory solrCloudCollectionProxyFactory) {
+    public CellTypeSearchDao(SolrCloudCollectionProxyFactory collectionProxyFactory) {
         this.singleCellAnalyticsCollectionProxy =
-                solrCloudCollectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
+                collectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
     @Cacheable(cacheNames = "inferredCellTypesOntology", key = "{#experimentAccession, #organOrOrganismPart}")
@@ -100,7 +102,7 @@ public class CellTypeSearchDao {
      */
     private ImmutableSet<String> getCellTypeMetadata(String experimentAccession,
                                                      ImmutableSet<String> organOrOrganismPart,
-                                                     String cellTypeValue) {
+                                                     String cellTypeFacetName) {
         var cellIdsInOrganOrOrganismPartQueryBuilder =
                 new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
@@ -124,8 +126,8 @@ public class CellTypeSearchDao {
                         .addQueryFieldByTerm(EXPERIMENT_ACCESSION, experimentAccession)
                         .addQueryFieldByTerm(
                                 ImmutableMap.of(
-                                        FACET_FACTOR_NAME, ImmutableSet.of(cellTypeValue),
-                                        FACET_CHARACTERISTIC_NAME, ImmutableSet.of(cellTypeValue)))
+                                        FACET_FACTOR_NAME, ImmutableSet.of(cellTypeFacetName),
+                                        FACET_CHARACTERISTIC_NAME, ImmutableSet.of(cellTypeFacetName)))
                         .setFieldList(ImmutableSet.of(CELL_ID, FACET_FACTOR_VALUE, FACET_CHARACTERISTIC_VALUE))
                         .sortBy(CELL_ID, SolrQuery.ORDER.asc);
         var uniqueCellIdsAnnotatedWithCellTypeValue =
@@ -160,6 +162,46 @@ public class CellTypeSearchDao {
             return tupleStreamer.get()
                     .map(tuple -> tuple.getString(CELL_TYPE_VALUE_RENAMED_FIELD))
                     .collect(toImmutableSet());
+        }
+    }
+
+    public ImmutableSet<String> searchCellTypes(ImmutableSet<String> cellIds, ImmutableSet<String> organismParts) {
+//        Streaming query for getting the cell types provided by set of cell IDs and organism parts
+//        unique(
+//            search(scxa-analytics-v6, q=cell_id:<SET_OF_CELL_IDS> AND ctw_organism_part:<SET_OF_ORGANISM_PART>,
+//            fl="ctw_cell_type",
+//            sort="ctw_cell_type asc"
+//            ),
+//            over="ctw_cell_type"
+//        )
+        return getCellTypeFromStreamQuery(
+                new UniqueStreamBuilder(getStreamBuilderForCellTypeByCellIdsAndOrganismParts(
+                        cellIds, organismParts), CTW_CELL_TYPE.name()));
+    }
+
+    private SearchStreamBuilder<SingleCellAnalyticsCollectionProxy> getStreamBuilderForCellTypeByCellIdsAndOrganismParts(
+            ImmutableSet<String> cellIDs, ImmutableSet<String> organismParts) {
+        var cellTypeQueryBuilder = new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                .addQueryFieldByTerm(CELL_ID, cellIDs)
+                .setFieldList(CTW_CELL_TYPE)
+                .sortBy(CTW_CELL_TYPE, SolrQuery.ORDER.asc);
+
+        if (organismParts != null && !organismParts.isEmpty()) {
+            cellTypeQueryBuilder.addQueryFieldByTerm(CTW_ORGANISM_PART, organismParts);
+        }
+
+        return new SearchStreamBuilder<>(
+                singleCellAnalyticsCollectionProxy,
+                cellTypeQueryBuilder
+        ).returnAllDocs();
+    }
+
+    private ImmutableSet<String> getCellTypeFromStreamQuery(UniqueStreamBuilder uniqueCellTypeStreamBuilder) {
+        try (TupleStreamer tupleStreamer = TupleStreamer.of(uniqueCellTypeStreamBuilder.build())) {
+            return tupleStreamer.get()
+                    .map(tuple -> tuple.getString(CTW_CELL_TYPE.name()))
+                    .collect(toImmutableSet()
+                    );
         }
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
-import uk.ac.ebi.atlas.search.analytics.AnalyticsSearchService;
+import uk.ac.ebi.atlas.search.celltype.CellTypeSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
 import uk.ac.ebi.atlas.search.organismpart.OrganismPartSearchService;
@@ -48,8 +48,8 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
-    private final AnalyticsSearchService analyticsSearchService;
     private final OrganismPartSearchService organismPartSearchService;
+    private final CellTypeSearchService cellTypeSearchService;
     private final SpeciesSearchService speciesSearchService;
 
     @GetMapping(value = "/json/search", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -267,7 +267,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             return ImmutableSet.of();
         }
 
-        return analyticsSearchService.searchCellType(geneIds.get());
+        var organismParts = requestParams.get("organismParts");
+
+        return cellTypeSearchService.search(geneIds.get(),
+                organismParts != null ? ImmutableSet.copyOf(organismParts) : ImmutableSet.of());
     }
 
     @GetMapping(value = "/json/gene-search/species", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

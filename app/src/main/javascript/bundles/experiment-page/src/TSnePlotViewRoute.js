@@ -166,7 +166,7 @@ class TSnePlotViewRoute extends React.Component {
           ks={ks}
           selectedClusterByCategory={search.cellGroupType || search.k || preferredK}
           selectedK={this.state.selectedClusterId}
-          onSelectK={(colourByValue,colourByCategory) => {
+          onSelectK={(colourByValue) => {
               this.setState({
                 selectedClusterId : colourByValue
               })

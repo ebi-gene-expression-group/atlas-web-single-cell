@@ -28,6 +28,6 @@ public String getExperimentDesign(@PathVariable String experimentAccession,
         if(pageSize < 1)
             throw new IllegalArgumentException("Page size must be greater than 0");
 
-        return  GSON.toJson(experimentDesignService.getExperimentDesignData(experiment_accession, pageNo, pageSize));
+return GSON.toJson(experimentDesignService.getExperimentDesignData(experimentAccession, pageNo, pageSize));
     }
 }

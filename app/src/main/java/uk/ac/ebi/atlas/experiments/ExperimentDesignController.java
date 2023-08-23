@@ -20,7 +20,7 @@ public class ExperimentDesignController extends JsonExceptionHandlingController 
 
     @GetMapping(value = "/json/experiment-design/{experiment_accession}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getExperimentDesign(@PathVariable String experiment_accession,
+public String getExperimentDesign(@PathVariable String experimentAccession,
                                       @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
                                       @RequestParam(value = "pageSize", defaultValue = "20") int pageSize) {
         if(pageNo < 1)

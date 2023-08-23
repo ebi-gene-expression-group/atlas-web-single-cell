@@ -68,14 +68,16 @@ class ExperimentDesignControllerWIT {
     }
 
     @Test
-    void hasExperimentDesignDataWithoutAnyParameter() throws Exception {
+    void hasExperimentDesignDataWithoutAnyPageNoSizeParameter() throws Exception {
         mockMvc.perform(get(URL, "E-EHCA-2"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.headers").isArray())
                 .andExpect(jsonPath("$.headers").isNotEmpty())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data").isNotEmpty());
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                //default pageSize is 20 and pageNo is 1
+                .andExpect(jsonPath("$.data.length()").value(20));
     }
 
     @Test

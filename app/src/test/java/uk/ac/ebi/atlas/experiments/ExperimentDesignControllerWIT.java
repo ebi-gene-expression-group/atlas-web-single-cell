@@ -21,6 +21,8 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -76,6 +78,7 @@ class ExperimentDesignControllerWIT {
                 .andExpect(jsonPath("$.headers").isNotEmpty())
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.headers").contains(List.of("contrastName", "referenceOrTest", "run")))
                 //default pageSize is 20 and pageNo is 1
                 .andExpect(jsonPath("$.data.length()").value(20));
     }
@@ -88,6 +91,7 @@ class ExperimentDesignControllerWIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.headers").isArray())
                 .andExpect(jsonPath("$.headers").isNotEmpty())
+                .andExpect(jsonPath("$.headers").contains(List.of("contrastName", "referenceOrTest", "run")))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data").isNotEmpty())
                 .andExpect(jsonPath("$.data.length()").value(10));

@@ -13,6 +13,8 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 @RestController
 public class ExperimentDesignController extends JsonExceptionHandlingController {
     private final ExperimentDesignTableService experimentDesignService;
+    private final String DEFAULT_PAGE_NO = "1";
+    private final String DEFAULT_PAGE_SIZE = "20";
 
     public ExperimentDesignController (ExperimentDesignTableService experimentDesignService) {
         this.experimentDesignService = experimentDesignService;
@@ -20,14 +22,14 @@ public class ExperimentDesignController extends JsonExceptionHandlingController 
 
     @GetMapping(value = "/json/experiment-design/{experiment_accession}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public String getExperimentDesign(@PathVariable String experimentAccession,
-                                      @RequestParam(value = "pageNo", defaultValue = "1") int pageNo,
-                                      @RequestParam(value = "pageSize", defaultValue = "20") int pageSize) {
+    public String getExperimentDesign(@PathVariable String experiment_accession,
+                                      @RequestParam(value = "pageNo", defaultValue = DEFAULT_PAGE_NO) int pageNo,
+                                      @RequestParam(value = "pageSize", defaultValue = DEFAULT_PAGE_SIZE) int pageSize) {
         if(pageNo < 1)
             throw new IllegalArgumentException("Page number must be greater than 0");
         if(pageSize < 1)
             throw new IllegalArgumentException("Page size must be greater than 0");
 
-return GSON.toJson(experimentDesignService.getExperimentDesignData(experimentAccession, pageNo, pageSize));
+        return  GSON.toJson(experimentDesignService.getExperimentDesignData(experiment_accession, pageNo, pageSize));
     }
 }

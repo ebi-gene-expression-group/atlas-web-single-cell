@@ -8,9 +8,15 @@ services:
       - atlas-test-net
     ports:
       - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_DB
 
   solr-populator:
-    build: ${DOCKERFILE_PATH}
+    build:
+      context: ${DOCKERFILE_PATH}
+      no_cache: true
     networks:
       - atlas-test-net
     depends_on:
@@ -58,8 +64,8 @@ services:
         ./create-bioentities-schema.sh
         ./create-bioentities-suggesters.sh
         
-        export SOLR_COLLECTION=${SOLR_COLLECTION_BIOENTITIES}
-        export SCHEMA_VERSION=${SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION}
+        export SOLR_COLLECTION=$${SOLR_COLLECTION_BIOENTITIES}
+        export SCHEMA_VERSION=$${SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION}
         for FILE in `ls /root/bioentity-properties-jsonl/*.jsonl`
         do
           INPUT_JSONL=$${FILE} ./solr-jsonl-chunk-loader.sh >> /dev/stdout 2>&1

@@ -199,6 +199,7 @@ public class CellTypeSearchDao {
     private ImmutableSet<String> getCellTypeFromStreamQuery(UniqueStreamBuilder uniqueCellTypeStreamBuilder) {
         try (TupleStreamer tupleStreamer = TupleStreamer.of(uniqueCellTypeStreamBuilder.build())) {
             return tupleStreamer.get()
+                    .filter(tuple -> !tuple.getFields().isEmpty())
                     .map(tuple -> tuple.getString(CTW_CELL_TYPE.name()))
                     .collect(toImmutableSet()
                     );

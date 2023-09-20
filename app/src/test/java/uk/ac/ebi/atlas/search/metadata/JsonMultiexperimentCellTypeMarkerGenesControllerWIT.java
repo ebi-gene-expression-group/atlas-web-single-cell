@@ -17,6 +17,8 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -59,7 +61,7 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
     }
 
     @Test
-    void returnsAValidJsonPayloadForAValidCellType() throws Exception {
+    void shouldReturnAValidJsonPayloadForAValidCellType() throws Exception {
         this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", "cell cycle S phase")
                         .param("experimentAccession", "E-ENAD-53"))
                 .andExpect(status().isOk())
@@ -71,7 +73,7 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
     }
 
     @Test
-    void shouldReturnsAValidJsonPayloadForACellTypeContainingAForwardSlash() throws Exception {
+    void shouldReturnAValidJsonPayloadForACellTypeContainingAForwardSlash() throws Exception {
         final String encodedCellType = URLEncoder.encode("cell cycle G2/M phase", StandardCharsets.UTF_8);
         this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", encodedCellType)
                         .param("experimentAccession", "E-ENAD-53"))
@@ -84,9 +86,11 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
     }
 
     @Test
-    void returnsEmptyPayloadForAnInvalidCellType() throws Exception {
+    void shouldReturnEmptyPayloadForAnInvalidCellType() throws Exception {
         this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", "fooBar")
                 .param("experimentAccession", "E-CURD-4"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", is(empty())));
     }
 }

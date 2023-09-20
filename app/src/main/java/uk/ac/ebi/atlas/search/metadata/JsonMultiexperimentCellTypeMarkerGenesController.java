@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.HighchartsHeatmapAdapter;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
@@ -32,15 +32,13 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
     public String getCellTypeMarkerGenes(
             @PathVariable String cellType,
             @RequestParam(name = "experiment-accessions", required = false) Collection<String> experimentAccessions) {
-        try {
-            return GSON.toJson(
-                    highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
-                            experimentAccessions == null ?
-                                    multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile( URLDecoder.decode(cellType, "UTF-8")) :
-                                    multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
-                                            ImmutableSet.copyOf(experimentAccessions), URLDecoder.decode(cellType, "UTF-8"))));
-        } catch (UnsupportedEncodingException e) {
-            return "Error decoding the URL: " + e.getMessage();
-        }
+        return GSON.toJson(
+                highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
+                        experimentAccessions == null ?
+                                multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
+                                        URLDecoder.decode(cellType, StandardCharsets.UTF_8)) :
+                                multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
+                                        ImmutableSet.copyOf(experimentAccessions),
+                                        URLDecoder.decode(cellType, StandardCharsets.UTF_8))));
     }
 }

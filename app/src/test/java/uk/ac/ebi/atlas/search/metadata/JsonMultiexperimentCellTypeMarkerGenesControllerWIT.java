@@ -14,6 +14,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.Matchers.isA;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -58,7 +61,20 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
     @Test
     void returnsAValidJsonPayloadForAValidCellType() throws Exception {
         this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", "cell cycle S phase")
-                .param("experimentAccession", "E-ENAD-53"))
+                        .param("experimentAccession", "E-ENAD-53"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$[0].cellGroupValue", isA(String.class)))
+                .andExpect(jsonPath("$[0].value", isA(Number.class)))
+                .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
+                .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
+    }
+
+    @Test
+    void shouldReturnsAValidJsonPayloadForACellTypeContainingAForwardSlash() throws Exception {
+        final String encodedCellType = URLEncoder.encode("cell cycle G2/M phase", StandardCharsets.UTF_8);
+        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", encodedCellType)
+                        .param("experimentAccession", "E-ENAD-53"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].cellGroupValue", isA(String.class)))

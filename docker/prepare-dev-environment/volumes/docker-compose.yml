@@ -2,7 +2,9 @@ version: "3.6"
 
 services:
   volumes-populator:
-    build: ${DOCKERFILE_PATH}
+    build:
+      context: ${DOCKERFILE_PATH}
+      no_cache: true
     volumes:
       - atlas-data-bioentity-properties:/atlas-data/bioentity_properties
       - atlas-data-exp:/atlas-data/exp

@@ -6,7 +6,7 @@ services:
     volumes:
       - ..:/root/project
     working_dir: /root/project
-    command: ["sh", "-c", "npm install -g npm-check-updates && ./compile-front-end-packages.sh -ui" ]
+    command: ["sh", "-c", "export CPPFLAGS=-DPNG_ARM_NEON_OPT=0 && npm install -g npm-check-updates && ./compile-front-end-packages.sh -ui" ]
 
   gradle-build:
     depends_on:

@@ -19,7 +19,7 @@ enum SupportedOrgan {
     LIVER("liver", "http://purl.obolibrary.org/obo/UBERON_0002107"),
     PLACENTA("placenta", "http://purl.obolibrary.org/obo/UBERON_0001987"),
     LUNG("lung", "http://purl.obolibrary.org/obo/UBERON_0002048"),
-    INTESTINE("intestine", "http://purl.obolibrary.org/obo/UBERON_0000160");
+    GUT("gut", "http://purl.obolibrary.org/obo/UBERON_0000160");
 
     final String name;
     final String ontologyUri;

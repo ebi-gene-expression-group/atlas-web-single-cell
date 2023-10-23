@@ -5,18 +5,23 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # EXP_IDS
 # SPECIES
 source ${SCRIPT_DIR}/../test-data.env
-# ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME
-# ATLAS_DATA_SCXA_VOL_NAME
+
+# PROJECT_NAME
 # SOLR_CLOUD_CONTAINER_1_NAME
 # SOLR_CLOUD_CONTAINER_2_NAME
-source ${SCRIPT_DIR}/../../dev.env
+ENV_FILE=${SCRIPT_DIR}/../../dev.env
+source ${ENV_FILE}
+
 # print_stage_name
 # print_done
 # print_error
 source ${SCRIPT_DIR}/../utils.sh
 
+SOLR_KEYS_DIRECTORY=${SCRIPT_DIR}
+REMOVE_VOLUMES=false
+LOG_FILE=/dev/stdout
 function print_usage() {
-  printf '\n%b\n' "Usage: ${0} [ -k DIRECTORY ] [ -o FILE ] [ -l FILE ]"
+  printf '\n%b\n' "Usage: ${0} [ -r] [ -k DIRECTORY ] [ -o FILE ] [ -l FILE ]"
   printf '\n%b\n' "Populate a Docker Compose SolrCloud 8 cluster with Single Cell Expression Atlas data."
 
   printf '\n%b\n' "-k DIRECTORY\tDirectory where RSA private/public keypair"
@@ -26,13 +31,13 @@ function print_usage() {
   printf '%b\n' "\t\toption is not provided it will download it from"
   printf '%b\n' "\t\thttps://github.com/EBISPOT/scatlas_ontology"
 
-  printf '\n%b\n' "-l FILE \tLog file (default is /dev/stdout)"
+  printf '\n%b\n' "-r\t\tRemove volumes before creating them"
+  printf '\n%b\n' "-l FILE \tLog file (default is ${LOG_FILE})"
   printf '%b\n\n' "-h\t\tDisplay usage instructions"
 }
 
-SOLR_KEYS_DIRECTORY=${SCRIPT_DIR}
-LOG_FILE=/dev/stdout
-while getopts "k:o:l:h" opt
+
+while getopts "k:o:l:rh" opt
 do
   case ${opt} in
     k)
@@ -43,6 +48,9 @@ do
       ;;
     l)
       LOG_FILE=$OPTARG
+      ;;
+    r)
+      REMOVE_VOLUMES=true
       ;;
     h)
       print_usage
@@ -56,25 +64,36 @@ do
   esac
 done
 
-IMAGE_NAME=scxa-solr-indexer
-print_stage_name "🚧 Build Docker image ${IMAGE_NAME}"
-docker build \
--t ${IMAGE_NAME} ${SCRIPT_DIR} >> ${LOG_FILE} 2>&1
-print_done
+DOCKER_COMPOSE_COMMAND="docker compose \
+--project-name ${PROJECT_NAME} \
+--env-file ${ENV_FILE} \
+--env-file ${SCRIPT_DIR}/../test-data.env \
+--file ${SCRIPT_DIR}/../../docker-compose-solrcloud.yml \
+--file ${SCRIPT_DIR}/docker-compose.yml"
+
+DOCKER_COMPOSE_SOLRCLOUD_COMMAND="docker compose \
+--project-name ${PROJECT_NAME} \
+--env-file ${ENV_FILE} \
+--file ${SCRIPT_DIR}/../../docker-compose-solrcloud.yml"
+
+SOLR_PRIVATE_KEY=${SOLR_KEYS_DIRECTORY}/solrcloud.pem
+SOLR_PUBLIC_KEY=${SOLR_KEYS_DIRECTORY}/solrcloud.der
+SOLR_USERFILES_PATH=/var/solr/data/userfiles/
+DOCKER_COMPOSE_COMMAND_VARS="DOCKERFILE_PATH=${SCRIPT_DIR} SOLR_USERFILES_PATH=/var/solr/data/userfiles/ SOLR_PRIVATE_KEY=${SOLR_PRIVATE_KEY} SOLR_PUBLIC_KEY=${SOLR_PUBLIC_KEY}"
+
+if [ "${REMOVE_VOLUMES}" = "true" ]; then
+  countdown "🗑 Remove Docker Compose Solr and ZooKeeper volumes"
+  eval "${DOCKER_COMPOSE_SOLRCLOUD_COMMAND}" "down --volumes >> ${LOG_FILE} 2>&1"
+  print_done
+fi
 
 print_stage_name "🔐 Generate RSA keypair to sign and verify Solr packages"
-SOLR_PRIVATE_KEY=${SOLR_KEYS_DIRECTORY}/scxa-solrcloud.pem
-SOLR_PUBLIC_KEY=${SOLR_KEYS_DIRECTORY}/scxa-solrcloud.der
 openssl genrsa -out ${SOLR_PRIVATE_KEY} 512 >> ${LOG_FILE} 2>&1
 openssl rsa -in ${SOLR_PRIVATE_KEY} -pubout -outform DER -out ${SOLR_PUBLIC_KEY} >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🌅 Start Solr 8 cluster in Docker Compose"
-SOLR_PUBLIC_KEY=${SOLR_PUBLIC_KEY} \
-docker-compose \
---env-file ${SCRIPT_DIR}/../../dev.env \
--f ${SCRIPT_DIR}/../../docker-compose-solrcloud.yml \
-up -d >> ${LOG_FILE} 2>&1
+eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_SOLRCLOUD_COMMAND}" "up -d >> ${LOG_FILE} 2>&1"
 print_done
 
 print_stage_name "💤 Give Solr ten seconds to start up before copying ontology file..."
@@ -89,56 +108,33 @@ then
   print_done
 fi
 
-SOLR_USERFILES_PATH=/var/solr/data/userfiles/
-print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH}"
-docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
+print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH}"
+docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
 print_done
-print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH}"
-docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
+print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH}"
+docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🔏 Register ${SOLR_PUBLIC_KEY} in SolrCloud"
-docker exec ${SOLR_CLOUD_CONTAINER_1_NAME} ./bin/solr package add-key /run/secrets/scxa-solrcloud.der >> ${LOG_FILE} 2>&1
+docker exec ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_1_NAME} ./bin/solr package add-key /run/secrets/solrcloud.der >> ${LOG_FILE} 2>&1
 print_done
 
-POSTGRES_HOST=postgres
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=pgpass
-print_stage_name "⚙ Spin up containers to index volume data in Solr"
-echo "docker run --network atlas-test-net -h ${POSTGRES_HOST} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -d postgres:11-alpine"
-PG_CONTAINER_ID=$(docker run --network atlas-test-net -h ${POSTGRES_HOST} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -d postgres:11-alpine)
-
-GRADLE_RO_DEP_CACHE_DEST=/gradle-ro-dep-cache
-SOLR_PRIVATE_KEY_DEST=/run/secrets/$(basename ${SOLR_PRIVATE_KEY})
-docker run --rm -it \
--v ${SOLR_PRIVATE_KEY}:${SOLR_PRIVATE_KEY_DEST}:ro \
--v ${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}:/atlas-data/bioentity_properties:ro \
--v ${ATLAS_DATA_SCXA_VOL_NAME}:/atlas-data/scxa:ro \
--v ${GRADLE_RO_DEP_CACHE_VOL_NAME}:${GRADLE_RO_DEP_CACHE_DEST}:ro \
--e GRADLE_RO_DEP_CACHE=${GRADLE_RO_DEP_CACHE_DEST} \
--e POSTGRES_HOST=${POSTGRES_HOST} \
--e POSTGRES_USER=${POSTGRES_USER} \
--e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
--e SPECIES="${SPECIES}" \
--e EXP_IDS="${EXP_IDS}" \
--e SOLR_HOST=${SOLR_CLOUD_CONTAINER_1_NAME}:8983 \
--e SOLR_NUM_SHARDS=2 \
--e NUM_DOCS_PER_BATCH=20000 \
--e SOLR_COLLECTION_BIOENTITIES=bioentities \
--e SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION=1 \
--e BIOSOLR_VERSION=2.0.0 \
--e BIOSOLR_JAR_PATH=/root/index-scxa/lib/solr-ontology-update-processor-2.0.0.jar \
--e SIGNING_PRIVATE_KEY=${SOLR_PRIVATE_KEY_DEST} \
--e SCXA_ONTOLOGY=file://${SOLR_USERFILES_PATH}/scatlas.owl \
---network atlas-test-net \
-${IMAGE_NAME} >> ${LOG_FILE} 2>&1
+print_stage_name "🌄 Stop Solr 8 cluster in Docker Compose"
+eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_SOLRCLOUD_COMMAND}" "down >> ${LOG_FILE} 2>&1"
 print_done
 
-print_stage_name "🧹 Clean up Postgres container"
-echo "docker stop ${PG_CONTAINER_ID}"
-docker stop ${PG_CONTAINER_ID} >> ${LOG_FILE} 2>&1
-docker rm ${PG_CONTAINER_ID} >> ${LOG_FILE} 2>&1
+print_stage_name "🛫 Spin up containers to index bioentity annotations and test experiments metadata in Solr"
+eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_COMMAND}" "up --build --abort-on-container-exit --exit-code-from solr-populator >> ${LOG_FILE} 2>&1"
 print_done
 
-printf '%b\n' "🙂 All done! Point your browser at http://localhost:8983 to explore your SolrCloud instance."
-printf '%b\n' "ℹ You can keep $(basename ${SOLR_PRIVATE_KEY}) and reuse it to sign any other Solr packages."
+print_stage_name "🛬 Bring down all services"
+eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_COMMAND}" "down --rmi local >> ${LOG_FILE} 2>&1"
+print_done
+
+printf '%b\n' "🙂 All done! You can keep $(basename ${SOLR_PRIVATE_KEY}) and reuse it to sign any other Solr packages."
+printf '%b\n' "  Start the SolrCloud cluster again with the following command:"
+printf '%b\n\n' "  ${DOCKER_COMPOSE_SOLRCLOUD_COMMAND} up -d"
+printf '%b\n\n' "  You can point your browser at http://localhost:8983 to explore your SolrCloud instance."
+printf '%b\n' "  Stop the SolrCloud cluster again with the following command:"
+printf '%b\n' "  ${DOCKER_COMPOSE_SOLRCLOUD_COMMAND} down"
+

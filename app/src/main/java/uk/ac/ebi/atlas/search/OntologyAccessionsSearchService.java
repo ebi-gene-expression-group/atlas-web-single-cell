@@ -2,6 +2,7 @@ package uk.ac.ebi.atlas.search;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.model.OntologyTerm;
 
@@ -11,16 +12,18 @@ import java.util.Map;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
+@Getter
 enum SupportedOrgan {
     PANCREAS("pancreas", "http://purl.obolibrary.org/obo/UBERON_0001264"),
     KIDNEY("kidney", "http://purl.obolibrary.org/obo/UBERON_0002113"),
     LIVER("liver", "http://purl.obolibrary.org/obo/UBERON_0002107"),
     PLACENTA("placenta", "http://purl.obolibrary.org/obo/UBERON_0001987"),
-    LUNG("lung", "http://purl.obolibrary.org/obo/UBERON_0002048");
+    LUNG("lung", "http://purl.obolibrary.org/obo/UBERON_0002048"),
+    GUT("gut", "http://purl.obolibrary.org/obo/UBERON_0000160");
 
-    String name;
-    String ontologyUri;
-    String ontologyAccession;
+    final String name;
+    final String ontologyUri;
+    final String ontologyAccession;
 
     SupportedOrgan(String name, String ontologyUri) {
         this.name = name;
@@ -28,17 +31,6 @@ enum SupportedOrgan {
         this.ontologyAccession = OntologyTerm.create(ontologyUri).accession();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getOntologyUri() {
-        return ontologyUri;
-    }
-
-    public String getOntologyAccession() {
-        return ontologyAccession;
-    }
 }
 
 

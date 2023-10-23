@@ -1,0 +1,28 @@
+version: "3.6"
+
+services:
+  gradle-cache-populator:
+    build:
+      context: ${DOCKERFILE_PATH}
+      no_cache: true
+    volumes:
+      - gradle-wrapper-dists:/gradle-wrapper-dists
+      - gradle-ro-dep-cache:/gradle-ro-dep-cache
+    environment:
+      JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF8"
+    working_dir: /root/atlas-web-single-cell
+    command:
+      - |
+        ./gradlew :atlas-web-core:test
+        ./gradlew :app:test
+        ./gradlew :cli:test
+        ./gradlew :cli:bootRun
+        printf '\n%b\n\n' "🙈 Ignore any errors above: our only goal is to have Gradle dependencies in the local cache."
+        rsync -av /root/.gradle/wrapper/dists/* /gradle-wrapper-dists/
+        rsync -av --exclude=*.lock --exclude=gc.properties /root/.gradle/caches/modules-2 /gradle-ro-dep-cache/
+
+volumes:
+  gradle-wrapper-dists:
+    name: ${PROJECT_NAME}_${GRADLE_WRAPPER_DISTS_VOL_NAME}
+  gradle-ro-dep-cache:
+    name: ${PROJECT_NAME}_${GRADLE_RO_DEP_CACHE_VOL_NAME}

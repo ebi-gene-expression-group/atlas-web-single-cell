@@ -90,6 +90,25 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
+    void ifSpeciesIsNotPresentUsingGeneSearchGeneQueryHasEmptySpeciesField() {
+        var requestParams = new LinkedMultiValueMap<String, String>();
+        final String geneId = randomAlphabetic(1, 12);
+        requestParams.add("q", geneId);
+
+        GeneQuery geneQuery = GeneQuery.create(geneId);
+
+        when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
+                .thenReturn(geneQuery);
+
+        subject.searchForGene(requestParams);
+
+        var geneQueryArgCaptor = ArgumentCaptor.forClass(GeneQuery.class);
+        verify(geneIdSearchServiceMock).search(geneQueryArgCaptor.capture());
+
+        assertThat(geneQueryArgCaptor.getValue().species()).isEmpty();
+    }
+
+    @Test
     void whenRequestParamIsEmptyMarkerGeneSearchReturnsFalse() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 
@@ -141,9 +160,9 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(ImmutableSet.of(geneId)));
-        when(geneSearchServiceMock.getCellIdsInExperiments(geneId))
+        when(geneSearchServiceMock.getCellIdsInExperiments(ImmutableSet.of(geneId)))
                 .thenReturn(Map.of(geneId, Map.of(experimentAccession, List.of(cellId))));
-        when(geneSearchServiceMock.getMarkerGeneProfile(geneId))
+        when(geneSearchServiceMock.getMarkerGeneProfile(ImmutableSet.of(geneId)))
                 .thenReturn(ImmutableMap.of(geneId, Map.of(experimentAccession, Map.of(kValue, clusterIds))));
 
         boolean isMarkerGene = subject.isMarkerGene(requestParams);

@@ -1,0 +1,124 @@
+version: "3.6"
+
+services:
+  postgres-stub:
+    container_name: ${POSTGRES_HOST}
+    image: postgres:11-alpine
+    networks:
+      - atlas-test-net
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_DB
+
+  solr-populator:
+    build:
+      context: ${DOCKERFILE_PATH}
+      no_cache: true
+    networks:
+      - atlas-test-net
+    depends_on:
+      - postgres-stub
+      - solrcloud-0
+      - solrcloud-1
+    volumes:
+      - gradle-wrapper-dists:/root/.gradle/wrapper/dists
+      - gradle-ro-dep-cache:/gradle-ro-dep-cache:ro
+      - atlas-data-bioentity-properties:/atlas-data/bioentity_properties
+      - atlas-data-exp:/atlas-data/exp
+      - atlas-data-expdesign:/atlas-data/expdesign
+    secrets:
+      - solrcloud.pem
+    environment:
+      JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF8"
+      GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
+      SOLR_HOST: ${SOLR_CLOUD_CONTAINER_1_NAME}:8983
+      SOLR_NUM_SHARDS: 2
+      NUM_DOCS_PER_BATCH: 20000
+      BIOSOLR_VERSION: 2.0.0
+      BIOSOLR_JAR_PATH: /root/index-scxa/lib/solr-ontology-update-processor-2.0.0.jar
+      SIGNING_PRIVATE_KEY: /run/secrets/solrcloud.pem
+      SCXA_ONTOLOGY: file://${SOLR_USERFILES_PATH}/scatlas.owl
+      SOLR_COLLECTION_BIOENTITIES: bioentities
+      SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION: 1
+    working_dir: /root
+    command:
+      - |
+        for _SPECIES in ${SPECIES}
+        do
+          rsync -av --include=$${_SPECIES}* --include=*/ --exclude=* /atlas-data/bioentity_properties /root
+        done
+  
+        cd /root/atlas-web-bulk
+        ./gradlew -PdataFilesLocation=/root \
+        -PexperimentFilesLocation=/atlas-data/exp \
+        -PjdbcUrl=jdbc:postgresql://${POSTGRES_HOST}:5432/postgres \
+        -PjdbcUsername=${POSTGRES_USER} \
+        -PjdbcPassword=${POSTGRES_PASSWORD} \
+        :cli:bootRun --args="bioentities-json --output=/root/bioentity-properties-jsonl"
+        
+        cd /root/index-bioentities/bin
+        ./create-bioentities-collection.sh
+        ./create-bioentities-schema.sh
+        ./create-bioentities-suggesters.sh
+        
+        export SOLR_COLLECTION=$${SOLR_COLLECTION_BIOENTITIES}
+        export SCHEMA_VERSION=$${SOLR_COLLECTION_BIOENTITIES_SCHEMA_VERSION}
+        for FILE in `ls /root/bioentity-properties-jsonl/*.jsonl`
+        do
+          INPUT_JSONL=$${FILE} ./solr-jsonl-chunk-loader.sh >> /dev/stdout 2>&1
+        done
+        ./build-suggesters.sh
+        unset SOLR_COLLECTION
+        unset SCHEMA_VERSION
+        
+        sleep 1m
+        
+        cd /root/index-scxa/bin
+        export PATH=.:$${PATH}
+        ./upload-biosolr-lib.sh
+        ./create-scxa-analytics-collection.sh
+        ./create-scxa-analytics-schema.sh
+        ./create-scxa-analytics-suggesters.sh
+        for EXP_ID in ${EXP_IDS}
+        do
+          CONDENSED_SDRF_TSV=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.condensed-sdrf.tsv \
+          ./load-scxa-analytics.sh
+        done
+        ./build-scxa-analytics-suggestions.sh
+        
+        ./create-scxa-gene2experiment-collection.sh
+        ./create-scxa-gene2experiment-schema.sh
+        for EXP_ID in ${EXP_IDS}
+        do
+          EXP_ID=$${EXP_ID} \
+          MATRIX_MARKT_ROWS_GENES_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.aggregated_filtered_normalised_counts.mtx_rows \
+          ./load-scxa-gene2experiment.sh
+        done
+
+secrets:
+  solrcloud.pem:
+    file: ${SOLR_PRIVATE_KEY:-/dev/null}
+
+volumes:
+  gradle-wrapper-dists:
+    external: true
+    name: ${PROJECT_NAME}_${GRADLE_WRAPPER_DISTS_VOL_NAME}
+  gradle-ro-dep-cache:
+    external: true
+    name: ${PROJECT_NAME}_${GRADLE_RO_DEP_CACHE_VOL_NAME}
+  atlas-data-bioentity-properties:
+    external: true
+    name: ${PROJECT_NAME}_${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
+  atlas-data-exp:
+    external: true
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXP_VOL_NAME}
+  atlas-data-expdesign:
+    external: true
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXPDESIGN_VOL_NAME}
+
+networks:
+  atlas-test-net:
+    name: atlas-test-net

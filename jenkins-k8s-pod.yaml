@@ -3,6 +3,8 @@ kind: Pod
 metadata:
   namespace: jenkins-gene-expression
 spec:
+  nodeSelector:
+    topology.kubernetes.io/zone: "europe-west2-a"
   serviceAccountName: admin-jenkins-gene-expression
   # If we set workspaceVolume dynamicPVC() or workspaceVolume persistentVolumeClaimWorkspaceVolume() we need to add a
   # fsGroup 1000 to make the /home/jenkins/agent directory writable. Otherwise, we get the following exception in the
@@ -15,8 +17,7 @@ spec:
     - name: "kubectl"
       image: bitnami/kubectl
       command: [ "/bin/sh" ]
-      #args: [ "-c", "kubectl scale --replicas=2 solrcloud scxa && sleep 2h" ]
-      args: [ "-c", "sleep 2h" ]
+      args: [ "-c", "kubectl scale --replicas=2 solrcloud scxa && sleep 2h" ]
       resources:
         requests:
           memory: "0.5Gi"

@@ -4,18 +4,18 @@
 
 ### TL;DR
 ```bash
-./docker/prepare-dev-environment/gradle-cache/run.sh -l gradle-cache.log && \
-./docker/prepare-dev-environment/volumes/run.sh -l volumes.log && \
-./docker/prepare-dev-environment/postgres/run.sh -l pg-anndata.log && \
-SCHEMA_VERSION=18 docker-compose -f ./docker/docker-compose-postgres.yml down && \
-./docker/prepare-dev-environment/postgres/run.sh -a -l pg-no-anndata.log && \
-SCHEMA_VERSION=latest docker-compose -f ./docker/docker-compose-postgres.yml down && \
-./docker/prepare-dev-environment/solr/run.sh -l solr.log
+./docker/prepare-dev-environment/gradle-cache/run.sh -r -l gradle-cache.log && \
+./docker/prepare-dev-environment/volumes/run.sh -r -l volumes.log && \
+./docker/prepare-dev-environment/postgres/run.sh -r -l pg-anndata.log && \
+./docker/prepare-dev-environment/postgres/run.sh -r -a -l pg-no-anndata.log && \
+./docker/prepare-dev-environment/solr/run.sh -r -l solr.log &&
+./build-and-deploy-webapp.sh
 ```
 
+Point your browser at `http://localhost:8080/gxa/sc` and voilà!
+
 ### Requirements
-- Docker v19+
-- Docker Compose v1.25+
+- Docker v20+ with the [Compose plugin](https://docs.docker.com/compose/install/)
 - 60 GB of available storage for the following Docker volumes:
   - Experiment files
   - Bioentity properties (i.e. gene annotations)
@@ -24,29 +24,27 @@ SCHEMA_VERSION=latest docker-compose -f ./docker/docker-compose-postgres.yml dow
   - Tomcat configuration files
 
 Files written by Solr, PostgreSQL and Tomcat are kept in volumes which will be reused even if the containers are 
-removed (e.g. when running `docker-compose down`).  If you want to start afresh delete the old volume(s) (e.g. for
-Postgres `docker volume rm scxa-postgres-11-pgdata-${SCHEMA_VERSION}`) and re-run the necessary script to return to the
-initial state. You can find the volume names used by each service in the `volumes` section of its Docker Compose YAML
-file.
+removed (e.g. when running `docker compose down`).  If you want to start afresh each script can remove all volumes 
+if you add the `-r` option . You can find the volume names used by each service in the `volumes` section of its Docker 
+Compose YAML file.
 
 The full list of volumes is:
-- `scxa-atlas-data-bioentity-properties`
-- `scxa-atlas-data-scxa`
-- `scxa-atlas-data-scxa-expdesign`
-- `scxa-gradle-wrapper-dists`
-- `scxa-gradle-ro-dep-cache`
-- `scxa-postgres-11-pgdata-18`
-- `scxa-postgres-11-pgdata-latest`
-- `scxa-solrcloud-0-data-solr-8.7`
-- `scxa-solrcloud-1-data-solr-8.7`
-- `scxa-solrcloud-zookeeper-0-data-solr-8.7`
-- `scxa-solrcloud-zookeeper-0-datalog-solr-8.7`
-- `scxa-solrcloud-zookeeper-1-data-solr-8.7`
-- `scxa-solrcloud-zookeeper-1-datalog-solr-8.7`
-- `scxa-solrcloud-zookeeper-2-data-solr-8.7`
-- `scxa-solrcloud-zookeeper-2-datalog-solr-8.7`
-- `scxa-tomcat-conf`
-- `scxa-webapp-properties`
+- `scxa_gradle-wrapper-dists`
+- `scxa_gradle-ro-dep-cache`
+- `scxa_atlas-data-bioentity-properties`
+- `scxa_atlas-data-exp`
+- `scxa_atlas-data-scxa-expdesign`
+- `scxa_postgres-11-pgdata-18`
+- `scxa_postgres-11-pgdata-latest`
+- `scxa_solrcloud-0-data-solr-8.7`
+- `scxa_solrcloud-1-data-solr-8.7`
+- `scxa_solrcloud-zookeeper-0-data-solr-8.7`
+- `scxa_solrcloud-zookeeper-0-datalog-solr-8.7`
+- `scxa_solrcloud-zookeeper-1-data-solr-8.7`
+- `scxa_solrcloud-zookeeper-1-datalog-solr-8.7`
+- `scxa_solrcloud-zookeeper-2-data-solr-8.7`
+- `scxa_solrcloud-zookeeper-2-datalog-solr-8.7`
+- `scxa_tomcat-conf`
 
 ### Code
 Clone this repository with submodules:
@@ -64,16 +62,16 @@ git submodule update --remote
 To speed up builds and tests it is strongly encouraged to create a Docker volume to back a [Gradle read-only dependency
 cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:ephemeral-ci-cache).
 ```bash
-./docker/prepare-dev-environment/gradle-cache/run.sh -l gradle-cache.log
+./docker/prepare-dev-environment/gradle-cache/run.sh -r -l gradle-cache.log
 ```
 
 ### Prepare volumes
 In order to run integration tests and a development instance of Single Cell Expression Atlas you will need a few Docker
-volumes first. They will be populated with data that will be indexed in Solr and Postgres. Single Cell Expression Atlas 
-needs all three of: file bundles in the volumes, Solr collections and Postgres data. This step takes care of the first
-requirement:
+Compose volumes first. They will be populated with data that will be indexed in Solr and Postgres. Single Cell 
+Expression Atlas needs all three of: file bundles in the volumes, Solr collections and Postgres data. This step takes 
+care of the first requirement:
 ```bash
-./docker/prepare-dev-environment/volumes/run.sh -l volumes.log
+./docker/prepare-dev-environment/volumes/run.sh -r -l volumes.log
 ```
 
 You can get detailed information about which volumes are created if you run the script with the `-h` flag.
@@ -93,20 +91,14 @@ respectively.  The value is appended to the volume name mounted by the Postgres 
 
 Run the script twice and then choose later the appropriate version:
 ```bash
-./docker/prepare-dev-environment/postgres/run.sh -l pg-anndata.log       # anndata support
-# Stop Postgres service:
-SCHEMA_VERSION=18 \
-docker-compose \
---env-file ./docker/dev.env \
--f ./docker/docker-compose-postgres.yml \
-down
-./docker/prepare-dev-environment/postgres/run.sh -a -l pg-no-anndata.log  # no anndata support
+./docker/prepare-dev-environment/postgres/run.sh -r -l pg-anndata.log       # anndata support
+./docker/prepare-dev-environment/postgres/run.sh -a -r -l pg-no-anndata.log  # no anndata support
 ```
 
 To run the Postgres service **with support for anndata experiments**:
 ```bash
 SCHEMA_VERSION=latest \
-docker-compose --env-file ./docker/dev.env \
+docker compose --env-file ./docker/dev.env \
 -f ./docker/docker-compose-postgres.yml \
 up
 ```
@@ -114,7 +106,7 @@ up
 To run the Postgres service **without support for anndata experiments**:
 ```bash
 SCHEMA_VERSION=18 \
-docker-compose --env-file ./docker/dev.env \
+docker compose --env-file ./docker/dev.env \
 -f ./docker/docker-compose-postgres.yml \
 up
 ```
@@ -129,7 +121,7 @@ they are not strictly necessary; it is possible to generate a new keypair and st
 package. Run the script with the `-h` flag for more details.
 
 ```bash
-./docker/prepare-dev-environment/solr/run.sh -l solr.log
+./docker/prepare-dev-environment/solr/run.sh -r -l solr.log
 ```
 
 You may want to speed up the process by raising the value of the environment variable `NUM_DOCS_PER_BATCH` (L126 of the
@@ -180,7 +172,7 @@ PostgreSQL section above).
 For non-*anndata*:
 ```bash
 SCHEMA_VERSION=18 \
-docker-compose \
+docker compose \
 --env-file ./docker/dev.env \
 -f ./docker/docker-compose-gradle.yml \
 -f ./docker/docker-compose-postgres-test.yml \
@@ -191,7 +183,7 @@ up
 For *anndata*:
 ```bash
 SCHEMA_VERSION=latest \
-docker-compose \
+docker compose \
 --env-file ./docker/dev.env \
 -f ./docker/docker-compose-gradle.yml \
 -f ./docker/docker-compose-postgres-test.yml \
@@ -209,7 +201,7 @@ scxa-gradle exited with code 0
 Press `Ctrl+C` to stop the container and clean any leftovers:
 ```bash
 SCHEMA_VERSION=18 \
-docker-compose \
+docker compose \
 --env-file ./docker/dev.env \
 -f ./docker/docker-compose-gradle.yml \
 -f ./docker/docker-compose-postgres-test.yml \
@@ -225,8 +217,7 @@ the schema version can be provided as an argument. E.g.:
 ./execute-all-tests.sh [ 18 ]
 ```
 
-The script uses `docker-compose run`, and control returns to your shell once the tasks have finished, but you’ll need 
-to clean up the service containers anyway.
+The script uses `docker compose run`, and control returns to your shell once the tasks have finished.
 
 ### Execute a single test
 Many times you will find yourself working in a specific test case or class. Running all tests in such cases is
@@ -234,7 +225,7 @@ impractical. In such situations you can use
 [Gradle’s continuous build execution](https://blog.gradle.org/introducing-continuous-build). See the example below for
 e.g. `ExperimentFileLocationServiceIT.java`:
 ```bash
-docker-compose \
+docker compose \
 --env-file ./docker/dev.env \
 -f ./docker/docker-compose-gradle.yml \
 -f ./docker/docker-compose-postgres-test.yml \
@@ -245,6 +236,7 @@ scxa-gradle bash -c '
 ./gradlew \
 -PdataFilesLocation=/atlas-data \
 -PexperimentFilesLocation=/atlas-data/scxa \
+-PexperimentDesignLocation=/atlas-data/expdesign \
 -PjdbcUrl=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB} \
 -PjdbcUsername=${POSTGRES_USER} \
 -PjdbcPassword=${POSTGRES_PASSWORD} \
@@ -301,83 +293,36 @@ The script `debug-single-test.sh` is a shortcut for this task. It takes the same
 ## Run web application
 The web application is compiled in two stages:
 1. Front end JavaScript packages are transpiled into “bundles” with [Webpack](https://webpack.js.org/)
-2. Bundles and back end Java code are built as a WAR file to deploy and serve with Tomcat (other Java EE web servers
-might work but no testing has been carried out in this regard)
+2. Bundles and back end Java code are built as a WAR file
 
-To generate the Webpack bundles run the following script:
+Lastly, Tomcat deploys the WAR file according to `app/src/main/webapp/META-INF/context.xml`; other Java EE web servers
+might work but no testing has been carried out in this regard.
+
+For the first step you can run the following script:
 ```bash
  ./compile-front-end-packages.sh -iu
 ```
 
-If the script encounters no compilation errors it will open your default browser with a graphical diagram of the
-bundles and their contents.
-
-Run the script with `-h` to know more about its usage.
-You can add `-p` to generate production bundles, which will minify the code and omit browser console warnings. Certain
-React rendering tasks are also faster but it makes debugging very hard.
-
-Then run the Gradle task `war` in the `atlas-web-single-cell` directory:
+The sceond step is simply:
 ```bash
-./gradlew clean :app:war
+./gradlew :app:war
 ```
 
-You should now have the file `webapps/gxa#sc.war`.
+The script `build-and-deploy-webapp.sh` puts it altogether and will eventually launch a Tomcat container with a running
+dev instance of Single Cell Expression Atlas.
 
-You can now deploy it in Tomcat’s container with the following:
+
+
+### Gradle shell
+ It
+also creates a service with one Gradle container that you can attach to your terminal:
 ```bash
-SCHEMA_VERSION=latest \
-docker-compose \
---env-file=./docker/dev.env \
--f ./docker/docker-compose-solrcloud.yml \
--f ./docker/docker-compose-postgres.yml \
--f ./docker/docker-compose-tomcat.yml \
-up
+docker attach scxa-gradle-shell-1
 ```
+
+You can run tests within and any Gradle task in that container (a running Gradle daemon is provided). Every time you 
+re-run the `war` task (e.g. in the Gradle shell container) the web app will be automatically re-deployed by Tomcat.
+
 
 You can also set a Docker Compose *Run* configuration in IntelliJ IDEA with `SCHEMA_VERSION` in environment variables
 and `dev.env` in environment files.
-
-After bringing up the containers, you may want to inspect the logs to see that all services are running fine. The last
-log should come from Tomcat, and it should be similar to:
-```
-scxa-tomcat    | 18-Dec-2020 13:40:58.907 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 6705 ms
-...
-scxa-tomcat    | 12-Jan-2021 14:59:47.566 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/usr/local/tomcat/webapps/gxa#sc.war] has finished in [5,510] ms
-```
-
-Point your browser at `http://localhost:8080/gxa/sc` and voilà!
-
-Every time you re-run the `war` task the web app will be automatically re-deployed by Tomcat.
-
-If you get any redeployment issues or want to start again afresh, remove all containers using this:
-```bash
-SCHEMA_VERSION=latest \
-docker-compose \
---env-file=./docker/dev.env \
--f ./docker/docker-compose-solrcloud.yml \
--f ./docker/docker-compose-postgres.yml \
--f ./docker/docker-compose-tomcat.yml \
-down
-```
-
-## Troubleshooting
-
-### ``secret "scxa-solrcloud.der" must declare either `file` or `environment`: invalid compose project``
-- **Operating system**: macOS Ventura
-- **Docker Compose version**: v2.x
-
-#### Issue
-Docker may refuse to start the Solr cluster and display this error message:
-```
-WARN[0000] The "SOLR_PUBLIC_KEY" variable is not set. Defaulting to a blank string.
-secret "scxa-solrcloud.der" must declare either `file` or `environment`: invalid compose project
-```
-
-#### Solution
-The path for the file `scxa-solrcloud.der` must be set before bringing up the Solr containers. Export the
-`SOLR_PUBLIC_KEY` and set its value to e.g. the public key generated in the Solr section above:
-```
-export SOLR_PUBLIC_KEY=$ATLAS_WEB_SINGLE_CELL/docker/prepare-dev-environment/solr/scxa-solrcloud.der
-```
-
-It is recommended to use an absolute path to avoid any second guesses by Docker.

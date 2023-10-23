@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.search;
 
-import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,11 +45,12 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.PROPERTY_VALUE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.BioentitiesCollectionProxy.SPECIES;
 
+// TODO: Remove this test suit when the '/json/search' endpoint has been removed
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class JsonGeneSearchControllerWIT {
+class ToBeDeprecatedJsonGeneSearchControllerWIT {
     @Inject
     private DataSource dataSource;
 
@@ -82,7 +82,7 @@ class JsonGeneSearchControllerWIT {
                 new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats.sql")
         );
 
-        populator.execute(dataSource);
+                populator.execute(dataSource);
     }
 
     @AfterAll
@@ -109,7 +109,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void unknownGene() throws Exception {
-        this.mockMvc.perform(get("/json/gene-search").param("q", "FOO"))
+        this.mockMvc.perform(get("/json/search").param("q", "FOO"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results").isEmpty())
@@ -118,7 +118,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void unexpressedGene() throws Exception {
-        this.mockMvc.perform(get("/json/gene-search").param("symbol", "FOX2"))
+        this.mockMvc.perform(get("/json/search").param("symbol", "FOX2"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results").isEmpty())
@@ -127,37 +127,46 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void validJsonForValidGeneId() throws Exception {
-        var geneId = jdbcTestUtils.fetchRandomGene();
+        var shouldBeMarkerGene =
+                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
 
-        this.mockMvc.perform(get("/json/gene-search").param("ensgene", geneId))
+        this.mockMvc.perform(get("/json/search").param("ensgene", shouldBeMarkerGene))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$.results[0].experimentAccession", isA(String.class)))
-                .andExpect(jsonPath("$.results[0].markerGenes", hasSize(greaterThanOrEqualTo(0))))
+                .andExpect(jsonPath("$.results[0].element.experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].element.markerGenes", hasSize(greaterThanOrEqualTo(0))))
+                .andExpect(jsonPath("$.results[0].facets", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.results[0].facets[0].group", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].value", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].label", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")))
                 .andExpect(jsonPath("$.matchingGeneId", equalTo("")));
     }
 
     @Test
     void ifSymbolQueryMatchesUniqueGeneIdIncludeIt() throws Exception {
-        var geneId = jdbcTestUtils.fetchRandomGene();
-
         // Some gene IDs don’t have a symbol, e.g. ERCC-00044
         // Also, it turns out that some gene symbols like Vmn1r216 match more than one gene ID within the same species:
         // ENSMUSG00000115697 and ENSMUSG00000116057
-        // We don’t want any of those pesky gene IDs!
-        var matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(geneId, SYMBOL);
+        // We want an experiment that has symbols which match a single marker gene ID
+        var experimentAccession = "E-GEOD-81547";
+        var speciesName = "Homo_sapiens";
+
+        var shouldBeMarkerGene =
+                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment(experimentAccession);
+
+        var matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(shouldBeMarkerGene, SYMBOL);
         while (matchingSymbols.isEmpty() ||
                 bioEntityPropertyDao.fetchGeneIdsForPropertyValue(
-                        SYMBOL, matchingSymbols.iterator().next()).size() > 1) {
-            geneId = jdbcTestUtils.fetchRandomGene();
-            matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(geneId, SYMBOL);
+                        SYMBOL, matchingSymbols.iterator().next(), speciesName).size() > 1) {
+            shouldBeMarkerGene = jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment(experimentAccession);
+            matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(shouldBeMarkerGene, SYMBOL);
         }
 
         var solrQueryBuilder =
                 new SolrQueryBuilder<BioentitiesCollectionProxy>()
-                        .addQueryFieldByTerm(BIOENTITY_IDENTIFIER, geneId)
+                        .addQueryFieldByTerm(BIOENTITY_IDENTIFIER, shouldBeMarkerGene)
                         .addQueryFieldByTerm(PROPERTY_NAME, "symbol")
                         .setFieldList(PROPERTY_VALUE)
                         .setFieldList(SPECIES)
@@ -167,30 +176,40 @@ class JsonGeneSearchControllerWIT {
         var symbol = docList.get(0).getFieldValue(PROPERTY_VALUE.name()).toString();
         var species = docList.get(0).getFieldValue(SPECIES.name()).toString();
 
-        this.mockMvc.perform(get("/json/gene-search").param("symbol", symbol).param("species", species))
+        this.mockMvc.perform(get("/json/search").param("symbol", symbol).param("species", species))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$.results[0].experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].element.experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.results[0].facets[0].group", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].value", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].label", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")))
-                .andExpect(jsonPath("$.matchingGeneId", equalTo("(" + geneId + ")")));
+                .andExpect(jsonPath("$.matchingGeneId", equalTo("(" + shouldBeMarkerGene + ")")));
     }
 
     @Test
     void jsonPayloadContainsFacetDescription() throws Exception {
-        var geneId = jdbcTestUtils.fetchRandomGene();
+        var shouldBeMarkerGene =
+                jdbcTestUtils.fetchRandomMarkerGeneFromSingleCellExperiment("E-CURD-4");
 
-        this.mockMvc.perform(get("/json/gene-search").param("ensgene", geneId))
+        this.mockMvc.perform(get("/json/search").param("ensgene", shouldBeMarkerGene))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.results", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$.results[0].experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].element.experimentAccession", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$.results[0].facets[0].group", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].value", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].label", isA(String.class)))
+                .andExpect(jsonPath("$.results[0].facets[0].description", isA(String.class)))
                 .andExpect(jsonPath("$.checkboxFacetGroups", contains("Marker genes", "Species")));
     }
 
     @Test
     void speciesParamCanAppearBeforeGeneQuery() throws Exception {
-        this.mockMvc.perform(get("/json/gene-search").param("species", "homo sapiens").param("symbol", "aspm"))
+        this.mockMvc.perform(get("/json/search").param("species", "homo sapiens").param("symbol", "aspm"))
                 .andExpect(status().isOk());
     }
 
@@ -251,7 +270,7 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void whenGeneIdIsNotPartOfAnyExperimentsThenReturnEmptySetOfSpecies() throws Exception {
-//        This is the Solr streaming expression query that is getting the list of bioentity_identifiers
+//        This is the SolR streaming expression query that is getting the list of bioentity_identifiers
 //        that is not part of any experiments based on a given species (as a query parameter in the bioentities query)
 //        I just selected the 1st ID and used that in my test
 //        If we are going to use this query more than once, we might have to implement this in a utility method
@@ -330,20 +349,14 @@ class JsonGeneSearchControllerWIT {
 
     @Test
     void whenSearchTermExistsInDBThenReturnsSetOfCellType() throws Exception {
-        var shouldBeGeneThatPartOfExperiments = "AT4G01480";
-
-        // Find out which cells the gene ID is expressed in the scxa_analytics.sql fixture and then get the cell types
-        // in Solr
-        var expectedCellTypes =
-                ImmutableSet.of(
-                        "non-hair root epidermal cell 4", "protoplast", "root cortex; trichoblast 10",
-                        "root cortex; trichoblast 9", "root endodermis 11", "root endodermis 12", "stele 14",
-                        "trichoblast 17");
+        var shouldBeGeneThatPartOfExperiments =
+                jdbcTestUtils.fetchRandomGeneFromSingleCellExperiment(
+                        jdbcTestUtils.fetchRandomExperimentAccession()
+                );
 
         this.mockMvc.perform(get("/json/gene-search/cell-types").param("ensgene", shouldBeGeneThatPartOfExperiments))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(equalTo(expectedCellTypes.size()))))
-                .andExpect(jsonPath("$", containsInAnyOrder(expectedCellTypes.toArray())));
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
     }
 }

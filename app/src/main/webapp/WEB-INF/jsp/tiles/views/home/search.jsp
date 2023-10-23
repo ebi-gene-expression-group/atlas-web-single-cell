@@ -19,6 +19,7 @@
         geneSearchForm.render({
             host: '${pageContext.request.contextPath}/',
             resource: 'json/suggestions/species',
+            defaultSpecies: `Homo sapiens`,
             wrapperClassName: 'row expanded',
             actionEndpoint: 'search',
 
@@ -35,8 +36,8 @@
                     url: '${pageContext.request.contextPath}/search?symbol=CFTR'
                 },
                 {
-                    text: 'ENSG00000115904 (Ensembl ID)',
-                    url: '${pageContext.request.contextPath}/search?ensgene=ENSG00000115904'
+                    text: 'ENSG00000125798 (Ensembl ID)',
+                    url: '${pageContext.request.contextPath}/search?ensgene=ENSG00000125798'
                 },
                 {
                     text: '657 (Entrez ID)',

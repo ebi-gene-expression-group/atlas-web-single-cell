@@ -1,0 +1,102 @@
+version: "3.6"
+
+services:
+  postgres-populator:
+    build:
+      context: ${DOCKERFILE_PATH}
+      no_cache: true
+    networks:
+      - atlas-test-net
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
+    volumes:
+      - gradle-wrapper-dists:/root/.gradle/wrapper/dists
+      - gradle-ro-dep-cache:/gradle-ro-dep-cache:ro
+      - atlas-data-exp:/atlas-data/exp
+      - atlas-data-expdesign:/atlas-data/expdesign
+    environment:
+      JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF8"
+      GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
+    working_dir: /root
+    command:
+      - |
+        cd /root/atlas-web-single-cell
+
+        # Creating the experiments is required because certain scripts below use experiment.accession as a foreign key.
+        # We get the experiment designs as a side benefit: they are necessary for ITs and for running the web app
+        ./gradlew \
+        -PexperimentFilesLocation=/atlas-data/exp \
+        -PexperimentDesignLocation=/atlas-data/expdesign \
+        -PjdbcUrl=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB} \
+        -PjdbcUsername=${POSTGRES_USER} \
+        -PjdbcPassword=${POSTGRES_PASSWORD} \
+        :cli:bootRun --args="create-update-experiment -e $(echo ${EXP_IDS} | sed -e "s/ /,/g")"
+          
+        # The last commit before v19 was introduced...
+        if [ "${SCHEMA_VERSION}" = "18" ] ; then
+          cd /root/db-scxa
+          git checkout 1236753d3d799effa4d24fa9bdfb9292c66309ab
+        fi
+          
+        cd /root/db-scxa/bin
+        export PATH=.:$${PATH}
+        export dbConnection=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+          
+        for EXP_ID in ${EXP_IDS}
+        do
+          EXPRESSION_TYPE=aggregated_filtered_normalised_counts \
+          EXP_ID=$${EXP_ID} \
+          EXPERIMENT_MATRICES_PATH=/atlas-data/exp/magetab/$${EXP_ID} ./load_db_scxa_analytics.sh
+        
+          if [ "${SCHEMA_VERSION}" = "18" ]; then
+            EXP_ID=$${EXP_ID} EXPERIMENT_DIMRED_PATH=/atlas-data/exp/magetab/$${EXP_ID} ./load_db_scxa_dimred.sh
+          else
+            # Copied from db-scxa/tests/test-dimred-load.sh
+            ls /atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.tsne*.tsv | while read -r l; do
+              DIMRED_TYPE=tsne
+              DIMRED_FILE_PATH=$$l
+              DIMRED_PARAM_JSON='[{"perplexity": '$(echo "$$l" | sed 's/.*[^0-9]\([0-9]*\).tsv/\1/g')'}]'
+              load_db_scxa_dimred.sh $${dbConnection} $${EXP_ID} $${DIMRED_TYPE} $${DIMRED_FILE_PATH} "$${DIMRED_PARAM_JSON}"
+            done
+        
+            ls /atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.umap*.tsv | while read -r l; do
+              DIMRED_TYPE=umap
+              DIMRED_FILE_PATH=$$l
+              DIMRED_PARAM_JSON='[{"n_neighbors": '$(echo "$$l" | sed 's/.*[^0-9]\([0-9]*\).tsv/\1/g')'}]'
+              load_db_scxa_dimred.sh $${dbConnection} $${EXP_ID} $${DIMRED_TYPE} $${DIMRED_FILE_PATH} "$${DIMRED_PARAM_JSON}"
+            done
+          fi
+      
+          EXP_ID=$${EXP_ID} \
+          EXPERIMENT_CLUSTERS_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.clusters.tsv \
+          CONDENSED_SDRF_TSV=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.condensed-sdrf.tsv \
+          ./load_db_scxa_cell_clusters.sh
+        
+          EXP_ID=$${EXP_ID} \
+          CLUSTERS_FORMAT=SCANPY \
+          EXPERIMENT_MGENES_PATH=/atlas-data/exp/magetab/$${EXP_ID} \
+          ./load_db_scxa_marker_genes.sh
+        done
+          
+        ./reindex_tables.sh
+        
+        # Hackerman approves of this way to shut down a Postgres database remotely
+        PGPASSWORD=${POSTGRES_PASSWORD} psql -h ${POSTGRES_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c "COPY (SELECT 1) TO PROGRAM 'pg_ctl stop -m smart --no-wait';"
+
+volumes:
+  gradle-wrapper-dists:
+    external: true
+    name: ${PROJECT_NAME}_${GRADLE_WRAPPER_DISTS_VOL_NAME}
+  gradle-ro-dep-cache:
+    external: true
+    name: ${PROJECT_NAME}_${GRADLE_RO_DEP_CACHE_VOL_NAME}
+  atlas-data-exp:
+    external: true
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXP_VOL_NAME}
+  atlas-data-expdesign:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXPDESIGN_VOL_NAME}
+
+networks:
+  atlas-test-net:
+    name: atlas-test-net

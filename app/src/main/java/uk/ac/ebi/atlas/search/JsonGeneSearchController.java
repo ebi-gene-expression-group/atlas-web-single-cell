@@ -28,7 +28,6 @@ import uk.ac.ebi.atlas.utils.StringUtil;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -132,10 +131,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
         // If the query term matches a single Ensembl ID different to the query term, we return it in the response.
         // The most common case is a non-Ensembl gene identifier (e.g. Entrez, MGI, ...).
-        var matchingGeneIds =
-                (Objects.requireNonNull(geneIds.orElse(null)).size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) ?
-                        "(" + String.join(", ", geneIds.get()) + ")" :
-                        "";
+        var matchingGeneIds = geneIds.filter(
+                strings -> strings.size() == 1
+                        && !strings.iterator().next().equals(geneQuery.queryTerm()))
+                .map(strings -> "(" + String.join(", ", strings) + ")")
+                .orElse("");
 
         var json = GSON.toJson(
                 ImmutableMap.of(
@@ -180,11 +180,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                 expressedGeneIdEntries.stream()
                         // TODO Measure in production if parallelising the stream results in any speedup
                         //      (the more experiments we have the better). BEWARE: just adding parallel() throws! (?)
-                        .flatMap(entry -> entry.getValue().entrySet().stream().map(exp2cells -> {
+                        .flatMap(entry -> entry.getValue().keySet().stream().map(experimentAccession -> {
 
                             // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...
                             var geneId = entry.getKey();
-                            var experimentAccession = exp2cells.getKey();
 
                             var experimentAttributes =
                                     ImmutableMap.<String, Object>builder().putAll(
@@ -207,10 +206,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
                         })).collect(toImmutableList());
 
-        var matchingGeneIds = "";
-        if (geneIds.get().size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) {
-            matchingGeneIds = "(" + String.join(", ", geneIds.get()) + ")";
-        }
+        var matchingGeneIds = geneIds.filter(
+                        strings -> strings.size() == 1
+                                && !strings.iterator().next().equals(geneQuery.queryTerm()))
+                .map(strings -> "(" + String.join(", ", strings) + ")")
+                .orElse("");
 
         return GSON.toJson(
                 ImmutableMap.of(
@@ -284,7 +284,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private ImmutableList<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {
         // We found expressed gene IDs, let’s get to it now...
         var geneIds2ExperimentAndCellIds =
-                geneSearchService.getCellIdsInExperiments(geneIds.get());
+                geneSearchService.getCellIdsInExperiments(geneIds.orElse(null));
 
         return geneIds2ExperimentAndCellIds.entrySet().stream()
                         .filter(entry -> !entry.getValue().isEmpty())

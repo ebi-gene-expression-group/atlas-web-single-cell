@@ -24,7 +24,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -157,21 +157,17 @@ class CellPlotServiceTest {
     }
 
     @Test
-    void throwsNullPointerExceptionIfHardCodedTestMethodIsNotSameAsDBMethod() {
-        var tsne = randomAlphabetic(10);
-        var umap = randomAlphabetic(10);
+    void defaultResultedPlotMethodMatchesWithDBPlotMethods() {
         var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+
         when(cellPlotDaoMock.fetchDefaultPlotMethodWithParameterisation(experimentAccession))
-                .thenReturn(ImmutableMap.of(umap.toUpperCase(),
+                .thenReturn(ImmutableMap.of("UMAP",
                         List.of(new Gson().fromJson("{\"n_neighbors\": 15}", JsonObject.class)),
-                        tsne,
+                        "t-SNE",
                         List.of(new Gson().fromJson("{\"perplexity\": 20}", JsonObject.class))));
 
-        assertThrows(NullPointerException.class, () -> {
-            //We are passing method 'umap' which is small letters, But DB has capilized method 'UMAP'
-            //This gives null List as MAP fetches from the DB, MAP keys are case-sensitive.
-            subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
-                    .get(umap).getAsJsonObject();
-        });
+            assertTrue(subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
+                    .keySet()
+                    .contains("t-SNE"));
     }
 }

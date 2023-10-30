@@ -104,20 +104,27 @@ class TSnePlotViewRoute extends React.Component {
             }
           }
           plotTypeDropdown={plotTypeDropdown}
-          selectedPlotOptionLabel={this.state.selectedPlotOptionLabel}
+          selectedPlotOptionLabel={search.plotOption ?
+              search.plotType ?
+                  Object.keys(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === search.plotType).plotOptions[0])[0] + `: ` + search.plotOption
+                  :
+                  Object.keys(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === this.state.selectedPlotType).plotOptions[0])[0] + `: ` + search.plotOption
+              :
+              this.state.selectedPlotOptionLabel}
           onChangePlotTypes={
             (plotOption) => {
-              console.log(plotOption)
               this.setState({
                 selectedPlotType: plotOption.value,
-                selectedPlotOption: defaultPlotMethodAndParameterisation[plotOption.value],
+                selectedPlotOption: Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0],
                 selectedPlotOptionLabel: Object.keys(defaultPlotMethodAndParameterisation[plotOption.value])[0]
                     + ": " + Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0],
               })
 
               const query = new URLSearchParams(history.location.search)
               query.set(`plotType`, plotOption.value)
-              query.set(`plotOption`, defaultPlotMethodAndParameterisation[plotOption.value])
+              query.set(`plotOption`, Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0])
               resetHighlightClusters(query)
               updateUrlWithParams(query)
               }
@@ -166,16 +173,14 @@ class TSnePlotViewRoute extends React.Component {
           wrapperClassName={`row expanded`}
           ks={ks}
           selectedClusterByCategory={search.cellGroupType || search.k || preferredK}
-          selectedClusterId={this.state.selectedClusterId}
-          onChangeClusterId={(colourByCategory, colourByValue) => {
+          selectedK={this.state.selectedClusterId}
+          onSelectK={(colourByValue) => {
+              this.setState({
+                selectedClusterId : colourByValue
+              })
               const query = new URLSearchParams(history.location.search)
               // If tsne plot is coloured by k
-              if (!query.has(`metadata`)) {
-                query.set(`k`, colourByValue)
-              } else {
-                query.set(`cellGroupType`, colourByValue)
-              }
-              query.set(`colourBy`, colourByCategory)
+              query.set(`k`, colourByValue)
               resetHighlightClusters(query)
               updateUrlWithParams(query)
             }

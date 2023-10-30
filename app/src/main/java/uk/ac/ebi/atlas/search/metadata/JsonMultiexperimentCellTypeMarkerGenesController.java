@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.HighchartsHeatmapAdapter;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
@@ -33,8 +35,10 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
         return GSON.toJson(
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
                         experimentAccessions == null ?
-                                multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(cellType) :
                                 multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
-                                        ImmutableSet.copyOf(experimentAccessions), cellType)));
+                                        URLDecoder.decode(cellType, StandardCharsets.UTF_8)) :
+                                multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
+                                        ImmutableSet.copyOf(experimentAccessions),
+                                        URLDecoder.decode(cellType, StandardCharsets.UTF_8))));
     }
 }

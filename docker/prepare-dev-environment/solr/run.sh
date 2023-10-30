@@ -108,15 +108,15 @@ then
   print_done
 fi
 
-print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH}"
-docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
+print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH}"
+docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_1_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
 print_done
-print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH}"
-docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
+print_stage_name "📑 Copy ${SC_ATLAS_ONTOLOGY_FILE} to ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH}"
+docker cp ${SC_ATLAS_ONTOLOGY_FILE} ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_2_NAME}:${SOLR_USERFILES_PATH} >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🔏 Register ${SOLR_PUBLIC_KEY} in SolrCloud"
-docker exec ${SOLR_CLOUD_CONTAINER_1_NAME} ./bin/solr package add-key /run/secrets/solrcloud.der >> ${LOG_FILE} 2>&1
+docker exec ${PROJECT_NAME}-${SOLR_CLOUD_CONTAINER_1_NAME} ./bin/solr package add-key /run/secrets/solrcloud.der >> ${LOG_FILE} 2>&1
 print_done
 
 print_stage_name "🌄 Stop Solr 8 cluster in Docker Compose"

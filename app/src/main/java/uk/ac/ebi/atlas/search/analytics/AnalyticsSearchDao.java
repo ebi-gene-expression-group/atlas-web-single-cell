@@ -1,5 +1,6 @@
 package uk.ac.ebi.atlas.search.analytics;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,9 @@ import uk.ac.ebi.atlas.solr.cloud.search.streamingexpressions.source.SearchStrea
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_CELL_TYPE;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
 
 @Component
 public class AnalyticsSearchDao {
@@ -41,6 +45,87 @@ public class AnalyticsSearchDao {
                 ),
                 schemaField.name()
         );
+    }
+
+    public ImmutableSet<String> searchOrganismPartsByCellIdsAndSpecies(ImmutableSet<String> cellIDs,
+                                                                       ImmutableSet<String> species) {
+        var inputParams = ImmutableMap.of(
+                CELL_ID, cellIDs,
+                CTW_ORGANISM, species
+        );
+
+        return searchOutputFieldByInputFieldValues(CTW_ORGANISM_PART, inputParams);
+    }
+
+    public ImmutableSet<String> searchCellTypesByCellIdsAndSpeciesAndOrganismParts(ImmutableSet<String> cellIDs,
+                                                                                   ImmutableSet<String> species,
+                                                                                   ImmutableSet<String> organismParts) {
+        var inputParams = ImmutableMap.of(
+                CELL_ID, cellIDs,
+                CTW_ORGANISM, species,
+                CTW_ORGANISM_PART, organismParts
+        );
+
+        return searchOutputFieldByInputFieldValues(CTW_CELL_TYPE, inputParams);
+    }
+
+    private ImmutableSet<String> searchOutputFieldByInputFieldValues(
+            SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField outputSchemaField,
+            ImmutableMap<SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField, ImmutableSet<String>> inputParams) {
+        var queryBuilder = getStreamBuilderForOutputField(outputSchemaField);
+        inputParams.forEach((key, value) -> {
+            if (!value.isEmpty()) {
+                queryBuilder.addQueryFieldByTerm(key, value);
+            }
+        });
+
+        var uniqueSearchStreamBuilder = new UniqueStreamBuilder(
+                new SearchStreamBuilder<>(singleCellAnalyticsCollectionProxy, queryBuilder).returnAllDocs(),
+                outputSchemaField.name());
+
+        return getSchemaFieldFromStreamQuery(uniqueSearchStreamBuilder, outputSchemaField.name());
+    }
+
+    private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> getStreamBuilderForOutputField(
+            SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField outputSchemaField) {
+        return new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .setFieldList(outputSchemaField)
+                        .sortBy(outputSchemaField, SolrQuery.ORDER.asc);
+    }
+
+    public ImmutableSet<String> searchOutputFieldByInputFieldValues(
+            SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField outputSchemaField,
+            SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField inputSchemaField,
+            ImmutableSet<String> inputValues) {
+//        Streaming query for getting the set of output field values provided by set of input field values
+//        unique(
+//            search(scxa-analytics, q=<name_of_input_field>:<SET_OF_INPUT_FIELD_VALUES>, // could be ctw_cell_type
+//            fl="outputSchemaField", // could be : cell_id
+//            sort="outputSchemaField asc"
+//            ),
+//            over="outputSchemaField"
+//        )
+        return getSchemaFieldFromStreamQuery(
+                new UniqueStreamBuilder(
+                        getStreamBuilderByInputFieldValuesForOutputField(
+                                inputSchemaField, inputValues, outputSchemaField),
+                        outputSchemaField.name()
+                ),
+                outputSchemaField.name()
+        );
+    }
+
+    private SearchStreamBuilder<SingleCellAnalyticsCollectionProxy> getStreamBuilderByInputFieldValuesForOutputField(
+            SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField inputSchemaField,
+            ImmutableSet<String> inputValues,
+            SingleCellAnalyticsCollectionProxy.SingleCellAnalyticsSchemaField outputSchemaField) {
+        return new SearchStreamBuilder<>(
+                singleCellAnalyticsCollectionProxy,
+                new SolrQueryBuilder<SingleCellAnalyticsCollectionProxy>()
+                        .addQueryFieldByTerm(inputSchemaField, inputValues)
+                        .setFieldList(outputSchemaField)
+                        .sortBy(outputSchemaField, SolrQuery.ORDER.asc)
+        ).returnAllDocs();
     }
 
     private SearchStreamBuilder<SingleCellAnalyticsCollectionProxy> getStreamBuilderByCellIdsForSchemaField(

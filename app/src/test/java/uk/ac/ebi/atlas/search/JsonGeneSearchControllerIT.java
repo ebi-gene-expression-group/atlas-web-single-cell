@@ -18,6 +18,7 @@ import uk.ac.ebi.atlas.search.analytics.AnalyticsSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
+import uk.ac.ebi.atlas.search.organismpart.OrganismPartSearchService;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -47,6 +48,10 @@ class JsonGeneSearchControllerIT {
     @Mock
     private AnalyticsSearchService analyticsSearchServiceMock;
 
+    @Mock
+    private OrganismPartSearchService organismPartSearchServiceMock;
+
+
     @Inject
     private ExperimentTrader experimentTrader;
 
@@ -67,6 +72,7 @@ class JsonGeneSearchControllerIT {
                         experimentTrader,
                         experimentAttributesService,
                         analyticsSearchServiceMock,
+                        organismPartSearchServiceMock,
                         speciesSearchService);
     }
 
@@ -171,7 +177,7 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
-    void whenRequestParamIsEmptyOrganismPartSearchReturnsEmptySet() {
+    void whenRequestParamIsEmptyOrganismPartSearchReturnsException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 
         when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
@@ -194,7 +200,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(ImmutableSet.of()));
-        when(analyticsSearchServiceMock.searchOrganismPart(ImmutableSet.of()))
+        when(organismPartSearchServiceMock.search(ImmutableSet.of(), ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
@@ -216,7 +222,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(analyticsSearchServiceMock.searchOrganismPart(geneIdsFromService))
+        when(organismPartSearchServiceMock.search(geneIdsFromService, ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
@@ -239,7 +245,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(analyticsSearchServiceMock.searchOrganismPart(geneIdsFromService))
+        when(organismPartSearchServiceMock.search(geneIdsFromService, ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of(expectedOrganismPart));
 
         var actualOrganismParts = subject.getOrganismPartBySearchTerm(requestParams);
@@ -327,17 +333,6 @@ class JsonGeneSearchControllerIT {
     @Test
     void whenRequestParamIsEmptySpeciesSearchReturnsAnException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-
-        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
-                .thenThrow(new QueryParsingException("Error parsing query"));
-
-        assertThatExceptionOfType(QueryParsingException.class)
-                .isThrownBy(() -> subject.getSpeciesByGeneId(requestParams));
-    }
-
-    @Test
-    void whenRequestParamIsNullSpeciesSearchReturnsAnException() {
-        LinkedMultiValueMap<String, String> requestParams = null;
 
         when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
                 .thenThrow(new QueryParsingException("Error parsing query"));

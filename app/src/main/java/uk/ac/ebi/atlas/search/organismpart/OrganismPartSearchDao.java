@@ -25,10 +25,10 @@ public class OrganismPartSearchDao {
                 collectionProxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-    public ImmutableSet<String> searchOrganismPart(ImmutableSet<String> cellIDs, ImmutableSet<String> cellTypes) {
-//        Streaming query for getting the organism_part provided by set of cell IDs
+        public ImmutableSet<String> searchOrganismPart(ImmutableSet<String> cellIDs, ImmutableSet<String> cellTypes) {
+//        Streaming query for getting the organism_part provided by set of cell IDs and cell types
 //        unique(
-//            search(scxa-analytics-v6, q=cell_id:<SET_OF_CELL_IDS> AND cell_type:<SET_OF_CELL_TYPES>,
+//            search(scxa-analytics-v6, q=cell_id:<SET_OF_CELL_IDS> AND ctw_cell_type:<SET_OF_CELL_TYPES>,
 //            fl="ctw_organism_part",
 //            sort="ctw_organism_part asc"
 //            ),

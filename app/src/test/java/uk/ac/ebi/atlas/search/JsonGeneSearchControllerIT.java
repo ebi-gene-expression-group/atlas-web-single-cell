@@ -14,7 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
-import uk.ac.ebi.atlas.search.analytics.AnalyticsSearchService;
+import uk.ac.ebi.atlas.search.celltype.CellTypeSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
@@ -46,11 +46,10 @@ class JsonGeneSearchControllerIT {
     private GeneSearchService geneSearchServiceMock;
 
     @Mock
-    private AnalyticsSearchService analyticsSearchServiceMock;
-
-    @Mock
     private OrganismPartSearchService organismPartSearchServiceMock;
 
+    @Mock
+    private CellTypeSearchService cellTypeSearchService;
 
     @Inject
     private ExperimentTrader experimentTrader;
@@ -71,8 +70,8 @@ class JsonGeneSearchControllerIT {
                         geneSearchServiceMock,
                         experimentTrader,
                         experimentAttributesService,
-                        analyticsSearchServiceMock,
                         organismPartSearchServiceMock,
+                        cellTypeSearchService,
                         speciesSearchService);
     }
 
@@ -254,7 +253,7 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
-    void whenRequestParamIsEmptyCellTypeSearchReturnsEmptySet() {
+    void whenRequestParamIsEmptyCellTypeSearchReturnsException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 
         when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
@@ -277,7 +276,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(ImmutableSet.of()));
-        when(analyticsSearchServiceMock.searchCellType(ImmutableSet.of()))
+        when(cellTypeSearchService.search(ImmutableSet.of(), ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyCellTypeSet = subject.getCellTypeBySearchTerm(requestParams);
@@ -299,7 +298,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(analyticsSearchServiceMock.searchCellType(geneIdsFromService))
+        when(cellTypeSearchService.search(geneIdsFromService, ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyCellTypeSet = subject.getCellTypeBySearchTerm(requestParams);
@@ -322,7 +321,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(analyticsSearchServiceMock.searchCellType(geneIdsFromService))
+        when(cellTypeSearchService.search(geneIdsFromService, ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of(expectedCellType));
 
         var actualCellTypes = subject.getCellTypeBySearchTerm(requestParams);

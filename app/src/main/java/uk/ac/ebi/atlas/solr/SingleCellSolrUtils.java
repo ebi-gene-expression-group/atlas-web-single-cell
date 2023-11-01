@@ -13,6 +13,7 @@ import java.util.Random;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_CELL_TYPE;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
 
 @Component
 public class SingleCellSolrUtils {
@@ -33,12 +34,32 @@ public class SingleCellSolrUtils {
                 .setFieldList(CTW_CELL_TYPE)
                 .setRows(MAX_ROWS);
 
-        return getRandomCellTypesFromQueryResult(singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults(), numberOfCellTypes);
+        return getRandomCellTypesFromQueryResult(
+                singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults(),
+                CTW_CELL_TYPE.name(),
+                numberOfCellTypes);
     }
 
-    private ImmutableSet<String> getRandomCellTypesFromQueryResult(SolrDocumentList solrDocumentList, int numberOfCellTypes) {
+    public ImmutableSet<String> fetchedRandomOrganismPartsByCellIDs(ImmutableSet<String> cellIDs, int numberOfOrganismParts) {
+        SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder = new SolrQueryBuilder<>();
+        queryBuilder
+                .addQueryFieldByTerm(CELL_ID, cellIDs)
+                .setFieldList(CTW_ORGANISM_PART)
+                .setRows(MAX_ROWS);
+
+        return getRandomCellTypesFromQueryResult(
+                singleCellAnalyticsCollectionProxy.query(queryBuilder).getResults(),
+                CTW_ORGANISM_PART.name(),
+                numberOfOrganismParts);
+    }
+
+
+    private ImmutableSet<String> getRandomCellTypesFromQueryResult(
+            SolrDocumentList solrDocumentList,
+            String schemaFieldName,
+            int numberOfCellTypes) {
         return Arrays.stream(new Random().ints(numberOfCellTypes, 0, solrDocumentList.size()).toArray())
-                .mapToObj(index -> solrDocumentList.get(index).getFieldValue(CTW_CELL_TYPE.name()).toString())
+                .mapToObj(index -> solrDocumentList.get(index).getFieldValue(schemaFieldName).toString())
                 .collect(toImmutableSet());
     }
 }

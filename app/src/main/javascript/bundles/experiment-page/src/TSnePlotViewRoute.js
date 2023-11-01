@@ -42,8 +42,7 @@ class TSnePlotViewRoute extends React.Component {
       selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`,
-      selectedClusterByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`,
+      selectedColourByCategory: isNaN(search.colourBy) ? `metadata` :  `clusters`,
       selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       selectedClusterIdOption: ``
     }

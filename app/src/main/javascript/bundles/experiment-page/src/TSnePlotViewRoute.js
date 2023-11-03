@@ -42,8 +42,7 @@ class TSnePlotViewRoute extends React.Component {
       selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`,
-      selectedClusterByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`,
+      selectedColourByCategory: isNaN(search.colourBy) ? `metadata` :  `clusters`,
       selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       selectedClusterIdOption: ``
     }
@@ -104,19 +103,27 @@ class TSnePlotViewRoute extends React.Component {
             }
           }
           plotTypeDropdown={plotTypeDropdown}
-          selectedPlotOptionLabel={this.state.selectedPlotOptionLabel}
+          selectedPlotOptionLabel={search.plotOption ?
+              search.plotType ?
+                  Object.keys(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === search.plotType).plotOptions[0])[0] + `: ` + search.plotOption
+                  :
+                  Object.keys(_find(plotTypeDropdown,
+                      (plot) => plot.plotType.toLowerCase() === this.state.selectedPlotType).plotOptions[0])[0] + `: ` + search.plotOption
+              :
+              this.state.selectedPlotOptionLabel}
           onChangePlotTypes={
             (plotOption) => {
               this.setState({
                 selectedPlotType: plotOption.value,
-                selectedPlotOption: defaultPlotMethodAndParameterisation[plotOption.value],
+                selectedPlotOption: Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0],
                 selectedPlotOptionLabel: Object.keys(defaultPlotMethodAndParameterisation[plotOption.value])[0]
                     + ": " + Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0],
               })
 
               const query = new URLSearchParams(history.location.search)
               query.set(`plotType`, plotOption.value)
-              query.set(`plotOption`, defaultPlotMethodAndParameterisation[plotOption.value])
+              query.set(`plotOption`, Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0])
               resetHighlightClusters(query)
               updateUrlWithParams(query)
               }

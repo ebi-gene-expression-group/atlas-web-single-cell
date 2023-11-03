@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.search.organismpart;
+package uk.ac.ebi.atlas.search.celltype;
 
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,49 +15,49 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class OrganismPartSearchServiceTest {
+public class CellTypeSearchServiceTest {
 
     @Mock
-    private OrganismPartSearchDao organismPartSearchDao;
+    private CellTypeSearchDao cellTypeSearchDao;
 
     @Mock
     private GeneSearchService geneSearchService;
 
-    private OrganismPartSearchService subject;
+    private CellTypeSearchService subject;
 
     @BeforeEach
     void setup() {
-        subject = new OrganismPartSearchService(organismPartSearchDao, geneSearchService);
+        subject = new CellTypeSearchService(cellTypeSearchDao, geneSearchService);
     }
 
     @Test
-    void whenEmptySetOfGeneIdsAndCellTypesProvidedReturnsEmptySetOfOrganismPart() {
+    void whenEmptySetOfGeneIdsAndOrganismPartsProvidedReturnsEmptySetOfCellTypes() {
         ImmutableSet<String> emptySetOfGeneIds = ImmutableSet.of();
-        ImmutableSet<String> emptySetOfCellTypes = ImmutableSet.of();
+        ImmutableSet<String> emptySetOfOrganismParts = ImmutableSet.of();
 
-        var organismParts = subject.search(emptySetOfGeneIds, emptySetOfCellTypes);
+        var cellTypes = subject.search(emptySetOfGeneIds, emptySetOfOrganismParts);
 
-        assertThat(organismParts).isEmpty();
+        assertThat(cellTypes).isEmpty();
     }
 
     @Test
-    void whenNonExistentGeneIdsAndEmptySetOfCellTypesProvidedReturnsEmptySetOfOrganismPart() {
+    void whenNonExistentGeneIdsAndEmptySetOfOrganismPartsProvidedReturnsEmptySetOfCellTypes() {
         var nonExistentGeneId = "nonExistentGeneId";
         var setOfNonExistentGeneIds = ImmutableSet.of(nonExistentGeneId);
-        ImmutableSet<String> emptySetOfCellTypes = ImmutableSet.of();
+        ImmutableSet<String> emptySetOfOrganismParts = ImmutableSet.of();
 
         when(geneSearchService.getCellIdsFromGeneIds(setOfNonExistentGeneIds))
                 .thenReturn(ImmutableSet.of());
-        when(organismPartSearchDao.searchOrganismPart(ImmutableSet.of(), emptySetOfCellTypes))
+        when(cellTypeSearchDao.searchCellTypes(ImmutableSet.of(), emptySetOfOrganismParts))
                 .thenReturn(ImmutableSet.of());
 
-        var organismParts = subject.search(setOfNonExistentGeneIds, emptySetOfCellTypes);
+        var cellTypes = subject.search(setOfNonExistentGeneIds, emptySetOfOrganismParts);
 
-        assertThat(organismParts).isEmpty();
+        assertThat(cellTypes).isEmpty();
     }
 
     @Test
-    void whenValidGeneIdsAndEmptySetOfCellTypesProvidedReturnsSetOfOrganismParts() {
+    void whenValidGeneIdsAndEmptySetOfOrganismPartsProvidedReturnsSetOfCellTypes() {
         var existingGeneId1 = "ExistingGeneId1";
         var existingGeneId2 = "ExistingGeneId2";
         var geneIds = ImmutableSet.of(existingGeneId1, existingGeneId2);
@@ -65,22 +65,22 @@ public class OrganismPartSearchServiceTest {
         var existingCellId2 = "ExistingCellId2";
         var cellIds = ImmutableSet.of(existingCellId1, existingCellId2);
 
-        ImmutableSet<String> emptySetOfCellTypes = ImmutableSet.of();
+        ImmutableSet<String> emptySetOfOrganismParts = ImmutableSet.of();
 
-        var expectedOrganismPart = "primary visual cortex";
+        var expectedCellType = "root cortex 7";
 
         when(geneSearchService.getCellIdsFromGeneIds(geneIds))
                 .thenReturn(cellIds);
-        when(organismPartSearchDao.searchOrganismPart(cellIds, emptySetOfCellTypes))
-                .thenReturn(ImmutableSet.of(expectedOrganismPart));
+        when(cellTypeSearchDao.searchCellTypes(cellIds, emptySetOfOrganismParts))
+                .thenReturn(ImmutableSet.of(expectedCellType));
 
-        var organismParts = subject.search(geneIds, emptySetOfCellTypes);
+        var cellTypes = subject.search(geneIds, emptySetOfOrganismParts);
 
-        assertThat(organismParts).contains(expectedOrganismPart);
+        assertThat(cellTypes).contains(expectedCellType);
     }
 
     @Test
-    void whenValidGeneIDsAndCellTypesProvidedReturnsSetOfOrganismParts() {
+    void whenValidGeneIDsAndOrganismPartsProvidedReturnsSetOfCellTypes() {
         var existingGeneId1 = "ExistingGeneId1";
         var existingGeneId2 = "ExistingGeneId2";
         var geneIds = ImmutableSet.of(existingGeneId1, existingGeneId2);
@@ -89,17 +89,17 @@ public class OrganismPartSearchServiceTest {
         var cellIds = ImmutableSet.of(existingCellId1, existingCellId2);
         var existingCellType1 = "ExistingCellType1";
         var existingCellType2 = "ExistingCellType2";
-        var cellTypes = ImmutableSet.of(existingCellType1, existingCellType2);
+        var organismParts = ImmutableSet.of(existingCellType1, existingCellType2);
 
-        var expectedOrganismPart = "primary visual cortex";
+        var expectedCellType = "root cortex 7";
 
         when(geneSearchService.getCellIdsFromGeneIds(geneIds))
                 .thenReturn(cellIds);
-        when(organismPartSearchDao.searchOrganismPart(cellIds, cellTypes))
-                .thenReturn(ImmutableSet.of(expectedOrganismPart));
+        when(cellTypeSearchDao.searchCellTypes(cellIds, organismParts))
+                .thenReturn(ImmutableSet.of(expectedCellType));
 
-        var organismParts = subject.search(geneIds, cellTypes);
+        var cellTypes = subject.search(geneIds, organismParts);
 
-        assertThat(organismParts).contains(expectedOrganismPart);
+        assertThat(cellTypes).contains(expectedCellType);
     }
 }

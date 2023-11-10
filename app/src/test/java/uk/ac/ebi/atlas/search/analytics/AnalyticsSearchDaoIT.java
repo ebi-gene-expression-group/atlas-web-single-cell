@@ -15,14 +15,17 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
-import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CELL_ID;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_CELL_TYPE;
 import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy.CTW_ORGANISM_PART;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomCellId;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomOrganismPart;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomSpecies;
 
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
@@ -45,6 +48,7 @@ public class AnalyticsSearchDaoIT {
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
+                new ClassPathResource("fixtures/experiment.sql"),
                 new ClassPathResource("fixtures/scxa_analytics.sql")
         );
 
@@ -55,7 +59,8 @@ public class AnalyticsSearchDaoIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/scxa_analytics-delete.sql")
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql")
         );
         populator.execute(dataSource);
     }
@@ -69,7 +74,8 @@ public class AnalyticsSearchDaoIT {
     void whenEmptySetOfCellIDsProvidedReturnEmptySetOfOrganismPart() {
         var cellIDs = ImmutableSet.<String>of();
 
-        var organismParts = subject.searchFieldByCellIds(CTW_ORGANISM_PART, cellIDs);
+        var organismParts = subject.searchOutputFieldByInputFieldValues(
+                CTW_ORGANISM_PART, CELL_ID, cellIDs);
 
         assertThat(organismParts).isEmpty();
     }
@@ -78,12 +84,13 @@ public class AnalyticsSearchDaoIT {
     void whenInvalidCellIdsProvidedReturnEmptySetOfOrganismPart() {
         var cellIDs =
                 ImmutableSet.of(
-                        RandomDataTestUtils.generateRandomCellId(),
-                        RandomDataTestUtils.generateRandomCellId(),
-                        RandomDataTestUtils.generateRandomCellId()
+                        generateRandomCellId(),
+                        generateRandomCellId(),
+                        generateRandomCellId()
                 );
 
-        var organismParts = subject.searchFieldByCellIds(CTW_ORGANISM_PART, cellIDs);
+        var organismParts = subject.searchOutputFieldByInputFieldValues(
+                CTW_ORGANISM_PART, CELL_ID, cellIDs);
 
         assertThat(organismParts).isEmpty();
     }
@@ -93,7 +100,8 @@ public class AnalyticsSearchDaoIT {
         var cellIDs =
                 ImmutableSet.copyOf(jdbcUtils.fetchRandomListOfCells(10));
 
-        var organismParts = subject.searchFieldByCellIds(CTW_ORGANISM_PART, cellIDs);
+        var organismParts = subject.searchOutputFieldByInputFieldValues(
+                CTW_ORGANISM_PART, CELL_ID, cellIDs);
 
         assertThat(organismParts.size()).isGreaterThan(0);
     }
@@ -102,7 +110,8 @@ public class AnalyticsSearchDaoIT {
     void whenEmptySetOfCellIdsProvidedReturnEmptySetOfCellType() {
         var cellIDs = ImmutableSet.<String>of();
 
-        var cellTypes = subject.searchFieldByCellIds(CTW_CELL_TYPE, cellIDs);
+        var cellTypes = subject.searchOutputFieldByInputFieldValues(
+                CTW_CELL_TYPE, CELL_ID, cellIDs);
 
         assertThat(cellTypes).isEmpty();
     }
@@ -111,12 +120,13 @@ public class AnalyticsSearchDaoIT {
     void whenInvalidCellIdsProvidedReturnEmptySetOfCellType() {
         var cellIDs =
                 ImmutableSet.of(
-                        RandomDataTestUtils.generateRandomCellId(),
-                        RandomDataTestUtils.generateRandomCellId(),
-                        RandomDataTestUtils.generateRandomCellId()
+                        generateRandomCellId(),
+                        generateRandomCellId(),
+                        generateRandomCellId()
                 );
 
-        var cellTypes = subject.searchFieldByCellIds(CTW_CELL_TYPE, cellIDs);
+        var cellTypes = subject.searchOutputFieldByInputFieldValues(
+                CTW_CELL_TYPE, CELL_ID, cellIDs);
 
         assertThat(cellTypes).isEmpty();
     }
@@ -126,8 +136,80 @@ public class AnalyticsSearchDaoIT {
         var cellIDs =
                 ImmutableSet.copyOf(jdbcUtils.fetchRandomListOfCells(10));
 
-        var cellTypes = subject.searchFieldByCellIds(CTW_CELL_TYPE, cellIDs);
+        var cellTypes = subject.searchOutputFieldByInputFieldValues(
+                CTW_CELL_TYPE, CELL_ID, cellIDs);
 
         assertThat(cellTypes.size()).isGreaterThan(0);
+    }
+
+    @Test
+    void whenInvalidParametersProvidedReturnEmptySetOfOrganismParts() {
+        var cellIDs = ImmutableSet.of(
+                generateRandomCellId(),
+                generateRandomCellId(),
+                generateRandomCellId()
+        );
+        var species = ImmutableSet.of(
+                generateRandomSpecies().getName(),
+                generateRandomSpecies().getName(),
+                generateRandomSpecies().getName()
+        );
+
+        var actualOrganismParts = subject.searchOrganismPartsByCellIdsAndSpecies(
+                cellIDs, species);
+
+        assertThat(actualOrganismParts).isEmpty();
+    }
+
+    @Test
+    void whenValidCellIDsAndSpeciesProvidedReturnSetOfOrganismParts() {
+        var experimentAccession = "E-EHCA-2";
+        var cellIDs = ImmutableSet.copyOf(
+                jdbcUtils.fetchRandomListOfCellsFromExperiment(experimentAccession, 10));
+        var species = ImmutableSet.of(
+                jdbcUtils.fetchSpeciesByExperimentAccession(experimentAccession));
+
+        var actualOrganismParts = subject.searchOrganismPartsByCellIdsAndSpecies(cellIDs, species);
+
+        assertThat(actualOrganismParts.size()).isGreaterThan(0);
+    }
+
+    @Test
+    void whenInvalidParametersProvidedReturnEmptySetOfCellTypes() {
+        var cellIDs = ImmutableSet.of(
+                generateRandomCellId(),
+                generateRandomCellId(),
+                generateRandomCellId()
+        );
+        var species = ImmutableSet.of(
+                generateRandomSpecies().getName(),
+                generateRandomSpecies().getName(),
+                generateRandomSpecies().getName()
+        );
+        var organismParts = ImmutableSet.of(
+                generateRandomOrganismPart(),
+                generateRandomOrganismPart()
+        );
+
+        var actualCellTypes = subject.searchCellTypesByCellIdsAndSpeciesAndOrganismParts(
+                cellIDs, species, organismParts);
+
+        assertThat(actualCellTypes).isEmpty();
+    }
+
+    @Test // TODO replace hardcoded values with random ones if it is possible
+    void whenValidParametersProvidedReturnSetOfCellTypes() {
+        var experimentAccession = "E-CURD-4";
+        var species = ImmutableSet.of(
+                jdbcUtils.fetchSpeciesByExperimentAccession(experimentAccession));
+        // hardcoded values for cellIds and organism parts as we don't have fixtures for Solr
+        var cellIDs = ImmutableSet.of(
+                "SRR8206654-ATTGTTAGTAGT", "SRR8206662-ATCTCGCTCCCC", "SRR8206662-CAGGATTAAGCC");
+        var organismParts = ImmutableSet.of("root");
+
+        var actualOrganismParts = subject.searchCellTypesByCellIdsAndSpeciesAndOrganismParts(
+                cellIDs, species, organismParts);
+
+        assertThat(actualOrganismParts.size()).isGreaterThan(0);
     }
 }

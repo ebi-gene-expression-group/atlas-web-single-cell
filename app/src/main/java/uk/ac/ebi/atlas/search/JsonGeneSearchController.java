@@ -17,9 +17,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
 import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
-import uk.ac.ebi.atlas.search.analytics.AnalyticsSearchService;
+import uk.ac.ebi.atlas.search.celltype.CellTypeSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
+import uk.ac.ebi.atlas.search.organismpart.OrganismPartSearchService;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
@@ -46,7 +47,8 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private final ExperimentTrader experimentTrader;
     private final ExperimentAttributesService experimentAttributesService;
 
-    private final AnalyticsSearchService analyticsSearchService;
+    private final OrganismPartSearchService organismPartSearchService;
+    private final CellTypeSearchService cellTypeSearchService;
     private final SpeciesSearchService speciesSearchService;
 
     @GetMapping(value = "/json/search", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -129,10 +131,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
         // If the query term matches a single Ensembl ID different to the query term, we return it in the response.
         // The most common case is a non-Ensembl gene identifier (e.g. Entrez, MGI, ...).
-        var matchingGeneIds =
-                (geneIds.get().size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) ?
-                        "(" + String.join(", ", geneIds.get()) + ")" :
-                        "";
+        var matchingGeneIds = geneIds.filter(
+                strings -> strings.size() == 1
+                        && !strings.iterator().next().equals(geneQuery.queryTerm()))
+                .map(strings -> "(" + String.join(", ", strings) + ")")
+                .orElse("");
 
         var json = GSON.toJson(
                 ImmutableMap.of(
@@ -177,12 +180,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                 expressedGeneIdEntries.stream()
                         // TODO Measure in production if parallelising the stream results in any speedup
                         //      (the more experiments we have the better). BEWARE: just adding parallel() throws! (?)
-                        .flatMap(entry -> entry.getValue().entrySet().stream().map(exp2cells -> {
+                        .flatMap(entry -> entry.getValue().keySet().stream().map(experimentAccession -> {
 
                             // Inside this map-within-a-flatMap we unfold expressedGeneIdEntries to triplets of...
                             var geneId = entry.getKey();
-                            var experimentAccession = exp2cells.getKey();
-                            var cellIds = exp2cells.getValue();
 
                             var experimentAttributes =
                                     ImmutableMap.<String, Object>builder().putAll(
@@ -205,10 +206,11 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
 
                         })).collect(toImmutableList());
 
-        var matchingGeneIds = "";
-        if (geneIds.get().size() == 1 && !geneIds.get().iterator().next().equals(geneQuery.queryTerm())) {
-            matchingGeneIds = "(" + String.join(", ", geneIds.get()) + ")";
-        }
+        var matchingGeneIds = geneIds.filter(
+                        strings -> strings.size() == 1
+                                && !strings.iterator().next().equals(geneQuery.queryTerm()))
+                .map(strings -> "(" + String.join(", ", strings) + ")")
+                .orElse("");
 
         return GSON.toJson(
                 ImmutableMap.of(
@@ -236,7 +238,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
                                 .map(Map.Entry::getKey)
                                 .collect(toImmutableSet()));
 
-        return markerGeneFacets != null && markerGeneFacets.size() > 0;
+        return markerGeneFacets != null && !markerGeneFacets.isEmpty();
     }
 
     @GetMapping(value = "/json/gene-search/organism-parts",
@@ -249,7 +251,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             return ImmutableSet.of();
         }
 
-        return analyticsSearchService.searchOrganismPart(geneIds.get());
+        var cellTypes = requestParams.get("cellTypes");
+
+        return organismPartSearchService.search(geneIds.get(),
+                cellTypes != null ? ImmutableSet.copyOf(cellTypes) : ImmutableSet.of());
     }
 
     @GetMapping(value = "/json/gene-search/cell-types",
@@ -262,7 +267,10 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
             return ImmutableSet.of();
         }
 
-        return analyticsSearchService.searchCellType(geneIds.get());
+        var organismParts = requestParams.get("organismParts");
+
+        return cellTypeSearchService.search(geneIds.get(),
+                organismParts != null ? ImmutableSet.copyOf(organismParts) : ImmutableSet.of());
     }
 
     @GetMapping(value = "/json/gene-search/species", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -279,7 +287,7 @@ public class JsonGeneSearchController extends JsonExceptionHandlingController {
     private ImmutableList<Map.Entry<String, Map<String, List<String>>>> getMarkerGeneProfileByGeneIds(Optional<ImmutableSet<String>> geneIds) {
         // We found expressed gene IDs, let’s get to it now...
         var geneIds2ExperimentAndCellIds =
-                geneSearchService.getCellIdsInExperiments(geneIds.get());
+                geneSearchService.getCellIdsInExperiments(geneIds.orElse(null));
 
         return geneIds2ExperimentAndCellIds.entrySet().stream()
                         .filter(entry -> !entry.getValue().isEmpty())

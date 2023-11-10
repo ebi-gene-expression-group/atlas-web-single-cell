@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.search;
 
 import com.google.common.collect.ImmutableSet;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,7 @@ import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -345,5 +347,15 @@ class JsonGeneSearchControllerWIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$", hasSize(equalTo(expectedCellTypes.size()))))
                 .andExpect(jsonPath("$", containsInAnyOrder(expectedCellTypes.toArray())));
+    }
+
+    @Test
+    void whenGivenExistingSymbolReturnedCellTypesNotContainsNullValue() throws Exception {
+        var symbolValue = "CFTR";
+
+        this.mockMvc.perform(get("/json/gene-search/cell-types").param("symbol", symbolValue))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", not(contains(IsNull.nullValue()))));
     }
 }

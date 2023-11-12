@@ -117,7 +117,7 @@ pipeline {
 
         stage('–– Build ––') {
           when { anyOf {
-            branch 'develop'; branch 'main'; branch 'release/*'
+            branch 'develop'; branch 'main'; branch 'release/*'; branch `hotfix/*`
           } }
           stages {
             stage('Provision Node.js build environment') {

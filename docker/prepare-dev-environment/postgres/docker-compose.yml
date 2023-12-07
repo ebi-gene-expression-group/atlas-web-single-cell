@@ -42,9 +42,13 @@ services:
         cd /root/db-scxa/bin
         export PATH=.:$${PATH}
         export dbConnection=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
-          
+        
         for EXP_ID in ${EXP_IDS}
         do
+          EXP_ID=$${EXP_ID} \
+          CONDENSED_SDRF_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.condensed-sdrf.tsv \
+          SDRF_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.sdrf.txt ./load_exp_design.sh
+                
           EXPRESSION_TYPE=aggregated_filtered_normalised_counts \
           EXP_ID=$${EXP_ID} \
           EXPERIMENT_MATRICES_PATH=/atlas-data/exp/magetab/$${EXP_ID} ./load_db_scxa_analytics.sh

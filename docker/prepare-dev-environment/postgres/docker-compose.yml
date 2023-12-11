@@ -45,29 +45,31 @@ services:
         
         for EXP_ID in ${EXP_IDS}
         do
-          EXP_ID=$${EXP_ID} \
-          CONDENSED_SDRF_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.condensed-sdrf.tsv \
-          SDRF_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.sdrf.txt ./load_exp_design.sh
-                
           EXPRESSION_TYPE=aggregated_filtered_normalised_counts \
           EXP_ID=$${EXP_ID} \
           EXPERIMENT_MATRICES_PATH=/atlas-data/exp/magetab/$${EXP_ID} ./load_db_scxa_analytics.sh
         
           if [ "${SCHEMA_VERSION}" = "18" ]; then
-            EXP_ID=$${EXP_ID} EXPERIMENT_DIMRED_PATH=/atlas-data/exp/magetab/$${EXP_ID} ./load_db_scxa_dimred.sh
+            EXP_ID=$${EXP_ID} SCRATCH_DIR=/atlas-data/exp/magetab/$${EXP_ID} ./load_db_scxa_dimred.sh
           else
+            EXP_ID=$${EXP_ID} \
+            CONDENSED_SDRF_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.condensed-sdrf.tsv \
+            SDRF_FILE=/atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.sdrf.txt ./load_exp_design.sh
+        
             # Copied from db-scxa/tests/test-dimred-load.sh
             ls /atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.tsne*.tsv | while read -r l; do
-              DIMRED_TYPE=tsne
-              DIMRED_FILE_PATH=$$l
-              DIMRED_PARAM_JSON='[{"perplexity": '$(echo "$$l" | sed 's/.*[^0-9]\([0-9]*\).tsv/\1/g')'}]'
+              DIMRED_TYPE=tsne \
+              DIMRED_FILE_PATH=$$l \
+              DIMRED_PARAM_JSON='[{"perplexity": '$(echo "$$l" | sed 's/.*[^0-9]\([0-9]*\).tsv/\1/g')'}]' \
+              SCRATCH_DIR=/atlas-data/exp/magetab/$${EXP_ID} \
               load_db_scxa_dimred.sh $${dbConnection} $${EXP_ID} $${DIMRED_TYPE} $${DIMRED_FILE_PATH} "$${DIMRED_PARAM_JSON}"
             done
         
             ls /atlas-data/exp/magetab/$${EXP_ID}/$${EXP_ID}.umap*.tsv | while read -r l; do
-              DIMRED_TYPE=umap
-              DIMRED_FILE_PATH=$$l
-              DIMRED_PARAM_JSON='[{"n_neighbors": '$(echo "$$l" | sed 's/.*[^0-9]\([0-9]*\).tsv/\1/g')'}]'
+              DIMRED_TYPE=umap \
+              DIMRED_FILE_PATH=$$l \
+              DIMRED_PARAM_JSON='[{"n_neighbors": '$(echo "$$l" | sed 's/.*[^0-9]\([0-9]*\).tsv/\1/g')'}]' \
+              SCRATCH_DIR=/atlas-data/exp/magetab/$${EXP_ID} \
               load_db_scxa_dimred.sh $${dbConnection} $${EXP_ID} $${DIMRED_TYPE} $${DIMRED_FILE_PATH} "$${DIMRED_PARAM_JSON}"
             done
           fi

@@ -42,8 +42,7 @@ class TSnePlotViewRoute extends React.Component {
       selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`,
-      selectedClusterByCategory: !isNaN(search.colourBy) ? `clusters` : `metadata`,
+      selectedColourByCategory: isNaN(search.colourBy) ? `metadata` :  `clusters`,
       selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       selectedClusterIdOption: ``
     }
@@ -106,11 +105,11 @@ class TSnePlotViewRoute extends React.Component {
           plotTypeDropdown={plotTypeDropdown}
           selectedPlotOptionLabel={search.plotOption ?
               search.plotType ?
-                  Object.keys(_find(plotTypeDropdown,
-                      (plot) => plot.plotType.toLowerCase() === search.plotType).plotOptions[0])[0] + `: ` + search.plotOption
+                  Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
+                      (plot) => plot.plotType.toLowerCase() === search.plotType.toLowerCase())].plotOptions[0])[0] + `: ` + search.plotOption
                   :
-                  Object.keys(_find(plotTypeDropdown,
-                      (plot) => plot.plotType.toLowerCase() === this.state.selectedPlotType).plotOptions[0])[0] + `: ` + search.plotOption
+                  Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
+                      (plot) => plot.plotType.toLowerCase() ===  this.state.selectedPlotType.toLowerCase())].plotOptions[0])[0] + `: ` + search.plotOption
               :
               this.state.selectedPlotOptionLabel}
           onChangePlotTypes={

@@ -1,4 +1,4 @@
-package uk.ac.ebi.atlas.search.organismpart;
+package uk.ac.ebi.atlas.search.celltype;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
@@ -9,14 +9,14 @@ import uk.ac.ebi.atlas.search.GeneSearchService;
 
 @Component
 @RequiredArgsConstructor
-public class OrganismPartSearchService {
+public class CellTypeSearchService {
 
-    private final OrganismPartSearchDao organismPartSearchDao;
+    private final CellTypeSearchDao cellTypeSearchDao;
     private final GeneSearchService geneSearchService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrganismPartSearchService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CellTypeSearchService.class);
 
-    public ImmutableSet<String> search(ImmutableSet<String> geneIds, ImmutableSet<String> cellTypes) {
+    public ImmutableSet<String> search(ImmutableSet<String> geneIds, ImmutableSet<String> organismParts) {
         if (geneIds.isEmpty()) {
             LOGGER.warn("Can't query for organism part as no gene IDs has given.");
             return ImmutableSet.of();
@@ -24,7 +24,6 @@ public class OrganismPartSearchService {
 
         LOGGER.info("Searching organism parts for this gene ids: {}", geneIds.asList());
 
-        return organismPartSearchDao.searchOrganismPart(geneSearchService.getCellIdsFromGeneIds(geneIds), cellTypes);
+        return cellTypeSearchDao.searchCellTypes(geneSearchService.getCellIdsFromGeneIds(geneIds), organismParts);
     }
-
 }

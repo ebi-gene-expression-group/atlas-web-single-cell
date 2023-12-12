@@ -14,10 +14,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 import uk.ac.ebi.atlas.experimentpage.ExperimentAttributesService;
-import uk.ac.ebi.atlas.search.analytics.AnalyticsSearchService;
+import uk.ac.ebi.atlas.search.celltype.CellTypeSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneIdSearchService;
 import uk.ac.ebi.atlas.search.geneids.GeneQuery;
 import uk.ac.ebi.atlas.search.geneids.QueryParsingException;
+import uk.ac.ebi.atlas.search.organismpart.OrganismPartSearchService;
 import uk.ac.ebi.atlas.search.species.SpeciesSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -45,7 +46,10 @@ class JsonGeneSearchControllerIT {
     private GeneSearchService geneSearchServiceMock;
 
     @Mock
-    private AnalyticsSearchService analyticsSearchServiceMock;
+    private OrganismPartSearchService organismPartSearchServiceMock;
+
+    @Mock
+    private CellTypeSearchService cellTypeSearchService;
 
     @Inject
     private ExperimentTrader experimentTrader;
@@ -66,7 +70,8 @@ class JsonGeneSearchControllerIT {
                         geneSearchServiceMock,
                         experimentTrader,
                         experimentAttributesService,
-                        analyticsSearchServiceMock,
+                        organismPartSearchServiceMock,
+                        cellTypeSearchService,
                         speciesSearchService);
     }
 
@@ -171,7 +176,7 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
-    void whenRequestParamIsEmptyOrganismPartSearchReturnsEmptySet() {
+    void whenRequestParamIsEmptyOrganismPartSearchReturnsException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 
         when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
@@ -194,7 +199,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(ImmutableSet.of()));
-        when(analyticsSearchServiceMock.searchOrganismPart(ImmutableSet.of()))
+        when(organismPartSearchServiceMock.search(ImmutableSet.of(), ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
@@ -216,7 +221,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(analyticsSearchServiceMock.searchOrganismPart(geneIdsFromService))
+        when(organismPartSearchServiceMock.search(geneIdsFromService, ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyOrganismPartSet = subject.getOrganismPartBySearchTerm(requestParams);
@@ -239,7 +244,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(analyticsSearchServiceMock.searchOrganismPart(geneIdsFromService))
+        when(organismPartSearchServiceMock.search(geneIdsFromService, ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of(expectedOrganismPart));
 
         var actualOrganismParts = subject.getOrganismPartBySearchTerm(requestParams);
@@ -248,7 +253,7 @@ class JsonGeneSearchControllerIT {
     }
 
     @Test
-    void whenRequestParamIsEmptyCellTypeSearchReturnsEmptySet() {
+    void whenRequestParamIsEmptyCellTypeSearchReturnsException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
 
         when(geneIdSearchServiceMock.getGeneQueryByRequestParams(requestParams))
@@ -271,7 +276,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(ImmutableSet.of()));
-        when(analyticsSearchServiceMock.searchCellType(ImmutableSet.of()))
+        when(cellTypeSearchService.search(ImmutableSet.of(), ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyCellTypeSet = subject.getCellTypeBySearchTerm(requestParams);
@@ -293,7 +298,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(analyticsSearchServiceMock.searchCellType(geneIdsFromService))
+        when(cellTypeSearchService.search(geneIdsFromService, ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of());
 
         var emptyCellTypeSet = subject.getCellTypeBySearchTerm(requestParams);
@@ -316,7 +321,7 @@ class JsonGeneSearchControllerIT {
                 .thenReturn(geneQuery);
         when(geneIdSearchServiceMock.search(geneQuery))
                 .thenReturn(Optional.of(geneIdsFromService));
-        when(analyticsSearchServiceMock.searchCellType(geneIdsFromService))
+        when(cellTypeSearchService.search(geneIdsFromService, ImmutableSet.of()))
                 .thenReturn(ImmutableSet.of(expectedCellType));
 
         var actualCellTypes = subject.getCellTypeBySearchTerm(requestParams);
@@ -327,17 +332,6 @@ class JsonGeneSearchControllerIT {
     @Test
     void whenRequestParamIsEmptySpeciesSearchReturnsAnException() {
         var requestParams = new LinkedMultiValueMap<String, String>();
-
-        when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
-                .thenThrow(new QueryParsingException("Error parsing query"));
-
-        assertThatExceptionOfType(QueryParsingException.class)
-                .isThrownBy(() -> subject.getSpeciesByGeneId(requestParams));
-    }
-
-    @Test
-    void whenRequestParamIsNullSpeciesSearchReturnsAnException() {
-        LinkedMultiValueMap<String, String> requestParams = null;
 
         when(geneIdSearchServiceMock.getCategoryFromRequestParams(requestParams))
                 .thenThrow(new QueryParsingException("Error parsing query"));

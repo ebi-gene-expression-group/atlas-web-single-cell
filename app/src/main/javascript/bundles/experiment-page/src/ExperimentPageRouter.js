@@ -36,6 +36,11 @@ const TopRibbon = ({tabs, routeProps}) =>
     {
       tabs.map((tab) =>
         <li title={tab.name} key={tab.type} className={`tabs-title`}>
+          {
+            tab.type == 'results' && Array.isArray(tab.props.ks) ?
+                console.log("result*****", tab.props.ks): console.log("Boolean status", typeof tab.props.ks)
+
+          }
           <NavLink to={{pathname:`/${tab.type}`, search: routeProps.location.search, hash: routeProps.location.hash}}
                    activeClassName={`active`}>
             {tab.name}

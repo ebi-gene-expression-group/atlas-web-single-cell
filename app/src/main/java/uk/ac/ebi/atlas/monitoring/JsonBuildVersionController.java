@@ -9,28 +9,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 
-import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
+import java.util.Map;
 
 @RestController
-@PropertySource("classpath:configuration.properties")
+@PropertySource("classpath:resources/git.properties")
 public class JsonBuildVersionController extends JsonExceptionHandlingController {
     private final ImmutableMap<String, String> buildVersion;
 
-    public JsonBuildVersionController(@Value("${build.number}") String buildNumber,
-                                      @Value("${build.branch}") String buildBranch,
-                                      @Value("${build.commitId}") String buildCommitId,
-                                      @Value("${build.tomcatHostname}") String tomcatHostname) {
-        buildVersion = ImmutableMap.of(
-                "bambooBuildVersion", buildNumber,
-                "gitBranch", buildBranch,
-                "gitCommitID", buildCommitId,
-                "tomcatHostname", tomcatHostname);
+    public JsonBuildVersionController(@Value("${git.build.version}") String buildVersion,
+                                      @Value("${git.branch}") String gitBranch,
+                                      @Value("${git.commit.id}") String gitCommitId,
+                                      @Value("${git.commit.message.full}") String commitMessage) {
+        this.buildVersion = ImmutableMap.of(
+                "Build version", buildVersion,
+                "Git branch", gitBranch,
+                "Latest commit ID", gitCommitId,
+                "Latest commit message", commitMessage);
     }
 
     @RequestMapping(value = "/json/build",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getBuildInfo() {
-        return GSON.toJson(buildVersion);
+    public Map<String, String> getBuildInfo() {
+        return buildVersion;
     }
 }

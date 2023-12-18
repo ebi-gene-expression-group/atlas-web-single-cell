@@ -307,9 +307,15 @@ The sceond step is simply:
 ```
 
 The script `build-and-deploy-webapp.sh` puts it altogether and will eventually launch a Tomcat container with a running
-dev instance of Single Cell Expression Atlas.
+dev instance of Single Cell Expression Atlas. The script before launching the web application can build only the back-end or front-end component or both.
 
+Here is the usage of this script:
 
+  - -f      Use this flag if you would like to build the front-end javascript packages.
+  - -b      Use this flag if you would like to build the back-end of the web application.
+  - -h      Displaying the help file of this script.
+
+If you don't give any flags, or you add both then the script is going to build both front and back-end part of the web application.
 
 ### Gradle shell
  It

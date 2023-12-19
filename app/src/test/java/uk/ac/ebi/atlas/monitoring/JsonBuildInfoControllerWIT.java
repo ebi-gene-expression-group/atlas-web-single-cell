@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
-class JsonBuildVersionControllerWIT {
+class JsonBuildInfoControllerWIT {
 
     @Autowired
     private WebApplicationContext wac;

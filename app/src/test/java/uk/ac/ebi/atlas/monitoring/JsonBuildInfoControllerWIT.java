@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
-class JsonBuildVersionControllerWIT {
+class JsonBuildInfoControllerWIT {
 
     @Autowired
     private WebApplicationContext wac;
@@ -39,9 +39,9 @@ class JsonBuildVersionControllerWIT {
         mockMvc.perform(get("/json/build"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.bambooBuildVersion", isA(String.class)))
-                .andExpect(jsonPath("$.gitBranch", isA(String.class)))
-                .andExpect(jsonPath("$.gitCommitID", isA(String.class)))
-                .andExpect(jsonPath("$.tomcatHostname", isA(String.class)));
+                .andExpect(jsonPath("$['Build version']", isA(String.class)))
+                .andExpect(jsonPath("$['Git branch']", isA(String.class)))
+                .andExpect(jsonPath("$['Latest commit ID']", isA(String.class)))
+                .andExpect(jsonPath("$['Latest commit message']", isA(String.class)));
     }
 }

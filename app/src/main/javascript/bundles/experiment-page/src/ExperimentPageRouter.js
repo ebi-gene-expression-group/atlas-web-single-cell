@@ -24,12 +24,8 @@ const TabCommonPropTypes = {
 }
 
 // What component each tab type should render, coupled to ExperimentController.java
-const tabTypeComponent = {
-  'results' : TSnePlotViewRoute,
-  'experiment-design' : ExperimentDesignRoute,
-  'supplementary-information' : SupplementaryInformationRoute,
-  'downloads' : DownloadsRoute
-}
+let tabTypeComponent = []
+
 
 const TopRibbon = ({tabs, routeProps}) =>
   <ul className={`tabs`}>
@@ -37,9 +33,11 @@ const TopRibbon = ({tabs, routeProps}) =>
       tabs.map((tab) =>
         <li title={tab.name} key={tab.type} className={`tabs-title`}>
           {
-            tab.type == 'results' && Array.isArray(tab.props.ks) ?
-                console.log("result*****", tab.props.ks): console.log("Boolean status", typeof tab.props.ks)
 
+            tab.type === 'results' && Array.isArray(tab.props.ks) ? console.log("result1 **************", tabTypeComponent.push({'results' : TSnePlotViewRoute})) :
+            tab.type === 'experiment-design' && Object.keys(tab.props.table.length >0) ? console.log("result2 **************",tabTypeComponent.push({'experiment-design' : ExperimentDesignRoute})) :
+            tab.type === 'supplementary-information' && Object.keys(tab.props.sections.length >0) ? console.log("result3 **************", tabTypeComponent.push({'supplementary-information' : SupplementaryInformationRoute})) :
+                        console.log('result4********', tabTypeComponent.push({'downloads' : DownloadsRoute}))
           }
           <NavLink to={{pathname:`/${tab.type}`, search: routeProps.location.search, hash: routeProps.location.hash}}
                    activeClassName={`active`}>

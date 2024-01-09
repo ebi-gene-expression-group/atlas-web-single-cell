@@ -2,6 +2,11 @@ plugins {
     id 'atlas-web-app.java-conventions'
     id 'war'
     id 'org.flywaydb.flyway' version '7.14.0'
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
+}
+
+gitProperties {
+    gitPropertiesName = "resources/git.properties"
 }
 
 war {

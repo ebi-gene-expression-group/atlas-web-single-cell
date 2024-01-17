@@ -33,11 +33,10 @@ const TopRibbon = ({tabs, routeProps}) =>
       tabs.map((tab) =>
         <li title={tab.name} key={tab.type} className={`tabs-title`}>
           {
-
             tab.type === 'results' && Array.isArray(tab.props.ks) ? console.log("result1 **************", tabTypeComponent.push({'results' : TSnePlotViewRoute})) :
-            tab.type === 'experiment-design' && Object.keys(tab.props.table.length >0) ? console.log("result2 **************",tabTypeComponent.push({'experiment-design' : ExperimentDesignRoute})) :
-            tab.type === 'supplementary-information' && Object.keys(tab.props.sections.length >0) ? console.log("result3 **************", tabTypeComponent.push({'supplementary-information' : SupplementaryInformationRoute})) :
-                        console.log('result4********', tabTypeComponent.push({'downloads' : DownloadsRoute}))
+            tab.type === 'experiment-design' && Array.isArray(tab.props.table.data) ? console.log("result2 **************",tabTypeComponent.push({'experiment-design' : ExperimentDesignRoute})) :
+            tab.type === 'supplementary-information' && Array.isArray(tab.props.sections) ? console.log("result3 **************", tabTypeComponent.push({'supplementary-information' : SupplementaryInformationRoute})) :
+            tab.type === 'resources'&& Array.isArray(tab.props.data)? console.log('result4********', tabTypeComponent.push({'resources' : DownloadsRoute})): ""
           }
           <NavLink to={{pathname:`/${tab.type}`, search: routeProps.location.search, hash: routeProps.location.hash}}
                    activeClassName={`active`}>

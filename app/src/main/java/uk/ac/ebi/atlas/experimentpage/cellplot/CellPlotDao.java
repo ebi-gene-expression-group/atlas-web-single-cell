@@ -157,14 +157,15 @@ public class CellPlotDao {
 
 
     private static final String SELECT_DEFAULT_PLOT_METHOD_AND_PARAMETERISATION =
-            "SELECT dr.method, jsonb_array_elements(dr.parameterisation) parameterisation " +
+            "SELECT DISTINCT dr.method, jsonb_array_elements(dr.parameterisation) parameterisation " +
                     "FROM scxa_dimension_reduction dr " +
                     "JOIN (SELECT method,  max(priority) as prt " +
                         "FROM scxa_dimension_reduction " +
                         "WHERE experiment_accession=:experiment_accession " +
                         " GROUP BY method) fi " +
                     "ON dr.method = fi.method " +
-                    "AND dr.priority = fi.prt";
+                    "AND dr.priority = fi.prt " +
+            "ORDER BY parameterisation";
 
     public Map<String, List<JsonObject>> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {
         var namedParameters = ImmutableMap.of("experiment_accession", experimentAccession);

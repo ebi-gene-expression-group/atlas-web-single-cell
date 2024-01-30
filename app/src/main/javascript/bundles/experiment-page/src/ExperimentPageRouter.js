@@ -26,6 +26,39 @@ const TabCommonPropTypes = {
 // What component each tab type should render, coupled to ExperimentController.java
 let tabTypeComponent = []
 
+function validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccession}) {
+  if ( (typeof speciesName == 'string' && speciesName instanceof String) &&
+      (typeof atlasUrl == 'string' && atlasUrl instanceof String) &&
+      (typeof experimentAccession == 'string' && experimentAccession instanceof String)) {
+        return true;
+  }
+  else return false;
+}
+
+function validateTab({tabType}) {
+  if (tabType === 'results') {
+    if ( validateCommonRequiredProps({speciesName},atlasUrl,experimentAccession) && Array.isArray(tab.props.ks)) {
+      console.log("result **************",tabTypeComponent.push({'results' : TSnePlotViewRoute}))
+    }
+  }
+  else if (tabType === 'experiment-design') {
+    if (Array.isArray(tab.props.table.data) && validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccession})) {
+      console.log("experiment-design **************",tabTypeComponent.push({'experiment-design' : ExperimentDesignRoute}));
+    }
+  }
+  else if(tabType === 'supplementary-information') {
+     if (Array.isArray(tab.props.sections) && validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccession})) {
+       console.log("supplementary-information **************", tabTypeComponent.push({'supplementary-information' : SupplementaryInformationRoute}))
+     }
+  }
+  else {
+    if (Array.isArray(tab.props.data) &&  validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccession})) {
+      console.log('download********', tabTypeComponent.push({'resources' : DownloadsRoute}))
+    }
+  }
+}
+
+
 
 const TopRibbon = ({tabs, routeProps}) =>
   <ul className={`tabs`}>
@@ -33,10 +66,7 @@ const TopRibbon = ({tabs, routeProps}) =>
       tabs.map((tab) =>
         <li title={tab.name} key={tab.type} className={`tabs-title`}>
           {
-            tab.type === 'results' && Array.isArray(tab.props.ks) ? console.log("result1 **************", tabTypeComponent.push({'results' : TSnePlotViewRoute})) :
-            tab.type === 'experiment-design' && Array.isArray(tab.props.table.data) ? console.log("result2 **************",tabTypeComponent.push({'experiment-design' : ExperimentDesignRoute})) :
-            tab.type === 'supplementary-information' && Array.isArray(tab.props.sections) ? console.log("result3 **************", tabTypeComponent.push({'supplementary-information' : SupplementaryInformationRoute})) :
-            tab.type === 'resources'&& Array.isArray(tab.props.data)? console.log('result4********', tabTypeComponent.push({'resources' : DownloadsRoute})): ""
+              validateTab(tab.type)
           }
           <NavLink to={{pathname:`/${tab.type}`, search: routeProps.location.search, hash: routeProps.location.hash}}
                    activeClassName={`active`}>

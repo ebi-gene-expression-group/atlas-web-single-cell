@@ -35,24 +35,24 @@ function validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccessi
   else return false;
 }
 
-function validateTab({tabType}) {
-  if (tabType === 'results') {
-    if ( validateCommonRequiredProps({speciesName},atlasUrl,experimentAccession) && Array.isArray(tab.props.ks)) {
+function validateTab(tab) {
+  if (tab.type === 'results') {
+    if ( Array.isArray(tab.props.ks) && validateCommonRequiredProps(TabCommonPropTypes.species,TabCommonPropTypes.atlasUrl,TabCommonPropTypes.experimentAccession) && Array.isArray(tab.props.ks)) {
       console.log("result **************",tabTypeComponent.push({'results' : TSnePlotViewRoute}))
     }
   }
-  else if (tabType === 'experiment-design') {
-    if (Array.isArray(tab.props.table.data) && validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccession})) {
+  else if (tab.type === 'experiment-design') {
+    if (Array.isArray(tab.props.table.data) && validateCommonRequiredProps(TabCommonPropTypes.species,TabCommonPropTypes.atlasUrl,TabCommonPropTypes.experimentAccession)) {
       console.log("experiment-design **************",tabTypeComponent.push({'experiment-design' : ExperimentDesignRoute}));
     }
   }
-  else if(tabType === 'supplementary-information') {
-     if (Array.isArray(tab.props.sections) && validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccession})) {
+  else if(tab.type === 'supplementary-information') {
+     if (Array.isArray(tab.props.sections) && validateCommonRequiredProps(TabCommonPropTypes.species,TabCommonPropTypes.atlasUrl,TabCommonPropTypes.experimentAccession)) {
        console.log("supplementary-information **************", tabTypeComponent.push({'supplementary-information' : SupplementaryInformationRoute}))
      }
   }
   else {
-    if (Array.isArray(tab.props.data) &&  validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccession})) {
+    if (Array.isArray(tab.props.data) &&  validateCommonRequiredProps(TabCommonPropTypes.species,TabCommonPropTypes.atlasUrl,TabCommonPropTypes.experimentAccession)) {
       console.log('download********', tabTypeComponent.push({'resources' : DownloadsRoute}))
     }
   }
@@ -66,7 +66,7 @@ const TopRibbon = ({tabs, routeProps}) =>
       tabs.map((tab) =>
         <li title={tab.name} key={tab.type} className={`tabs-title`}>
           {
-              validateTab(tab.type)
+              validateTab(tab)
           }
           <NavLink to={{pathname:`/${tab.type}`, search: routeProps.location.search, hash: routeProps.location.hash}}
                    activeClassName={`active`}>

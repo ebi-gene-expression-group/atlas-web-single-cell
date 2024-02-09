@@ -26,51 +26,38 @@ const TabCommonPropTypes = {
 // What component each tab type should render, coupled to ExperimentController.java
 let tabTypeComponent = []
 
-function validateCommonRequiredProps({speciesName},{atlasUrl},{experimentAccession}) {
-  if ( (typeof speciesName == 'string' && speciesName instanceof String) &&
-      (typeof atlasUrl == 'string' && atlasUrl instanceof String) &&
-      (typeof experimentAccession == 'string' && experimentAccession instanceof String)) {
-        return true;
-  }
-  else return false;
-}
-
-function validateTab(tab) {
+function enableExperimentPageTab(tab) {
   if (tab.type === 'results') {
-    if ( Array.isArray(tab.props.ks) && validateCommonRequiredProps(TabCommonPropTypes.species,TabCommonPropTypes.atlasUrl,TabCommonPropTypes.experimentAccession) && Array.isArray(tab.props.ks)) {
-      console.log("result **************",tabTypeComponent.push({'results' : TSnePlotViewRoute}))
+    if (Array.isArray(tab.props.ks) && (tab.props.plotTypesAndOptions)) {
+      tabTypeComponent.push({'results': TSnePlotViewRoute})
+      return tab.name;
     }
-  }
-  else if (tab.type === 'experiment-design') {
-    if (Array.isArray(tab.props.table.data) && validateCommonRequiredProps(TabCommonPropTypes.species,TabCommonPropTypes.atlasUrl,TabCommonPropTypes.experimentAccession)) {
-      console.log("experiment-design **************",tabTypeComponent.push({'experiment-design' : ExperimentDesignRoute}));
+  } else if (tab.type === 'experiment-design') {
+    if (Array.isArray(tab.props.table.data)) {
+      tabTypeComponent.push({'experiment-design': ExperimentDesignRoute})
+      return tab.name;
     }
-  }
-  else if(tab.type === 'supplementary-information') {
-     if (Array.isArray(tab.props.sections) && validateCommonRequiredProps(TabCommonPropTypes.species,TabCommonPropTypes.atlasUrl,TabCommonPropTypes.experimentAccession)) {
-       console.log("supplementary-information **************", tabTypeComponent.push({'supplementary-information' : SupplementaryInformationRoute}))
-     }
-  }
-  else {
-    if (Array.isArray(tab.props.data) &&  validateCommonRequiredProps(TabCommonPropTypes.species,TabCommonPropTypes.atlasUrl,TabCommonPropTypes.experimentAccession)) {
-      console.log('download********', tabTypeComponent.push({'resources' : DownloadsRoute}))
+  } else if (tab.type === 'supplementary-information') {
+    if (Array.isArray(tab.props.sections)) {
+      tabTypeComponent.push({'supplementary-information': SupplementaryInformationRoute})
+      return tab.name;
+    }
+  } else {
+    if (Array.isArray(tab.props.data)) {
+      tabTypeComponent.push({'resources': DownloadsRoute})
+      return tab.name;
     }
   }
 }
-
-
 
 const TopRibbon = ({tabs, routeProps}) =>
   <ul className={`tabs`}>
     {
       tabs.map((tab) =>
         <li title={tab.name} key={tab.type} className={`tabs-title`}>
-          {
-              validateTab(tab)
-          }
           <NavLink to={{pathname:`/${tab.type}`, search: routeProps.location.search, hash: routeProps.location.hash}}
                    activeClassName={`active`}>
-            {tab.name}
+            { enableExperimentPageTab(tab) }
           </NavLink>
         </li>
       )}

@@ -30,6 +30,14 @@ function isThistabType(tab,tabType) {
   return tab.type === tabType;
 }
 
+const isObjectEmpty = (objectName) => {
+  return (
+      objectName &&
+      Object.keys(objectName).length === 0 &&
+      objectName.constructor === Object
+  );
+};
+
 function enableExperimentPageTab(tab) {
   const resultTab = 'results'
   const experimentDesignTab = 'experiment-design'
@@ -37,22 +45,22 @@ function enableExperimentPageTab(tab) {
   const downloadTab = 'resources'
 
   if (isThistabType(tab, resultTab)) {
-    if (Array.isArray(tab.props.ks) && (tab.props.plotTypesAndOptions)) {
+    if (!isObjectEmpty(tab.props.ks) && Array.isArray(tab.props.ks) && !isObjectEmpty(tab.props.plotTypesAndOptions)) {
       tabTypeComponent.push({resultTab : TSnePlotViewRoute})
       return tab.name;
     }
   } else if (isThistabType(tab, experimentDesignTab)) {
-    if (Array.isArray(tab.props.table.data)) {
+    if (!isObjectEmpty(tab.props.table.data) && Array.isArray(tab.props.table.data)) {
       tabTypeComponent.push({experimentDesignTab : ExperimentDesignRoute})
       return tab.name;
     }
   } else if (isThistabType(tab, supplementaryInformationTab)) {
-    if (Array.isArray(tab.props.sections)) {
+    if (!isObjectEmpty(tab.props.sections) && Array.isArray(tab.props.sections)) {
       tabTypeComponent.push({supplementaryInformationTab : SupplementaryInformationRoute})
       return tab.name;
     }
   } else if (isThistabType(tab, downloadTab)) {
-    if (Array.isArray(tab.props.data)) {
+    if (!isObjectEmpty(tab.props.data) && Array.isArray(tab.props.data)) {
       tabTypeComponent.push({'resources': DownloadsRoute})
       return tab.name;
     }

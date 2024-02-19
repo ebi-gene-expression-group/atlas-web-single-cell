@@ -26,20 +26,29 @@ const TabCommonPropTypes = {
 // What component each tab type should render, coupled to ExperimentController.java
 let tabTypeComponent = []
 
+function isThistabType(tab,tabType) {
+  return tab.type === tabType;
+}
+
 function enableExperimentPageTab(tab) {
-  if (tab.type === 'results') {
+  const resultTab = 'results'
+  const experimentDesignTab = 'experiment-design'
+  const supplementaryInformationTab = 'supplementary-information'
+  const downloadTab = 'download'
+
+  if (isThistabType(tab, resultTab)) {
     if (Array.isArray(tab.props.ks) && (tab.props.plotTypesAndOptions)) {
-      tabTypeComponent.push({'results': TSnePlotViewRoute})
+      tabTypeComponent.push({resultTab : TSnePlotViewRoute})
       return tab.name;
     }
-  } else if (tab.type === 'experiment-design') {
+  } else if (isThistabType(tab, experimentDesignTab)) {
     if (Array.isArray(tab.props.table.data)) {
-      tabTypeComponent.push({'experiment-design': ExperimentDesignRoute})
+      tabTypeComponent.push({experimentDesignTab : ExperimentDesignRoute})
       return tab.name;
     }
-  } else if (tab.type === 'supplementary-information') {
+  } else if (isThistabType(tab, supplementaryInformationTab)) {
     if (Array.isArray(tab.props.sections)) {
-      tabTypeComponent.push({'supplementary-information': SupplementaryInformationRoute})
+      tabTypeComponent.push({supplementaryInformationTab : SupplementaryInformationRoute})
       return tab.name;
     }
   } else {

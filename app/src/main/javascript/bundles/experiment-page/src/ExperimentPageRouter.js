@@ -34,7 +34,7 @@ function enableExperimentPageTab(tab) {
   const resultTab = 'results'
   const experimentDesignTab = 'experiment-design'
   const supplementaryInformationTab = 'supplementary-information'
-  const downloadTab = 'download'
+  const downloadTab = 'resources'
 
   if (isThistabType(tab, resultTab)) {
     if (Array.isArray(tab.props.ks) && (tab.props.plotTypesAndOptions)) {
@@ -51,7 +51,7 @@ function enableExperimentPageTab(tab) {
       tabTypeComponent.push({supplementaryInformationTab : SupplementaryInformationRoute})
       return tab.name;
     }
-  } else {
+  } else if (isThistabType(tab, downloadTab)) {
     if (Array.isArray(tab.props.data)) {
       tabTypeComponent.push({'resources': DownloadsRoute})
       return tab.name;

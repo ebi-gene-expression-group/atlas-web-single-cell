@@ -179,7 +179,7 @@ class CellPlotDaoIT {
         var defaultPlotMethodResult = subject.fetchDefaultPlotMethodWithParameterisation(
                 jdbcTestUtils.fetchExperimentAccessionByMaxPriority());
 
-        assertThat(defaultPlotMethodResult.keySet()).contains("umap","tsne");
+        assertThat(defaultPlotMethodResult.keySet()).containsExactlyInAnyOrder("umap","tsne");
     }
 
     @Test

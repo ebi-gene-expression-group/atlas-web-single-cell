@@ -165,6 +165,7 @@ public class CellPlotDao {
                         " GROUP BY method) fi " +
                     "ON dr.method = fi.method " +
                     "AND dr.priority = fi.prt " +
+            "WHERE experiment_accession=:experiment_accession " +
             "ORDER BY parameterisation";
 
     public Map<String, List<JsonObject>> fetchDefaultPlotMethodWithParameterisation(String experimentAccession) {

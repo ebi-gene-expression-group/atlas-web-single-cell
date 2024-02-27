@@ -24,11 +24,47 @@ const TabCommonPropTypes = {
 }
 
 // What component each tab type should render, coupled to ExperimentController.java
-const tabTypeComponent = {
-  'results' : TSnePlotViewRoute,
-  'experiment-design' : ExperimentDesignRoute,
-  'supplementary-information' : SupplementaryInformationRoute,
-  'downloads' : DownloadsRoute
+let tabTypeComponent = []
+
+function isThisTabType(tab,tabType) {
+  return tab.type === tabType;
+}
+
+const isObjectEmpty = (objectName) => {
+  return (
+      objectName &&
+      Object.keys(objectName).length === 0 &&
+      objectName.constructor === Object
+  );
+};
+
+function enableExperimentPageTab(tab) {
+  const resultTab = 'results'
+  const experimentDesignTab = 'experiment-design'
+  const supplementaryInformationTab = 'supplementary-information'
+  const downloadTab = 'resources'
+
+  if (isThisTabType(tab, resultTab)) {
+    if (!isObjectEmpty(tab.props.ks) && Array.isArray(tab.props.ks) && !isObjectEmpty(tab.props.plotTypesAndOptions)) {
+      tabTypeComponent.push({resultTab : TSnePlotViewRoute})
+      return tab.name;
+    }
+  } else if (isThisTabType(tab, experimentDesignTab)) {
+    if (!isObjectEmpty(tab.props.table.data) && Array.isArray(tab.props.table.data)) {
+      tabTypeComponent.push({experimentDesignTab : ExperimentDesignRoute})
+      return tab.name;
+    }
+  } else if (isThisTabType(tab, supplementaryInformationTab)) {
+    if (!isObjectEmpty(tab.props.sections) && Array.isArray(tab.props.sections)) {
+      tabTypeComponent.push({supplementaryInformationTab : SupplementaryInformationRoute})
+      return tab.name;
+    }
+  } else if (isThisTabType(tab, downloadTab)) {
+    if (!isObjectEmpty(tab.props.data) && Array.isArray(tab.props.data)) {
+      tabTypeComponent.push({'resources': DownloadsRoute})
+      return tab.name;
+    }
+  }
 }
 
 const TopRibbon = ({tabs, routeProps}) =>
@@ -38,7 +74,7 @@ const TopRibbon = ({tabs, routeProps}) =>
         <li title={tab.name} key={tab.type} className={`tabs-title`}>
           <NavLink to={{pathname:`/${tab.type}`, search: routeProps.location.search, hash: routeProps.location.hash}}
                    activeClassName={`active`}>
-            {tab.name}
+            { enableExperimentPageTab(tab) }
           </NavLink>
         </li>
       )}

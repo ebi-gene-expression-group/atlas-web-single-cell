@@ -17,7 +17,6 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @WebAppConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class IdfParserIT {
+class IdfParserForSingleCellIT {
     @Inject
     private DataSource dataSource;
 

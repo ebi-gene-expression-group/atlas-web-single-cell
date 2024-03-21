@@ -28,6 +28,9 @@ RedirectWithSearchAndHash.propTypes = {
 
 const RedirectWithLocation = withRouter(RedirectWithSearchAndHash)
 
+const CLUSTERS_PLOT = `clusters`
+const METADATA_PLOT = `metatdata`
+
 class TSnePlotViewRoute extends React.Component {
   constructor(props) {
       super(props)
@@ -42,7 +45,7 @@ class TSnePlotViewRoute extends React.Component {
       selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: isNaN(search.colourBy) ? `metadata` :  `clusters`,
+      selectedColourByCategory: isNaN(search.colourBy) ? METADATA_PLOT :  CLUSTERS_PLOT,
       selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
       selectedClusterIdOption: ``
     }
@@ -74,7 +77,7 @@ class TSnePlotViewRoute extends React.Component {
 
     const routes = [
       {
-        path: `/tsne`,
+        path: `/cell-plots`,
         title: `Cell plots`,
         main: () => <TSnePlotView
           atlasUrl={atlasUrl}
@@ -104,14 +107,15 @@ class TSnePlotViewRoute extends React.Component {
           }
           plotTypeDropdown={plotTypeDropdown}
           selectedPlotOptionLabel={search.plotOption ?
-              search.plotType ?
-                  Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
-                      (plot) => plot.plotType.toLowerCase() === search.plotType.toLowerCase())].plotOptions[0])[0] + `: ` + search.plotOption
-                  :
-                  Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
-                      (plot) => plot.plotType.toLowerCase() ===  this.state.selectedPlotType.toLowerCase())].plotOptions[0])[0] + `: ` + search.plotOption
-              :
-              this.state.selectedPlotOptionLabel}
+                search.plotType ?
+                    Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
+                        (plot) => plot.plotType.toLowerCase() === search.plotType.toLowerCase())].plotOptions[0])[0] + `: ` + search.plotOption
+                    :
+                    Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
+                        (plot) => plot.plotType.toLowerCase() ===  this.state.selectedPlotType.toLowerCase())].plotOptions[0])[0] + `: ` + search.plotOption
+                :
+                this.state.selectedPlotOptionLabel
+          }
           onChangePlotTypes={
             (plotOption) => {
               this.setState({
@@ -147,8 +151,12 @@ class TSnePlotViewRoute extends React.Component {
                 selectedColourBy : colourByValue,
                 selectedColourByCategory : colourByCategory
               })
+              colourByCategory === CLUSTERS_PLOT && this.setState({
+              selectedClusterId : colourByValue
+            })
             const query = new URLSearchParams(history.location.search)
             query.set(`colourBy`, colourByValue)
+            colourByCategory === CLUSTERS_PLOT && query.set(`k`, colourByValue)
             resetHighlightClusters(query)
             updateUrlWithParams(query)
             }
@@ -172,14 +180,17 @@ class TSnePlotViewRoute extends React.Component {
           wrapperClassName={`row expanded`}
           ks={ks}
           selectedClusterByCategory={search.cellGroupType || search.k || preferredK}
-          selectedK={this.state.selectedClusterId}
+          selectedK={this.state.colourByCategory === CLUSTERS_PLOT ? this.state.selectedColourBy : this.state.selectedClusterId}
           onSelectK={(colourByValue) => {
               this.setState({
-                selectedClusterId : colourByValue
+                selectedClusterId : colourByValue,
+                selectedColourBy : colourByValue,
+                selectedColourByCategory : CLUSTERS_PLOT
               })
               const query = new URLSearchParams(history.location.search)
               // If tsne plot is coloured by k
               query.set(`k`, colourByValue)
+              query.set(`colourBy`, colourByValue)
               resetHighlightClusters(query)
               updateUrlWithParams(query)
             }

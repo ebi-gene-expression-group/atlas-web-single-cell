@@ -99,10 +99,7 @@ class TSnePlotViewRoute extends React.Component {
           height={800}
           onSelectGeneId={
             (geneId) => {
-              const query = new URLSearchParams(history.location.search)
-              query.set(`geneId`, geneId)
-              resetHighlightClusters(query)
-              updateUrlWithParams(query)
+              updateUrlWithParams([{geneId: geneId}])
             }
           }
           plotTypeDropdown={plotTypeDropdown}
@@ -125,11 +122,7 @@ class TSnePlotViewRoute extends React.Component {
                     + ": " + Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0],
               })
 
-              const query = new URLSearchParams(history.location.search)
-              query.set(`plotType`, plotOption.value)
-              query.set(`plotOption`, Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0])
-              resetHighlightClusters(query)
-              updateUrlWithParams(query)
+              updateUrlWithParams([{plotType: plotOption.value}, {plotOption: Object.values(defaultPlotMethodAndParameterisation[plotOption.value])[0]}])
               }
           }
           onChangePlotOptions={
@@ -138,10 +131,7 @@ class TSnePlotViewRoute extends React.Component {
                 selectedPlotOption: plotOption.value,
                 selectedPlotOptionLabel: plotOption.label
               })
-              const query = new URLSearchParams(history.location.search)
-              query.set(`plotOption`, plotOption.value)
-              resetHighlightClusters(query)
-              updateUrlWithParams(query)
+              updateUrlWithParams([{plotOption: plotOption.value}])
               }
           }
 
@@ -154,11 +144,9 @@ class TSnePlotViewRoute extends React.Component {
               colourByCategory === CLUSTERS_PLOT && this.setState({
               selectedClusterId : colourByValue
             })
-            const query = new URLSearchParams(history.location.search)
-            query.set(`colourBy`, colourByValue)
-            colourByCategory === CLUSTERS_PLOT && query.set(`k`, colourByValue)
-            resetHighlightClusters(query)
-            updateUrlWithParams(query)
+              const queryParams = [{colourBy: colourByValue}]
+              colourByCategory === CLUSTERS_PLOT && queryParams.push({k: colourByValue})
+              updateUrlWithParams(queryParams)
             }
           }
         />
@@ -187,12 +175,8 @@ class TSnePlotViewRoute extends React.Component {
                 selectedColourBy : colourByValue,
                 selectedColourByCategory : CLUSTERS_PLOT
               })
-              const query = new URLSearchParams(history.location.search)
               // If tsne plot is coloured by k
-              query.set(`k`, colourByValue)
-              query.set(`colourBy`, colourByValue)
-              resetHighlightClusters(query)
-              updateUrlWithParams(query)
+              updateUrlWithParams([{k: colourByValue}, {colourBy: colourByValue}])
             }
           }
           onChangeMarkerGeneFor={(selectedOption) => {
@@ -227,7 +211,7 @@ class TSnePlotViewRoute extends React.Component {
       }
     ]
 
-    const updateUrlWithParams = (query) => {
+    const updateUrl = (query) => {
       history.push({...history.location, search: query.toString()})
     }
 
@@ -235,6 +219,13 @@ class TSnePlotViewRoute extends React.Component {
       if(query.has(`clusterId`)) {
         query.delete(`clusterId`)
       }
+    }
+
+    const updateUrlWithParams = (params) => {
+      const query = new URLSearchParams(history.location.search)
+      params.forEach(param => query.set(Object.keys(param)[0], Object.values(param)[0]))
+      resetHighlightClusters(query)
+      updateUrl(query)
     }
 
     const preferredK = this.props.selectedK ? this.props.selectedK.toString() : this.props.ks[0].toString()

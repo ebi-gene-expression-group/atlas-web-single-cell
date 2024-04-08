@@ -29,7 +29,7 @@ RedirectWithSearchAndHash.propTypes = {
 const RedirectWithLocation = withRouter(RedirectWithSearchAndHash)
 
 const CLUSTERS_PLOT = `clusters`
-const METADATA_PLOT = `metatdata`
+const METADATA_PLOT = `metadata`
 
 class TSnePlotViewRoute extends React.Component {
   constructor(props) {

@@ -11,20 +11,12 @@ import { ClustersHeatmapView } from '@ebi-gene-expression-group/scxa-marker-gene
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
-import {find as _find, intersection as _intersection, first as _first, map as _map} from 'lodash'
+import {intersection as _intersection, first as _first, map as _map} from 'lodash'
 
 const BioentityInformationWithFetchLoader = withFetchLoader(BioentityInformation)
 
 const RedirectWithSearchAndHash = (props) =>
   <Redirect to={{ pathname: props.pathname, search: props.location.search, hash: props.location.hash}} />
-
-RedirectWithSearchAndHash.propTypes = {
-  pathname: PropTypes.string.isRequired,
-  location: PropTypes.shape({
-    search: PropTypes.string.isRequired,
-    hash: PropTypes.string.isRequired
-  }).isRequired
-}
 
 const RedirectWithLocation = withRouter(RedirectWithSearchAndHash)
 
@@ -53,20 +45,16 @@ class TSnePlotViewRoute extends React.Component {
 
   render() {
     const { location, match, history } = this.props
-    const { atlasUrl, suggesterEndpoint, initialCellTypeValues, defaultPlotMethodAndParameterisation } = this.props
+    const { atlasUrl, suggesterEndpoint, defaultPlotMethodAndParameterisation } = this.props
     const { species, experimentAccession, accessKey, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
 
-    const plotTypeDropdown =  [
-      {
-        plotType: Object.keys(defaultPlotMethodAndParameterisation)[0],
-        plotOptions: plotTypesAndOptions[Object.keys(defaultPlotMethodAndParameterisation)[0]]
-      },
-      {
-        plotType: Object.keys(defaultPlotMethodAndParameterisation)[1],
-        plotOptions: plotTypesAndOptions[Object.keys(defaultPlotMethodAndParameterisation)[1]]
-      }
-    ]
+    let plotTypeDropdown =  []
+    Object.keys(defaultPlotMethodAndParameterisation).map(plot => plotTypeDropdown.push(
+    {
+      plotType: plot,
+          plotOptions: plotTypesAndOptions[plot]
+    }))
 
     let organWithMostOntologies = Object.keys(anatomogram)[0]
     for (let availableOrgan in anatomogram) {
@@ -105,13 +93,8 @@ class TSnePlotViewRoute extends React.Component {
           plotTypeDropdown={plotTypeDropdown}
           selectedPlotOptionLabel={search.plotOption ?
                 search.plotType ?
-                    Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
-                        (plot) => plot.plotType.toLowerCase() === search.plotType.toLowerCase())].plotOptions[0])[0] + `: ` + search.plotOption
-                    :
-                    Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
-                        (plot) => plot.plotType.toLowerCase() ===  this.state.selectedPlotType.toLowerCase())].plotOptions[0])[0] + `: ` + search.plotOption
-                :
-                this.state.selectedPlotOptionLabel
+                    getPlotOption(search.plotType.toLowerCase()) : getPlotOption(this.state.selectedPlotType.toLowerCase())
+                : this.state.selectedPlotOptionLabel
           }
           onChangePlotTypes={
             (plotOption) => {
@@ -157,7 +140,7 @@ class TSnePlotViewRoute extends React.Component {
         main: () => <ClustersHeatmapView
           host={atlasUrl}
           resource={
-            this.state.selectedColourByCategory == `metadata` ?
+            this.state.selectedColourByCategory === METADATA_PLOT ?
                 URI(`json/experiments/${this.state.experimentAccession}/marker-genes-heatmap/cell-types`)
                     .search({cellGroupType: this.state.selectedClusterId})
                     .toString() :
@@ -228,6 +211,11 @@ class TSnePlotViewRoute extends React.Component {
       updateUrl(query)
     }
 
+    const getPlotOption = (selectedPlotType) => {
+      return Object.keys(plotTypeDropdown[plotTypeDropdown.findIndex(
+          (plot) => plot.plotType.toLowerCase() ===  selectedPlotType)].plotOptions[0])[0] + `: ` + search.plotOption
+    }
+
     const preferredK = this.props.selectedK ? this.props.selectedK.toString() : this.props.ks[0].toString()
 
     const basename = URI(`experiments/${experimentAccession}${match.path}`, URI(atlasUrl).path()).toString()
@@ -289,6 +277,14 @@ class TSnePlotViewRoute extends React.Component {
       </BrowserRouter>
     )
   }
+}
+
+RedirectWithSearchAndHash.propTypes = {
+  pathname: PropTypes.string.isRequired,
+  location: PropTypes.shape({
+    search: PropTypes.string.isRequired,
+    hash: PropTypes.string.isRequired
+  }).isRequired
 }
 
 TSnePlotViewRoute.propTypes = {

@@ -5,13 +5,57 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ENV_FILE=${SCRIPT_DIR}/docker/dev.env
 source ${ENV_FILE}
 
+function show_usage {
+  echo "Usage: build-and-deploy-webapp.sh [OPTION]..."
+  echo "It is building and deploying our web application."
+  echo ""
+  echo "All options are disabled if omitted."
+  echo -e "-f\tUse this flag if you would like to build the front-end javascript packages."
+  echo -e "-b\tUse this flag if you would like to build the back-end of the web application."
+  echo -e "-h\tDisplaying this help file."
+  echo -e "\nIf you don't give any flags or you add both then the script is going to build both front and back-end part of the web application."
+}
+
+function get_build_type() {
+  if [[ $BUILD_FRONTEND == "true" && $BUILD_BACKEND != "true" ]]; then
+    echo "-ui-only"
+  elif [[ $BUILD_FRONTEND != "true" && $BUILD_BACKEND == "true" ]]; then
+    echo "-war-only"
+  elif [[ $BUILD_FRONTEND == "true" && $BUILD_BACKEND == "true" ]] || [[ -z $BUILD_FRONTEND && -z $BUILD_BACKEND ]]; then
+    echo "-all"
+  fi
+}
+
+while getopts ":fbh" opt; do
+  case $opt in
+    f)
+      BUILD_FRONTEND=true
+      ;;
+    b)
+      BUILD_BACKEND=true
+      ;;
+    h)
+      show_usage
+      exit 1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      echo ""
+      show_usage
+      exit 1
+      ;;
+  esac
+done
+
+BUILD_POSTFIX=$(get_build_type)
+
 DOCKER_COMPOSE_COMMAND="docker compose \
 --project-name ${PROJECT_NAME} \
 --env-file=${ENV_FILE} \
 -f ./docker/docker-compose-solrcloud.yml \
 -f ./docker/docker-compose-postgres.yml \
 -f ./docker/docker-compose-tomcat.yml \
--f ./docker/docker-compose-build.yml"
+-f ./docker/docker-compose-build${BUILD_POSTFIX}.yml"
 
 DOCKER_COMPOSE_COMMAND_VARS="SCHEMA_VERSION=latest"
 

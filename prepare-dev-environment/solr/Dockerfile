@@ -15,8 +15,8 @@ RUN mkdir -p /root/bioentity-properties-jsonl
 
 # Clone the necessary repositories
 WORKDIR /root
-RUN git clone --depth 1 https://github.com/ebi-gene-expression-group/index-bioentities.git
+RUN git clone --depth 1 --recurse-submodules https://github.com/ebi-gene-expression-group/index-bioentities.git
 RUN git clone --depth 1 --recurse-submodules https://github.com/ebi-gene-expression-group/atlas-web-bulk.git
-RUN git clone --depth 1 https://github.com/ebi-gene-expression-group/index-scxa.git
+RUN git clone --depth 1 --recurse-submodules https://github.com/ebi-gene-expression-group/index-scxa.git
 
 ENTRYPOINT ["/bin/bash", "-c"]

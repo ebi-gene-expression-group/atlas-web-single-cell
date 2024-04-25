@@ -2,6 +2,11 @@ plugins {
     id 'atlas-web-app.java-conventions'
     id 'war'
     id 'org.flywaydb.flyway' version '7.14.0'
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
+}
+
+gitProperties {
+    gitPropertiesName = "resources/git.properties"
 }
 
 war {
@@ -30,13 +35,10 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
 
     implementation "org.cache2k:cache2k-api:${cache2kVersion}"
-    compileOnly 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     runtimeOnly "org.cache2k:cache2k-core:${cache2kVersion}"
     implementation "org.cache2k:cache2k-spring:${cache2kVersion}"
-
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     runtimeOnly 'org.apache.tiles:tiles-extras:3.0.8'
     // For URL rewrite (see WEB-INF/web.xml), or your Filter will fail with the most confusing error messages

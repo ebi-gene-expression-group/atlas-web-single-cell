@@ -49,12 +49,12 @@ class TSnePlotViewRoute extends React.Component {
     const { species, experimentAccession, accessKey, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
 
-let plotTypeDropdown =
-        Object.keys(defaultPlotMethodAndParameterisation)
-            .map(plot => ({
-              plotType: plot,
-              plotOptions: plotTypesAndOptions[plot]
-            }));
+    let plotTypeDropdown =
+      Object.keys(defaultPlotMethodAndParameterisation)
+        .map(plot => ({
+          plotType: plot,
+          plotOptions: plotTypesAndOptions[plot]
+        }))
 
     let organWithMostOntologies = Object.keys(anatomogram)[0]
     for (let availableOrgan in anatomogram) {

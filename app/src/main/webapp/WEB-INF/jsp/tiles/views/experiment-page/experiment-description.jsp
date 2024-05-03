@@ -28,7 +28,7 @@
         </div>
         </c:if>
 
-        <div class="media-object-section middle">
+        <div class="media-object-section middle ${fn:startsWith(experimentAccession, 'E-ANND-') ? 'anndata' : ''}">
             <h3 id="goto-experiment">
                 ${experimentDescription}
             </h3>

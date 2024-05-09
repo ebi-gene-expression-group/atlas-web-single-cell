@@ -103,6 +103,7 @@
             <div class="experiment-type-icon">
                 <img src="${pageContext.request.contextPath}/resources/images/experiment-type/anndata.png"
                      alt="Experiment with annotated data from external source"
+                     title="Experiment with annotated data from external source"
                      style="height: 100px;">
             </div>
         </c:if>

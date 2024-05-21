@@ -100,11 +100,9 @@
             </c:if>
         </div>
         <c:if test="${fn:startsWith(experimentAccession, 'E-ANND-')}">
-            <div class="experiment-type-icon">
-                <img src="${pageContext.request.contextPath}/resources/images/experiment-type/anndata.png"
-                     alt="Experiment with annotated data from external source"
-                     title="Experiment with annotated data from external source"
-                     style="height: 100px;">
+            <div class="experiment-type-icon"
+                 title="Experiment with annotated data analysed by an external source">
+                A
             </div>
         </c:if>
     </div>

@@ -15,7 +15,7 @@
   "dependencies": {
     "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.9.0",
     "@ebi-gene-expression-group/react-ebi-species": "^2.6.2",
-    "@ebi-gene-expression-group/scxa-faceted-search-results": "^4.1.0",
+    "@ebi-gene-expression-group/scxa-faceted-search-results": "^4.1.2",
     "@ebi-gene-expression-group/scxa-gene-search-form": "^2.0.0",
     "format-number": "^3.0.0",
     "prop-types": "^15.7.2",

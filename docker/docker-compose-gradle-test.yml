@@ -1,0 +1,42 @@
+version: "3.6"
+
+services:
+  gradle:
+    image: gradle:7.0-jdk11
+    networks:
+      - atlas-test-net
+    ports:
+      - "5005:5005"
+    volumes:
+      - ..:/root/project
+      - gradle-wrapper-dists:/root/.gradle/wrapper/dists
+      - gradle-ro-dep-cache:/gradle-ro-dep-cache:ro
+      - bioentity-properties:/atlas-data/bioentity_properties:ro
+      - exp:/atlas-data/exp:ro
+      - expdesign:/atlas-data/expdesign
+    depends_on:
+      scxa-solrcloud-0:
+        condition: service_started
+      solrcloud-1:
+        condition: service_started
+      flyway:
+        condition: service_completed_successfully
+    environment:
+      GRADLE_RO_DEP_CACHE: /gradle-ro-dep-cache
+    working_dir: /root/project
+
+volumes:
+  gradle-wrapper-dists:
+    name: ${PROJECT_NAME}_${GRADLE_WRAPPER_DISTS_VOL_NAME}
+  gradle-ro-dep-cache:
+    name: ${PROJECT_NAME}_${GRADLE_RO_DEP_CACHE_VOL_NAME}
+  bioentity-properties:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_BIOENTITY_PROPERTIES_VOL_NAME}
+  exp:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXP_VOL_NAME}
+  expdesign:
+    name: ${PROJECT_NAME}_${ATLAS_DATA_EXPDESIGN_VOL_NAME}
+
+networks:
+  atlas-test-net:
+    name: atlas-test-net

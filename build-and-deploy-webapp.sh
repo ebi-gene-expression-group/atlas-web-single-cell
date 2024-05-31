@@ -10,6 +10,7 @@ function show_usage {
   echo "It is building and deploying our web application."
   echo ""
   echo "All options are disabled if omitted."
+  echo -e "-n\tUse this flag if you would not like to do any build, just execute the application."
   echo -e "-f\tUse this flag if you would like to build the front-end javascript packages."
   echo -e "-b\tUse this flag if you would like to build the back-end of the web application."
   echo -e "-h\tDisplaying this help file."
@@ -23,11 +24,17 @@ function get_build_type() {
     echo "-war-only"
   elif [[ $BUILD_FRONTEND == "true" && $BUILD_BACKEND == "true" ]] || [[ -z $BUILD_FRONTEND && -z $BUILD_BACKEND ]]; then
     echo "-all"
+  elif [[ $BUILD_FRONTEND == "false" && $BUILD_BACKEND == "false" ]]; then
+    echo "-no"
   fi
 }
 
-while getopts ":fbh" opt; do
+while getopts ":bfhn" opt; do
   case $opt in
+    n)
+      BUILD_FRONTEND=false
+      BUILD_BACKEND=false
+      ;;
     f)
       BUILD_FRONTEND=true
       ;;

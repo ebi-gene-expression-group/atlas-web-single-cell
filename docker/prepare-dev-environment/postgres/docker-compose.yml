@@ -101,6 +101,7 @@ volumes:
     external: true
     name: ${PROJECT_NAME}_${ATLAS_DATA_EXP_VOL_NAME}
   atlas-data-expdesign:
+    external: true
     name: ${PROJECT_NAME}_${ATLAS_DATA_EXPDESIGN_VOL_NAME}
 
 networks:

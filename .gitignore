@@ -43,7 +43,6 @@ gradle-app.setting
 # Node gitignore from https://github.com/github/gitignore/blob/master/Node.gitignore
 # Logs
 logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -145,3 +144,4 @@ _idea
 
 # Webpack bundles
 app/src/main/webapp/resources/js-bundles
+/app/src/main/javascript/bundles/*/lib/

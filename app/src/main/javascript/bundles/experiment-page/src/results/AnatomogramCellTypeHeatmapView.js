@@ -11,7 +11,9 @@ const supportedOrgans = {
   liver: `UBERON_0002107`,
   placenta: `UBERON_0001987`,
   lung: `UBERON_0002048`,
-  gut: `UBERON_0000160`
+  gut: `UBERON_0000160`,
+  ovary: ``,
+  reproduction: ``,
 }
 
 const ontologyAccessionToOntologyUri = (accession) => {
@@ -132,6 +134,76 @@ class AnatomogramCellTypeHeatmapView extends React.Component {
           "UBERON_8410001", "UBERON_8410063", "UBERON_8410064", "UBERON_0001210", "UBERON_0012401",
           "UBERON_0012402", "CL_0009012", "CL_1000495", "CL_1000343", "CL_1000353", "CL_0009080",
           "CL_0009017", "CL_0009006", "CL_0009024", "CL_0009022", "CL_1000411", "CL_0009015", "CL_0009007", "UBERON_8410068"
+        ]
+      }
+    } else if (species === `ovary`) {
+        if (view === `ovary`) {
+          requestOntologyIds = [supportedOrgans[species]]
+        } else if (view === `ovariole`) {
+          requestOntologyIds = [
+            "FBbt_00048555",
+            "FBbt_00048554",
+            "FBbt_00048556",
+            "FBbt_00004906",
+            "FBbt_00004905",
+            "FBbt_00000046",
+            "FBbt_00000043",
+            "FBbt_00000045",
+            "FBbt_00000047",
+            "FBbt_00004878",
+            "FBbt_00007031",
+            "FBbt_00004866",
+            "FBbt_00004886",
+            "FBbt_00005406",
+            "FBbt_00004903"
+          ]
+        } else if (view === `germarium`) {
+          requestOntologyIds = [
+            "FBbt_00048532",
+            "FBbt_00004886",
+            "FBbt_00048534",
+            "FBbt_00048531",
+            "FBbt_00004877",
+            "FBbt_00004903",
+            "FBbt_00048537",
+            "FBbt_00047835",
+            "FBbt_00048536",
+            "FBbt_00048535",
+            "FBbt_00004873",
+            "FBbt_00004868",
+            "FBbt_00047029",
+            "FBbt_00004904",
+            "FBbt_00048288",
+            "FBbt_00048533"
+          ]
+        }
+      } else if (species === `reproduction`) {
+      if (view === `reproduction`) {
+        requestOntologyIds = [supportedOrgans[species]]
+      } else if (view === `testis`) {
+        requestOntologyIds = [
+          "FBbt_00057009",
+          "FBbt_00057010",
+          "FBbt_00004942",
+          "FBbt_00004941",
+          "FBbt_00059174",
+          "FBbt_00059175",
+          "FBbt_00005286",
+          "FBbt_00004929",
+          "FBbt_00004933",
+          "FBbt_00059172",
+          "FBbt_00004935",
+          "FBbt_00004931",
+          "FBbt_00004934",
+          "FBbt_00004930",
+          "FBbt_00004928",
+          "FBbt_00005287",
+          "FBbt_00004938",
+          "FBbt_00007138",
+          "FBbt_00004931",
+          "FBbt_00007141",
+          "FBbt_00005259",
+          "FBbt_00004954"
         ]
       }
     }

@@ -126,8 +126,15 @@
             {"perplexity": 10 },{ "perplexity": 15 },{ "perplexity": 50 },{ "perplexity": 35 },{ "perplexity": 20 },{ "perplexity": 5 }],
             "umap": [{"n_neighbors": 5},{"n_neighbors": 100},{"n_neighbors": 50},{"n_neighbors": 10},{"n_neighbors": 30},{"n_neighbors": 15},{"n_neighbors": 3}]
           },
-            defaultPlotMethodAndParameterisation: {"tsne": {"perplexity": 50}, "umap": {"n_neighbors": 100}},
-            anatomogram:{},
+          defaultPlotMethodAndParameterisation: {"tsne": {"perplexity": 50}, "umap": {"n_neighbors": 100}},
+          anatomogram:{
+            "lung": [
+                "NCBITaxon_9606",
+                "PATO_0000461",
+                "UBERON_0002048",
+                "EFO_0000768"
+            ]
+          },
           suggesterEndpoint: 'json/suggestions'
         }
       },
@@ -323,7 +330,7 @@
         content: {
           experimentAccession: 'E-MTAB-5061',
           experimentType: 'SINGLE_CELL_RNASEQ_MRNA_BASELINE',
-          species: 'Homo sapiens',
+          species: 'homo sapiens',
           tabs: tabs
         }
     }, 'container');

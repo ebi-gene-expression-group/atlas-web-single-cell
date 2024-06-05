@@ -9,6 +9,7 @@ import uk.ac.ebi.atlas.experimentimport.ExperimentCrudDao;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.sdrf.SdrfParser;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
+import uk.ac.ebi.atlas.model.experiment.ExperimentDesign;
 import uk.ac.ebi.atlas.trader.factory.SingleCellBaselineExperimentFactory;
 
 @Repository
@@ -53,7 +54,7 @@ public class ScxaExperimentRepository implements ExperimentRepository {
 
         return singleCellBaselineExperimentFactory.create(
                 experimentDto,
-                experimentDesignParser.parse(experimentDto.getExperimentAccession()),
+                getExperimentDesign(experimentAccession),
                 idfParser.parse(experimentDto.getExperimentAccession()),
                 sdrfParser.parseSingleCellTechnologyType(experimentDto.getExperimentAccession()));
     }
@@ -61,5 +62,10 @@ public class ScxaExperimentRepository implements ExperimentRepository {
     @Override
     public String getExperimentType(String experimentAccession) {
         return experimentCrudDao.getExperimentType(experimentAccession);
+    }
+
+    @Override
+    public ExperimentDesign getExperimentDesign(String experimentAccession) {
+        return experimentDesignParser.parse(experimentAccession);
     }
 }

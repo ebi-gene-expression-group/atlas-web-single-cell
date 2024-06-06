@@ -43,7 +43,7 @@ function enableExperimentPageTab(tab) {
     const experimentDesignTab = 'experiment-design'
     const supplementaryInformationTab = 'supplementary-information'
     const downloadTab = 'resources'
-    console.log("in enableExperimentPageTab");
+
     if (isThisTabType(tab, resultTab)) {
         if (!isObjectEmpty(tab.props.ks) && Array.isArray(tab.props.ks) && !isObjectEmpty(tab.props.plotTypesAndOptions)) {
             tabTypeComponent.push({resultTab: TSnePlotViewRoute})
@@ -133,7 +133,7 @@ const ExperimentPageRouter = ({atlasUrl, resourcesUrl, experimentAccession, spec
         species,
         accessKey
     }
-    console.log("in ExperimentPageRouter. Tabs length: " + tabs.length);
+
     return (
         <BrowserRouter
             basename={URI(`experiments/${experimentAccession}`, URI(atlasUrl).path()).toString()}>

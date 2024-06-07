@@ -38,34 +38,31 @@ const isObjectEmpty = (objectName) => {
     );
 };
 
-function enableExperimentPageTab(tab) {
-    const resultTab = 'results'
-    const experimentDesignTab = 'experiment-design'
-    const supplementaryInformationTab = 'supplementary-information'
-    const downloadTab = 'resources'
+const tabTypes = [
+    { type: 'results', key: 'ks', component: TSnePlotViewRoute, optionsKey: 'plotTypesAndOptions' },
+    { type: 'experiment-design', key: 'table.data', component: ExperimentDesignRoute },
+    { type: 'supplementary-information', key: 'sections', component: SupplementaryInformationRoute },
+    { type: 'resources', key: 'data', component: DownloadsRoute }
+];
 
-    if (isThisTabType(tab, resultTab)) {
-        if (!isObjectEmpty(tab.props.ks) && Array.isArray(tab.props.ks) && !isObjectEmpty(tab.props.plotTypesAndOptions)) {
-            tabTypeComponent.push({resultTab: TSnePlotViewRoute})
-            return tab.name;
-        }
-    } else if (isThisTabType(tab, experimentDesignTab)) {
-        if (!isObjectEmpty(tab.props.table.data) && Array.isArray(tab.props.table.data)) {
-            tabTypeComponent.push({experimentDesignTab: ExperimentDesignRoute})
-            return tab.name;
-        }
-    } else if (isThisTabType(tab, supplementaryInformationTab)) {
-        if (!isObjectEmpty(tab.props.sections) && Array.isArray(tab.props.sections)) {
-            tabTypeComponent.push({supplementaryInformationTab: SupplementaryInformationRoute})
-            return tab.name;
-        }
-    } else if (isThisTabType(tab, downloadTab)) {
-        if (!isObjectEmpty(tab.props.data) && Array.isArray(tab.props.data)) {
-            tabTypeComponent.push({'resources': DownloadsRoute})
-            return tab.name;
+const getNestedProperty = (obj, path) => path.split('.').reduce((acc, key) => acc?.[key], obj);
+
+const isNonEmptyArray = (value) => !isObjectEmpty(value) && Array.isArray(value);
+
+const enableExperimentPageTab = (tab) => {
+    for (let { type, key, component, optionsKey } of tabTypes) {
+        if (isThisTabType(tab, type)) {
+            const propValue = getNestedProperty(tab.props, key);
+            const optionsValue = optionsKey ? getNestedProperty(tab.props, optionsKey) : true;
+
+            if (isNonEmptyArray(propValue) && (!optionsKey || !isObjectEmpty(optionsValue))) {
+                tabTypeComponent.push({ [type]: component });
+                return tab.name;
+            }
         }
     }
-}
+    return null;
+};
 
 const TopRibbon = ({tabs, routeProps}) => {
     tabTypeComponent = [];
@@ -79,7 +76,7 @@ const TopRibbon = ({tabs, routeProps}) => {
                         hash: routeProps.location.hash
                     }}
                              activeClassName={`active`}>
-                        {enableExperimentPageTab(tab)}
+                        { enableExperimentPageTab(tab) }
                     </NavLink>
                 </li>))
         }

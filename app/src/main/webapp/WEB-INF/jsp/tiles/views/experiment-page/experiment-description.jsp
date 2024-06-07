@@ -18,7 +18,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <div id="experimentDescription" class="row column expanded">
-    <div class="media-object stack-for-small">
+    <div class="media-object stack-for-small ${fn:startsWith(experimentAccession, 'E-ANND-') ? 'anndata' : ''}">
         <c:if test="${fn:startsWith(experimentAccession, 'E-EHCA-')}">
         <div class="media-object-section middle paddin-right-medium">
             <a class="clear padding-right-xlarge" href="https://preview.data.humancellatlas.org/">
@@ -99,5 +99,11 @@
             </div>
             </c:if>
         </div>
+        <c:if test="${fn:startsWith(experimentAccession, 'E-ANND-')}">
+            <div class="experiment-type-icon"
+                 title="Externally analysed data">
+                E
+            </div>
+        </c:if>
     </div>
 </div>

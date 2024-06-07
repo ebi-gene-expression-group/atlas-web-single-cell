@@ -57,4 +57,9 @@ public class ScxaExperimentRepository implements ExperimentRepository {
                 idfParser.parse(experimentDto.getExperimentAccession()),
                 sdrfParser.parseSingleCellTechnologyType(experimentDto.getExperimentAccession()));
     }
+
+    @Override
+    public String getExperimentType(String experimentAccession) {
+        return experimentCrudDao.getExperimentType(experimentAccession);
+    }
 }

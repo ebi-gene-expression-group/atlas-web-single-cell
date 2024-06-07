@@ -44,7 +44,7 @@
     </definition>
 
     <definition name="cell-type-wheel-experiment-heatmap" extends="base">
-        <put-attribute name="title" value="Cell Type Wheel Heatmap Demo"/>
+        <put-attribute name="title" value="Cell Type Wheel Heatmap"/>
         <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/cell-type-wheel-experiment-heatmap.jsp"/>
     </definition>
 

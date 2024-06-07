@@ -10,6 +10,36 @@
     padding-right: 0;
 }
 
+.media-object.stack-for-small {
+    padding: 0.9375rem;
+}
+
+.media-object.stack-for-small.anndata {
+    background: lightyellow;
+    display: flex;
+}
+
+#main-content-area {
+    margin-top: 0;
+}
+
+#experimentDescription {
+    padding: 0;
+}
+
+.experiment-type-icon {
+    background: indianred;
+    color: white;
+    border-radius: 50%;
+    font-size: 40px;
+    height: 60px;
+    width: 60px;
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+    right: 40px;
+}
+
 a.clear {
     border-bottom: none;
 }

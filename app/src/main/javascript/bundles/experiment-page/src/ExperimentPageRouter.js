@@ -3,54 +3,21 @@ import PropTypes from 'prop-types'
 import {BrowserRouter, Route, Redirect, Switch, NavLink, withRouter} from 'react-router-dom'
 
 import URI from 'urijs'
+import {
+    isThisTabType,
+    isObjectEmpty,
+    tabConfigurations,
+    getNestedProperty,
+    isNonEmptyArray
+} from './tabConfig';
+import { RoutePropTypes, TabCommonPropTypes } from './propTypes';
 
-import TSnePlotViewRoute from './TSnePlotViewRoute'
-import ExperimentDesignRoute from './ExperimentDesignRoute'
-import SupplementaryInformationRoute from './SupplementaryInformationRoute'
-import DownloadsRoute from './DownloadsRoute'
-
-const RoutePropTypes = {
-    match: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired
-}
-
-const TabCommonPropTypes = {
-    atlasUrl: PropTypes.string.isRequired,
-    experimentAccession: PropTypes.string.isRequired,
-    species: PropTypes.string.isRequired,
-    accessKey: PropTypes.string,
-    resourcesUrl: PropTypes.string
-}
 
 // What component each tab type should render, coupled to ExperimentController.java
 let tabTypeComponent = []
 
-function isThisTabType(tab, tabType) {
-    return tab.type === tabType;
-}
-
-const isObjectEmpty = (objectName) => {
-    return (
-        objectName &&
-        Object.keys(objectName).length === 0 &&
-        objectName.constructor === Object
-    );
-};
-
-const tabTypes = [
-    { type: 'results', key: 'ks', component: TSnePlotViewRoute, optionsKey: 'plotTypesAndOptions' },
-    { type: 'experiment-design', key: 'table.data', component: ExperimentDesignRoute },
-    { type: 'supplementary-information', key: 'sections', component: SupplementaryInformationRoute },
-    { type: 'resources', key: 'data', component: DownloadsRoute }
-];
-
-const getNestedProperty = (obj, path) => path.split('.').reduce((acc, key) => acc?.[key], obj);
-
-const isNonEmptyArray = (value) => !isObjectEmpty(value) && Array.isArray(value);
-
 const enableExperimentPageTab = (tab) => {
-    for (let { type, key, component, optionsKey } of tabTypes) {
+    for (let { type, key, component, optionsKey } of tabConfigurations) {
         if (isThisTabType(tab, type)) {
             const propValue = getNestedProperty(tab.props, key);
             const optionsValue = optionsKey ? getNestedProperty(tab.props, optionsKey) : true;
@@ -95,7 +62,6 @@ TopRibbon.propTypes = {
 const TabContent = ({type, tabProps, commonProps, routeProps}) => {
     // Pass in the search from location
     const Tab = tabTypeComponent[type]
-
     return (
         Tab ? <Tab {...tabProps} {...commonProps} {...routeProps}/> : null
     )

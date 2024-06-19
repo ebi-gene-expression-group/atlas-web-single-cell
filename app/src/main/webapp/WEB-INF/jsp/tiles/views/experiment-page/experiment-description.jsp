@@ -101,8 +101,8 @@
         </div>
         <c:if test="${fn:startsWith(experimentAccession, 'E-ANND-')}">
             <div class="experiment-type-icon"
-                 title="Experiment with annotated data analysed by an external source">
-                A
+                 title="Externally analysed data">
+                E
             </div>
         </c:if>
     </div>

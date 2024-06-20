@@ -3,7 +3,6 @@ package uk.ac.ebi.atlas.experiments;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.ImmutableSet;
 import uk.ac.ebi.atlas.model.arraydesign.ArrayDesign;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.model.experiment.ExperimentDesign;
@@ -282,12 +281,17 @@ public abstract class ExperimentBuilder<R extends ReportsGeneExpression, E exten
                     species,
                     technologyType,
                     samples,
-                    experimentDesign,
+                    getExperimentalFactorHeaders(experimentDesign),
                     pubMedIds,
                     dois,
                     displayName,
                     isPrivate,
                     accessKey);
         }
+
+        private ImmutableSet<String> getExperimentalFactorHeaders(ExperimentDesign experimentDesign) {
+            return ImmutableSet.copyOf(experimentDesign.getFactorHeaders());
+        }
+
     }
 }

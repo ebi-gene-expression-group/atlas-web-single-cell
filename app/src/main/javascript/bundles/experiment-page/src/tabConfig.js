@@ -25,9 +25,22 @@ export const getNestedProperty = (obj, path) => path.split('.').reduce((acc, key
 export const isNonEmptyArray = (value) => !isObjectEmpty(value) && Array.isArray(value);
 
 // Configuration for tab types, their keys, and components
-export const tabConfigurations = [
-    { type: 'results', key: 'ks', component: TSnePlotViewRoute, optionsKey: 'plotTypesAndOptions' },
-    { type: 'experiment-design', key: 'table.data', component: ExperimentDesignRoute },
-    { type: 'supplementary-information', key: 'sections', component: SupplementaryInformationRoute },
-    { type: 'resources', key: 'data', component: DownloadsRoute }
+export const tabValidations = [
+    { type: 'results', requiredProps: ['ks ','selectedPlotOption','selectedPlotType','suggesterEndpoint'], component: TSnePlotViewRoute},
+    { type: 'cell-plots', requiredProps: ['ks ','selectedPlotOption','selectedPlotType','suggesterEndpoint'], component: TSnePlotViewRoute},
+    { type: 'marker-genes', requiredProps: ['Ks','SelectedK'], component: TSnePlotViewRoute},
+    { type: 'anatomogram', requiredProps: ['searchTerm ','data'], component: TSnePlotViewRoute},
+    { type: 'experiment-design', requiredProps: ['table','data','headers'], component: ExperimentDesignRoute },
+    { type: 'supplementary-information', requiredProps: ['sections','data','type'], component: SupplementaryInformationRoute },
+    { type: 'resources', requiredProps: ['data','url'], component: DownloadsRoute }
+];
+
+export const tabCommonValidations = [
+    { type: 'results', commonValidations: ['atlasUrl ','experimentAccession'], component: TSnePlotViewRoute},
+    { type: 'cell-plots', commonValidations: ['atlasUrl ','experimentAccession'], component: TSnePlotViewRoute},
+    { type: 'marker-genes', commonValidations: ['host ','resources','species'], component: TSnePlotViewRoute},
+    { type: 'anatomogram', commonValidations: ['experimentAccession ','showIds','species','organ'], component: TSnePlotViewRoute},
+    { type: 'experiment-design', commonValidations: ['atlasUrl','downloadUrl','experimentAccession'], component: ExperimentDesignRoute },
+    { type: 'supplementary-information', commonValidations: ['atlasUrl','experimentAccession'], component: SupplementaryInformationRoute },
+    { type: 'resources', commonValidations: ['atlasUrl','experimentAccession'], component: DownloadsRoute }
 ];

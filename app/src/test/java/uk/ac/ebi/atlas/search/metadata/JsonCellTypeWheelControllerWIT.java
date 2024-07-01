@@ -14,10 +14,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.lessThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -89,8 +87,6 @@ class JsonCellTypeWheelControllerWIT {
         this.mockMvc.perform(get(uri))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].experimentAccessions", is(empty())));
-
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 }

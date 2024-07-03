@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+import java.util.Map;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.stream.Collectors.groupingBy;
@@ -22,6 +22,11 @@ public class HighchartsSunburstAdapter {
     public ImmutableSet<ImmutableMap<String, ?>> getCellTypeWheelSunburst(
             String searchTerm,
             ImmutableCollection<ImmutablePair<ImmutableList<String>, String>> entries) {
+
+        if (entries.isEmpty()) {
+            return ImmutableSet.of();
+        }
+
         // The centre is special, so we build it manually
         var centre = ImmutableMap.of(
                 "name", searchTerm,
@@ -42,11 +47,12 @@ public class HighchartsSunburstAdapter {
                                 mapping(ImmutablePair::getRight, toImmutableSet())))
                 .entrySet()
                 .stream()
+                .filter( entry -> isSpeciesSearch(entry, searchTerm))
                 .map(
                         entry -> ImmutableMap.of(
                                 "name", entry.getKey().getRight(),
                                 "id", entry.getKey().getLeft().isEmpty() ?
-                                        entry.getKey().getRight() + "#" + UUID.randomUUID() :
+                                        entry.getKey().getRight() :
                                         entry.getKey().getLeft() + "#" + entry.getKey().getRight(),
                                 "parent", entry.getKey().getLeft().isEmpty() ?
                                         searchTerm :
@@ -70,6 +76,11 @@ public class HighchartsSunburstAdapter {
                 .add(centre)
                 .addAll(rings)
                 .build();
+    }
+
+    private boolean isSpeciesSearch(Map.Entry<ImmutablePair<String, String>, ImmutableSet<String>> entry,
+                                    String searchTerm) {
+        return !(entry.getKey().getRight().equals(searchTerm) && entry.getKey().getLeft().isEmpty());
     }
 
     // Transform a list [e_1, e_2, e_3, ..., e_n] to a pair: "e_1#e_2#e_3#...#e_(n-1)", "e_n"

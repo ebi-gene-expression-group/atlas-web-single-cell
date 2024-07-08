@@ -37,16 +37,27 @@ public class SearchController extends HtmlExceptionHandlingController {
                 .newInstance()
                 .path(SEARCH_ENDPOINT);
 
+        addCategoryToURL(queryObject, searchUrlBuilder);
+
+        addSpeciesToURL(species, searchUrlBuilder);
+
+        return "redirect:" + searchUrlBuilder.build().toUriString();
+    }
+
+    private void addCategoryToURL(JsonObject queryObject, UriComponentsBuilder searchUrlBuilder) {
         if (queryObject.get("category").getAsString().equals("metadata")) {
             searchUrlBuilder
                     .pathSegment("metadata", queryObject.get("term").getAsString());
         } else {
             searchUrlBuilder
-                    .queryParam(queryObject.get("category").getAsString(), queryObject.get("term").getAsString())
-                    .queryParam("species", species);
+                    .queryParam(queryObject.get("category").getAsString(), queryObject.get("term").getAsString());
         }
+    }
 
-        return "redirect:" + searchUrlBuilder.build().toUriString();
+    private void addSpeciesToURL(String species, UriComponentsBuilder searchUrlBuilder) {
+        if (!species.isBlank()) {
+            searchUrlBuilder.queryParam("species", species);
+        }
     }
 
     @RequestMapping(value = SEARCH_ENDPOINT, method = RequestMethod.GET, produces = "text/html;charset=UTF-8")

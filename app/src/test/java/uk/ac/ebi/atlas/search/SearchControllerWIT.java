@@ -100,6 +100,20 @@ class SearchControllerWIT {
     }
 
     @Test
+    void metadataAndSpeciesParamsAreParsedAndAddedToGetRequest() throws Exception {
+        var term = randomAlphanumeric(10);
+        var category = "metadata";
+        var species = randomAlphanumeric(4) + " " + randomAlphanumeric(6);
+
+        this.mockMvc.perform(
+                        post("/search")
+                                .param("geneQuery", GSON.toJson(ImmutableMap.of("term", term, "category", category)))
+                                .param("species", species))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/search/" + category + "/" + term + "?species=" + species));
+    }
+
+    @Test
     void otherRequestParamsAreIgnored() throws Exception {
         var term = randomAlphanumeric(10);
         var category = randomAlphanumeric(10);

@@ -11,7 +11,7 @@
                 <p>
                     <strong>Expression Atlas update: insights from sequencing data at both bulk and single cell level</strong>
                     <br>
-                    <em>Nucleic Acids Research</em>, 2024.
+                    <em>Nucleic Acids Research</em>, 22 November 2023.
                 </p>
             </div>
         </div>

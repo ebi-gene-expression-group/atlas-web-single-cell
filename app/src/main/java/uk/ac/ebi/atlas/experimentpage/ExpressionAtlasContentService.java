@@ -41,7 +41,7 @@ public class ExpressionAtlasContentService {
                                                  ExternallyAvailableContent.ContentType contentType) {
         Experiment<?> experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
-        ImmutableList.Builder<ExternallyAvailableContent> arrayExpressResourceLinks = ImmutableList.builder();
+        var externalResourceLinks = ImmutableList.builder();
 
         if (experimentAccession.matches("E-MTAB.*|E-ERAD.*|E-GEUV.*")) {
             arrayExpressResourceLinks.addAll(linkToArrayExpress.get(experiment));

@@ -55,7 +55,7 @@ public class ExpressionAtlasContentService {
     private ImmutableList.Builder<ExternallyAvailableContent> externalResourceLinks(Experiment<?> experiment) {
         ImmutableList.Builder<ExternallyAvailableContent> otherExternalResourceLinks = ImmutableList.builder();
 
-        Map<String, List<String>> resourceList = experiment.getSecondaryAccessions().stream()
+        var resourceList = experiment.getSecondaryAccessions().stream()
                 .collect(Collectors.groupingBy(accession -> {
                     if (accession.matches("GSE.*")) return "GEO";
                     if (accession.matches("EGA.*")) return "EGA";

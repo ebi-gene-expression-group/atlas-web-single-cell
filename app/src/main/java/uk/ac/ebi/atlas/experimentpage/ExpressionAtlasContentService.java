@@ -41,21 +41,21 @@ public class ExpressionAtlasContentService {
                                                  ExternallyAvailableContent.ContentType contentType) {
         Experiment<?> experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
-        ImmutableList.Builder<ExternallyAvailableContent> arrayExpressResourceLinks = ImmutableList.builder();
+        var externalResourceLinks = ImmutableList.builder();
 
         if (experimentAccession.matches("E-MTAB.*|E-ERAD.*|E-GEUV.*")) {
-            arrayExpressResourceLinks.addAll(linkToArrayExpress.get(experiment));
+            externalResourceLinks.addAll(linkToArrayExpress.get(experiment));
         }
         var otherExternalResourceLinks =  externalResourceLinks(experiment);
-        arrayExpressResourceLinks.addAll(otherExternalResourceLinks.build());
+        externalResourceLinks.addAll(otherExternalResourceLinks.build());
 
-        return arrayExpressResourceLinks.build();
+        return externalResourceLinks.build();
     }
 
     private ImmutableList.Builder<ExternallyAvailableContent> externalResourceLinks(Experiment<?> experiment) {
-        ImmutableList.Builder<ExternallyAvailableContent> otherExternalResourceLinks = ImmutableList.builder();
+        var otherExternalResourceLinks = ImmutableList.builder();
 
-        Map<String, List<String>> resourceList = experiment.getSecondaryAccessions().stream()
+        var resourceList = experiment.getSecondaryAccessions().stream()
                 .collect(Collectors.groupingBy(accession -> {
                     if (accession.matches("GSE.*")) return "GEO";
                     if (accession.matches("EGA.*")) return "EGA";

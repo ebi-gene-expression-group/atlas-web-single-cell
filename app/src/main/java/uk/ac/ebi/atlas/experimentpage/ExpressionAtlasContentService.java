@@ -47,7 +47,7 @@ public class ExpressionAtlasContentService {
             externalResourceLinks.addAll(linkToArrayExpress.get(experiment));
         }
         var otherExternalResourceLinks =  externalResourceLinks(experiment);
-        arrayExpressResourceLinks.addAll(otherExternalResourceLinks.build());
+        externalResourceLinks.addAll(otherExternalResourceLinks.build());
 
         return arrayExpressResourceLinks.build();
     }

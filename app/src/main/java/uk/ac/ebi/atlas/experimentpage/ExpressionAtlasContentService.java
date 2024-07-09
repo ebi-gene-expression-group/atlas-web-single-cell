@@ -64,13 +64,11 @@ public class ExpressionAtlasContentService {
                     return "OTHER";
                 }));
 
-        resourceList.replaceAll((k, v) -> v.stream().collect(toImmutableList()));
+        resourceList.entrySet().removeIf(entry -> {
+            String resource = entry.getKey();
+            var accessions = entry.getValue().stream()
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
 
-        // Remove "OTHER" key if it exists
-        resourceList.remove("OTHER");
-
-        // Add to the builder based on the resource type
-        resourceList.forEach((resource, accessions) -> {
             switch (resource) {
                 case "GEO":
                     otherExternalResourceLinks.addAll(linkToGeo.get(experiment));
@@ -81,7 +79,14 @@ public class ExpressionAtlasContentService {
                 case "ENA":
                     otherExternalResourceLinks.addAll(linkToEna.get(experiment));
                     break;
+                case "OTHER":
+                    // Remove this entry by returning true
+                    return true;
             }
+
+            // Update the entry's value
+            entry.setValue(accessions);
+            return false;
         });
 
         return otherExternalResourceLinks;

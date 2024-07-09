@@ -5,14 +5,10 @@ import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.experimentpage.link.*;
 import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
-import uk.ac.ebi.atlas.model.experiment.singlecell.SingleCellBaselineExperiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.stream.Collectors;
-
-import static com.google.common.collect.ImmutableList.toImmutableList;
 
 @Component
 public class ExpressionAtlasContentService {
@@ -36,23 +32,23 @@ public class ExpressionAtlasContentService {
         this.linkToArrayExpress = linkToArrayExpress;
     }
 
-    public List<ExternallyAvailableContent> getExternalResourceLinks(String experimentAccession,
-                                                 String accessKey,
-                                                 ExternallyAvailableContent.ContentType contentType) {
+    public ImmutableList<ExternallyAvailableContent> getExternalResourceLinks(String experimentAccession,
+                                                                              String accessKey,
+                                                                              ExternallyAvailableContent.ContentType contentType) {
         Experiment<?> experiment = experimentTrader.getExperiment(experimentAccession, accessKey);
 
-        var externalResourceLinks = ImmutableList.builder();
+        ImmutableList.Builder<ExternallyAvailableContent> externalResourcesLinks = ImmutableList.builder();
 
         if (experimentAccession.matches("E-MTAB.*|E-ERAD.*|E-GEUV.*")) {
-            externalResourceLinks.addAll(linkToArrayExpress.get(experiment));
+            externalResourcesLinks.addAll(linkToArrayExpress.get(experiment));
         }
         var otherExternalResourceLinks =  externalResourceLinks(experiment);
-        externalResourceLinks.addAll(otherExternalResourceLinks.build());
+        externalResourcesLinks.addAll((Iterator<? extends ExternallyAvailableContent>) otherExternalResourceLinks.build());
 
-        return externalResourceLinks.build();
+        return externalResourcesLinks.build();
     }
 
-    private ImmutableList.Builder<ExternallyAvailableContent> externalResourceLinks(Experiment<?> experiment) {
+    private ImmutableList.Builder<Object> externalResourceLinks(Experiment<?> experiment) {
         var otherExternalResourceLinks = ImmutableList.builder();
 
         var resourceList = experiment.getSecondaryAccessions().stream()

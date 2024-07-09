@@ -49,7 +49,7 @@ public class ExpressionAtlasContentService {
         var otherExternalResourceLinks =  externalResourceLinks(experiment);
         externalResourceLinks.addAll(otherExternalResourceLinks.build());
 
-        return arrayExpressResourceLinks.build();
+        return externalResourceLinks.build();
     }
 
     private ImmutableList.Builder<ExternallyAvailableContent> externalResourceLinks(Experiment<?> experiment) {

@@ -44,7 +44,7 @@ public class ExpressionAtlasContentService {
         var externalResourceLinks = ImmutableList.builder();
 
         if (experimentAccession.matches("E-MTAB.*|E-ERAD.*|E-GEUV.*")) {
-            arrayExpressResourceLinks.addAll(linkToArrayExpress.get(experiment));
+            externalResourceLinks.addAll(linkToArrayExpress.get(experiment));
         }
         var otherExternalResourceLinks =  externalResourceLinks(experiment);
         arrayExpressResourceLinks.addAll(otherExternalResourceLinks.build());

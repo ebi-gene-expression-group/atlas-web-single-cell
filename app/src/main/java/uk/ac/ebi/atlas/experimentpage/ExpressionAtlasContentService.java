@@ -53,7 +53,7 @@ public class ExpressionAtlasContentService {
     }
 
     private ImmutableList.Builder<ExternallyAvailableContent> externalResourceLinks(Experiment<?> experiment) {
-        ImmutableList.Builder<ExternallyAvailableContent> otherExternalResourceLinks = ImmutableList.builder();
+        var otherExternalResourceLinks = ImmutableList.builder();
 
         var resourceList = experiment.getSecondaryAccessions().stream()
                 .collect(Collectors.groupingBy(accession -> {

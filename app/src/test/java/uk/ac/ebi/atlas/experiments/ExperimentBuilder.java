@@ -281,7 +281,7 @@ public abstract class ExperimentBuilder<R extends ReportsGeneExpression, E exten
                     species,
                     technologyType,
                     samples,
-                    experimentDesign,
+                    getExperimentalFactorHeaders(experimentDesign),
                     pubMedIds,
                     dois,
                     displayName,

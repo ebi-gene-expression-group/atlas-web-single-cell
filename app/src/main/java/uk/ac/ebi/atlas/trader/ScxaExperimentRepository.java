@@ -64,6 +64,7 @@ public class ScxaExperimentRepository implements ExperimentRepository {
         return experimentCrudDao.getExperimentType(experimentAccession);
     }
 
+    @Override
     public ExperimentDesign getExperimentDesign(String experimentAccession) {
         return experimentDesignParser.parse(experimentAccession);
     }

@@ -42,13 +42,12 @@ public class ExpressionAtlasContentService {
         if (experimentAccession.matches("E-MTAB.*|E-ERAD.*|E-GEUV.*")) {
             externalResourcesLinks.addAll(linkToArrayExpress.get(experiment));
         }
-        var otherExternalResourceLinks =  externalResourceLinks(experiment);
-        externalResourcesLinks.addAll((Iterator<? extends ExternallyAvailableContent>) otherExternalResourceLinks.build());
+        externalResourcesLinks.addAll(externalResourceLinks(experiment).build());
 
         return externalResourcesLinks.build();
     }
 
-    private ImmutableList.Builder<Object> externalResourceLinks(Experiment<?> experiment) {
+    private ImmutableList.Builder<ExternallyAvailableContent> externalResourceLinks(Experiment<?> experiment) {
         var otherExternalResourceLinks = ImmutableList.builder();
 
         var resourceList = experiment.getSecondaryAccessions().stream()

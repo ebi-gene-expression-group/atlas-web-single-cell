@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.atlas.search.FeaturedSpeciesService;
 
 import java.util.stream.IntStream;
 
@@ -13,13 +14,19 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 @Service
 public class CellTypeWheelService {
     private final CellTypeWheelDao cellTypeWheelDao;
+    private final FeaturedSpeciesService featuredSpeciesService;
 
-    public CellTypeWheelService(CellTypeWheelDao cellTypeWheelDao) {
+    public CellTypeWheelService(CellTypeWheelDao cellTypeWheelDao,
+                                FeaturedSpeciesService featuredSpeciesService) {
         this.cellTypeWheelDao = cellTypeWheelDao;
+        this.featuredSpeciesService = featuredSpeciesService;
     }
 
     public ImmutableSet<ImmutablePair<ImmutableList<String>, String>> search(String searchTerm, String species) {
-        return cellTypeWheelDao.facetSearchCtwFields(searchTerm, species)
+        ImmutableList<String> allSpeciesNames = featuredSpeciesService.getSpeciesNamesSortedByExperimentCount();
+        var isSpeciesSearch = allSpeciesNames.contains(searchTerm);
+
+        return cellTypeWheelDao.facetSearchCtwFields(searchTerm, species, isSpeciesSearch)
                 .stream()
                 // This will effectively “explode” tuples and aggregate experiment accessions (the last element in the
                 // tuple) to the organisms, organism parts and cell types

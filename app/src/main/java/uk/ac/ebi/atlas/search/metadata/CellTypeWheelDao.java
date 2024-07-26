@@ -81,7 +81,7 @@ public class CellTypeWheelDao {
         singleCellAnalyticsCollectionProxy = proxyFactory.create(SingleCellAnalyticsCollectionProxy.class);
     }
 
-    public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm, String species) {
+    public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm, String species, boolean isSpeciesSearch) {
         // Build the facet in the query above:
         // "facet": {
         //   ...
@@ -115,8 +115,8 @@ public class CellTypeWheelDao {
                         .addNegativeFilterFieldByTerm(CTW_CELL_TYPE, ImmutableList.of(NOT_APPLICABLE_TERM))
                         .setRows(0);    // We only want the facets, we don’t care about the docs;
 
-        // If there’s a species add it as an additional filter
-        if (isNotBlank(species)) {
+        // If there’s a species or the search term is a species add it as an additional filter
+        if (isNotBlank(species) || isSpeciesSearch) {
             queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, species);
         }
 

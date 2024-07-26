@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.ac.ebi.atlas.search.FeaturedSpeciesService;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,12 +19,14 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomSpecie
 class CellTypeWheelServiceTest {
     @Mock
     private CellTypeWheelDao cellTypeWheelDaoMock;
+    @Mock
+    private FeaturedSpeciesService featuredSpeciesServiceMock;
 
     private CellTypeWheelService subject;
 
     @BeforeEach
     void setUp() {
-        subject = new CellTypeWheelService(cellTypeWheelDaoMock);
+        subject = new CellTypeWheelService(cellTypeWheelDaoMock, featuredSpeciesServiceMock);
     }
 
     @Test
@@ -31,9 +34,9 @@ class CellTypeWheelServiceTest {
         var metadataSearchTerm =  randomAlphabetic(20);
         var species = generateRandomSpecies();
 
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null, false))
                 .thenReturn(ImmutableList.of());
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName()))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName(), false))
                 .thenReturn(ImmutableList.of());
 
         assertThat(subject.search(metadataSearchTerm, null)).isEmpty();
@@ -156,7 +159,7 @@ class CellTypeWheelServiceTest {
                         )
                 );
 
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null, false))
                 .thenReturn(twoSpeciesCellTypesWheel);
 
         assertThat(subject.search(metadataSearchTerm, null))
@@ -284,7 +287,7 @@ class CellTypeWheelServiceTest {
                                 species1OrganismPart2ExperimentAccession
                         ));
 
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species1.getName()))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species1.getName(), false))
                 .thenReturn(oneSpeciesCellTypesWheel);
 
         assertThat(subject.search(metadataSearchTerm, species1.getName()))

@@ -31,7 +31,7 @@ class CellTypeWheelDaoIT {
 
     @Test
     void knownTermReturnsResultsWithoutNotApplicable() {
-        var results = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, null);
+        var results = subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, null, false);
 
         assertThat(
                 results.stream()
@@ -45,9 +45,9 @@ class CellTypeWheelDaoIT {
     void canFilterBySpecies() {
         var speciesFilter = MULTIPLE_SPECIES.get(RNG.nextInt(MULTIPLE_SPECIES.size()));
         var resultsWithoutSpeciesFiltering =
-                subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, generateBlankString());
+                subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, generateBlankString(), false);
         var resultsWithSpeciesFitlering =
-                subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, speciesFilter);
+                subject.facetSearchCtwFields(MULTIPLE_SPECIES_METADATA_TERM, speciesFilter, false);
 
         assertThat(
                 resultsWithoutSpeciesFiltering.stream()
@@ -64,7 +64,7 @@ class CellTypeWheelDaoIT {
 
     @Test
     void unknownTermReturnsEmpty() {
-        assertThat(subject.facetSearchCtwFields("foobar", generateBlankString())).isEmpty();
+        assertThat(subject.facetSearchCtwFields("foobar", generateBlankString(), false)).isEmpty();
     }
 
 }

@@ -19,7 +19,7 @@
         geneSearchForm.render({
             host: '${pageContext.request.contextPath}/',
             resource: 'json/suggestions/species',
-            defaultSpecies: `Any`,
+            defaultSpecies: ``,
             wrapperClassName: 'row expanded',
             actionEndpoint: 'search',
 

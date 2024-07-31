@@ -27,13 +27,13 @@ class CellTypeWheelServiceTest {
     @BeforeEach
     void setUp() {
         subject = new CellTypeWheelService(cellTypeWheelDaoMock, featuredSpeciesServiceMock);
+        when(featuredSpeciesServiceMock.getSpeciesNamesSortedByExperimentCount()).thenReturn(ImmutableList.of());
     }
 
     @Test
     void emptyFacetTermsProducesAnEmptyWheel() {
         var metadataSearchTerm =  randomAlphabetic(20);
         var species = generateRandomSpecies();
-
         when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null, false))
                 .thenReturn(ImmutableList.of());
         when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName(), false))

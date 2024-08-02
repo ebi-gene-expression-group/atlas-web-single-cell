@@ -63,6 +63,18 @@ class CellTypeWheelDaoIT {
     }
 
     @Test
+    void isSpeciesSearchOnlyHasOneSpecies() {
+        var species = MULTIPLE_SPECIES.get(RNG.nextInt(MULTIPLE_SPECIES.size()));
+        var resultsWithSpeciesSearch =
+                subject.facetSearchCtwFields(species, generateBlankString(), true);
+        assertThat(
+                resultsWithSpeciesSearch.stream()
+                        .map(result -> result.get(0))
+                        .distinct())
+                .containsExactly(species);
+    }
+
+    @Test
     void unknownTermReturnsEmpty() {
         assertThat(subject.facetSearchCtwFields("foobar", generateBlankString(), false)).isEmpty();
     }

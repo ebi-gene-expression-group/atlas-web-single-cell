@@ -39,8 +39,19 @@ class CellTypeWheelServiceTest {
         when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName(), false))
                 .thenReturn(ImmutableList.of());
 
+
         assertThat(subject.search(metadataSearchTerm, null)).isEmpty();
         assertThat(subject.search(metadataSearchTerm, species.getName())).isEmpty();
+    }
+
+    @Test
+    void speciesTermSearchProducesAnEmptyWheel() {
+        var species = generateRandomSpecies();
+        when(featuredSpeciesServiceMock.getSpeciesNamesSortedByExperimentCount()).thenReturn(ImmutableList.of(species.getName()));
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(species.getName(), null, true))
+                .thenReturn(ImmutableList.of());
+
+        assertThat(subject.search(species.getName(), null)).isEmpty();
     }
 
     @Test

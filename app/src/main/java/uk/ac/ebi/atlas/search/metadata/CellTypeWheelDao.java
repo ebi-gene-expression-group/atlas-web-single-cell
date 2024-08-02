@@ -116,8 +116,12 @@ public class CellTypeWheelDao {
                         .setRows(0);    // We only want the facets, we don’t care about the docs;
 
         // If there’s a species or the search term is a species add it as an additional filter
-        if (isNotBlank(species) || isSpeciesSearch) {
+        if (isNotBlank(species)) {
             queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, species);
+        }
+
+        if (isSpeciesSearch) {
+            queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, searchTerm);
         }
 
         // Add the facet to the query

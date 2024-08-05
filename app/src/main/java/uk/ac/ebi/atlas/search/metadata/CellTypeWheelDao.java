@@ -100,6 +100,9 @@ public class CellTypeWheelDao {
     public ImmutableList<ImmutableList<String>> speciesSearchCtwFields(String searchTerm, String species) {
         var queryBuilder = buildSolrQueryForCellTypeWheel(searchTerm);
 
+        if (isNotBlank(species)) {
+            queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, species);
+        }
         // If the search term is a species add it as an additional filter
         queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, searchTerm);
 

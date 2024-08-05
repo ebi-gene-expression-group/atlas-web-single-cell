@@ -24,7 +24,7 @@ public class CellTypeWheelService {
 
     public ImmutableSet<ImmutablePair<ImmutableList<String>, String>> search(String searchTerm, String species) {
         ImmutableList<String> allSpeciesNames = featuredSpeciesService.getSpeciesNamesSortedByExperimentCount();
-        var isSpeciesSearch = allSpeciesNames.contains(searchTerm);
+        var isSpeciesSearch = allSpeciesNames.contains(StringUtils.capitalize(searchTerm));
 
         return cellTypeWheelDao.facetSearchCtwFields(searchTerm, species, isSpeciesSearch)
                 .stream()

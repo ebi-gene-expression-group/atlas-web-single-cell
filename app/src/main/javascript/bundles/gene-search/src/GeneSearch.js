@@ -17,7 +17,7 @@ function GeneSearch ({atlasUrl, history}) {
     event.preventDefault()
     history.push(
     query.category === `metadata` ?
-      URI(`/search/metadata${query.term}`)
+      URI(`/search/metadata/${query.term}`)
         .query({
             species: species
             })

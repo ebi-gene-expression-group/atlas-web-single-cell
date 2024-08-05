@@ -27,13 +27,20 @@ public class CellTypeWheelService {
         ImmutableList<String> allSpeciesNames = featuredSpeciesService.getSpeciesNamesSortedByExperimentCount();
         var isSpeciesSearch = allSpeciesNames.contains(StringUtils.capitalize(searchTerm));
 
-        return cellTypeWheelDao.facetSearchCtwFields(searchTerm, species, isSpeciesSearch)
+        return isSpeciesSearch ? cellTypeWheelDao.facetSearchCtwFields(searchTerm, species)
                 .stream()
                 // This will effectively “explode” tuples and aggregate experiment accessions (the last element in the
                 // tuple) to the organisms, organism parts and cell types
                 .map(this::addTailToEveryHeadSublist)
                 .flatMap(ImmutableList::stream)
-                .collect(toImmutableSet());
+                .collect(toImmutableSet()) :
+                cellTypeWheelDao.speciesSearchCtwFields(searchTerm, species)
+                        .stream()
+                        // This will effectively “explode” tuples and aggregate experiment accessions (the last element in the
+                        // tuple) to the organisms, organism parts and cell types
+                        .map(this::addTailToEveryHeadSublist)
+                        .flatMap(ImmutableList::stream)
+                        .collect(toImmutableSet());
     }
 
     // Transform a list [e_1, e_2, e_3, ..., e_n] into:

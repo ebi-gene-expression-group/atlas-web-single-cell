@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.search.FeaturedSpeciesService;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.IntStream;
 

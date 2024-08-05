@@ -36,7 +36,7 @@ class CellTypeWheelServiceTest {
         var species = generateRandomSpecies();
         when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null))
                 .thenReturn(ImmutableList.of());
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName()))
+        when(cellTypeWheelDaoMock.speciesSearchCtwFields(metadataSearchTerm, species.getName()))
                 .thenReturn(ImmutableList.of());
 
 

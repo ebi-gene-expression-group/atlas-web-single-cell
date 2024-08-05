@@ -34,9 +34,9 @@ class CellTypeWheelServiceTest {
     void emptyFacetTermsProducesAnEmptyWheel() {
         var metadataSearchTerm =  randomAlphabetic(20);
         var species = generateRandomSpecies();
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null, false))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null))
                 .thenReturn(ImmutableList.of());
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName(), false))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName()))
                 .thenReturn(ImmutableList.of());
 
 
@@ -48,7 +48,7 @@ class CellTypeWheelServiceTest {
     void speciesTermSearchProducesAnEmptyWheel() {
         var species = generateRandomSpecies();
         when(featuredSpeciesServiceMock.getSpeciesNamesSortedByExperimentCount()).thenReturn(ImmutableList.of(species.getName()));
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(species.getName(), null, true))
+        when(cellTypeWheelDaoMock.speciesSearchCtwFields(species.getName(), null))
                 .thenReturn(ImmutableList.of());
 
         assertThat(subject.search(species.getName(), null)).isEmpty();
@@ -170,7 +170,7 @@ class CellTypeWheelServiceTest {
                         )
                 );
 
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null, false))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null))
                 .thenReturn(twoSpeciesCellTypesWheel);
 
         assertThat(subject.search(metadataSearchTerm, null))
@@ -298,7 +298,7 @@ class CellTypeWheelServiceTest {
                                 species1OrganismPart2ExperimentAccession
                         ));
 
-        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species1.getName(), false))
+        when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species1.getName()))
                 .thenReturn(oneSpeciesCellTypesWheel);
 
         assertThat(subject.search(metadataSearchTerm, species1.getName()))

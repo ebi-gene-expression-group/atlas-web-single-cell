@@ -8,6 +8,7 @@ import uk.ac.ebi.atlas.search.FeaturedSpeciesService;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
@@ -27,20 +28,16 @@ public class CellTypeWheelService {
         ImmutableList<String> allSpeciesNames = featuredSpeciesService.getSpeciesNamesSortedByExperimentCount();
         var isSpeciesSearch = allSpeciesNames.contains(StringUtils.capitalize(searchTerm));
 
-        return isSpeciesSearch ? cellTypeWheelDao.speciesSearchCtwFields(searchTerm, species)
-                .stream()
-                // This will effectively “explode” tuples and aggregate experiment accessions (the last element in the
-                // tuple) to the organisms, organism parts and cell types
+        Stream<ImmutableList<String>> cellTypeWheelResultsStream = isSpeciesSearch
+                ? cellTypeWheelDao.speciesSearchCtwFields(searchTerm, species).stream()
+                : cellTypeWheelDao.facetSearchCtwFields(searchTerm, species).stream();
+
+        return cellTypeWheelResultsStream
+                // This will effectively “explode” tuples and aggregate experiment accessions
+                // (the last element in the tuple) to the organisms, organism parts, and cell types
                 .map(this::addTailToEveryHeadSublist)
                 .flatMap(ImmutableList::stream)
-                .collect(toImmutableSet()) :
-                cellTypeWheelDao.facetSearchCtwFields(searchTerm, species)
-                        .stream()
-                        // This will effectively “explode” tuples and aggregate experiment accessions (the last element in the
-                        // tuple) to the organisms, organism parts and cell types
-                        .map(this::addTailToEveryHeadSublist)
-                        .flatMap(ImmutableList::stream)
-                        .collect(toImmutableSet());
+                .collect(toImmutableSet());
     }
 
     // Transform a list [e_1, e_2, e_3, ..., e_n] into:

@@ -82,30 +82,20 @@ public class CellTypeWheelDao {
     }
 
     public ImmutableList<ImmutableList<String>> facetSearchCtwFields(String searchTerm, String species) {
-        var queryBuilder = buildSolrQueryForCellTypeWheel(searchTerm);
-        // If there’s a species add it as an additional filter
-        if (isNotBlank(species)) {
-            queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, species);
-        }
+        var queryBuilder = buildSolrQueryForCellTypeWheel(searchTerm, species);
 
-        return extractNestedFacetTerms(
-                (SimpleOrderedMap<Object>) singleCellAnalyticsCollectionProxy
-                        .query(queryBuilder)
-                        .getResponse()
-                        .findRecursive("facets"),
-                ImmutableList.of(ORGANISMS_TERMS_KEY, ORGANISM_PARTS_TERMS_KEY, CELL_TYPES_TERMS_KEY, EXPERIMENT_ACCESSIONS_TERMS_KEY),
-                ImmutableList.of());
+        return getNestedFacetTerms(queryBuilder);
     }
 
     public ImmutableList<ImmutableList<String>> speciesSearchCtwFields(String searchTerm, String species) {
-        var queryBuilder = buildSolrQueryForCellTypeWheel(searchTerm);
-
-        if (isNotBlank(species)) {
-            queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, species);
-        }
+        var queryBuilder = buildSolrQueryForCellTypeWheel(searchTerm, species);
         // If the search term is a species add it as an additional filter
         queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, searchTerm);
 
+        return getNestedFacetTerms(queryBuilder);
+    }
+
+    private ImmutableList<ImmutableList<String>> getNestedFacetTerms(SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder){
         return extractNestedFacetTerms(
                 (SimpleOrderedMap<Object>) singleCellAnalyticsCollectionProxy
                         .query(queryBuilder)
@@ -114,7 +104,7 @@ public class CellTypeWheelDao {
                 ImmutableList.of(ORGANISMS_TERMS_KEY, ORGANISM_PARTS_TERMS_KEY, CELL_TYPES_TERMS_KEY, EXPERIMENT_ACCESSIONS_TERMS_KEY),
                 ImmutableList.of());
     }
-    private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> buildSolrQueryForCellTypeWheel(String searchTerm) {
+    private SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> buildSolrQueryForCellTypeWheel(String searchTerm, String species) {
         var facetBuilder = new SolrJsonFacetBuilder<SingleCellAnalyticsCollectionProxy>()
                 .setFacetField(CTW_ORGANISM)
                 .addNestedFacet(
@@ -143,6 +133,10 @@ public class CellTypeWheelDao {
                                 ONTOLOGY_ANNOTATION_SYNONYMS, ImmutableSet.of(searchTerm)))
                         .addNegativeFilterFieldByTerm(CTW_CELL_TYPE, ImmutableList.of(NOT_APPLICABLE_TERM))
                         .setRows(0);    // We only want the facets, we don’t care about the docs;
+
+        if (isNotBlank(species)) {
+            queryBuilder.addFilterFieldByTerm(CTW_ORGANISM, species);
+        }
         // Add the facet to the query
         queryBuilder.addFacet(ORGANISMS_TERMS_KEY, facetBuilder);
 

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.ac.ebi.atlas.search.FeaturedSpeciesService;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,26 +19,39 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomSpecie
 class CellTypeWheelServiceTest {
     @Mock
     private CellTypeWheelDao cellTypeWheelDaoMock;
+    @Mock
+    private FeaturedSpeciesService featuredSpeciesServiceMock;
 
     private CellTypeWheelService subject;
 
     @BeforeEach
     void setUp() {
-        subject = new CellTypeWheelService(cellTypeWheelDaoMock);
+        subject = new CellTypeWheelService(cellTypeWheelDaoMock, featuredSpeciesServiceMock);
+        when(featuredSpeciesServiceMock.getSpeciesNamesSortedByExperimentCount()).thenReturn(ImmutableList.of());
     }
 
     @Test
     void emptyFacetTermsProducesAnEmptyWheel() {
         var metadataSearchTerm =  randomAlphabetic(20);
         var species = generateRandomSpecies();
-
         when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, null))
                 .thenReturn(ImmutableList.of());
         when(cellTypeWheelDaoMock.facetSearchCtwFields(metadataSearchTerm, species.getName()))
                 .thenReturn(ImmutableList.of());
 
+
         assertThat(subject.search(metadataSearchTerm, null)).isEmpty();
         assertThat(subject.search(metadataSearchTerm, species.getName())).isEmpty();
+    }
+
+    @Test
+    void speciesTermSearchProducesAnEmptyWheel() {
+        var species = generateRandomSpecies();
+        when(featuredSpeciesServiceMock.getSpeciesNamesSortedByExperimentCount()).thenReturn(ImmutableList.of(species.getName()));
+        when(cellTypeWheelDaoMock.speciesSearchCtwFields(species.getName(), null))
+                .thenReturn(ImmutableList.of());
+
+        assertThat(subject.search(species.getName(), null)).isEmpty();
     }
 
     @Test

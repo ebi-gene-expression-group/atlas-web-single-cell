@@ -111,6 +111,10 @@ public class CellPlotService {
                         options -> getMiddleElement(options.getValue())));
     }
 
+    public String fetchExpressionUnitByAccession(String experimentAccession) {
+        return cellPlotDao.fetchExpressionUnitByAccession(experimentAccession);
+    }
+
     private JsonObject getMiddleElement(List plotOptions) {
             var plotOptionsSize = plotOptions.size();
             var middleOfPlotOptionsSize = plotOptionsSize % 2 == 0 ? plotOptionsSize / 2 - 1 : plotOptionsSize / 2;

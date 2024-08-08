@@ -187,7 +187,7 @@ class CellPlotDaoIT {
         var generatedExperimentAccession = generateRandomExperimentAccession();
 
         assertThatExceptionOfType(ResourceNotFoundException.class).isThrownBy(
-                () -> subject.getExpressionUnitByAccession(generatedExperimentAccession)
+                () -> subject.fetchExpressionUnitByAccession(generatedExperimentAccession)
         );
     }
 
@@ -195,7 +195,7 @@ class CellPlotDaoIT {
     void fetchExpressionUnit_whenExperimentExists_thenReturnsItsUnit(){
         var randomExperimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
 
-        assertThat(subject.getExpressionUnitByAccession(randomExperimentAccession))
+        assertThat(subject.fetchExpressionUnitByAccession(randomExperimentAccession))
                 .isNotEmpty();
     }
 

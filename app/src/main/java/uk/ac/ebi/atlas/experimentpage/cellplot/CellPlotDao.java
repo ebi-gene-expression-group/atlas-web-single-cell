@@ -193,7 +193,7 @@ public class CellPlotDao {
                 });
     }
 
-    public String getExpressionUnitByAccession(String experimentAccession) {
+    public String fetchExpressionUnitByAccession(String experimentAccession) {
         try {
             LOGGER.debug("Get expression unit for experiment: {}.", experimentAccession);
 

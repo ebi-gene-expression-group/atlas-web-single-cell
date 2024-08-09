@@ -52,9 +52,12 @@ class HighchartsHeatmapAdapterTest {
                                 gene2, geneSymbol2));
 
         var markerGenes = ImmutableList.of(
-                MarkerGene.create(gene1, "1", "1", 0.004, "1", 199, 185),
-                MarkerGene.create(gene2, "1", "3", 0.0006, "2", 12, 1.11),
-                MarkerGene.create(gene3, "1", "5", 0.001, "6", 1000, 10000));
+                MarkerGene.create(gene1, "1", "1", 0.004,
+                        "1", 199, 185, "CPM"),
+                MarkerGene.create(gene2, "1", "3", 0.0006,
+                        "2", 12, 1.11, "CPM"),
+                MarkerGene.create(gene3, "1", "5", 0.001,
+                        "6", 1000, 10000, "CPM"));
 
         var result = subject.getMarkerGeneHeatmapDataSortedNumerically(markerGenes);
         assertThat(result).hasSize(3);
@@ -82,9 +85,15 @@ class HighchartsHeatmapAdapterTest {
                                 gene2, geneSymbol2));
 
         var cellTypeMarkerGenes = ImmutableList.of(
-                MarkerGene.create(gene1, "inferred cell type", "CD8-positive, alpha-beta T cell", 0.004, "T cell", 199, 185),
-                MarkerGene.create(gene2, "inferred cell type", "Not available", 0.0006, "Not available", 12, 1.11),
-                MarkerGene.create(gene3, "inferred cell type", "T cell", 0.001, "B cell", 1000, 10000));
+                MarkerGene.create(gene1, "inferred cell type",
+                        "CD8-positive, alpha-beta T cell", 0.004,
+                        "T cell", 199, 185, "CPM"),
+                MarkerGene.create(gene2, "inferred cell type",
+                        "Not available", 0.0006,
+                        "Not available", 12, 1.11, "CPM"),
+                MarkerGene.create(gene3, "inferred cell type",
+                        "T cell", 0.001,
+                        "B cell", 1000, 10000, "CPM"));
 
         var result = subject.getMarkerGeneHeatmapDataSortedLexicographically(cellTypeMarkerGenes);
 
@@ -116,7 +125,8 @@ class HighchartsHeatmapAdapterTest {
                 pValue1,
                 Integer.toString(RNG.nextInt()),
                 RNG.nextInt(1000000),
-                RNG.nextInt(1000000));
+                RNG.nextInt(1000000),
+                "CPM");
 
         var markerGene2 = MarkerGene.create(
                 geneId,
@@ -125,7 +135,8 @@ class HighchartsHeatmapAdapterTest {
                 pValue2,
                 Integer.toString(RNG.nextInt()),
                 RNG.nextInt(1000000),
-                RNG.nextInt(1000000));
+                RNG.nextInt(1000000),
+                "CPM");
 
         when(bioEntityPropertyDaoMock.getSymbolsForGeneIds(ImmutableSet.of(geneId)))
                 .thenReturn(ImmutableMap.of(geneId, geneId));

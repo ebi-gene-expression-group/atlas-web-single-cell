@@ -19,13 +19,16 @@ public abstract class MarkerGene {
 
     public abstract double meanExpression();
 
+    public abstract String expressionUnit();
+
     public static MarkerGene create(String geneId,
                                     String cellGroupType,
                                     String cellGroupValueWhereMarker,
                                     double pValue,
                                     String cellGroupValue,
                                     double medianExpression,
-                                    double meanExpression) {
+                                    double meanExpression,
+                                    String expressionUnit) {
         return new AutoValue_MarkerGene(
                 geneId,
                 cellGroupType,
@@ -33,7 +36,8 @@ public abstract class MarkerGene {
                 pValue,
                 cellGroupValue,
                 medianExpression,
-                meanExpression);
+                meanExpression,
+                expressionUnit);
     }
 }
 

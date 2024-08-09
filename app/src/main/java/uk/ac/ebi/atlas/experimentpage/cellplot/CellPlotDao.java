@@ -4,10 +4,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 import uk.ac.ebi.atlas.experimentpage.tsne.TSnePoint;
+
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +24,8 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 @Repository
 @Transactional(transactionManager = "txManager", readOnly = true)
 public class CellPlotDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CellPlotDao.class);
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public CellPlotDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -184,5 +191,19 @@ public class CellPlotDao {
                     }
                     return plotTypeAndOptions;
                 });
+    }
+
+    public String fetchExpressionUnitByAccession(String experimentAccession) {
+        try {
+            LOGGER.debug("Get expression unit for experiment: {}.", experimentAccession);
+
+            return namedParameterJdbcTemplate.queryForObject(
+                    "SELECT expression_unit FROM experiment WHERE accession = :accession",
+                    ImmutableMap.of("accession", experimentAccession),
+                    String.class);
+
+        } catch (DataAccessException e) {
+            throw new ResourceNotFoundException(e);
+        }
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
+import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomEnsemblGeneId;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
@@ -178,6 +180,23 @@ class CellPlotDaoIT {
     void fetchEmptyResultsIfExperimentDoesNotHaveDefaultPlotMethod(){
         assertThat(subject.fetchDefaultPlotMethodWithParameterisation("fooBar"))
                 .isEmpty();
+    }
+
+    @Test
+    void fetchExpressionUnit_whenExperimentDoesNotExists_thenReturnResourceNotFoundException(){
+        var generatedExperimentAccession = generateRandomExperimentAccession();
+
+        assertThatExceptionOfType(ResourceNotFoundException.class).isThrownBy(
+                () -> subject.fetchExpressionUnitByAccession(generatedExperimentAccession)
+        );
+    }
+
+    @Test
+    void fetchExpressionUnit_whenExperimentExists_thenReturnsItsUnit(){
+        var randomExperimentAccession = jdbcTestUtils.fetchRandomExperimentAccession();
+
+        assertThat(subject.fetchExpressionUnitByAccession(randomExperimentAccession))
+                .isNotEmpty();
     }
 
     private Stream<Arguments> randomExperimentAccessionPlotWithKProvider() {

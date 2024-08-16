@@ -6,7 +6,7 @@ import { BrowserRouter, Route, NavLink, Switch, Redirect, withRouter } from 'rea
 import AnatomogramCellTypeHeatmapView from './results/AnatomogramCellTypeHeatmapView'
 
 import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
-import HeatmapView from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
+import { ClustersHeatmapView }  from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
 
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
@@ -139,7 +139,7 @@ class TSnePlotViewRoute extends React.Component {
       {
         path: `/marker-genes`,
         title: `Marker Genes`,
-        main: () => <HeatmapView
+        main: () => <ClustersHeatmapView
           host={atlasUrl}
           resource={
             this.state.selectedColourByCategory === METADATA_PLOT ?
@@ -158,7 +158,7 @@ class TSnePlotViewRoute extends React.Component {
               this.setState({
                 selectedClusterId : colourByValue,
                 selectedColourBy : colourByValue,
-                selectedColourByCategory : CLUSTERS_PLOT
+                selectedColourByCategory :  parseInt(colourByValue) ? CLUSTERS_PLOT : METADATA_PLOT
               })
               // If tsne plot is coloured by k
               updateUrlWithParams([{k: colourByValue}, {colourBy: colourByValue}])

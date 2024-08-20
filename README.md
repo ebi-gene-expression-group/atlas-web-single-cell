@@ -71,7 +71,6 @@ In order to run integration tests and a development instance of Single Cell Expr
 Compose volumes first. They will be populated with data that will be indexed in Solr and Postgres. Single Cell 
 Expression Atlas needs all three of: file bundles in the volumes, Solr collections and Postgres data. This step takes 
 care of the first requirement:
-
 ```bash
 ./docker/prepare-dev-environment/volumes/run.sh -r -l volumes.log
 ```

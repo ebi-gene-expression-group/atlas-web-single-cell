@@ -5,7 +5,8 @@ import CellTypeWheelMultiExperimentHeatmap from '@ebi-gene-expression-group/scxa
 
 const render = (options, target) => {
   ReactDOM.render(
-    <CellTypeWheelMultiExperimentHeatmap {...options}/>,
+    <CellTypeWheelMultiExperimentHeatmap {...options}
+    />,
     document.getElementById(target))
 }
 

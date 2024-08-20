@@ -64,7 +64,6 @@ cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:
 ```bash
 ./docker/prepare-dev-environment/gradle-cache/run.sh -r -l gradle-cache.log
 ```
-
 ### Prepare volumes
 In order to run integration tests and a development instance of Single Cell Expression Atlas you will need a few Docker
 Compose volumes first. They will be populated with data that will be indexed in Solr and Postgres. Single Cell 

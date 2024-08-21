@@ -34,11 +34,13 @@ class TSnePlotViewRoute extends React.Component {
       selectedPlotOption: Object.values(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0],
       selectedPlotOptionLabel: Object.keys(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0] + ": " +
           Object.values(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0],
-      selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() :
+          this.props.ks.length > 0 ? this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString() : ``,
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
       selectedColourByCategory: isNaN(search.colourBy) ? METADATA_PLOT :  CLUSTERS_PLOT,
-      selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() :
+          this.props.ks.length > 0 ? this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString() : ``,
       selectedClusterIdOption: ``
     }
   }
@@ -216,7 +218,10 @@ class TSnePlotViewRoute extends React.Component {
           (plot) => plot.plotType.toLowerCase() ===  selectedPlotType)].plotOptions[0])[0] + `: ` + search.plotOption
     }
 
-    const preferredK = this.props.selectedK ? this.props.selectedK.toString() : this.props.ks[0].toString()
+    const preferredK = this.props.selectedK ?
+        this.props.selectedK.toString() :
+          this.props.ks.length > 0 ?
+          this.props.ks[0].toString() : ``
 
     const basename = URI(`experiments/${experimentAccession}${match.path}`, URI(atlasUrl).path()).toString()
 

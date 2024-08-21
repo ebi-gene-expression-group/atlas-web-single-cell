@@ -13,7 +13,7 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap": "^1.4.9",
+    "@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap": "^1.4.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

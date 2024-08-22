@@ -91,7 +91,7 @@ public class MarkerGenesDao {
                     "m.marker_probability AS marker_p_value, " +
                     "s.mean_expression, " +
                     "s.median_expression, " +
-                    "e.expression_unit" +
+                    "e.expression_unit " +
             "FROM " +
                     "scxa_cell_group_marker_gene_stats s, " +
                     "scxa_cell_group_marker_genes m, " +

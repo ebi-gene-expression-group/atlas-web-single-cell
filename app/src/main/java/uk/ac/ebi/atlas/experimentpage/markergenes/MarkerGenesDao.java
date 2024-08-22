@@ -27,13 +27,13 @@ public class MarkerGenesDao {
                     "h.value AS cluster_id_where_marker, " +
                     "s.mean_expression, " +
                     "s.median_expression, " +
-                    "e.expression_unit" +
+                    "e.expression_unit " +
             "FROM " +
                     "scxa_cell_group_marker_gene_stats s, " +
                     "scxa_cell_group_marker_genes m, " +
                     "scxa_cell_group g, " +
                     "scxa_cell_group h, " +
-                    "experiment e" +
+                    "experiment e " +
             "WHERE " +
                     "s.cell_group_id = g.id AND " +
                     "s.marker_id = m.id AND " +

@@ -61,6 +61,7 @@ git submodule update --remote
 ### Create a Gradle read-only dependency cache
 To speed up builds and tests it is strongly encouraged to create a Docker volume to back a [Gradle read-only dependency
 cache](https://docs.gradle.org/current/userguide/dependency_resolution.html#sub:ephemeral-ci-cache).
+
 ```bash
 ./docker/prepare-dev-environment/gradle-cache/run.sh -r -l gradle-cache.log
 ```

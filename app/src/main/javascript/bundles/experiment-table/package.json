@@ -11,7 +11,7 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "@ebi-gene-expression-group/atlas-experiment-table": "^3.2.6",
+    "@ebi-gene-expression-group/atlas-experiment-table": "^3.2.9",
     "@ebi-gene-expression-group/atlas-react-fetch-loader": "^3.9.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

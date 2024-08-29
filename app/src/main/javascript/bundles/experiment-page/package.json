@@ -10,7 +10,7 @@
     "@ebi-gene-expression-group/atlas-bioentity-information": "^2.1.4",
     "@ebi-gene-expression-group/expression-atlas-disclaimers": "^1.4.0",
     "@ebi-gene-expression-group/organ-anatomogram": "^1.1.0",
-    "@ebi-gene-expression-group/scxa-marker-gene-heatmap": "^2.5.1",
+    "@ebi-gene-expression-group/scxa-marker-gene-heatmap": "^2.5.2",
     "@ebi-gene-expression-group/scxa-tsne-plot": "^6.3.3",
     "linkifyjs": "^2.1.9",
     "lodash": "^4.17.20",

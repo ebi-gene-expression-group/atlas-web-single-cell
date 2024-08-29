@@ -26,12 +26,14 @@ public class MultiexperimentCellTypeMarkerGenesDao {
 					"g.value AS cell_group_value," +
 					"m.marker_probability AS marker_p_value, " +
 					"s.mean_expression, " +
-					"s.median_expression " +
+					"s.median_expression, " +
+					"e.expression_unit " +
 			"FROM " +
 					"scxa_cell_group_marker_gene_stats s, " +
 					"scxa_cell_group_marker_genes m, " +
 					"scxa_cell_group g, " +
-					"scxa_cell_group h " +
+					"scxa_cell_group h, " +
+					"experiment e " +
 			"WHERE " +
 					"s.cell_group_id = g.id AND " +
 					"s.marker_id = m.id AND " +
@@ -39,7 +41,8 @@ public class MultiexperimentCellTypeMarkerGenesDao {
 					"m.marker_probability < 0.05 AND " +
 					"h.value = :cell_type AND " +
 					"g.value = :cell_type AND " +
-					"expression_type = 0 " +
+					"s.expression_type = 0 AND " +
+					"e.accession = g.experiment_accession " +
 			"ORDER BY " +
 					"experiment_accession, " +
 					"marker_p_value";
@@ -53,12 +56,14 @@ public class MultiexperimentCellTypeMarkerGenesDao {
 					"g.value AS cell_group_value," +
 					"m.marker_probability AS marker_p_value, " +
 					"s.mean_expression, " +
-					"s.median_expression " +
+					"s.median_expression, " +
+					"e.expression_unit " +
 			"FROM " +
 					"scxa_cell_group_marker_gene_stats s, " +
 					"scxa_cell_group_marker_genes m, " +
 					"scxa_cell_group g, " +
-					"scxa_cell_group h " +
+					"scxa_cell_group h, " +
+					"experiment e " +
 			"WHERE " +
 					"s.cell_group_id = g.id AND " +
 					"s.marker_id = m.id AND " +
@@ -67,7 +72,8 @@ public class MultiexperimentCellTypeMarkerGenesDao {
 					"m.marker_probability < 0.05 AND " +
 					"h.value = :cell_type AND " +
 					"g.value = :cell_type AND " +
-					"expression_type = 0 " +
+					"s.expression_type = 0 AND " +
+					"e.accession = g.experiment_accession " +
 			"ORDER BY " +
 					"experiment_accession, " +
 					"marker_p_value";
@@ -88,7 +94,8 @@ public class MultiexperimentCellTypeMarkerGenesDao {
 						resultSet.getDouble("marker_p_value"),
 						resultSet.getString("experiment_accession"),
 						resultSet.getDouble("median_expression"),
-						resultSet.getDouble("mean_expression")));
+						resultSet.getDouble("mean_expression"),
+						resultSet.getString("expression_unit")));
 	}
 
 	public List<MarkerGene> getCellTypeMarkerGenes(String cellType) {
@@ -104,6 +111,7 @@ public class MultiexperimentCellTypeMarkerGenesDao {
 						resultSet.getDouble("marker_p_value"),
 						resultSet.getString("experiment_accession"),
 						resultSet.getDouble("median_expression"),
-						resultSet.getDouble("mean_expression")));
+						resultSet.getDouble("mean_expression"),
+						resultSet.getString("expression_unit")));
 	}
 }

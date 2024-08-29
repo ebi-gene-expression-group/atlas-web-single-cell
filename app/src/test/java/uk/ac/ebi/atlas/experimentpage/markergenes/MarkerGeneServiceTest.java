@@ -69,7 +69,12 @@ public class MarkerGeneServiceTest {
 
     private List<MarkerGene> mockTestData() {
         return ImmutableList.of(
-                MarkerGene.create("1", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0, "T cell", 125.258405, 563.54442), MarkerGene.create("2", "inferred cell type", "CD4-positive, alpha-beta T cell", 0.0, "T cell", 125.258405, 563.54442));
+                MarkerGene.create("1", "inferred cell type",
+                        "CD4-positive, alpha-beta T cell", 0.0, "T cell",
+                        125.258405, 563.54442, "CPM"),
+                MarkerGene.create("2", "inferred cell type",
+                        "CD4-positive, alpha-beta T cell", 0.0, "T cell",
+                        125.258405, 563.54442, "CPM"));
     }
 }
 

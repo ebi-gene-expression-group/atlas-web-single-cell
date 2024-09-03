@@ -187,7 +187,7 @@ class TSnePlotViewRoute extends React.Component {
             }))
           }}
           ksWithMarkers={ksWithMarkerGenes}
-          metadata={metadata}
+          metadata={metadata.map(data => {return {value: data.value.replaceAll(`_`, ` `), label: data.label}})}
           species={species}
           heatmapType={this.state.selectedColourByCategory === METADATA_PLOT ? CELL_TYPE_MARKER_GENE_HEATMAP : CLUSTER_MARKER_GENE_HEATMAP}
         />

@@ -31,15 +31,45 @@ public class HighchartsHeatmapAdapter {
     private static final Comparator<MarkerGene> CELL_GROUP_VALUE_WHERE_MARKER_NUMERICAL =
             comparingInt(CELL_GROUP_VALUE_WHERE_MARKER_AS_NUMBERS).thenComparing(MarkerGene::pValue);
 
+    private static final Comparator<MarkerGene> MARKER_NATURALLY_ORDERED_BY_CELL_GROUP_VALUE =
+            new MarkerGeneComparatorByCellGroupValueByMarker();
+
+    private static final Comparator<MarkerGene> MARKER_GENE_COMPARATOR =
+            MARKER_NATURALLY_ORDERED_BY_CELL_GROUP_VALUE.thenComparing(MarkerGene::pValue);
+
     private final BioEntityPropertyDao bioEntityPropertyDao;
 
     public HighchartsHeatmapAdapter(BioEntityPropertyDao bioEntityPropertyDao) {
         this.bioEntityPropertyDao = bioEntityPropertyDao;
     }
 
+    public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapDataSortedNaturally
+            (Collection<MarkerGene> markerGenes) {
+        var sortedMarkerGenes = mergeSameGeneIdIntoSingleGroup(markerGenes).stream()
+                .parallel()
+                .sorted(MARKER_GENE_COMPARATOR)
+                .collect(toImmutableList());
+
+        var rows =
+                sortedMarkerGenes.stream()
+                        .map(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER)
+                        .distinct()
+                        .collect(toImmutableList());
+
+        var columns =
+                sortedMarkerGenes.stream()
+                        .map(MarkerGene::cellGroupValue)
+                        .distinct()
+                        .sorted()
+                        .collect(toImmutableList());
+
+        return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
+    }
+
+
     /**
      * Given a list of marker genes, this method returns a Highcharts data series object
-     * (https://api.highcharts.com/highcharts/series.heatmap.data), where gene IDs/symbols are
+     * (<a href="https://api.highcharts.com/highcharts/series.heatmap.data">heatmap data for series</a>), where gene IDs/symbols are
      * the rows (y values), and the cell types are the columns (x values).
      * The cells contain the median average expression of the gene in the cell group.
      * The rows of the heatmap are ordered by the cell type, i.e. genes for celltype 1, 2, etc.

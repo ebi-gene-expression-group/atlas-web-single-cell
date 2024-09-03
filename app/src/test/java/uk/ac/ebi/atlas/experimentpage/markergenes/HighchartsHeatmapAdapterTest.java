@@ -153,4 +153,138 @@ class HighchartsHeatmapAdapterTest {
                 .extracting("cellGroupValueWhereMarker")
                 .containsOnly(cellGroupValueWhereMarker2);
     }
+
+    @Test
+    void whenMarkerGeneHasNumericalClusterNames_theySortedCorrectly() {
+        var gene1 = generateRandomEnsemblGeneId();
+        var gene2 = generateRandomEnsemblGeneId();
+        var gene3 = generateRandomEnsemblGeneId();
+
+        var geneSymbol1 = generateRandomGeneSymbol();
+        var geneSymbol2 = generateRandomGeneSymbol();
+        var geneSymbol3 = generateRandomGeneSymbol();
+
+        var randomGeneIds = ImmutableSet.of(gene1, gene2, gene3);
+        var cellGroupValueWhereMarkers = new String[] {"1", "11", "9"};
+
+        when(bioEntityPropertyDaoMock.getSymbolsForGeneIds(randomGeneIds))
+                .thenReturn(
+                        ImmutableMap.of(
+                                gene1, geneSymbol1,
+                                gene2, geneSymbol2,
+                                gene3, geneSymbol3));
+
+
+        var markerGenes = ImmutableList.of(
+                MarkerGene.create(gene1, "1", cellGroupValueWhereMarkers[0], 0.004,
+                        "1", 199, 185, "CPM"),
+                MarkerGene.create(gene2, "1", cellGroupValueWhereMarkers[1], 0.0006,
+                        "2", 12, 1.11, "CPM"),
+                MarkerGene.create(gene3, "1", cellGroupValueWhereMarkers[2], 0.001,
+                        "6", 1000, 10000, "CPM"));
+
+        var result = subject.getMarkerGeneHeatmapDataSortedNaturally(markerGenes);
+        assertThat(result).hasSize(3);
+
+        assertThat(result).element(0).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[0]);
+        assertThat(result).element(1).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[2]);
+        assertThat(result).element(2).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[1]);
+    }
+
+    @Test
+    void whenMarkerGeneHasNotOnlyNumericalClusterNames_theySortedCorrectly() {
+        var gene1 = generateRandomEnsemblGeneId();
+        var gene2 = generateRandomEnsemblGeneId();
+        var gene3 = generateRandomEnsemblGeneId();
+        var gene4 = generateRandomEnsemblGeneId();
+
+        var geneSymbol1 = generateRandomGeneSymbol();
+        var geneSymbol2 = generateRandomGeneSymbol();
+        var geneSymbol3 = generateRandomGeneSymbol();
+        var geneSymbol4 = generateRandomGeneSymbol();
+
+        var randomGeneIds = ImmutableSet.of(gene1, gene2, gene3, gene4);
+        var cellGroupValueWhereMarkers = new String[] {"1", "abc", "aaa", "2"};
+
+        when(bioEntityPropertyDaoMock.getSymbolsForGeneIds(randomGeneIds))
+                .thenReturn(
+                        ImmutableMap.of(
+                                gene1, geneSymbol1,
+                                gene2, geneSymbol2,
+                                gene3, geneSymbol3,
+                                gene4, geneSymbol4));
+
+
+        var markerGenes = ImmutableList.of(
+                MarkerGene.create(gene1, "1", cellGroupValueWhereMarkers[0], 0.004,
+                        "1", 199, 185, "CPM"),
+                MarkerGene.create(gene2, "1", cellGroupValueWhereMarkers[1], 0.0006,
+                        "2", 12, 1.11, "CPM"),
+                MarkerGene.create(gene3, "1", cellGroupValueWhereMarkers[2], 0.001,
+                        "6", 234, 736, "CPM"),
+                MarkerGene.create(gene4, "1", cellGroupValueWhereMarkers[3], 0.001,
+                        "6", 1000, 10000, "CPM"));
+
+        var result = subject.getMarkerGeneHeatmapDataSortedNaturally(markerGenes);
+        assertThat(result).hasSize(4);
+
+        assertThat(result).element(0).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[2]);
+        assertThat(result).element(1).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[1]);
+        assertThat(result).element(2).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[0]);
+        assertThat(result).element(3).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[3]);
+    }
+
+    @Test
+    void whenMarkerGeneHasOnlyStringClusterNames_theySortedCorrectly() {
+        var gene1 = generateRandomEnsemblGeneId();
+        var gene2 = generateRandomEnsemblGeneId();
+        var gene3 = generateRandomEnsemblGeneId();
+        var gene4 = generateRandomEnsemblGeneId();
+
+        var geneSymbol1 = generateRandomGeneSymbol();
+        var geneSymbol2 = generateRandomGeneSymbol();
+        var geneSymbol3 = generateRandomGeneSymbol();
+        var geneSymbol4 = generateRandomGeneSymbol();
+
+        var randomGeneIds = ImmutableSet.of(gene1, gene2, gene3, gene4);
+        var cellGroupValueWhereMarkers = new String[] {"x", "abc", "aaa", "y"};
+
+        when(bioEntityPropertyDaoMock.getSymbolsForGeneIds(randomGeneIds))
+                .thenReturn(
+                        ImmutableMap.of(
+                                gene1, geneSymbol1,
+                                gene2, geneSymbol2,
+                                gene3, geneSymbol3,
+                                gene4, geneSymbol4));
+
+
+        var markerGenes = ImmutableList.of(
+                MarkerGene.create(gene1, "1", cellGroupValueWhereMarkers[0], 0.004,
+                        "1", 199, 185, "CPM"),
+                MarkerGene.create(gene2, "1", cellGroupValueWhereMarkers[1], 0.0006,
+                        "2", 12, 1.11, "CPM"),
+                MarkerGene.create(gene3, "1", cellGroupValueWhereMarkers[2], 0.001,
+                        "6", 234, 736, "CPM"),
+                MarkerGene.create(gene4, "1", cellGroupValueWhereMarkers[3], 0.001,
+                        "6", 1000, 10000, "CPM"));
+
+        var result = subject.getMarkerGeneHeatmapDataSortedNaturally(markerGenes);
+        assertThat(result).hasSize(4);
+
+        assertThat(result).element(0).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[2]);
+        assertThat(result).element(1).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[1]);
+        assertThat(result).element(2).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[0]);
+        assertThat(result).element(3).extracting("cellGroupValueWhereMarker")
+                .containsOnly(cellGroupValueWhereMarkers[3]);
+    }
 }

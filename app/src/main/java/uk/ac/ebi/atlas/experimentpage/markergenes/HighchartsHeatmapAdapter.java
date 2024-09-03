@@ -45,27 +45,14 @@ public class HighchartsHeatmapAdapter {
 
     public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapDataSortedNaturally
             (Collection<MarkerGene> markerGenes) {
-        var sortedMarkerGenes = mergeSameGeneIdIntoSingleGroup(markerGenes).stream()
-                .parallel()
-                .sorted(MARKER_GENE_COMPARATOR)
-                .collect(toImmutableList());
+        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes, MARKER_GENE_COMPARATOR);
 
-        var rows =
-                sortedMarkerGenes.stream()
-                        .map(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER)
-                        .distinct()
-                        .collect(toImmutableList());
+        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
 
-        var columns =
-                sortedMarkerGenes.stream()
-                        .map(MarkerGene::cellGroupValue)
-                        .distinct()
-                        .sorted()
-                        .collect(toImmutableList());
+        var columns = getColumnsFromSortedMarkerGenes(sortedMarkerGenes);
 
         return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
     }
-
 
     /**
      * Given a list of marker genes, this method returns a Highcharts data series object
@@ -80,23 +67,11 @@ public class HighchartsHeatmapAdapter {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
-        var sortedMarkerGenes = mergeSameGeneIdIntoSingleGroup(markerGenes).stream()
-                .parallel()
-                .sorted(CELL_GROUP_VALUE_WHERE_MARKER_LEXICOGRAPHICAL)
-                .collect(toImmutableList());
+        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes, CELL_GROUP_VALUE_WHERE_MARKER_LEXICOGRAPHICAL);
 
-        var rows =
-                sortedMarkerGenes.stream()
-                        .map(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER)
-                        .distinct()
-                        .collect(toImmutableList());
+        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
 
-        var columns =
-                sortedMarkerGenes.stream()
-                        .map(MarkerGene::cellGroupValue)
-                        .distinct()
-                        .sorted()
-                        .collect(toImmutableList());
+        var columns = getColumnsFromSortedMarkerGenes(sortedMarkerGenes);
 
         return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
     }
@@ -106,28 +81,46 @@ public class HighchartsHeatmapAdapter {
         // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
         // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
         // reversing the comparator
-        var sortedMarkerGenes = mergeSameGeneIdIntoSingleGroup(markerGenes).stream()
+        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes, CELL_GROUP_VALUE_WHERE_MARKER_NUMERICAL);
+
+        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
+
+        var columns = getColumnsForNumericallySortedMarkerGenes(sortedMarkerGenes);
+
+        return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
+    }
+
+    private ImmutableList<MarkerGene> getSortedMarkerGenes(Collection<MarkerGene> markerGenes, Comparator<MarkerGene> markerGeneComparator) {
+        return mergeSameGeneIdIntoSingleGroup(markerGenes).stream()
                 .parallel()
-                .sorted(CELL_GROUP_VALUE_WHERE_MARKER_NUMERICAL)
+                .sorted(markerGeneComparator)
                 .collect(toImmutableList());
+    }
 
-        var rows =
-                sortedMarkerGenes.stream()
-                        .map(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER)
-                        .distinct()
-                        .collect(toImmutableList());
+    private static ImmutableList<Pair<String, String>> getRowsFromSortedMarkerGenes(ImmutableList<MarkerGene> sortedMarkerGenes) {
+        return sortedMarkerGenes.stream()
+                .map(MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER)
+                .distinct()
+                .collect(toImmutableList());
+    }
 
-        var columns = sortedMarkerGenes.stream()
+    private static ImmutableList<String> getColumnsFromSortedMarkerGenes(ImmutableList<MarkerGene> sortedMarkerGenes) {
+        return sortedMarkerGenes.stream()
+                .map(MarkerGene::cellGroupValue)
+                .distinct()
+                .sorted()
+                .collect(toImmutableList());
+    }
+
+    private ImmutableList<String> getColumnsForNumericallySortedMarkerGenes(ImmutableList<MarkerGene> sortedMarkerGenes) {
+        return sortedMarkerGenes.stream()
                 .map(MarkerGene::cellGroupValue)
                 .map(Integer::parseInt)
                 .distinct()
                 .sorted()
                 .map(Object::toString)
                 .collect(toImmutableList());
-
-        return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
     }
-
 
     private ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapData(ImmutableCollection<MarkerGene> sortedMarkerGenes,
                                                                                  ImmutableList<Pair<String, String>> rows,

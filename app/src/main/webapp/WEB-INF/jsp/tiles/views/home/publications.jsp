@@ -2,6 +2,20 @@
 
 <div id="publication-list" class="callout" data-equalizer-watch>
     <h4>Publications </h4>
+    <a href="https://doi.org/10.1093/nar/gkad1021" target="_blank">
+        <div class="media-object">
+            <div class="media-object-section middle">
+                <h3 class="icon icon-conceptual" data-icon="l" />
+            </div>
+            <div class="media-object-section middle">
+                <p>
+                    <strong>Expression Atlas update: insights from sequencing data at both bulk and single cell level</strong>
+                    <br>
+                    <em>Nucleic Acids Research</em>, 22 November 2023.
+                </p>
+            </div>
+        </div>
+    </a>
     <a href="https://academic.oup.com/nar/article/50/D1/D129/6438036" target="_blank">
         <div class="media-object">
             <div class="media-object-section middle">

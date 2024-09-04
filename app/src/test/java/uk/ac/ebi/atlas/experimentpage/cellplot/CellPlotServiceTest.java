@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataDao;
 import uk.ac.ebi.atlas.testutils.RandomDataTestUtils;
 
@@ -24,8 +25,10 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -169,5 +172,29 @@ class CellPlotServiceTest {
             assertTrue(subject.fetchDefaultPlotMethodWithParameterisation(experimentAccession)
                     .keySet()
                     .contains("t-SNE"));
+    }
+
+    @Test
+    void whenFetchExpressionUnitOfNonExistentExperiment_thenReturnResourceNotFoundException(){
+        var generatedExperimentAccession = generateRandomExperimentAccession();
+
+        when(cellPlotDaoMock.fetchExpressionUnitByAccession(generatedExperimentAccession))
+                .thenThrow(ResourceNotFoundException.class);
+
+        assertThatExceptionOfType(ResourceNotFoundException.class).isThrownBy(
+                () -> subject.fetchExpressionUnitByAccession(generatedExperimentAccession)
+        );
+    }
+
+    @Test
+    void whenFetchingExpressionUnitOfGivenExperiment_thenReturningItsValue() {
+        var experimentAccession = RandomDataTestUtils.generateRandomExperimentAccession();
+        var expressionUnit = "CPM";
+
+        when(cellPlotDaoMock.fetchExpressionUnitByAccession(experimentAccession))
+                .thenReturn(expressionUnit);
+
+        assertThat(subject.fetchExpressionUnitByAccession(experimentAccession))
+                .isEqualTo(expressionUnit);
     }
 }

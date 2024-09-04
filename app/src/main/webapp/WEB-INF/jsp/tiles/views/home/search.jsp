@@ -15,11 +15,11 @@
 
 <script defer src="${pageContext.request.contextPath}/resources/js-bundles/geneSearchForm.bundle.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function (event) {
+    document.addEventListener("DOMContentLoaded", function () {
         geneSearchForm.render({
             host: '${pageContext.request.contextPath}/',
             resource: 'json/suggestions/species',
-            defaultSpecies: `Homo sapiens`,
+            defaultSpecies: ``,
             wrapperClassName: 'row expanded',
             actionEndpoint: 'search',
 

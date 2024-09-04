@@ -88,7 +88,7 @@ public class CellPlotJsonSerializer {
                 .filter(d -> d > 0)
                 .min();
 
-        var unit = "CPM"; // Get units from experiment, or from request parameter if more than one is available
+        var unit = cellPlotService.fetchExpressionUnitByAccession(experimentAccession);
 
         var model = new HashMap<>();
         model.put("series", modelForHighcharts("Gene expression", pointsWithExpression));

@@ -16,12 +16,21 @@ function GeneSearch ({atlasUrl, history}) {
   const updateUrl = (event, query, species) => {
     event.preventDefault()
     history.push(
+    query.category === `metadata` ?
+      URI(`/search/metadata/${query.term}`)
+        .query({
+            species: species
+            })
+        .toString() :
       URI(`/search`)
         .query({
           [query.category]: query.term,
           species: species
         })
-        .toString())
+        .toString()
+    )
+    query.category === `metadata` && history.go(0)
+
   }
 
   const requestParams = URI(location.search).query(true)

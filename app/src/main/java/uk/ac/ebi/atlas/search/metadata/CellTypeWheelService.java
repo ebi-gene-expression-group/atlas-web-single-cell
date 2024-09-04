@@ -4,8 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.atlas.search.FeaturedSpeciesService;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
@@ -13,16 +16,25 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 @Service
 public class CellTypeWheelService {
     private final CellTypeWheelDao cellTypeWheelDao;
+    private final FeaturedSpeciesService featuredSpeciesService;
 
-    public CellTypeWheelService(CellTypeWheelDao cellTypeWheelDao) {
+    public CellTypeWheelService(CellTypeWheelDao cellTypeWheelDao,
+                                FeaturedSpeciesService featuredSpeciesService) {
         this.cellTypeWheelDao = cellTypeWheelDao;
+        this.featuredSpeciesService = featuredSpeciesService;
     }
 
     public ImmutableSet<ImmutablePair<ImmutableList<String>, String>> search(String searchTerm, String species) {
-        return cellTypeWheelDao.facetSearchCtwFields(searchTerm, species)
-                .stream()
-                // This will effectively “explode” tuples and aggregate experiment accessions (the last element in the
-                // tuple) to the organisms, organism parts and cell types
+        ImmutableList<String> allSpeciesNames = featuredSpeciesService.getSpeciesNamesSortedByExperimentCount();
+        var isSpeciesSearch = allSpeciesNames.contains(StringUtils.capitalize(searchTerm));
+
+        Stream<ImmutableList<String>> cellTypeWheelResultsStream = isSpeciesSearch
+                ? cellTypeWheelDao.speciesSearchCtwFields(searchTerm, species).stream()
+                : cellTypeWheelDao.facetSearchCtwFields(searchTerm, species).stream();
+
+        return cellTypeWheelResultsStream
+                // This will effectively “explode” tuples and aggregate experiment accessions
+                // (the last element in the tuple) to the organisms, organism parts, and cell types
                 .map(this::addTailToEveryHeadSublist)
                 .flatMap(ImmutableList::stream)
                 .collect(toImmutableSet());

@@ -118,6 +118,7 @@ public class HighchartsHeatmapAdapter {
                                 .put("cellGroupValue", markerGene.cellGroupValue())
                                 .put("cellGroupValueWhereMarker", markerGene.cellGroupValueWhereMarker())
                                 .put("pValue", markerGene.pValue())
+                                .put("expressionUnit", markerGene.expressionUnit())
                                 .build())
                 .collect(toImmutableList());
     }
@@ -144,7 +145,8 @@ public class HighchartsHeatmapAdapter {
                                             referenceMarkerGene.pValue(),
                                             sameGeneIdMarkerGene.cellGroupValue(),
                                             sameGeneIdMarkerGene.medianExpression(),
-                                            sameGeneIdMarkerGene.meanExpression()));
+                                            sameGeneIdMarkerGene.meanExpression(),
+                                            sameGeneIdMarkerGene.expressionUnit()));
                 })
                 .collect(toImmutableList());
     }

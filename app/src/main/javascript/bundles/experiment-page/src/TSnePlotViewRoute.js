@@ -6,7 +6,7 @@ import { BrowserRouter, Route, NavLink, Switch, Redirect, withRouter } from 'rea
 import AnatomogramCellTypeHeatmapView from './results/AnatomogramCellTypeHeatmapView'
 
 import TSnePlotView from '@ebi-gene-expression-group/scxa-tsne-plot'
-import { ClustersHeatmapView } from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
+import { ClustersHeatmapView }  from '@ebi-gene-expression-group/scxa-marker-gene-heatmap'
 
 import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-information'
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
@@ -22,6 +22,8 @@ const RedirectWithLocation = withRouter(RedirectWithSearchAndHash)
 
 const CLUSTERS_PLOT = `clusters`
 const METADATA_PLOT = `metadata`
+const CELL_TYPE_MARKER_GENE_HEATMAP = `celltypes`
+const CLUSTER_MARKER_GENE_HEATMAP = `clusters`
 
 class TSnePlotViewRoute extends React.Component {
   constructor(props) {
@@ -34,13 +36,15 @@ class TSnePlotViewRoute extends React.Component {
       selectedPlotOption: Object.values(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0],
       selectedPlotOptionLabel: Object.keys(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0] + ": " +
           Object.values(Object.values(this.props.defaultPlotMethodAndParameterisation)[0])[0],
-      selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      selectedColourBy: cellTypeValue ? cellTypeValue.toLowerCase() :
+          this.props.ks.length > 0 ? this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString() : ``,
       highlightClusters: [],
       experimentAccession: this.props.experimentAccession,
-      selectedColourByCategory: isNaN(search.colourBy) ? METADATA_PLOT :  CLUSTERS_PLOT,
-      selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() : this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString(),
+      selectedColourByCategory: isNaN(search.k) ? METADATA_PLOT :  CLUSTERS_PLOT,
+      selectedClusterId: cellTypeValue ? cellTypeValue.toLowerCase() :
+          this.props.ks.length > 0 ? this.props.ks[Math.round((this.props.ks.length -1) / 2)].toString() : ``,
       selectedClusterIdOption: ``
-    }
+      }
   }
 
   render() {
@@ -80,7 +84,10 @@ class TSnePlotViewRoute extends React.Component {
           selectedPlotType={search.plotType || this.state.selectedPlotType}
           ks={ks}
           metadata={metadata.map(data => {return {value: data.value.replaceAll(`_`, ` `), label: data.label}})}
-          selectedColourBy={search.colourBy || this.state.selectedColourBy }
+          selectedColourBy={this.state.selectedColourByCategory === METADATA_PLOT ?
+              search.colourBy || this.state.selectedColourBy :
+              search.k || this.state.selectedClusterId
+          }
           selectedColourByCategory={this.state.selectedColourByCategory} // Is the plot coloured by clusters or metadata
           highlightClusters={search.clusterId ? JSON.parse(search.clusterId) : []}
           geneId={search.geneId || ``}
@@ -120,15 +127,19 @@ class TSnePlotViewRoute extends React.Component {
 
           onChangeColourBy={
             (colourByCategory, colourByValue) => {
+              let queryParams = []
+
               this.setState({
-                selectedColourBy : colourByValue,
                 selectedColourByCategory : colourByCategory
               })
-              colourByCategory === CLUSTERS_PLOT && this.setState({
-              selectedClusterId : colourByValue
-            })
-              const queryParams = [{colourBy: colourByValue}]
-              colourByCategory === CLUSTERS_PLOT && queryParams.push({k: colourByValue})
+              if (colourByCategory === CLUSTERS_PLOT) {
+                this.setState({selectedClusterId : colourByValue})
+                queryParams.push({k: colourByValue})
+              } else {
+                this.setState({selectedColourBy : colourByValue,})
+                queryParams.push({colourBy: colourByValue})
+              }
+
               updateUrlWithParams(queryParams)
             }
           }
@@ -142,7 +153,7 @@ class TSnePlotViewRoute extends React.Component {
           resource={
             this.state.selectedColourByCategory === METADATA_PLOT ?
                 URI(`json/experiments/${this.state.experimentAccession}/marker-genes-heatmap/cell-types`)
-                    .search({cellGroupType: this.state.selectedClusterId})
+                    .search({cellGroupType: this.state.selectedColourBy})
                     .toString() :
                 URI(`json/experiments/${this.state.experimentAccession}/marker-genes/clusters`)
                     .search({k: this.state.selectedClusterId})
@@ -151,16 +162,24 @@ class TSnePlotViewRoute extends React.Component {
           wrapperClassName={`row expanded`}
           ks={ks}
           selectedClusterByCategory={search.cellGroupType || search.k || preferredK}
-          selectedK={this.state.colourByCategory === CLUSTERS_PLOT ? this.state.selectedColourBy : this.state.selectedClusterId}
+          selectedK={this.state.selectedColourByCategory === METADATA_PLOT ? this.state.selectedColourBy : this.state.selectedClusterId}
           onSelectK={(colourByValue) => {
+            // If marker gene heatmap is coloured by numeric k values
+            let isMetadataCluster = parseInt(colourByValue) ? false : true
+            if(isMetadataCluster) {
+              this.setState({
+                selectedColourBy : colourByValue,
+                selectedColourByCategory : METADATA_PLOT
+              })
+              updateUrlWithParams( [{colourBy: colourByValue}])
+            } else {
               this.setState({
                 selectedClusterId : colourByValue,
-                selectedColourBy : colourByValue,
                 selectedColourByCategory : CLUSTERS_PLOT
               })
-              // If tsne plot is coloured by k
-              updateUrlWithParams([{k: colourByValue}, {colourBy: colourByValue}])
+              updateUrlWithParams([{k: colourByValue}])
             }
+           }
           }
           onChangeMarkerGeneFor={(selectedOption) => {
             this.setState((state) => ({
@@ -168,8 +187,9 @@ class TSnePlotViewRoute extends React.Component {
             }))
           }}
           ksWithMarkers={ksWithMarkerGenes}
-          metadata={metadata}
+          metadata={metadata.map(data => {return {value: data.value.replaceAll(`_`, ` `), label: data.label}})}
           species={species}
+          heatmapType={this.state.selectedColourByCategory === METADATA_PLOT ? CELL_TYPE_MARKER_GENE_HEATMAP : CLUSTER_MARKER_GENE_HEATMAP}
         />
       },
       {
@@ -216,7 +236,10 @@ class TSnePlotViewRoute extends React.Component {
           (plot) => plot.plotType.toLowerCase() ===  selectedPlotType)].plotOptions[0])[0] + `: ` + search.plotOption
     }
 
-    const preferredK = this.props.selectedK ? this.props.selectedK.toString() : this.props.ks[0].toString()
+    const preferredK = this.props.selectedK ?
+        this.props.selectedK.toString() :
+          this.props.ks.length > 0 ?
+          this.props.ks[0].toString() : ``
 
     const basename = URI(`experiments/${experimentAccession}${match.path}`, URI(atlasUrl).path()).toString()
 

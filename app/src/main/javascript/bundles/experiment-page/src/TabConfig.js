@@ -22,11 +22,11 @@ export const isObjectEmpty = (objectName) => {
 export const getNestedProperty = (obj, path) => path.keys((acc, key) => acc?.[key], obj);
 
 // Helper function to check if a value is a non-empty array
-export const isNonEmptyArray = (value) => !isObjectEmpty(value) && Array.isArray(value);
+export const isEmptyArray = (value) => isObjectEmpty(value) && Array.isArray(value);
 
 export const tabValidations = new Map([
-    [  'results',  ['ks','selectedPlotOption','selectedPlotType','suggesterEndpoint']],
-    [  'cell-plots', ['ks','selectedPlotOption','selectedPlotType','suggesterEndpoint']],
+    [  'results',  ['ks','defaultPlotMethodAndParameterisation', 'suggesterEndpoint']],
+    [  'cell-plots',['ks','defaultPlotMethodAndParameterisation', 'suggesterEndpoint']],
     [  'marker-genes', ['ks','SelectedK']],
     [ 'anatomogram',  ['searchTerm ','data']],
     [  'experiment-design',  ['table','data','headers']],

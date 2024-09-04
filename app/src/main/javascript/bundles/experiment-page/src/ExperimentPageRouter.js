@@ -8,7 +8,7 @@ import TSnePlotViewRoute from './TSnePlotViewRoute'
 import ExperimentDesignRoute from './ExperimentDesignRoute'
 import SupplementaryInformationRoute from './SupplementaryInformationRoute'
 import DownloadsRoute from './DownloadsRoute'
-import {tabCommonValidations, tabValidations} from "./TabConfig";
+import {isEmptyArray, tabCommonValidations, tabValidations} from "./TabConfig";
 
 const RoutePropTypes = {
     match: PropTypes.object.isRequired,
@@ -33,7 +33,7 @@ const tabTypeComponent = {
 }
 
 function shouldRender(tab, commonProps){
-    console.log(commonProps);
+    var shouldRender = true;
     var commonRequiredProps = tabCommonValidations.get(tab.type);
 
     if(commonRequiredProps != null){
@@ -41,6 +41,7 @@ function shouldRender(tab, commonProps){
             var propValue = commonProps.valueOf(commonProp);
             if(propValue==='undefined' || propValue=='' || propValue==null) {
              console.log(tab.type +" data missing the required value for the attribute "+commonProp);
+                shouldRender = false;
                 return false;
             }
         })
@@ -53,26 +54,37 @@ function shouldRender(tab, commonProps){
             var propValue = tabProps[requiredProp];
             if(propValue==='undefined' || propValue=='' || propValue==null) {
                 console.log(tab.type +" data missing the required value for the attribute "+requiredProp);
+                shouldRender = false;
                 return false;
             }
-            if(requiredProp=='ks'){
+            if(requiredProp == 'ks'){
                 if(propValue.length==0){
                     console.log(tab.type +" ks array length is 0");
-                    return  false;
+                    shouldRender = false;
+                    return false;
+                }
+            }
+             if(requiredProp == 'defaultPlotMethodAndParameterisation') {
+                if(isEmptyArray(propValue)){
+                    console.log(tab.type +" selectedPlotOption and selectedPlotType doesn't have data");
+                    shouldRender = false;
+                    return false;
                 }
             }
         });
     }
+    console.log(tab.type +" data validation pass. Returning "+shouldRender);
 
-    return true;
+    return shouldRender;
 }
 
 const TopRibbon = ({tabs, routeProps, commonProps}) =>
     <ul className={`tabs`}>
         {
             tabs.map((tab) => {
-                 if(shouldRender(tab, commonProps)) {
-                     <li title={tab.name} key={tab.type} className={`tabs-title`}>
+                 if(shouldRender(tab, commonProps) === true) {
+                     console.log("rendering tab");
+                     return <li title={tab.name} key={tab.type} className={`tabs-title`}>
                          <NavLink to={{
                              pathname: `/${tab.type}`,
                              search: routeProps.location.search,
@@ -154,7 +166,7 @@ const ExperimentPageRouter = ({atlasUrl, resourcesUrl, experimentAccession, spec
                         tabs.map((tab) =>
                         {
                             if(shouldRender(tab, tabCommonProps)) {
-                                <Route
+                               return <Route
                                     key={tab.type}
                                     path={`/${tab.type}`}
                                     render={

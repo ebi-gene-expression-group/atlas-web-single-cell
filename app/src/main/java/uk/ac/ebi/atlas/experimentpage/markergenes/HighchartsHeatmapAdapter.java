@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -10,12 +9,10 @@ import uk.ac.ebi.atlas.bioentity.properties.BioEntityPropertyDao;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.function.Function;
-import java.util.function.ToIntFunction;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.util.Comparator.comparing;
-import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
 
 @Component
@@ -25,11 +22,6 @@ public class HighchartsHeatmapAdapter {
 
     private static final Comparator<MarkerGene> CELL_GROUP_VALUE_WHERE_MARKER_LEXICOGRAPHICAL =
             comparing(MarkerGene::cellGroupValueWhereMarker).thenComparing(MarkerGene::pValue);
-
-    private static final ToIntFunction<MarkerGene> CELL_GROUP_VALUE_WHERE_MARKER_AS_NUMBERS =
-            markerGene -> Integer.parseInt(markerGene.cellGroupValueWhereMarker());
-    private static final Comparator<MarkerGene> CELL_GROUP_VALUE_WHERE_MARKER_NUMERICAL =
-            comparingInt(CELL_GROUP_VALUE_WHERE_MARKER_AS_NUMBERS).thenComparing(MarkerGene::pValue);
 
     private static final Comparator<MarkerGene> MARKER_NATURALLY_ORDERED_BY_CELL_GROUP_VALUE =
             new MarkerGeneComparatorByCellGroupValueByMarker();
@@ -45,13 +37,8 @@ public class HighchartsHeatmapAdapter {
 
     public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapDataSortedNaturally
             (Collection<MarkerGene> markerGenes) {
-        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes, MARKER_GENE_COMPARATOR);
 
-        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
-
-        var columns = getColumnsFromSortedMarkerGenes(sortedMarkerGenes);
-
-        return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
+        return getMarkerGeneHeatmapData(markerGenes, MARKER_GENE_COMPARATOR);
     }
 
     /**
@@ -64,30 +51,8 @@ public class HighchartsHeatmapAdapter {
      */
     public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapDataSortedLexicographically(
             Collection<MarkerGene> markerGenes) {
-        // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
-        // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
-        // reversing the comparator
-        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes, CELL_GROUP_VALUE_WHERE_MARKER_LEXICOGRAPHICAL);
 
-        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
-
-        var columns = getColumnsFromSortedMarkerGenes(sortedMarkerGenes);
-
-        return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
-    }
-
-    public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapDataSortedNumerically(
-            Collection<MarkerGene> markerGenes) {
-        // Whether the comparison by p-value should or shouldn’t be reversed depends on the yAxis.reversed property in
-        // the heatmap component. In our case it’s set to true, so lower p-value is displayed at the top without
-        // reversing the comparator
-        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes, CELL_GROUP_VALUE_WHERE_MARKER_NUMERICAL);
-
-        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
-
-        var columns = getColumnsForNumericallySortedMarkerGenes(sortedMarkerGenes);
-
-        return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
+        return getMarkerGeneHeatmapData(markerGenes, CELL_GROUP_VALUE_WHERE_MARKER_LEXICOGRAPHICAL);
     }
 
     private ImmutableList<MarkerGene> getSortedMarkerGenes(Collection<MarkerGene> markerGenes, Comparator<MarkerGene> markerGeneComparator) {
@@ -112,19 +77,14 @@ public class HighchartsHeatmapAdapter {
                 .collect(toImmutableList());
     }
 
-    private ImmutableList<String> getColumnsForNumericallySortedMarkerGenes(ImmutableList<MarkerGene> sortedMarkerGenes) {
-        return sortedMarkerGenes.stream()
-                .map(MarkerGene::cellGroupValue)
-                .map(Integer::parseInt)
-                .distinct()
-                .sorted()
-                .map(Object::toString)
-                .collect(toImmutableList());
-    }
+    private ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapData(Collection<MarkerGene> markerGenes,
+                                                                                 Comparator<MarkerGene> markerGeneComparator) {
+        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes, markerGeneComparator);
 
-    private ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapData(ImmutableCollection<MarkerGene> sortedMarkerGenes,
-                                                                                 ImmutableList<Pair<String, String>> rows,
-                                                                                 ImmutableList<String> columns) {
+        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
+
+        var columns = getColumnsFromSortedMarkerGenes(sortedMarkerGenes);
+
         var symbolsForGeneIds =
                 bioEntityPropertyDao.getSymbolsForGeneIds(
                         sortedMarkerGenes.stream().map(MarkerGene::geneId).collect(toImmutableSet()));

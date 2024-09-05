@@ -55,7 +55,7 @@ class HighchartsHeatmapAdapterTest {
                 MarkerGene.create(randomGeneIds.get(2), "1", "5", 0.001,
                         "6", 1000, 10000, EXPRESSION_UNIT));
 
-        var result = subject.getMarkerGeneHeatmapDataSortedNumerically(markerGenes);
+        var result = subject.getMarkerGeneHeatmapDataSortedNaturally(markerGenes);
         assertThat(result).hasSize(3);
 
         assertThat(result).element(0).extracting("geneName").containsOnly(randomGeneSymbols.get(0));
@@ -135,11 +135,11 @@ class HighchartsHeatmapAdapterTest {
                 .extracting("y")
                 .containsOnly(0);
 
-        assertThat(subject.getMarkerGeneHeatmapDataSortedNumerically(ImmutableSet.of(markerGene1, markerGene2)))
+        assertThat(subject.getMarkerGeneHeatmapDataSortedNaturally(ImmutableSet.of(markerGene1, markerGene2)))
                 .extracting("y")
                 .containsOnly(0);
 
-        assertThat(subject.getMarkerGeneHeatmapDataSortedNumerically(ImmutableSet.of(markerGene1, markerGene2)))
+        assertThat(subject.getMarkerGeneHeatmapDataSortedNaturally(ImmutableSet.of(markerGene1, markerGene2)))
                 .extracting("cellGroupValueWhereMarker")
                 .containsOnly(cellGroupValueWhereMarker2);
     }

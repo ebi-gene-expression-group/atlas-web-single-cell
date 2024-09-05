@@ -100,10 +100,12 @@
             </c:if>
         </div>
         <c:if test="${fn:startsWith(experimentAccession, 'E-ANND-')}">
-            <div class="experiment-type-icon"
-                 title="Externally analysed data">
-                E
-            </div>
+            <a href="${pageContext.request.contextPath}/help.html?section=external-data">
+                <div class="experiment-type-icon"
+                     title="Externally analysed data">
+                    E
+                </div>
+            </a>
         </c:if>
     </div>
 </div>

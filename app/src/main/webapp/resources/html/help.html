@@ -1,14 +1,30 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.2/iframeResizer.min.js"></script>
 
 <div class="row column">
-  <iframe id="atlas-help-iframe" class="row" src="https://ebi-gene-expression-group.github.io/atlas-help-pages/help-page-scxa.html"
+  <iframe id="atlas-help-iframe" class="row" src=""
           style="width: 1px; min-width: 100%; border: none; display: block; overflow: hidden;" name="atlas_help">
   </iframe>
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function(event) {
+    // Get the section parameter from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const section = urlParams.get('section');
+
+    // Build the iframe src URL with the section parameter
+    let iframeSrc = "https://ebi-gene-expression-group.github.io/atlas-help-pages/help-page-scxa.html";
+    if (section) {
+      iframeSrc += `#${section}`;
+    }
+
+    // Set the iframe src attribute
+    document.getElementById("atlas-help-iframe").src = iframeSrc;
+
+    // Mark the Help nav item as active
     document.getElementById("local-nav-help").className += ' active';
-    iFrameResize({inPageLinks:true}, '#atlas-help-iframe');
+
+    // Initialize iframe resizing
+    iFrameResize({inPageLinks: true}, '#atlas-help-iframe');
   });
 </script>

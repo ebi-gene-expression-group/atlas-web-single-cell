@@ -71,6 +71,13 @@ function shouldRender(tab, commonProps){
                     return false;
                 }
             }
+             if (requiredProp == 'suggesterEndpoint') {
+                 if(propValue.length == 0) {
+                     console.log(tab.type +" suggesterEndpoint doesn't have data")
+                     shouldRender = false;
+                     return false;
+                 }
+             }
         });
     }
     console.log(tab.type +" data validation pass. Returning "+shouldRender);

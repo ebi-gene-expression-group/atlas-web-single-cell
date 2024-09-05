@@ -30,8 +30,8 @@ export const tabValidations = new Map([
     [  'marker-genes', ['ks','SelectedK']],
     [ 'anatomogram',  ['searchTerm ','data']],
     [  'experiment-design',  ['table.headers.data']],
-    [ 'supplementary-information', ['sections','data','type']],
-    [  'resources', ['data','url']]
+    [ 'supplementary-information', ['sections.props.data']],
+    [  'resources', ['data.files']]
 ]);
 
 export const tabCommonValidations = new Map([

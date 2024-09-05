@@ -53,8 +53,12 @@ class ExperimentCard extends React.Component {
        <TitleDiv>
            {experimentDescription}
             <SmallIconDiv>
-              {showIcon && <ExperimentIconDiv background={`indianred`} color={`white`} data-toggle={`tooltip`} data-placement={`bottom`}
-                                              title={`Externally analysed data`}>E</ExperimentIconDiv>}
+              {showIcon &&
+                <a href={`${url}/help.html?section=external-data`}>
+                  <ExperimentIconDiv background={`indianred`} color={`white`} data-toggle={`tooltip`}
+                                     data-placement={`bottom`} title={`Externally analysed data`}
+                  >E</ExperimentIconDiv>
+                </a>}
             </SmallIconDiv>
        </TitleDiv>
         <VariableDiv>

@@ -32,15 +32,15 @@ const tabTypeComponent = {
     'downloads' : DownloadsRoute
 }
 
-function shouldRender(tab, commonProps){
+function shouldRender(tab, commonProps) {
     var shouldRender = true;
     var commonRequiredProps = tabCommonValidations.get(tab.type);
 
-    if(commonRequiredProps != null){
-        commonRequiredProps.forEach(commonProp=> {
+    if (commonRequiredProps != null) {
+        commonRequiredProps.forEach(commonProp => {
             var propValue = commonProps.valueOf(commonProp);
-            if(propValue==='undefined' || propValue=='' || propValue==null) {
-             console.log(tab.type +" data missing the required value for the attribute "+commonProp);
+            if (propValue === 'undefined' || propValue == '' || propValue == null) {
+                console.log(tab.type + " data missing the required value for the attribute " + commonProp);
                 shouldRender = false;
                 return false;
             }
@@ -49,38 +49,75 @@ function shouldRender(tab, commonProps){
 
     var requiredProps = tabValidations.get(tab.type);
     var tabProps = tab.props;
-    if(requiredProps != null){
-        requiredProps.forEach(requiredProp=>{
+    if (requiredProps != null) {
+        requiredProps.forEach(requiredProp => {
+
+            if (requiredProp.indexOf('.') > 0) {
+                var splitProps = requiredProp.split('.');
+                splitProps.forEach(splitProp => {
+                    let spiltPropTable = [];
+                    let spiltPropTableHeader = [];
+                    let spiltPropTableData = [];
+                    if (isEmptyArray(spiltPropTable)) {
+                        spiltPropTable = tabProps[splitProp]
+                        if (spiltPropTable.length == 0) {
+                            console.log(tab.type + ":" + " table doesn't have data")
+                            shouldRender = false;
+                            return false;
+                        }
+                    }
+                    if (isEmptyArray(spiltPropTableHeader)) {
+                        spiltPropTableHeader = spiltPropTable[splitProp]
+                        if (spiltPropTableHeader.length == 0) {
+                            console.log(tab.type + ":" + " table headers doesn't have data")
+                            shouldRender = false;
+                            return false;
+                        }
+                    }
+
+                    if (isEmptyArray(spiltPropTableData)) {
+                        spiltPropTableData = spiltPropTableHeader[splitProp]
+                        if (spiltPropTableData.length == 0) {
+                            console.log(tab.type + ":" + " table table data doesn't have")
+                            shouldRender = false;
+                            return false;
+                        }
+                    }
+                });
+                return shouldRender;
+            }
+
             var propValue = tabProps[requiredProp];
-            if(propValue==='undefined' || propValue=='' || propValue==null) {
-                console.log(tab.type +" data missing the required value for the attribute "+requiredProp);
+            if (propValue === 'undefined' || propValue == '' || propValue == null) {
+                console.log(tab.type + " data missing the required value for the attribute " + requiredProp);
                 shouldRender = false;
                 return false;
             }
-            if(requiredProp == 'ks'){
-                if(propValue.length==0){
-                    console.log(tab.type +" ks array length is 0");
+            if (requiredProp == 'ks') {
+                if (propValue.length == 0) {
+                    console.log(tab.type + " ks array length is 0");
                     shouldRender = false;
                     return false;
                 }
             }
-             if(requiredProp == 'defaultPlotMethodAndParameterisation') {
-                if(isEmptyArray(propValue)){
-                    console.log(tab.type +" selectedPlotOption and selectedPlotType doesn't have data");
+            if (requiredProp == 'defaultPlotMethodAndParameterisation') {
+                if (isEmptyArray(propValue)) {
+                    console.log(tab.type + " selectedPlotOption and selectedPlotType doesn't have data");
                     shouldRender = false;
                     return false;
                 }
             }
-             if (requiredProp == 'suggesterEndpoint') {
-                 if(propValue.length == 0) {
-                     console.log(tab.type +" suggesterEndpoint doesn't have data")
-                     shouldRender = false;
-                     return false;
-                 }
-             }
+            if (requiredProp == 'suggesterEndpoint') {
+                if (propValue.length == 0) {
+                    console.log(tab.type + " suggesterEndpoint doesn't have data")
+                    shouldRender = false;
+                    return false;
+                }
+            }
+
         });
     }
-    console.log(tab.type +" data validation pass. Returning "+shouldRender);
+    console.log(tab.type + " data validation pass. Returning " + shouldRender);
 
     return shouldRender;
 }

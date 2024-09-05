@@ -29,7 +29,7 @@ export const tabValidations = new Map([
     [  'cell-plots',['ks','defaultPlotMethodAndParameterisation', 'suggesterEndpoint']],
     [  'marker-genes', ['ks','SelectedK']],
     [ 'anatomogram',  ['searchTerm ','data']],
-    [  'experiment-design',  ['table','data','headers']],
+    [  'experiment-design',  ['table.headers.data']],
     [ 'supplementary-information', ['sections','data','type']],
     [  'resources', ['data','url']]
 ]);

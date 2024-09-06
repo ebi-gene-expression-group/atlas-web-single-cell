@@ -54,7 +54,7 @@ class ExperimentCard extends React.Component {
            {experimentDescription}
             <SmallIconDiv>
               {showIcon &&
-                <a href={`${window.location.host}/gxa/sc/help.html?section=external-data`}>
+                <a href={`${window.location.protocol}//${window.location.host}/gxa/sc/help.html?section=external-data`}>
                   <ExperimentIconDiv background={`indianred`} color={`white`} data-toggle={`tooltip`}
                                      data-placement={`bottom`} title={`Externally analysed data`}
                   >E</ExperimentIconDiv>

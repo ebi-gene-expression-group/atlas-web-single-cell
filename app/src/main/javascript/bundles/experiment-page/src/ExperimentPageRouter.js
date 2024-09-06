@@ -33,14 +33,14 @@ const tabTypeComponent = {
 }
 
 function shouldRender(tab, commonProps) {
-    var shouldRender = true;
-    var commonRequiredProps = tabCommonValidations.get(tab.type);
+    let shouldRender = true;
+    const commonRequiredProps = tabCommonValidations.get(tab.type);
 
     if (commonRequiredProps != null) {
-        commonRequiredProps.forEach(commonProp => {
-            var propValue = commonProps.valueOf(commonProp);
+        commonRequiredProps.some(commonProp => {
+            const propValue = commonProps.valueOf(commonProp);
             if (propValue === 'undefined' || propValue == '' || propValue == null) {
-                console.log(tab.type + " data missing the required value for the attribute " + commonProp);
+                console.log(`${tab.type} data missing the required value for the attribute ${commonProp}`);
                 shouldRender = false;
                 return false;
             }
@@ -93,6 +93,7 @@ function shouldRender(tab, commonProps) {
                 shouldRender = false;
                 return false;
             }
+
             if (requiredProp == 'ks') {
                 if (propValue.length == 0) {
                     console.log(tab.type + " ks array length is 0");
@@ -100,6 +101,7 @@ function shouldRender(tab, commonProps) {
                     return false;
                 }
             }
+
             if (requiredProp == 'defaultPlotMethodAndParameterisation') {
                 if (isEmptyArray(propValue)) {
                     console.log(tab.type + " selectedPlotOption and selectedPlotType doesn't have data");
@@ -107,6 +109,7 @@ function shouldRender(tab, commonProps) {
                     return false;
                 }
             }
+
             if (requiredProp == 'suggesterEndpoint') {
                 if (propValue.length == 0) {
                     console.log(tab.type + " suggesterEndpoint doesn't have data")
@@ -127,7 +130,7 @@ const TopRibbon = ({tabs, routeProps, commonProps}) =>
         {
             tabs.map((tab) => {
                  if(shouldRender(tab, commonProps) === true) {
-                     console.log("rendering tab");
+                     console.log("rendering tab"+tab.type);
                      return <li title={tab.name} key={tab.type} className={`tabs-title`}>
                          <NavLink to={{
                              pathname: `/${tab.type}`,

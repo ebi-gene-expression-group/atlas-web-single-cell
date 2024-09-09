@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { BrowserRouter, Route, Redirect, Switch, NavLink, withRouter } from 'react-router-dom'
 
@@ -47,37 +47,40 @@ function shouldRender(tab, commonProps) {
         })
     }
 
-    var requiredProps = tabValidations.get(tab.type);
-    var tabProps = tab.props;
+    const requiredProps = tabValidations.get(tab.type);
+    const tabProps = tab.props;
+
     if (requiredProps != null) {
         requiredProps.forEach(requiredProp => {
-
-            if (requiredProp.indexOf('.') > 0) {
-                var splitProps = requiredProp.split('.');
+            // Check if property requires nested object validation
+            if (requiredProp.includes('.')) {
+                const splitProps = requiredProp.split('.');
                 splitProps.forEach(splitProp => {
-                    let spiltPropTable = [];
-                    let spiltPropTableHeader = [];
-                    let spiltPropTableData = [];
-                    if (isEmptyArray(spiltPropTable)) {
-                        spiltPropTable = tabProps[splitProp]
-                        if (spiltPropTable.length == 0) {
-                            console.log(tab.type + ":" + " table doesn't have data")
+
+                    let table = [];
+                    let tableHeader = [];
+                    let TableData = [];
+
+                    if (isEmptyArray(table)) {
+                        table = tabProps[splitProp] || [];
+                        if (table.length == 0) {
+                            console.log(`${tab.type}: table doesn't have data`);
                             shouldRender = false;
-                            return false;
+                            return false; // Early return on failure
                         }
                     }
-                    if (isEmptyArray(spiltPropTableHeader)) {
-                        spiltPropTableHeader = spiltPropTable[splitProp]
-                        if (spiltPropTableHeader.length == 0) {
+                    if (isEmptyArray(tableHeader)) {
+                        tableHeader = table[splitProp] || [];
+                        if (tableHeader.length == 0) {
                             console.log(tab.type + ":" + " table headers doesn't have data")
                             shouldRender = false;
                             return false;
                         }
                     }
 
-                    if (isEmptyArray(spiltPropTableData)) {
-                        spiltPropTableData = spiltPropTableHeader[splitProp]
-                        if (spiltPropTableData.length == 0) {
+                    if (isEmptyArray(TableData)) {
+                        TableData = tableHeader[splitProp]
+                        if (TableData.length == 0) {
                             console.log(tab.type + ":" + " table table data doesn't have")
                             shouldRender = false;
                             return false;
@@ -93,31 +96,6 @@ function shouldRender(tab, commonProps) {
                 shouldRender = false;
                 return false;
             }
-
-            if (requiredProp == 'ks') {
-                if (propValue.length == 0) {
-                    console.log(tab.type + " ks array length is 0");
-                    shouldRender = false;
-                    return false;
-                }
-            }
-
-            if (requiredProp == 'defaultPlotMethodAndParameterisation') {
-                if (isEmptyArray(propValue)) {
-                    console.log(tab.type + " selectedPlotOption and selectedPlotType doesn't have data");
-                    shouldRender = false;
-                    return false;
-                }
-            }
-
-            if (requiredProp == 'suggesterEndpoint') {
-                if (propValue.length == 0) {
-                    console.log(tab.type + " suggesterEndpoint doesn't have data")
-                    shouldRender = false;
-                    return false;
-                }
-            }
-
         });
     }
     console.log(tab.type + " data validation pass. Returning " + shouldRender);
@@ -156,12 +134,12 @@ TopRibbon.propTypes = {
 }
 
 
-const TabContent = ({type, tabProps, commonProps, routeProps}) => {
+const TabContent = ({type, tabProps, commonProps, routeProps, resultTabView}) => {
     // Pass in the search from location
     const Tab = tabTypeComponent[type]
 
     return (
-        Tab ? <Tab {...tabProps} {...commonProps} {...routeProps}/> : null
+        Tab ? <Tab {...tabProps} {...commonProps} {...routeProps} enableView={resultTabView} /> : null
     )
 }
 
@@ -169,7 +147,8 @@ TabContent.propTypes = {
     type: PropTypes.string.isRequired,
     tabProps: PropTypes.object,
     commonProps: PropTypes.shape(TabCommonPropTypes),
-    routeProps: PropTypes.shape(RoutePropTypes)
+    routeProps: PropTypes.shape(RoutePropTypes),
+    resultTabView : PropTypes.func
 }
 
 const RedirectWithSearchAndHash = (props) =>
@@ -186,6 +165,18 @@ RedirectWithSearchAndHash.propTypes = {
 const RedirectWithLocation = withRouter(RedirectWithSearchAndHash)
 
 const ExperimentPageRouter = ({atlasUrl, resourcesUrl, experimentAccession, species, accessKey, tabs}) => {
+
+    const [enableResultTab, setEnableResultTab] = useState(false)
+
+
+
+    let resultTabView;
+    resultTabView = (resultTabView) => {
+        if(resultTabView) {
+            setEnableResultTab(true);
+        }
+    }
+
     const tabCommonProps = {
         atlasUrl,
         resourcesUrl,
@@ -222,7 +213,9 @@ const ExperimentPageRouter = ({atlasUrl, resourcesUrl, experimentAccession, spec
                                                 type={tab.type}
                                                 tabProps={tab.props}
                                                 commonProps={tabCommonProps}
-                                                routeProps={routeProps}/>
+                                                routeProps={routeProps}
+                                                resultTabView={resultTabView}
+                                            />
                                     }/>
                             }
                     })

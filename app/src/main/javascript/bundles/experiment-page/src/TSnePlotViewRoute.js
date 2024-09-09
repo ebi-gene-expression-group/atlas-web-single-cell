@@ -12,6 +12,7 @@ import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-inf
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
 import {intersection as _intersection, first as _first, map as _map} from 'lodash'
+import {innerTabValidations, isEmptyArray, tabValidations} from "./TabConfig";
 
 const BioentityInformationWithFetchLoader = withFetchLoader(BioentityInformation)
 
@@ -48,10 +49,20 @@ class TSnePlotViewRoute extends React.Component {
   }
 
   render() {
+
+    console.log(this.props)
+
     const { location, match, history } = this.props
     const { atlasUrl, suggesterEndpoint, defaultPlotMethodAndParameterisation } = this.props
     const { species, experimentAccession, accessKey, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
+    if(species === `homo sapiens` && Object.keys(anatomogram).length >0){
+      this.props.enableView(true);
+    }
+
+    if(search.geneId){
+      this.props.enableView(true);
+    }
 
     let plotTypeDropdown =
       Object.keys(defaultPlotMethodAndParameterisation)
@@ -244,6 +255,76 @@ class TSnePlotViewRoute extends React.Component {
     const basename = URI(`experiments/${experimentAccession}${match.path}`, URI(atlasUrl).path()).toString()
 
     const sideTabStyle = {overflow: `clip`, textOverflow: `ellipsis`}
+
+    function shouldHideCellPlots(route, props) {
+      const requiredProps = innerTabValidations.get(route.title);
+      var shouldHideTab = false;
+      requiredProps.some(requiredProp => {
+        console.log("experimentAccession: " + JSON.stringify(experimentAccession))
+
+        if (experimentAccession !== 'E-ANND' || requiredProp == 'ks') {
+          if (ks.length == 0) {
+            console.log(route.title + " ks array length is 0");
+            shouldHideTab = true
+            return false
+          }
+        }
+
+        if (experimentAccession == 'E-ANND' && requiredProp == 'metadata') {
+          console.log("In the meta data ---------" + isEmptyArray(metadata))
+          if (metadata.length == 0) {
+            console.log("Cell Plots metadata array length is 0");
+            shouldHideTab = true;
+            return false;
+          }
+        }
+
+        if (requiredProp == 'defaultPlotMethodAndParameterisation') {
+          console.log("Prop value: "+JSON.stringify(defaultPlotMethodAndParameterisation))
+          if (defaultPlotMethodAndParameterisation.length == 0) {
+            console.log(route.title+" : Cell Plots selectedPlotOption and selectedPlotType doesn't have data");
+            shouldHideTab = true;
+            return false;
+          }
+        }
+
+        if (requiredProp == 'suggesterEndpoint') {
+          console.log("suggesterEndpoint: "+JSON.stringify(suggesterEndpoint))
+          if (suggesterEndpoint.length == 0) {
+            console.log(route.title + " suggesterEndpoint doesn't have data");
+            shouldHideTab = true
+            return false;
+          }
+        }
+
+      })
+      console.log("Cell plot shouldHideTab: "+shouldHideTab)
+      if(shouldHideTab == false){
+        props.enableView(true);
+      }
+      return shouldHideTab;
+    }
+
+    function shouldHideMarkerGenes(route, props) {
+      console.log("Ks with Marker genes: "+JSON.stringify(ksWithMarkerGenes))
+      const requiredProps = innerTabValidations.get(route.title);
+      let shouldHideTab = false;
+      requiredProps.some( requiredProp=> {
+        if (experimentAccession == 'E-ANND' || requiredProp == 'ksWithMarkerGenes') {
+          if (ksWithMarkerGenes.length == 0) {
+            console.log(route.title + " ksWithMarkerGenes array length is 0");
+            shouldHideTab = true;
+            return false;
+          }
+        }
+      });
+      console.log("Marker genes tab: "+shouldHideTab)
+      if(shouldHideTab==false){
+        props.enableView(true);
+      }
+      return shouldHideTab;
+    }
+
     return (
       <BrowserRouter basename={basename}>
         <div className={`row expanded`}>
@@ -254,12 +335,15 @@ class TSnePlotViewRoute extends React.Component {
               background: `#ffffff`
             }}>
             <ul className={`side-tabs`}>
-              <li title={routes[0].title} className={`side-tabs-title`}>
+
+              <li title={routes[0].title} className={`side-tabs-title`}
+                  hidden={shouldHideCellPlots(routes[0], this.props)} >
                 <NavLink to={{pathname:routes[0].path, search: location.search, hash: location.hash}}
                   activeClassName={`active`} style={sideTabStyle}>
                   {routes[0].title}</NavLink>
               </li>
-              <li title={routes[1].title} className={`side-tabs-title`}>
+              <li title={routes[1].title} className={`side-tabs-title`}
+                  hidden={shouldHideMarkerGenes(routes[1], this.props)}>
                 <NavLink to={{pathname:routes[1].path, search: location.search, hash: location.hash}}
                   activeClassName={`active`} style={sideTabStyle}>
                   {routes[1].title}</NavLink>
@@ -271,6 +355,7 @@ class TSnePlotViewRoute extends React.Component {
                     activeClassName={`active`} style={sideTabStyle}>
                     {routes[2].title}</NavLink>
                 </li>
+
               }
               {
                 search.geneId &&

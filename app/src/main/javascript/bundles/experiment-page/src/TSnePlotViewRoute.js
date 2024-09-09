@@ -256,40 +256,48 @@ class TSnePlotViewRoute extends React.Component {
 
     const sideTabStyle = {overflow: `clip`, textOverflow: `ellipsis`}
 
-    function shouldHideCellPlots(route, props) {
+    function shouldHideCellPlotsTab(route, props) {
       const requiredProps = innerTabValidations.get(route.title);
-      var shouldHideTab = false;
+      let shouldHideTab = false;
+
+      // Helper function to check if an array is empty and log message
+      const isEmptyArrayAndLog = (array, arrayName) => {
+        if (!Array.isArray(array) || array.length === 0) {
+          console.log(`${route.title}: ${arrayName} array is empty`);
+          return true;
+        }
+        return false;
+      };
+
+      // Iterate through required properties and perform checks
       requiredProps.some(requiredProp => {
-        console.log("experimentAccession: " + JSON.stringify(experimentAccession))
-
-        if (experimentAccession !== 'E-ANND' || requiredProp == 'ks') {
-          if (ks.length == 0) {
-            console.log(route.title + " ks array length is 0");
-            shouldHideTab = true
-            return false
+        console.log(`experimentAccession: ${JSON.stringify(experimentAccession)}`);
+        // Check for 'ks' array
+        if (experimentAccession !== 'E-ANND' && requiredProp === 'ks') {
+          if (isEmptyArrayAndLog(ks, 'ks')) {
+            shouldHideTab = true;
+            return true; // Early exit
           }
         }
 
-        if (experimentAccession == 'E-ANND' && requiredProp == 'metadata') {
-          console.log("In the meta data ---------" + isEmptyArray(metadata))
-          if (metadata.length == 0) {
-            console.log("Cell Plots metadata array length is 0");
+        // Check for 'metadata' array when experimentAccession is 'E-ANND'
+        if (experimentAccession === 'E-ANND' || requiredProp === 'metadata') {
+          if (isEmptyArrayAndLog(metadata, 'metadata')) {
             shouldHideTab = true;
-            return false;
+            return true;
           }
         }
 
-        if (requiredProp == 'defaultPlotMethodAndParameterisation') {
-          console.log("Prop value: "+JSON.stringify(defaultPlotMethodAndParameterisation))
-          if (defaultPlotMethodAndParameterisation.length == 0) {
-            console.log(route.title+" : Cell Plots selectedPlotOption and selectedPlotType doesn't have data");
+        // Check for 'defaultPlotMethodAndParameterisation' array
+        if (requiredProp === 'defaultPlotMethodAndParameterisation') {
+          if (isEmptyArrayAndLog(defaultPlotMethodAndParameterisation, 'defaultPlotMethodAndParameterisation')) {
+            console.log(`${route.title}: Missing selectedPlotOption and selectedPlotType data`);
             shouldHideTab = true;
-            return false;
+            return true;
           }
         }
 
         if (requiredProp == 'suggesterEndpoint') {
-          console.log("suggesterEndpoint: "+JSON.stringify(suggesterEndpoint))
           if (suggesterEndpoint.length == 0) {
             console.log(route.title + " suggesterEndpoint doesn't have data");
             shouldHideTab = true
@@ -298,8 +306,9 @@ class TSnePlotViewRoute extends React.Component {
         }
 
       })
-      console.log("Cell plot shouldHideTab: "+shouldHideTab)
-      if(shouldHideTab == false){
+      console.log(`${route.title}: status:` + shouldHideTab)
+
+      if (shouldHideTab == false) {
         props.enableView(true);
       }
       return shouldHideTab;
@@ -337,7 +346,7 @@ class TSnePlotViewRoute extends React.Component {
             <ul className={`side-tabs`}>
 
               <li title={routes[0].title} className={`side-tabs-title`}
-                  hidden={shouldHideCellPlots(routes[0], this.props)} >
+                  hidden={shouldHideCellPlotsTab(routes[0], this.props)} >
                 <NavLink to={{pathname:routes[0].path, search: location.search, hash: location.hash}}
                   activeClassName={`active`} style={sideTabStyle}>
                   {routes[0].title}</NavLink>

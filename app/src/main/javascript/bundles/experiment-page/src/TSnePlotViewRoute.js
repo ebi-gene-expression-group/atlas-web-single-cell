@@ -256,33 +256,37 @@ class TSnePlotViewRoute extends React.Component {
 
     const sideTabStyle = {overflow: `clip`, textOverflow: `ellipsis`}
 
+    // Helper function to check if an array is empty and log message
+    const isEmptyArrayAndLog = (route, array, arrayName) => {
+      if (!Array.isArray(array) || array.length === 0) {
+        console.log(`${route.title}: ${arrayName} array is empty`);
+        return true;
+      }
+      return false;
+    };
+
+    var checkIfAnnDataExperiment = function checkIfAnnDataExperiment(experimentAccession) {
+      return /E-ANND-\d*/.test(experimentAccession);
+    };
+
     function shouldHideCellPlotsTab(route, props) {
       const requiredProps = innerTabValidations.get(route.title);
       let shouldHideTab = false;
-
-      // Helper function to check if an array is empty and log message
-      const isEmptyArrayAndLog = (array, arrayName) => {
-        if (!Array.isArray(array) || array.length === 0) {
-          console.log(`${route.title}: ${arrayName} array is empty`);
-          return true;
-        }
-        return false;
-      };
-
       // Iterate through required properties and perform checks
       requiredProps.some(requiredProp => {
         console.log(`experimentAccession: ${JSON.stringify(experimentAccession)}`);
         // Check for 'ks' array
-        if (experimentAccession !== 'E-ANND' && requiredProp === 'ks') {
-          if (isEmptyArrayAndLog(ks, 'ks')) {
+        if (!checkIfAnnDataExperiment(experimentAccession) && requiredProp === 'ks') {
+          console.log("experimentAccession === 'E-ANND'"+checkIfAnnDataExperiment(experimentAccession))
+          if (isEmptyArrayAndLog(route, ks, 'ks')) {
             shouldHideTab = true;
             return true; // Early exit
           }
         }
 
         // Check for 'metadata' array when experimentAccession is 'E-ANND'
-        if (experimentAccession === 'E-ANND' || requiredProp === 'metadata') {
-          if (isEmptyArrayAndLog(metadata, 'metadata')) {
+        if (checkIfAnnDataExperiment(experimentAccession) && requiredProp === 'metadata') {
+          if (isEmptyArrayAndLog(route, metadata, 'metadata')) {
             shouldHideTab = true;
             return true;
           }
@@ -290,14 +294,15 @@ class TSnePlotViewRoute extends React.Component {
 
         // Check for 'defaultPlotMethodAndParameterisation' array
         if (requiredProp === 'defaultPlotMethodAndParameterisation') {
-          if (isEmptyArrayAndLog(defaultPlotMethodAndParameterisation, 'defaultPlotMethodAndParameterisation')) {
+          console.log("defaultPlotMethodAndParameterisation"+JSON.stringify(defaultPlotMethodAndParameterisation))
+          if (defaultPlotMethodAndParameterisation.length == 0) {
             console.log(`${route.title}: Missing selectedPlotOption and selectedPlotType data`);
             shouldHideTab = true;
             return true;
           }
         }
 
-        if (requiredProp == 'suggesterEndpoint') {
+        if (requiredProp === 'suggesterEndpoint') {
           if (suggesterEndpoint.length == 0) {
             console.log(route.title + " suggesterEndpoint doesn't have data");
             shouldHideTab = true
@@ -314,21 +319,27 @@ class TSnePlotViewRoute extends React.Component {
       return shouldHideTab;
     }
 
-    function shouldHideMarkerGenes(route, props) {
-      console.log("Ks with Marker genes: "+JSON.stringify(ksWithMarkerGenes))
+    function shouldHideMarkerGenesTab(route, props) {
       const requiredProps = innerTabValidations.get(route.title);
       let shouldHideTab = false;
-      requiredProps.some( requiredProp=> {
-        if (experimentAccession == 'E-ANND' || requiredProp == 'ksWithMarkerGenes') {
-          if (ksWithMarkerGenes.length == 0) {
-            console.log(route.title + " ksWithMarkerGenes array length is 0");
+      requiredProps.some(requiredProp => {
+        // Check for 'ks' array
+        if (requiredProp === 'ks') {
+          if (isEmptyArrayAndLog(route, ks, 'ks')) {
+            shouldHideTab = true;
+            return true; // Early exit
+          }
+        }
+
+        if (checkIfAnnDataExperiment(experimentAccession) || requiredProp == 'ksWithMarkerGenes') {
+          if (isEmptyArrayAndLog(route, ksWithMarkerGenes, 'ksWithMarkerGenes')) {
             shouldHideTab = true;
             return false;
           }
         }
       });
-      console.log("Marker genes tab: "+shouldHideTab)
-      if(shouldHideTab==false){
+      console.log("Marker genes tab: " + shouldHideTab)
+      if (shouldHideTab == false) {
         props.enableView(true);
       }
       return shouldHideTab;
@@ -352,7 +363,7 @@ class TSnePlotViewRoute extends React.Component {
                   {routes[0].title}</NavLink>
               </li>
               <li title={routes[1].title} className={`side-tabs-title`}
-                  hidden={shouldHideMarkerGenes(routes[1], this.props)}>
+                  hidden={shouldHideMarkerGenesTab(routes[1], this.props)}>
                 <NavLink to={{pathname:routes[1].path, search: location.search, hash: location.hash}}
                   activeClassName={`active`} style={sideTabStyle}>
                   {routes[1].title}</NavLink>

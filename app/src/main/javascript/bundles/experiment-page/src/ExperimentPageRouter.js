@@ -32,9 +32,9 @@ const tabTypeComponent = {
     'downloads' : DownloadsRoute
 }
 
-function shouldRender(tab, commonProps) {
-    let shouldRender = true;
+function shouldRenderTab(tab, commonProps) {
     const commonRequiredProps = tabCommonValidations.get(tab.type);
+    let shouldRender = true;
 
     if (commonRequiredProps != null) {
         commonRequiredProps.some(commonProp => {
@@ -89,13 +89,6 @@ function shouldRender(tab, commonProps) {
                 });
                 return shouldRender;
             }
-
-            var propValue = tabProps[requiredProp];
-            if (propValue === 'undefined' || propValue == '' || propValue == null) {
-                console.log(tab.type + " data missing the required value for the attribute " + requiredProp);
-                shouldRender = false;
-                return false;
-            }
         });
     }
     console.log(tab.type + " data validation pass. Returning " + shouldRender);
@@ -107,8 +100,7 @@ const TopRibbon = ({tabs, routeProps, commonProps}) =>
     <ul className={`tabs`}>
         {
             tabs.map((tab) => {
-                 if(shouldRender(tab, commonProps) === true) {
-                     console.log("rendering tab"+tab.type);
+                 if(shouldRenderTab(tab, commonProps) === true) {
                      return <li title={tab.name} key={tab.type} className={`tabs-title`}>
                          <NavLink to={{
                              pathname: `/${tab.type}`,
@@ -203,7 +195,7 @@ const ExperimentPageRouter = ({atlasUrl, resourcesUrl, experimentAccession, spec
                     {
                         tabs.map((tab) =>
                         {
-                            if(shouldRender(tab, tabCommonProps)) {
+                            if(shouldRenderTab(tab, tabCommonProps)) {
                                return <Route
                                     key={tab.type}
                                     path={`/${tab.type}`}

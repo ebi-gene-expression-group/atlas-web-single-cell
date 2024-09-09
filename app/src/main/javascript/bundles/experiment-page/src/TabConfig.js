@@ -19,11 +19,9 @@ export const tabValidations = new Map([
 export const innerTabValidations = new Map([
     ['Cell plots', ['ks', 'metadata', 'defaultPlotMethodAndParameterisation', 'suggesterEndpoint']],
     ['Marker Genes', ['ksWithMarkerGenes']],
-    ['Anatomogram', ['searchTerm ', 'data']],
 ]);
 
 export const tabCommonValidations = new Map([
-    ['results', ['atlasUrl ', 'experimentAccession']],
     ['experiment-design', ['atlasUrl', 'experimentAccession']],
     ['supplementary-information', ['atlasUrl', 'experimentAccession']],
     ['resources', ['atlasUrl', 'experimentAccession']]

@@ -12,7 +12,7 @@ import BioentityInformation from '@ebi-gene-expression-group/atlas-bioentity-inf
 import { withFetchLoader } from '@ebi-gene-expression-group/atlas-react-fetch-loader'
 
 import {intersection as _intersection, first as _first, map as _map} from 'lodash'
-import {innerTabValidations, isEmptyArray, tabValidations} from "./TabConfig";
+import {innerTabValidations, isEmptyArray, tabValidations} from "./TabConfig"
 
 const BioentityInformationWithFetchLoader = withFetchLoader(BioentityInformation)
 
@@ -49,19 +49,16 @@ class TSnePlotViewRoute extends React.Component {
   }
 
   render() {
-
-    console.log(this.props)
-
     const { location, match, history } = this.props
     const { atlasUrl, suggesterEndpoint, defaultPlotMethodAndParameterisation } = this.props
     const { species, experimentAccession, accessKey, ks, ksWithMarkerGenes, plotTypesAndOptions, metadata, anatomogram } = this.props
     const search = URI(location.search).search(true)
-    if(species === `homo sapiens` && Object.keys(anatomogram).length >0){
-      this.props.enableView(true);
-    }
 
-    if(search.geneId){
-      this.props.enableView(true);
+    if (species === `homo sapiens` && Object.keys(anatomogram).length > 0) {
+      this.props.enableView(true)
+    }
+    if (search.geneId) {
+      this.props.enableView(true)
     }
 
     let plotTypeDropdown =
@@ -259,90 +256,81 @@ class TSnePlotViewRoute extends React.Component {
     // Helper function to check if an array is empty and log message
     const isEmptyArrayAndLog = (route, array, arrayName) => {
       if (!Array.isArray(array) || array.length === 0) {
-        console.log(`${route.title}: ${arrayName} array is empty`);
-        return true;
+        console.log(`${route.title}: ${arrayName} array is empty`)
+        return true
       }
-      return false;
-    };
+      return false
+    }
 
-    var checkIfAnnDataExperiment = function checkIfAnnDataExperiment(experimentAccession) {
-      return /E-ANND-\d*/.test(experimentAccession);
-    };
+    const checkIfAnnDataExperiment = function checkIfAnnDataExperiment(experimentAccession) {
+      return /E-ANND-\d*/.test(experimentAccession)
+    }
 
     function shouldHideCellPlotsTab(route, props) {
-      const requiredProps = innerTabValidations.get(route.title);
-      let shouldHideTab = false;
+      const requiredProps = innerTabValidations.get(route.title)
+      let shouldHideTab = false
       // Iterate through required properties and perform checks
       requiredProps.some(requiredProp => {
-        console.log(`experimentAccession: ${JSON.stringify(experimentAccession)}`);
         // Check for 'ks' array
         if (!checkIfAnnDataExperiment(experimentAccession) && requiredProp === 'ks') {
-          console.log("experimentAccession === 'E-ANND'"+checkIfAnnDataExperiment(experimentAccession))
           if (isEmptyArrayAndLog(route, ks, 'ks')) {
-            shouldHideTab = true;
-            return true; // Early exit
+            shouldHideTab = true
+            return true // Early exit
           }
         }
 
         // Check for 'metadata' array when experimentAccession is 'E-ANND'
         if (checkIfAnnDataExperiment(experimentAccession) && requiredProp === 'metadata') {
           if (isEmptyArrayAndLog(route, metadata, 'metadata')) {
-            shouldHideTab = true;
-            return true;
+            shouldHideTab = true
+            return true
           }
         }
-
-        // Check for 'defaultPlotMethodAndParameterisation' array
+        // Check for 'defaultPlotMethodAndParameterisation' array data
         if (requiredProp === 'defaultPlotMethodAndParameterisation') {
-          console.log("defaultPlotMethodAndParameterisation"+JSON.stringify(defaultPlotMethodAndParameterisation))
           if (defaultPlotMethodAndParameterisation.length == 0) {
-            console.log(`${route.title}: Missing selectedPlotOption and selectedPlotType data`);
-            shouldHideTab = true;
-            return true;
+            console.log(`${route.title}: Missing selectedPlotOption and selectedPlotType data`)
+            shouldHideTab = true
+            return true
           }
         }
-
         if (requiredProp === 'suggesterEndpoint') {
           if (suggesterEndpoint.length == 0) {
-            console.log(route.title + " suggesterEndpoint doesn't have data");
+            console.log(route.title + " suggesterEndpoint doesn't have data")
             shouldHideTab = true
-            return false;
+            return false
           }
         }
 
       })
-      console.log(`${route.title}: status:` + shouldHideTab)
-
       if (shouldHideTab == false) {
-        props.enableView(true);
+        props.enableView(true)
       }
-      return shouldHideTab;
+      return shouldHideTab
     }
 
     function shouldHideMarkerGenesTab(route, props) {
-      const requiredProps = innerTabValidations.get(route.title);
-      let shouldHideTab = false;
+      const requiredProps = innerTabValidations.get(route.title)
+      let shouldHideTab = false
       requiredProps.some(requiredProp => {
-        // Check for 'ks' array
+        // Check for 'ks' array data
         if (requiredProp === 'ks') {
           if (isEmptyArrayAndLog(route, ks, 'ks')) {
-            shouldHideTab = true;
-            return true; // Early exit
+            shouldHideTab = true
+            return true // Early exit
           }
         }
-
         if (checkIfAnnDataExperiment(experimentAccession) || requiredProp == 'ksWithMarkerGenes') {
           if (isEmptyArrayAndLog(route, ksWithMarkerGenes, 'ksWithMarkerGenes')) {
-            shouldHideTab = true;
-            return false;
+            shouldHideTab = true
+            return false
           }
         }
-      });
-      console.log("Marker genes tab: " + shouldHideTab)
+      })
       if (shouldHideTab == false) {
-        props.enableView(true);
+        props.enableView(true)
       }
-      return shouldHideTab;
+      return shouldHideTab
     }
 
     return (

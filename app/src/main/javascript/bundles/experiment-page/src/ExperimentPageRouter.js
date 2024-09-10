@@ -8,7 +8,7 @@ import TSnePlotViewRoute from './TSnePlotViewRoute'
 import ExperimentDesignRoute from './ExperimentDesignRoute'
 import SupplementaryInformationRoute from './SupplementaryInformationRoute'
 import DownloadsRoute from './DownloadsRoute'
-import {isEmptyArray, tabCommonValidations, tabValidations} from "./TabConfig";
+import {isEmptyArray, tabCommonValidations, tabValidations} from "./TabConfig"
 
 const RoutePropTypes = {
     match: PropTypes.object.isRequired,
@@ -38,7 +38,7 @@ function shouldRenderTab(tab, commonProps) {
 
     if (commonRequiredProps != null) {
         commonRequiredProps.some(commonProp => {
-            const propValue = commonProps.valueOf(commonProp);
+            const propValue = commonProps.valueOf(commonProp)
             if (propValue === 'undefined' || propValue == '' || propValue == null) {
                 console.log(`${tab.type} data missing the required value for the attribute ${commonProp}`)
                 shouldRender = false
@@ -63,6 +63,7 @@ function shouldRenderTab(tab, commonProps) {
                     if (isEmptyArray(table)) {
                         table = tabProps[splitProp] || []
                         if (table.length == 0) {
+                            console.log(`${tab.type}: table doesn't have data`)
                             shouldRender = false
                             return false // Early return on failure
                         }
@@ -70,6 +71,7 @@ function shouldRenderTab(tab, commonProps) {
                     if (isEmptyArray(tableHeader)) {
                         tableHeader = table[splitProp] || []
                         if (tableHeader.length == 0) {
+                            console.log(tab.type + ":" + " table headers doesn't have data")
                             shouldRender = false
                             return false
                         }
@@ -78,14 +80,15 @@ function shouldRenderTab(tab, commonProps) {
                     if (isEmptyArray(TableData)) {
                         TableData = tableHeader[splitProp]
                         if (TableData.length == 0) {
+                            console.log(tab.type + ":" + " table table data doesn't have")
                             shouldRender = false
                             return false
                         }
                     }
-                });
+                })
                 return shouldRender
             }
-        });
+        })
     }
     return shouldRender
 }
@@ -154,12 +157,9 @@ const ExperimentPageRouter = ({atlasUrl, resourcesUrl, experimentAccession, spec
 
     const [enableResultTab, setEnableResultTab] = useState(false)
 
-
-
-    let resultTabView;
-    resultTabView = (resultTabView) => {
+    let resultTabView = (resultTabView) => {
         if(resultTabView) {
-            setEnableResultTab(true);
+            setEnableResultTab(true)
         }
     }
 

@@ -33,67 +33,61 @@ const tabTypeComponent = {
 }
 
 function shouldRenderTab(tab, commonProps) {
-    const commonRequiredProps = tabCommonValidations.get(tab.type);
-    let shouldRender = true;
+    const commonRequiredProps = tabCommonValidations.get(tab.type)
+    let shouldRender = true
 
     if (commonRequiredProps != null) {
         commonRequiredProps.some(commonProp => {
             const propValue = commonProps.valueOf(commonProp);
             if (propValue === 'undefined' || propValue == '' || propValue == null) {
-                console.log(`${tab.type} data missing the required value for the attribute ${commonProp}`);
-                shouldRender = false;
-                return false;
+                console.log(`${tab.type} data missing the required value for the attribute ${commonProp}`)
+                shouldRender = false
+                return false
             }
         })
     }
 
-    const requiredProps = tabValidations.get(tab.type);
-    const tabProps = tab.props;
+    const requiredProps = tabValidations.get(tab.type)
+    const tabProps = tab.props
 
     if (requiredProps != null) {
         requiredProps.forEach(requiredProp => {
             // Check if property requires nested object validation
             if (requiredProp.includes('.')) {
-                const splitProps = requiredProp.split('.');
+                const splitProps = requiredProp.split('.')
                 splitProps.forEach(splitProp => {
-
-                    let table = [];
-                    let tableHeader = [];
-                    let TableData = [];
+                    let table = []
+                    let tableHeader = []
+                    let TableData = []
 
                     if (isEmptyArray(table)) {
-                        table = tabProps[splitProp] || [];
+                        table = tabProps[splitProp] || []
                         if (table.length == 0) {
-                            console.log(`${tab.type}: table doesn't have data`);
-                            shouldRender = false;
-                            return false; // Early return on failure
+                            shouldRender = false
+                            return false // Early return on failure
                         }
                     }
                     if (isEmptyArray(tableHeader)) {
-                        tableHeader = table[splitProp] || [];
+                        tableHeader = table[splitProp] || []
                         if (tableHeader.length == 0) {
-                            console.log(tab.type + ":" + " table headers doesn't have data")
-                            shouldRender = false;
-                            return false;
+                            shouldRender = false
+                            return false
                         }
                     }
 
                     if (isEmptyArray(TableData)) {
                         TableData = tableHeader[splitProp]
                         if (TableData.length == 0) {
-                            console.log(tab.type + ":" + " table table data doesn't have")
-                            shouldRender = false;
-                            return false;
+                            shouldRender = false
+                            return false
                         }
                     }
                 });
-                return shouldRender;
+                return shouldRender
             }
         });
     }
-    console.log(tab.type + " data validation pass. Returning " + shouldRender);
-
-    return shouldRender;
+    return shouldRender
 }
 
 const TopRibbon = ({tabs, routeProps, commonProps}) =>

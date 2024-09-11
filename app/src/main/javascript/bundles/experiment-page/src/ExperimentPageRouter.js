@@ -56,9 +56,10 @@ function shouldRenderTab(tab, commonProps) {
             if (requiredProp.includes('.')) {
                 const splitProps = requiredProp.split('.')
                 splitProps.forEach(splitProp => {
+
                     let table = []
                     let tableHeader = []
-                    let TableData = []
+                    let tableData = []
 
                     if (isEmptyArray(table)) {
                         table = tabProps[splitProp] || []
@@ -68,6 +69,7 @@ function shouldRenderTab(tab, commonProps) {
                             return false // Early return on failure
                         }
                     }
+
                     if (isEmptyArray(tableHeader)) {
                         tableHeader = table[splitProp] || []
                         if (tableHeader.length == 0) {
@@ -77,14 +79,15 @@ function shouldRenderTab(tab, commonProps) {
                         }
                     }
 
-                    if (isEmptyArray(TableData)) {
-                        TableData = tableHeader[splitProp]
-                        if (TableData.length == 0) {
-                            console.log(tab.type + ":" + " table table data doesn't have")
+                    if (isEmptyArray(tableData)) {
+                        tableData = tableHeader[splitProp]
+                        if (tableData.length == 0) {
+                            console.log(tab.type + ":" + " table data doesn't have")
                             shouldRender = false
                             return false
                         }
                     }
+
                 })
                 return shouldRender
             }

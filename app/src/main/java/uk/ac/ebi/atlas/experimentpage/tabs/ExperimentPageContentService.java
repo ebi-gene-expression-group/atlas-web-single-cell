@@ -38,9 +38,11 @@ public class ExperimentPageContentService {
     private final CellPlotService cellPlotService;
 
     final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
-            "E-GEOD-130473", "E-HCAD-8", "E-MTAB-6653", "E-GEOD-86618", "E-CURD-11", "E-MTAB-6308",
-            "E-HCAD-10", "E-CURD-10", "E-GEOD-114530", "E-MTAB-7407", "E-MTAB-9067", "E-CURD-126",
-            "E-ANND-2","E-ANND-3","E-ANND-4","E-ANND-5");
+            "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
+            "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
+            "E-HCAD-8", "E-HCAD-10",
+            "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",
+            "E-ANND-1", "E-ANND-2", "E-ANND-3", "E-ANND-4", "E-ANND-5");
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,

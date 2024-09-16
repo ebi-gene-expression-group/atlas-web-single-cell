@@ -48,8 +48,8 @@
                     url: '${pageContext.request.contextPath}/search?mgi_id=MGI:98354'
                 },
                 {
-                    text: 'FBgn0004647 (FlyBase ID)',
-                    url: '${pageContext.request.contextPath}/search?flybase_gene_id=FBgn0004647'
+                    text: 'FBgn0003062 (FlyBase ID)',
+                    url: '${pageContext.request.contextPath}/search?flybase_gene_id=FBgn0003062'
                 },
                 {
                     text: 'keratinocyte (cell type)',

@@ -10,7 +10,9 @@ import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.HighchartsHeatmapAdapter;
 
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
@@ -36,9 +38,9 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
                         experimentAccessions == null ?
                                 multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
-                                        URLDecoder.decode(cellType, StandardCharsets.UTF_8)) :
+                                        new String(Base64.getDecoder().decode(cellType), Charset.defaultCharset())):
                                 multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
                                         ImmutableSet.copyOf(experimentAccessions),
-                                        URLDecoder.decode(cellType, StandardCharsets.UTF_8))));
+                                        new String(Base64.getDecoder().decode(cellType), Charset.defaultCharset()))));
     }
 }

@@ -16,6 +16,7 @@ import uk.ac.ebi.atlas.configuration.TestConfig;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
@@ -62,7 +63,7 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
 
     @Test
     void shouldReturnAValidJsonPayloadForAValidCellType() throws Exception {
-        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", "cell cycle S phase")
+        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", getEncodedCellType("cell cycle S phase"))
                         .param("experimentAccession", "E-ENAD-53"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -74,8 +75,7 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
 
     @Test
     void shouldReturnAValidJsonPayloadForACellTypeContainingAForwardSlash() throws Exception {
-        final String encodedCellType = URLEncoder.encode("cell cycle G2/M phase", StandardCharsets.UTF_8);
-        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", encodedCellType)
+        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", getEncodedCellType("cell cycle G2/M phase"))
                         .param("experimentAccession", "E-ENAD-53"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -87,10 +87,16 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
 
     @Test
     void shouldReturnEmptyPayloadForAnInvalidCellType() throws Exception {
-        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", "fooBar")
-                .param("experimentAccession", "E-CURD-4"))
+        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", getEncodedCellType("fooBar"))
+                        .param("experimentAccession", "E-CURD-4"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$", is(empty())));
+    }
+
+    private static String getEncodedCellType(String cellType) {
+        byte[] CellType = cellType.getBytes(StandardCharsets.UTF_8);
+        final String encodedCellType = Base64.getEncoder().encodeToString(CellType);
+        return encodedCellType;
     }
 }

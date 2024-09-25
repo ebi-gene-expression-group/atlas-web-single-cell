@@ -38,9 +38,9 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
                         experimentAccessions == null ?
                                 multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
-                                        new String(Base64.getDecoder().decode(cellType), Charset.defaultCharset())):
+                                        new String(Base64.getDecoder().decode(cellType), StandardCharsets.UTF_8)):
                                 multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
                                         ImmutableSet.copyOf(experimentAccessions),
-                                        new String(Base64.getDecoder().decode(cellType), Charset.defaultCharset()))));
+                                        new String(Base64.getDecoder().decode(cellType), StandardCharsets.UTF_8))));
     }
 }

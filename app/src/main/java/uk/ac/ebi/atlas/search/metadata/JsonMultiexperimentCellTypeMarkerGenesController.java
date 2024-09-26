@@ -1,6 +1,7 @@
 package uk.ac.ebi.atlas.search.metadata;
 
 import com.google.common.collect.ImmutableSet;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,7 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
     }
 
     @GetMapping(value = "/json/cell-type-marker-genes/{cellType}",
-                produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getCellTypeMarkerGenes(
             @PathVariable String cellType,
             @RequestParam(name = "experiment-accessions", required = false) Collection<String> experimentAccessions) {
@@ -38,9 +39,18 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
                 highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
                         experimentAccessions == null ?
                                 multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
-                                        new String(Base64.getDecoder().decode(cellType), StandardCharsets.UTF_8)):
+                                        getDecodedCellType(cellType)) :
                                 multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
                                         ImmutableSet.copyOf(experimentAccessions),
-                                        new String(Base64.getDecoder().decode(cellType), StandardCharsets.UTF_8))));
+                                        getDecodedCellType(cellType))));
+    }
+
+    private static @NotNull String getDecodedCellType(@NotNull String cellType) {
+        if (cellType == null || cellType.trim().isEmpty()) {
+            throw new IllegalArgumentException("Input cellType cannot be null or empty");
+        }
+
+        byte[] decodedBytes = Base64.getDecoder().decode(cellType);
+        return new String(decodedBytes, StandardCharsets.UTF_8);
     }
 }

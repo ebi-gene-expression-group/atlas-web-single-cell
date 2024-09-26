@@ -95,8 +95,11 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
     }
 
     private static String getEncodedCellType(String cellType) {
-        byte[] CellType = cellType.getBytes(StandardCharsets.UTF_8);
-        final String encodedCellType = Base64.getEncoder().encodeToString(CellType);
-        return encodedCellType;
+        if (cellType == null) {
+            throw new IllegalArgumentException("cellType cannot be null");
+        }
+
+        byte[] cellTypeBytes = cellType.getBytes(StandardCharsets.UTF_8);
+        return Base64.getEncoder().encodeToString(cellTypeBytes);
     }
 }

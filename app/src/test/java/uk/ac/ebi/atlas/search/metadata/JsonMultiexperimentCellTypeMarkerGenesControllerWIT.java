@@ -99,7 +99,6 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
             throw new IllegalArgumentException("cellType cannot be null");
         }
 
-        byte[] cellTypeBytes = cellType.getBytes(StandardCharsets.UTF_8);
-        return Base64.getEncoder().encodeToString(cellTypeBytes);
+        return Base64.getEncoder().encodeToString(cellType.getBytes(StandardCharsets.UTF_8));
     }
 }

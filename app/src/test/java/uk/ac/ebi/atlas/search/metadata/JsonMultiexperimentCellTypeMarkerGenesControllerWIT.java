@@ -63,7 +63,8 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
 
     @Test
     void shouldReturnAValidJsonPayloadForAValidCellType() throws Exception {
-        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", getEncodedCellType("cell cycle S phase"))
+        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}",
+                        getEncodedCellType("cell cycle S phase"))
                         .param("experimentAccession", "E-ENAD-53"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -75,7 +76,8 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
 
     @Test
     void shouldReturnAValidJsonPayloadForACellTypeContainingAForwardSlash() throws Exception {
-        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", getEncodedCellType("cell cycle G2/M phase"))
+        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}",
+                        getEncodedCellType("cell cycle G2/M phase"))
                         .param("experimentAccession", "E-ENAD-53"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -87,7 +89,8 @@ class JsonMultiexperimentCellTypeMarkerGenesControllerWIT {
 
     @Test
     void shouldReturnEmptyPayloadForAnInvalidCellType() throws Exception {
-        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}", getEncodedCellType("fooBar"))
+        this.mockMvc.perform(get("/json/cell-type-marker-genes/{cellType}",
+                        getEncodedCellType("fooBar"))
                         .param("experimentAccession", "E-CURD-4"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

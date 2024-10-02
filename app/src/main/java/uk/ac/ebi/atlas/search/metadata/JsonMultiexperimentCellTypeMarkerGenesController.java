@@ -50,7 +50,6 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
             throw new IllegalArgumentException("Input cellType cannot be null or empty");
         }
 
-        byte[] decodedBytes = Base64.getDecoder().decode(cellType);
-        return new String(decodedBytes, StandardCharsets.UTF_8);
+        return new String(Base64.getDecoder().decode(cellType), StandardCharsets.UTF_8);
     }
 }

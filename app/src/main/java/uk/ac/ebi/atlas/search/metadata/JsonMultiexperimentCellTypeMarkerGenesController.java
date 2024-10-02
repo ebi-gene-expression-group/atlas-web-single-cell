@@ -45,11 +45,10 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
                                         getDecodedCellType(cellType))));
     }
 
-    private static @NotNull String getDecodedCellType(@NotNull String cellType) {
+    private static String getDecodedCellType(String cellType) {
         if (cellType == null || cellType.trim().isEmpty()) {
             throw new IllegalArgumentException("Input cellType cannot be null or empty");
         }
-
         return new String(Base64.getDecoder().decode(cellType), StandardCharsets.UTF_8);
     }
 }

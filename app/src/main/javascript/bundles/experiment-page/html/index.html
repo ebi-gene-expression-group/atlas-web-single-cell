@@ -111,6 +111,7 @@
         name: 'Results',
         props: {
           ks: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+          ksWithMarkerGenes: [10, 13, 16, 21, 34, 42, 52, 63, 7],
           metadata: [
             {
               value: `inferred cell type - authors labels`,
@@ -326,7 +327,7 @@
     ];
 
     experimentPageDemo.render({
-        atlasUrl: 'http://localhost:8080/gxa/sc/',
+        atlasUrl: 'https://wwwdev.ebi.ac.uk/gxa/sc/',
         content: {
           experimentAccession: 'E-MTAB-5061',
           experimentType: 'SINGLE_CELL_RNASEQ_MRNA_BASELINE',

@@ -15,8 +15,6 @@ services:
     extends:
       service: gradle
       file: docker-compose-gradle.yml
-    ports:
-      - "5005:5005"
     command: ["sh", "-c", "gradle clean :app:war"]
 
   gradle-shell:
@@ -29,5 +27,4 @@ services:
     depends_on:
       gradle-build:
         condition: service_completed_successfully
-    ports:
-      - "5006:5005"
+

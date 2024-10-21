@@ -196,4 +196,34 @@ public class MarkerGenesDao {
                         resultSet.getDouble("mean_expression"),
                         resultSet.getString("expression_unit")));
     }
+
+    private static final String SELECT_MARKER_GENES_FOR_INFERRED_CELL_TYPES =
+"SELECT \n" +
+        "                marker_genes.gene_id\n" +
+        "            FROM\n" +
+        "                    scxa_cell_group_membership AS cell_group_membership\n" +
+        "            INNER JOIN\n" +
+        "                      scxa_cell_group_marker_genes AS marker_genes\n" +
+        "                       ON marker_genes.cell_group_id = cell_group_membership.cell_group_id\n" +
+        "             INNER JOIN\n" +
+        "                    scxa_cell_group_marker_gene_stats AS marker_gene_stats\n" +
+        "                    ON marker_genes.id = marker_gene_stats.marker_id\n" +
+        "              WHERE\n" +
+        "                    cell_group_membership.experiment_accession ='E-MTAB-5061'\n" +
+        "                    AND marker_genes.marker_probability <= 0.05\n" +
+        "\n" +
+        "               ORDER BY RANDOM() LIMIT  1";
+
+    public String getMarkerGenesForTheInferredCellTypes(String experimentAccession, String cellGroupType) {
+        var namedParameters =
+                ImmutableMap.of(
+                        "experiment_accession", experimentAccession,
+                        "variable", cellGroupType);
+
+        return namedParameterJdbcTemplate.queryForObject(
+                SELECT_MARKER_GENES_FOR_INFERRED_CELL_TYPES,
+                namedParameters,
+                String.class);
+
+    }
 }

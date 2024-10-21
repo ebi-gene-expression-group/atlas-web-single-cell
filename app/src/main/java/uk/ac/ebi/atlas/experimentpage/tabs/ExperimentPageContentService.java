@@ -13,6 +13,7 @@ import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
 import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
+import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGeneService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
@@ -36,6 +37,7 @@ public class ExperimentPageContentService {
     private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
     private final CellPlotService cellPlotService;
+    private final MarkerGeneService markerGeneService;
 
     final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
@@ -50,7 +52,7 @@ public class ExperimentPageContentService {
                                         CellMetadataService cellMetadataService,
                                         OntologyAccessionsSearchService ontologyAccessionsSearchService,
                                         ExperimentTrader experimentTrader,
-                                        CellPlotService cellPlotService) {
+                                        CellPlotService cellPlotService, MarkerGeneService markerGeneService) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.dataFileHub = dataFileHub;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
@@ -58,6 +60,7 @@ public class ExperimentPageContentService {
         this.ontologyAccessionsSearchService = ontologyAccessionsSearchService;
         this.experimentTrader = experimentTrader;
         this.cellPlotService = cellPlotService;
+        this.markerGeneService = markerGeneService;
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
@@ -81,6 +84,9 @@ public class ExperimentPageContentService {
                 GSON.toJsonTree(fetchDefaultPlotMethodAndParameterisation(experimentAccession)));
 
         result.add("metadata", getMetadata(experimentAccession));
+        result.add("markerGeneMetadata", GSON.toJsonTree
+                (markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes(experimentAccession,
+                        "inferred cell type - ontology labels")));
 
         var units = new JsonArray();
         units.add("CPM");

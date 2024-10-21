@@ -1,6 +1,5 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
@@ -73,4 +72,10 @@ public class MarkerGeneService {
     public ImmutableList<MarkerGene> getMarkerGenesPerCluster(String experimentAccession, String k) {
         return ImmutableList.copyOf(markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k));
     }
+
+    public String isMarkerGenesAvailableForTheInferredCellTypes(String experimentAccession, String cellGroupType) {
+        var markerGene = markerGenesDao.getMarkerGenesForTheInferredCellTypes(experimentAccession,cellGroupType);
+        return markerGene;
+    }
+
 }

@@ -27,7 +27,6 @@ import static org.hamcrest.CoreMatchers.isA;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Disabled
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = TestConfig.class)
@@ -46,14 +45,16 @@ class JsonMarkerGenesControllerWIT {
 
     private static final String markerGeneClusterURL = "/json/experiments/{experimentAccession}/marker-genes/clusters";
     private static final String markerGeneCellTypeURL = "/json/experiments/{experimentAccession}/marker-genes/cell-types";
-    private static final String cellTypeMarkerGenesHeatmapDataURL = "/json/experiments/{experimentAccession}/marker-genes-heatmap/cell-type";
+    private static final String cellTypeMarkerGenesHeatmapDataURL = "/json/experiments/{experimentAccession}/marker-genes-heatmap/cell-types";
     private static final String cellTypesMarkerGenesHeatmapURL = "/json/experiments/{experimentAccession}/marker-genes-heatmap/cellTypeGroups";
+
     @BeforeAll
     void populateDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
                 new ClassPathResource("fixtures/experiment.sql"),
                 new ClassPathResource("fixtures/scxa_analytics.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction.sql"),
                 new ClassPathResource("fixtures/scxa_coords.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_membership.sql"),
@@ -66,12 +67,14 @@ class JsonMarkerGenesControllerWIT {
     void cleanDatabaseTables() {
         var populator = new ResourceDatabasePopulator();
         populator.addScripts(
-                new ClassPathResource("fixtures/experiment-delete.sql"),
-                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"),
                 new ClassPathResource("fixtures/scxa_cell_group_marker_genes-delete.sql"),
-                new ClassPathResource("fixtures/scxa_cell_group_marker_gene_stats-delete.sql"));
+                new ClassPathResource("fixtures/scxa_cell_group_membership-delete.sql"),
+                new ClassPathResource("fixtures/scxa_cell_group-delete.sql"),
+                new ClassPathResource("fixtures/scxa_coords-delete.sql"),
+                new ClassPathResource("fixtures/scxa_dimension_reduction-delete.sql"),
+                new ClassPathResource("fixtures/scxa_analytics-delete.sql"),
+                new ClassPathResource("fixtures/experiment-delete.sql"));
         populator.execute(dataSource);
     }
 
@@ -135,8 +138,7 @@ class JsonMarkerGenesControllerWIT {
     void isCellTypeMarkerGenesHeatmapDataIsValidJsonForCellTypesAndCellGroup() throws Exception {
         this.mockMvc
                 .perform(get(cellTypeMarkerGenesHeatmapDataURL, "E-MTAB-5061")
-                        .param("cellType", "mast cell", "mast cell")
-                        .param("cellGroupType", "inferred cell type -ontology labels"))
+                        .param("cellGroupType", "inferred cell type - ontology labels"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$[0].cellGroupValueWhereMarker", isA(String.class)))
@@ -148,6 +150,7 @@ class JsonMarkerGenesControllerWIT {
                 .andExpect(jsonPath("$[0].pValue", isA(Number.class)));
     }
 
+    @Disabled
     @Test
     void isCellTypesMarkerGenesHeatmapDataIsValidJsonForCellTypeGroup() throws Exception {
         this.mockMvc

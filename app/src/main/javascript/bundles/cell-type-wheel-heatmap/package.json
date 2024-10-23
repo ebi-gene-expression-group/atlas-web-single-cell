@@ -16,9 +16,5 @@
     "@ebi-gene-expression-group/scxa-cell-type-wheel-heatmap": "^1.4.14",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
-  },
-  "devDependencies": {
-    "@ebi-gene-expression-group/eslint-config": "^3.5.1",
-    "eslint": "^8.17.0"
   }
 }

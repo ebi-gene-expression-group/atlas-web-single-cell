@@ -63,6 +63,7 @@ public class MarkerGeneService {
                 .filter(markerGene -> !markerGene.cellGroupValueWhereMarker().equalsIgnoreCase("Not available"))
                 .collect(toImmutableList());
     }
+
     /**
      * @param experimentAccession - Id of the experiment
      * @param k                   - no of clusters
@@ -73,9 +74,8 @@ public class MarkerGeneService {
         return ImmutableList.copyOf(markerGenesDao.getMarkerGenesWithAveragesPerCluster(experimentAccession, k));
     }
 
-    public String isMarkerGenesAvailableForTheInferredCellTypes(String experimentAccession, String cellGroupType) {
-        var markerGene = markerGenesDao.getMarkerGenesForTheInferredCellTypes(experimentAccession,cellGroupType);
-        return markerGene;
+    public Integer isMarkerGenesAvailableForTheInferredCellTypes(String experimentAccession, String cellGroupType) {
+        return markerGenesDao.getMarkerGenesForTheInferredCellTypes(experimentAccession, cellGroupType);
     }
 
 }

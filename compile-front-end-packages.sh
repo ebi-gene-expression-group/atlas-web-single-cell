@@ -67,7 +67,6 @@ for MODULE_DIR in `ls`
 do
   pushd .
   cd $MODULE_DIR
-  update_npm_package
   echo ">> $PWD$ npm run prepare"
   npm run prepare
   popd

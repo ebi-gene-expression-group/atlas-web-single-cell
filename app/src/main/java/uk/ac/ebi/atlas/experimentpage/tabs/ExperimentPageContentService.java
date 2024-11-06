@@ -30,6 +30,12 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Service
 public class ExperimentPageContentService {
+    final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
+            "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
+            "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
+            "E-HCAD-8", "E-HCAD-10",
+            "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",
+            "E-ANND-1", "E-ANND-2", "E-ANND-3", "E-ANND-4", "E-ANND-5");
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
@@ -38,13 +44,6 @@ public class ExperimentPageContentService {
     private final ExperimentTrader experimentTrader;
     private final CellPlotService cellPlotService;
     private final MarkerGeneService markerGeneService;
-
-    final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
-            "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
-            "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
-            "E-HCAD-8", "E-HCAD-10",
-            "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",
-            "E-ANND-1", "E-ANND-2", "E-ANND-3", "E-ANND-4", "E-ANND-5");
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
@@ -61,6 +60,12 @@ public class ExperimentPageContentService {
         this.experimentTrader = experimentTrader;
         this.cellPlotService = cellPlotService;
         this.markerGeneService = markerGeneService;
+    }
+
+    // Smart-Seq-like experiments will contain the substring “smart” in their technology types
+    private static boolean isSmartExperiment(Collection<String> technologyType) {
+        return technologyType.stream()
+                .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
@@ -83,10 +88,15 @@ public class ExperimentPageContentService {
         result.add("defaultPlotMethodAndParameterisation",
                 GSON.toJsonTree(fetchDefaultPlotMethodAndParameterisation(experimentAccession)));
 
-        result.add("metadata", getMetadata(experimentAccession));
-        result.add("markerGeneMetadata", GSON.toJsonTree
-                (markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes(experimentAccession,
-                        "inferred cell type - ontology labels")));
+        var markerMetadataArray = getMetadata(experimentAccession);
+
+        result.add("metadata", markerMetadataArray);
+
+        result.add("markerGeneMetadata", getMarkerGeneMetadata(markerMetadataArray, experimentAccession));
+
+//        GSON.toJsonTree
+//                (markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes(experimentAccession,
+//                        "inferred cell type - ontology labels")));
 
         var units = new JsonArray();
         units.add("CPM");
@@ -241,13 +251,27 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    // Smart-Seq-like experiments will contain the substring “smart” in their technology types
-    private static boolean isSmartExperiment(Collection<String> technologyType) {
-        return technologyType.stream()
-                .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
+    public ImmutableMap fetchDefaultPlotMethodAndParameterisation(String experimentAccession) {
+        return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 
-    public ImmutableMap fetchDefaultPlotMethodAndParameterisation(String experimentAccession){
-        return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
+    public JsonArray getMarkerGeneMetadata(JsonArray markerGeneMetadata, String experimentAccession) {
+        var updatedJsonArray = new JsonArray();
+
+        markerGeneMetadata.forEach(item -> {
+            JsonObject jsonObject = item.getAsJsonObject();
+            if (jsonObject.has("inferred_cell_type_-_ontology_labels")) {
+                var result = markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes
+                        (experimentAccession, "inferred cell type - ontology labels");
+                if (result > 0) {
+                    jsonObject.addProperty("status", "true");
+                    updatedJsonArray.add(jsonObject);
+                } else {
+                    jsonObject.addProperty("status", "false");
+                    updatedJsonArray.add(jsonObject);
+                }
+            }
+        });
+        return updatedJsonArray;
     }
 }

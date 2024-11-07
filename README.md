@@ -302,7 +302,7 @@ For the first step you can run the following script:
  ./compile-front-end-packages.sh -iu
 ```
 
-The sceond step is simply:
+The second step is simply:
 ```bash
 ./gradlew :app:war
 ```

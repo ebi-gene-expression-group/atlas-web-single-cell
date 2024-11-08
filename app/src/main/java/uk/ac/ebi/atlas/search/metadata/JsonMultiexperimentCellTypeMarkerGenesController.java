@@ -1,7 +1,6 @@
 package uk.ac.ebi.atlas.search.metadata;
 
 import com.google.common.collect.ImmutableSet;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import uk.ac.ebi.atlas.experimentpage.markergenes.HighchartsHeatmapAdapter;
 
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
@@ -36,7 +33,7 @@ public class JsonMultiexperimentCellTypeMarkerGenesController extends JsonExcept
             @PathVariable String cellType,
             @RequestParam(name = "experiment-accessions", required = false) Collection<String> experimentAccessions) {
         return GSON.toJson(
-                highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
+                highchartsHeatmapAdapter.getSortedMarkerGeneData(
                         experimentAccessions == null ?
                                 multiexperimentCellTypeMarkerGenesService.getCellTypeMarkerGeneProfile(
                                         getDecodedCellType(cellType)) :

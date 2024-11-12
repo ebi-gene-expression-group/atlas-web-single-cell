@@ -2,6 +2,8 @@ package uk.ac.ebi.atlas.solr;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
@@ -17,6 +19,9 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 
 @Component
 public class SingleCellSolrUtils {
+
+    // TODO: only for debugging on our CI - Please remove before merging this PR!!!!!
+    private static final Logger LOGGER = LoggerFactory.getLogger(SingleCellSolrUtils.class);
 
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
@@ -58,6 +63,7 @@ public class SingleCellSolrUtils {
             SolrDocumentList solrDocumentList,
             String schemaFieldName,
             int numberOfCellTypes) {
+        LOGGER.info("Solr Document list: {}", solrDocumentList.toString());
         return Arrays.stream(new Random().ints(numberOfCellTypes, 0, solrDocumentList.size()).toArray())
                 .mapToObj(index -> solrDocumentList.get(index).getFieldValue(schemaFieldName).toString())
                 .collect(toImmutableSet());

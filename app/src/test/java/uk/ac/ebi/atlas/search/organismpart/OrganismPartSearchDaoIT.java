@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -112,7 +113,8 @@ public class OrganismPartSearchDaoIT {
         assertThat(organismParts).isEmpty();
     }
 
-    @Test
+    // TODO: only for debugging on our CI - Please change back to @Test before merging this PR!!!!!
+    @RepeatedTest(100)
     void whenValidCellIdsAndValidCellTypesProvidedReturnSetOfOrganismPart() {
         var randomListOfCellIDs =
                 ImmutableSet.copyOf(

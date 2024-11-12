@@ -8,6 +8,8 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,6 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class OrganismPartSearchDaoIT {
+
+    // TODO: only for debugging on our CI - Please remove before merging this PR!!!!!
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrganismPartSearchDaoIT.class);
 
     @Inject
     private JdbcUtils jdbcUtils;
@@ -119,6 +124,7 @@ public class OrganismPartSearchDaoIT {
         var randomListOfCellIDs =
                 ImmutableSet.copyOf(
                         new HashSet<>(jdbcUtils.fetchRandomListOfCells(3)));
+        LOGGER.info("Random list of cell IDs: {}", randomListOfCellIDs);
         ImmutableSet<String> cellTypes = solrUtils.fetchedRandomCellTypesByCellIDs(randomListOfCellIDs, 1);
 
         var organismParts = subject.searchOrganismPart(randomListOfCellIDs, cellTypes);

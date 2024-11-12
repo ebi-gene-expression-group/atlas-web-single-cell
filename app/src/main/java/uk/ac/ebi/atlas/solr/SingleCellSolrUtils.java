@@ -65,7 +65,10 @@ public class SingleCellSolrUtils {
             int numberOfCellTypes) {
         LOGGER.info("Solr Document list: {}", solrDocumentList.toString());
         return Arrays.stream(new Random().ints(numberOfCellTypes, 0, solrDocumentList.size()).toArray())
-                .mapToObj(index -> solrDocumentList.get(index).getFieldValue(schemaFieldName).toString())
-                .collect(toImmutableSet());
+            // TODO: only for debugging on our CI - Please remove it before merging this PR!!!!!
+            .peek(index -> LOGGER.info("SolrDocument at index({}): {}", index, solrDocumentList.get(index)))
+            .peek(index -> LOGGER.info("SolrDocument's fieldValue({}): {}", schemaFieldName, solrDocumentList.get(index).getFieldValue(schemaFieldName)))
+            .mapToObj(index -> solrDocumentList.get(index).getFieldValue(schemaFieldName).toString())
+            .collect(toImmutableSet());
     }
 }

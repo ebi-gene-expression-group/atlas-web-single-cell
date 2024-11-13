@@ -44,9 +44,10 @@ while getopts ":iuph" opt; do
 done
 
 function update_npm_package {
+  # the latest version @ebi-gene-expression-group/eslint-config has conflict eslint version matching with some front-end components
   if [ "$UPGRADE" = true ]; then
-      echo ">> $PWD$ ncu /@ebi-gene-expression-group/ --pre 1 -u"
-      ncu /@ebi-gene-expression-group/ --pre 1 -u
+      echo ">> $PWD$ ncu --filter /@ebi-gene-expression-group/ --pre 1 --reject @ebi-gene-expression-group/eslint -u "
+      ncu --filter '/@ebi-gene-expression-group.*/' --pre 1 --reject @ebi-gene-expression-group/eslint-config -u
     fi
     if [ "$INIT" = true ]; then
       echo ">> $PWD$ rm -rf node_modules package-lock.json"

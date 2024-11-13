@@ -88,15 +88,11 @@ public class ExperimentPageContentService {
         result.add("defaultPlotMethodAndParameterisation",
                 GSON.toJsonTree(fetchDefaultPlotMethodAndParameterisation(experimentAccession)));
 
-        var markerMetadataArray = getMetadata(experimentAccession);
+        var metadata = getMetadata(experimentAccession);
 
-        result.add("metadata", markerMetadataArray);
+        result.add("metadata", metadata);
 
-        result.add("markerGeneMetadata", getMarkerGeneMetadata(markerMetadataArray, experimentAccession));
-
-//        GSON.toJsonTree
-//                (markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes(experimentAccession,
-//                        "inferred cell type - ontology labels")));
+        result.add("markerGeneMetadata", getMarkerGeneMetadata(metadata, experimentAccession));
 
         var units = new JsonArray();
         units.add("CPM");
@@ -255,23 +251,46 @@ public class ExperimentPageContentService {
         return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 
-    public JsonArray getMarkerGeneMetadata(JsonArray markerGeneMetadata, String experimentAccession) {
-        var updatedJsonArray = new JsonArray();
+    public JsonArray getMarkerGeneMetadata(JsonArray metadata, String experimentAccession) {
+        var markerGenesArray = new JsonArray();
 
-        markerGeneMetadata.forEach(item -> {
+        metadata.forEach(item -> {
             JsonObject jsonObject = item.getAsJsonObject();
-            if (jsonObject.has("inferred_cell_type_-_ontology_labels")) {
+            if (containsValue(jsonObject, "value", "inferred_cell_type_-_ontology_labels")) {
                 var result = markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes
                         (experimentAccession, "inferred cell type - ontology labels");
                 if (result > 0) {
                     jsonObject.addProperty("status", "true");
-                    updatedJsonArray.add(jsonObject);
+                    markerGenesArray.add(jsonObject);
                 } else {
                     jsonObject.addProperty("status", "false");
-                    updatedJsonArray.add(jsonObject);
+                    markerGenesArray.add(jsonObject);
+                }
+            }
+
+            if (containsValue(jsonObject, "value", "inferred_cell_type_-_authors_labels")) {
+                var result = markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes
+                        (experimentAccession, "Inferred cell type - authors labels");
+                if (result > 0) {
+                    jsonObject.addProperty("status", "true");
+                    markerGenesArray.add(jsonObject);
+                } else {
+                    jsonObject.addProperty("status", "false");
+                    markerGenesArray.add(jsonObject);
                 }
             }
         });
-        return updatedJsonArray;
+        return markerGenesArray;
     }
+
+
+    private boolean containsValue(JsonObject jsonObject, String key, Object value) {
+        // Check if the key exists and if its value matches the specified value
+        if (jsonObject.has(key)) {
+            String jsonValue = jsonObject.get(key).getAsString();
+            return jsonValue != null && jsonValue.equals(value.toString());
+        }
+        return false;
+    }
+
 }

@@ -29,18 +29,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MarkerGenesDaoIT {
-    @Inject
-    private DataSource dataSource;
-
-    @Inject
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    @Inject
-    private JdbcUtils jdbcTestUtils;
-
     private static final String EXPERIMENT_ACCESSION_WITH_MARKER_GENES = "E-GEOD-99058";
     private static final String CELL_GROUP_EXPERIMENT_ACCESSION_WITH_MARKER_GENES = "E-EHCA-2";
-
+    @Inject
+    private DataSource dataSource;
+    @Inject
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Inject
+    private JdbcUtils jdbcTestUtils;
     private MarkerGenesDao subject;
 
     @BeforeAll
@@ -130,5 +126,29 @@ class MarkerGenesDaoIT {
         assertThat(cellTypeMarkerGenes)
                 .allMatch(markerGene -> markerGene.cellGroupType().equals("inferred cell type - ontology labels"));
 
+    }
+
+    @Test
+    void getMarkerGenesRecordCount_IfTheMarkerGenesExistForTheOntologyLabels() {
+        var markerGenesRecordsCount = subject.getMarkerGenesForTheInferredCellTypes(
+                "E-MTAB-5061", "inferred cell type - ontology labels");
+
+        assertThat(markerGenesRecordsCount).isGreaterThan(0);
+    }
+
+    @Test
+    void getMarkerGenesRecordCount_IfTheMarkerGenesExistForTheAuthorsLabels() {
+        var markerGenesRecordsCount = subject.getMarkerGenesForTheInferredCellTypes(
+                "E-MTAB-5061", "inferred cell type - authors labels");
+
+        assertThat(markerGenesRecordsCount).isGreaterThan(0);
+    }
+
+    @Test
+    void getMarkerGenesRecordCountZero_IfTheMarkerGenesDoesNotExistForTheAuthorsLabelsAOrOntologyLabels() {
+        var markerGenesRecordsCount = subject.getMarkerGenesForTheInferredCellTypes(
+                "foo", "inferred cell type - authors labels");
+
+        assertThat(markerGenesRecordsCount).isZero();
     }
 }

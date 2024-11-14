@@ -67,6 +67,50 @@ public class MarkerGeneServiceTest {
         assertThat(subject.getCellTypeMarkerGeneProfile("E-EHCA-2", ImmutableSet.of("skin"))).isEmpty();
     }
 
+    @Test
+    void getMarkerGenesCountForTheInferredCelltypeOntologyLabels() {
+        when(markerGenesDaoMock.getMarkerGenesForTheInferredCellTypes("E-EHCA-2", "inferred cell type - ontology labels"))
+                .thenReturn(1);
+
+        assertThat(subject.isMarkerGenesAvailableForTheInferredCellTypes("E-EHCA-2", "inferred cell type - ontology labels"))
+                .isGreaterThan(0);
+    }
+
+    @Test
+    void getMarkerGenesCountForInferredCellTypeAuthorsLabels() {
+        when(markerGenesDaoMock.getMarkerGenesForTheInferredCellTypes(
+                "E-EHCA-2",
+                "Inferred cell type - authors labels"))
+                .thenReturn(1);
+        assertThat(subject.isMarkerGenesAvailableForTheInferredCellTypes(
+                "E-EHCA-2",
+                "inferred cell type - ontology labels"))
+                .isGreaterThan(0);
+    }
+
+    @Test
+    void getMarkerGenesCountZero_IfTheMarkerGenesDoesNotExistForTheOntologyLabels() {
+        when(markerGenesDaoMock.getMarkerGenesForTheInferredCellTypes(
+                "E-EHCA-2",
+                "inferred cell type - ontology labels"))
+                .thenReturn(0);
+        assertThat(subject.isMarkerGenesAvailableForTheInferredCellTypes(
+                "E-EHCA-2",
+                "inferred cell type - ontology labels"))
+                .isZero();
+    }
+
+    @Test
+    void getMarkerGenesCountZero_IfTheMarkerGenesDoesNotExistForTheAuthorsLabels() {
+        when(markerGenesDaoMock.getMarkerGenesForTheInferredCellTypes("E-EHCA-2",
+                "inferred cell type - Authors labels"))
+                .thenReturn(0);
+        assertThat(subject.isMarkerGenesAvailableForTheInferredCellTypes(
+                "E-EHCA-2",
+                "inferred cell type - Authors labels"))
+                .isZero();
+    }
+
     private List<MarkerGene> mockTestData() {
         return ImmutableList.of(
                 MarkerGene.create("1", "inferred cell type",

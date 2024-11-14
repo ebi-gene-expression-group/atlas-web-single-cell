@@ -129,7 +129,7 @@ class MarkerGenesDaoIT {
     }
 
     @Test
-    void getMarkerGenesRecordCount_IfTheMarkerGenesExistForTheOntologyLabels() {
+    void getMarkerGenesCount_IfTheMarkerGenesExistForTheOntologyLabels() {
         var markerGenesRecordsCount = subject.getMarkerGenesForTheInferredCellTypes(
                 "E-MTAB-5061", "inferred cell type - ontology labels");
 
@@ -137,15 +137,15 @@ class MarkerGenesDaoIT {
     }
 
     @Test
-    void getMarkerGenesRecordCount_IfTheMarkerGenesExistForTheAuthorsLabels() {
+    void getMarkerGenesCount_IfTheMarkerGenesExistForTheAuthorsLabels() {
         var markerGenesRecordsCount = subject.getMarkerGenesForTheInferredCellTypes(
-                "E-MTAB-5061", "inferred cell type - authors labels");
+                "E-EHCA-2", "inferred cell type - authors labels");
 
         assertThat(markerGenesRecordsCount).isGreaterThan(0);
     }
 
     @Test
-    void getMarkerGenesRecordCountZero_IfTheMarkerGenesDoesNotExistForTheAuthorsLabelsAOrOntologyLabels() {
+    void getMarkerGenesCountZero_IfTheMarkerGenesDoesNotExistForTheAuthorsLabelsAOrOntologyLabels() {
         var markerGenesRecordsCount = subject.getMarkerGenesForTheInferredCellTypes(
                 "foo", "inferred cell type - authors labels");
 

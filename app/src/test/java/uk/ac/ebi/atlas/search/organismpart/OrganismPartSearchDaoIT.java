@@ -4,21 +4,18 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import uk.ac.ebi.atlas.configuration.TestConfig;
+import uk.ac.ebi.atlas.solr.SingleCellSolrUtils;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.testutils.JdbcUtils;
-import uk.ac.ebi.atlas.solr.SingleCellSolrUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -31,9 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class OrganismPartSearchDaoIT {
-
-    // TODO: only for debugging on our CI - Please remove before merging this PR!!!!!
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrganismPartSearchDaoIT.class);
 
     @Inject
     private JdbcUtils jdbcUtils;
@@ -118,13 +112,11 @@ public class OrganismPartSearchDaoIT {
         assertThat(organismParts).isEmpty();
     }
 
-    // TODO: only for debugging on our CI - Please change back to @Test before merging this PR!!!!!
-    @RepeatedTest(100)
+    @Test
     void whenValidCellIdsAndValidCellTypesProvidedReturnSetOfOrganismPart() {
         var randomListOfCellIDs =
                 ImmutableSet.copyOf(
                         new HashSet<>(jdbcUtils.fetchRandomListOfCells(3)));
-        LOGGER.info("Random list of cell IDs: {}", randomListOfCellIDs);
         ImmutableSet<String> cellTypes = solrUtils.fetchedRandomCellTypesByCellIDs(randomListOfCellIDs, 1);
 
         var organismParts = subject.searchOrganismPart(randomListOfCellIDs, cellTypes);

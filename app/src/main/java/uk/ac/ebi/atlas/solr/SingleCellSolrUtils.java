@@ -2,8 +2,6 @@ package uk.ac.ebi.atlas.solr;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.atlas.solr.cloud.SolrCloudCollectionProxyFactory;
 import uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollectionProxy;
@@ -20,9 +18,6 @@ import static uk.ac.ebi.atlas.solr.cloud.collections.SingleCellAnalyticsCollecti
 @Component
 public class SingleCellSolrUtils {
 
-    // TODO: only for debugging on our CI - Please remove before merging this PR!!!!!
-    private static final Logger LOGGER = LoggerFactory.getLogger(SingleCellSolrUtils.class);
-
     private final SingleCellAnalyticsCollectionProxy singleCellAnalyticsCollectionProxy;
 
     private static final int MAX_ROWS = 10000;
@@ -36,6 +31,7 @@ public class SingleCellSolrUtils {
         SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder = new SolrQueryBuilder<>();
         queryBuilder
                 .addQueryFieldByTerm(CELL_ID, cellIDs)
+                .exists(CTW_CELL_TYPE)
                 .setFieldList(CTW_CELL_TYPE)
                 .setRows(MAX_ROWS);
 
@@ -63,11 +59,7 @@ public class SingleCellSolrUtils {
             SolrDocumentList solrDocumentList,
             String schemaFieldName,
             int numberOfCellTypes) {
-        LOGGER.info("Solr Document list: {}", solrDocumentList.toString());
         return Arrays.stream(new Random().ints(numberOfCellTypes, 0, solrDocumentList.size()).toArray())
-            // TODO: only for debugging on our CI - Please remove it before merging this PR!!!!!
-            .peek(index -> LOGGER.info("SolrDocument at index({}): {}", index, solrDocumentList.get(index)))
-            .peek(index -> LOGGER.info("SolrDocument's fieldValue({}): {}", schemaFieldName, solrDocumentList.get(index).getFieldValue(schemaFieldName)))
             .mapToObj(index -> solrDocumentList.get(index).getFieldValue(schemaFieldName).toString())
             .collect(toImmutableSet());
     }

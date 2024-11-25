@@ -45,6 +45,7 @@ public class SingleCellSolrUtils {
         SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder = new SolrQueryBuilder<>();
         queryBuilder
                 .addQueryFieldByTerm(CELL_ID, cellIDs)
+                .exists(CTW_CELL_TYPE)
                 .setFieldList(CTW_ORGANISM_PART)
                 .setRows(MAX_ROWS);
 

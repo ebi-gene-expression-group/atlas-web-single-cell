@@ -5,7 +5,6 @@
     "access": "public"
   },
   "description": "Wrapper for all experiment pages with router, result page including cell type plots, gene expression heatmap, organ anatomogram page",
-
   "main": "index.js",
   "author": "Expression Atlas developers <atlas-developers@ebi.ac.uk>",
   "collaborators": [
@@ -13,7 +12,7 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "@ebi-gene-expression-group/scxa-experiment-page": "file:../../../../../../../atlas-components/packages/scxa-experiment-page",
+    "@ebi-gene-expression-group/scxa-experiment-page": "^1.0.0-batch",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }

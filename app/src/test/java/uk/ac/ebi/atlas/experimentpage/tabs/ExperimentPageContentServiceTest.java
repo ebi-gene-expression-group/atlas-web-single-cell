@@ -30,8 +30,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentService.EXPERIMENTS_WITH_NO_ANATOMOGRAM;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,8 +44,6 @@ class ExperimentPageContentServiceTest {
     private static final String EXPERIMENT_FILES_URI_TEMPLATE =
             "experiment/abc/download?fileType=xyz&accessKey=efg";
     private static final String EXPERIMENT_ACCESSION = generateRandomExperimentAccession();
-    private static final String NON_ANATOMOGRAM_EXPERIMENT_ACCESSION =
-            EXPERIMENTS_WITH_NO_ANATOMOGRAM.asList().get(RNG.nextInt(EXPERIMENTS_WITH_NO_ANATOMOGRAM.size()));
     private final JsonObject tpmsDownloadJsonObject = new JsonObject();
     @Mock
     private ExperimentFileLocationService experimentFileLocationServiceMock;
@@ -109,17 +107,17 @@ class ExperimentPageContentServiceTest {
                 "")
         ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
 
-        when(tsnePlotSettingsServiceMock.getAvailableKs(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+        when(tsnePlotSettingsServiceMock.getAvailableKs(anyString()))
                 .thenReturn(ImmutableList.of(1, 2, 3));
-        when(tsnePlotSettingsServiceMock.getKsWithMarkerGenes(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+        when(tsnePlotSettingsServiceMock.getKsWithMarkerGenes(anyString()))
                 .thenReturn(ImmutableList.of("1", "2"));
-        when(tsnePlotSettingsServiceMock.getExpectedClusters(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+        when(tsnePlotSettingsServiceMock.getExpectedClusters(anyString()))
                 .thenReturn(Optional.of(1));
-        when(tsnePlotSettingsServiceMock.getAvailablePerplexities(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+        when(tsnePlotSettingsServiceMock.getAvailablePerplexities(anyString()))
                 .thenReturn(ImmutableList.of(1, 2, 3));
-        when(cellMetadataServiceMock.getMetadataTypes(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
-                .thenReturn(ImmutableSet.of("foo"));
-        when(cellMetadataServiceMock.getMetadataValuesForGivenType(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION, "foo"))
+        when(cellMetadataServiceMock.getMetadataTypes(anyString()))
+                .thenReturn(ImmutableSet.of("foo", "bar", "foo bar"));
+        when(cellMetadataServiceMock.getMetadataValuesForGivenType(anyString(), anyString()))
                 .thenReturn(ImmutableMap.of());
 
         subject = new ExperimentPageContentService(
@@ -186,8 +184,7 @@ class ExperimentPageContentServiceTest {
 
     @Test
     void anatomogramDoesNotExistForValidExperiment() {
-        var result = this.subject.getTsnePlotData(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION);
-
+        var result = this.subject.getTsnePlotData("E-CURD-10");
         assertThat(result.getAsJsonObject("anatomogram").size()).isEqualTo(0);
     }
 

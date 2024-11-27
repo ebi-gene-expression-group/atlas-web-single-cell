@@ -12,7 +12,6 @@ import java.util.function.Function;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 
 @Component
@@ -20,25 +19,18 @@ public class HighchartsHeatmapAdapter {
     private static final Function<MarkerGene, Pair<String, String>> MARKER_GENE_ID_TO_CELL_GROUP_VALUE_WHERE_MARKER =
             markerGene -> Pair.of(markerGene.geneId(), markerGene.cellGroupValueWhereMarker());
 
-    private static final Comparator<MarkerGene> CELL_GROUP_VALUE_WHERE_MARKER_LEXICOGRAPHICAL =
-            comparing(MarkerGene::cellGroupValueWhereMarker).thenComparing(MarkerGene::pValue);
-
     private static final Comparator<MarkerGene> MARKER_NATURALLY_ORDERED_BY_CELL_GROUP_VALUE =
-            new MarkerGeneComparatorByCellGroupValueByMarker();
+            new MarkerGeneComparatorByCellGroupValueWhereMarker();
 
     private static final Comparator<MarkerGene> MARKER_GENE_COMPARATOR =
             MARKER_NATURALLY_ORDERED_BY_CELL_GROUP_VALUE.thenComparing(MarkerGene::pValue);
+
+    private static final Comparator<String> CLUSTER_NAME_COMPARATOR = new ClusterNameComparator();
 
     private final BioEntityPropertyDao bioEntityPropertyDao;
 
     public HighchartsHeatmapAdapter(BioEntityPropertyDao bioEntityPropertyDao) {
         this.bioEntityPropertyDao = bioEntityPropertyDao;
-    }
-
-    public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapDataSortedNaturally
-            (Collection<MarkerGene> markerGenes) {
-
-        return getMarkerGeneHeatmapData(markerGenes, MARKER_GENE_COMPARATOR);
     }
 
     /**
@@ -49,16 +41,21 @@ public class HighchartsHeatmapAdapter {
      * The rows of the heatmap are ordered by the cell type, i.e. genes for celltype 1, 2, etc.
      * If there are no marker genes for a cell group, then no rows will be present in the data.
      */
-    public ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapDataSortedLexicographically(
-            Collection<MarkerGene> markerGenes) {
+    public ImmutableList<ImmutableMap<String, Object>> getSortedMarkerGeneData
+            (Collection<MarkerGene> markerGenes) {
+        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes);
 
-        return getMarkerGeneHeatmapData(markerGenes, CELL_GROUP_VALUE_WHERE_MARKER_LEXICOGRAPHICAL);
+        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
+
+        var columns = getColumnsFromSortedMarkerGenes(sortedMarkerGenes);
+
+        return getMarkerGeneHeatmapData(sortedMarkerGenes, rows, columns);
     }
 
-    private ImmutableList<MarkerGene> getSortedMarkerGenes(Collection<MarkerGene> markerGenes, Comparator<MarkerGene> markerGeneComparator) {
+    private ImmutableList<MarkerGene> getSortedMarkerGenes(Collection<MarkerGene> markerGenes) {
         return mergeSameGeneIdIntoSingleGroup(markerGenes).stream()
                 .parallel()
-                .sorted(markerGeneComparator)
+                .sorted(MARKER_GENE_COMPARATOR)
                 .collect(toImmutableList());
     }
 
@@ -73,18 +70,13 @@ public class HighchartsHeatmapAdapter {
         return sortedMarkerGenes.stream()
                 .map(MarkerGene::cellGroupValue)
                 .distinct()
-                .sorted()
+                .sorted(CLUSTER_NAME_COMPARATOR)
                 .collect(toImmutableList());
     }
 
-    private ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapData(Collection<MarkerGene> markerGenes,
-                                                                                 Comparator<MarkerGene> markerGeneComparator) {
-        var sortedMarkerGenes = getSortedMarkerGenes(markerGenes, markerGeneComparator);
-
-        var rows = getRowsFromSortedMarkerGenes(sortedMarkerGenes);
-
-        var columns = getColumnsFromSortedMarkerGenes(sortedMarkerGenes);
-
+    private ImmutableList<ImmutableMap<String, Object>> getMarkerGeneHeatmapData(Collection<MarkerGene> sortedMarkerGenes,
+                                                                                 ImmutableList<Pair<String, String>> rows,
+                                                                                 ImmutableList<String> columns) {
         var symbolsForGeneIds =
                 bioEntityPropertyDao.getSymbolsForGeneIds(
                         sortedMarkerGenes.stream().map(MarkerGene::geneId).collect(toImmutableSet()));

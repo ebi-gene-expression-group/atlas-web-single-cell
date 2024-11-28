@@ -30,12 +30,13 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Service
 public class ExperimentPageContentService {
-    final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
+    private static final ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
             "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
             "E-HCAD-8", "E-HCAD-10",
             "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",
             "E-ANND-1", "E-ANND-2", "E-ANND-3", "E-ANND-4", "E-ANND-5");
+    private static final String EXPERIMENT_TECHNOLOGY_TYPE_PREFIX = "smart-";
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
@@ -62,15 +63,14 @@ public class ExperimentPageContentService {
         this.markerGeneService = markerGeneService;
     }
 
-    // Smart-Seq-like experiments will contain the substring “smart” in their technology types
+
     private static boolean isSmartExperiment(Collection<String> technologyType) {
         return technologyType.stream()
-                .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
+                .anyMatch(type -> type.toLowerCase().startsWith(EXPERIMENT_TECHNOLOGY_TYPE_PREFIX));
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
         var result = new JsonObject();
-
         result.add(
                 "ks",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailableKs(experimentAccession)));
@@ -88,11 +88,9 @@ public class ExperimentPageContentService {
         result.add("defaultPlotMethodAndParameterisation",
                 GSON.toJsonTree(fetchDefaultPlotMethodAndParameterisation(experimentAccession)));
 
-        var metadata = getMetadata(experimentAccession);
+        result.add("metadata", getMetadata(experimentAccession));
 
-        result.add("metadata", metadata);
-
-        result.add("markerGeneMetadata", getMarkerGeneMetadata(metadata, experimentAccession));
+        result.add("markerGeneMetadata", getMarkerGeneMetadata(result.getAsJsonArray("metadata"), experimentAccession));
 
         var units = new JsonArray();
         units.add("CPM");
@@ -196,7 +194,6 @@ public class ExperimentPageContentService {
                 .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
                 .collect(Collectors.toSet())
                 .forEach(metadata -> metadataArray.add(GSON.toJsonTree(metadata)));
-
         return metadataArray;
     }
 

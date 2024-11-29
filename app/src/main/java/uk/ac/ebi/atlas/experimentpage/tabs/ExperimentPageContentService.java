@@ -253,10 +253,9 @@ public class ExperimentPageContentService {
 
         metadata.forEach(item -> {
             JsonObject jsonObject = item.getAsJsonObject();
-            processMarkerGene(jsonObject, experimentAccession,
+            markerGenesArray.add(processMarkerGene(jsonObject, experimentAccession,
                     "inferred_cell_type_-_ontology_labels",
-                    "inferred cell type - ontology labels",
-                    markerGenesArray);
+                    "inferred cell type - ontology labels"));
             processMarkerGene(jsonObject, experimentAccession,
                     "inferred_cell_type_-_authors_labels",
                     "Inferred cell type - authors labels",

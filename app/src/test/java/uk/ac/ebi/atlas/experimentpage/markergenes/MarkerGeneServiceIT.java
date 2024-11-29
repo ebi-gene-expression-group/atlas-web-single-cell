@@ -132,7 +132,7 @@ class MarkerGeneServiceIT {
     @Test
     void getMarkerGenesCountForTheInferredCellTypesAuthorsLabel() {
         assertThat(subject.isMarkerGenesAvailableForTheInferredCellTypes(
-                "E-MTAB-5061", "inferred cell type - ontology labels"))
+"E-MTAB-5061", "inferred cell type - authors labels"))
                 .isGreaterThan(0);
     }
 }

@@ -331,11 +331,6 @@ class JsonGeneSearchControllerWIT {
 
     private Map<String, String> generateGeneSearchParams() {
         var geneId = jdbcTestUtils.fetchRandomGene();
-
-        // Some gene IDs don’t have a symbol, e.g. ERCC-00044
-        // Also, it turns out that some gene symbols like Vmn1r216 match more than one gene ID within the same species:
-        // ENSMUSG00000115697 and ENSMUSG00000116057
-        // We don’t want any of those pesky gene IDs!
         var matchingSymbols = bioEntityPropertyDao.fetchPropertyValuesForGeneId(geneId, SYMBOL);
         while (matchingSymbols.isEmpty() ||
             bioEntityPropertyDao.fetchGeneIdsForPropertyValue(

@@ -30,27 +30,27 @@ public class JsonMarkerGenesController extends JsonExceptionHandlingController {
     public String getClusterMarkerGenes(@PathVariable String experimentAccession,
                                         @RequestParam String k) {
         return GSON.toJson(
-                highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedNaturally(
-                        markerGeneService.getMarkerGenesPerCluster(experimentAccession, k)
-                ));
+            highchartsHeatmapAdapter.getSortedMarkerGeneData(
+                markerGeneService.getMarkerGenesPerCluster(experimentAccession, k)
+            ));
     }
 
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes/cell-types",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getCellTypeMarkerGenes(@PathVariable String experimentAccession,
                                          @RequestParam Set<String> organismPart) {
-        return GSON.toJson(highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
-                markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, ImmutableSet.copyOf(organismPart))
+        return GSON.toJson(highchartsHeatmapAdapter.getSortedMarkerGeneData(
+            markerGeneService.getCellTypeMarkerGeneProfile(experimentAccession, ImmutableSet.copyOf(organismPart))
         ));
     }
 
     @GetMapping(value = "/json/experiments/{experimentAccession}/marker-genes-heatmap/cell-types",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getCellTypeMarkerGenesHeatmapData(@PathVariable String experimentAccession,
-                                                @RequestParam String cellGroupType) {
-        return GSON.toJson(highchartsHeatmapAdapter.getMarkerGeneHeatmapDataSortedLexicographically(
+                                                    @RequestParam String cellGroupType) {
+        return GSON.toJson(
+            highchartsHeatmapAdapter.getSortedMarkerGeneData(
                 markerGeneService.getCellTypeMarkerGeneHeatmapData(experimentAccession, cellGroupType)
-        ));
+            ));
     }
-
 }

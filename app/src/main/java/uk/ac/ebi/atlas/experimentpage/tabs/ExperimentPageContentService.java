@@ -256,10 +256,9 @@ public class ExperimentPageContentService {
             markerGenesArray.add(processMarkerGene(jsonObject, experimentAccession,
                     "inferred_cell_type_-_ontology_labels",
                     "inferred cell type - ontology labels"));
-            processMarkerGene(jsonObject, experimentAccession,
+            markerGenesArray.add( processMarkerGene(jsonObject, experimentAccession,
                     "inferred_cell_type_-_authors_labels",
-                    "Inferred cell type - authors labels",
-                    markerGenesArray);
+                    "Inferred cell type - authors labels"));
         });
 
         return markerGenesArray;

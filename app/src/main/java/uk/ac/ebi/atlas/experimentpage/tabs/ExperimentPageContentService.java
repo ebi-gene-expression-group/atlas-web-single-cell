@@ -178,12 +178,6 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    public JsonArray getPerplexities(String experimentAccession) {
-        var perplexityArray = new JsonArray();
-        tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).forEach(perplexityArray::add);
-        return perplexityArray;
-    }
-
     public JsonArray getMetadata(String experimentAccession) {
         var metadataArray = new JsonArray();
         cellMetadataService
@@ -299,20 +293,5 @@ public class ExperimentPageContentService {
             System.err.println("Error extracting value from JsonObject: " + jsonObject);
             return "";
         }
-    }
-
-    private boolean containsValue(JsonObject jsonObject, Object value) {
-        var key = "value";
-
-        if (jsonObject.has(key)) {
-            try {
-                String jsonValue = jsonObject.get(key).getAsString();
-                return value != null && value.toString().equals(jsonValue);
-            } catch (ClassCastException e) {
-                // Handle unexpected types gracefully
-                System.err.println("Invalid value type for key '" + key + "': " + jsonObject);
-            }
-        }
-        return false;
     }
 }

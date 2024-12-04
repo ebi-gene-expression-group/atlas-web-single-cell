@@ -249,11 +249,11 @@ public class ExperimentPageContentService {
         return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 
-    public JsonArray getMarkerGeneMetadata(JsonArray toUpdateMetadata, String experimentAccession) {
+    public JsonArray getMarkerGeneMetadata(JsonArray metadata, String experimentAccession) {
         JsonArray markerGenesArray = new JsonArray();
 
-        toUpdateMetadata.forEach(item -> {
-            JsonObject metaDataObject = getAsJsonObject(item);
+        metadata.forEach(metadataObject -> {
+            JsonObject metaDataObject = getAsJsonObject(metadataObject);
 
             if (metaDataObject != null) {
                 String value = getValueAsString(metaDataObject);
@@ -280,11 +280,11 @@ public class ExperimentPageContentService {
         return jsonObject;
     }
 
-    private JsonObject getAsJsonObject(Object item) {
+    private JsonObject getAsJsonObject(Object metadataItem) {
         try {
-            return (JsonObject) item;
+            return (JsonObject) metadataItem;
         } catch (ClassCastException e) {
-            LOGGER.debug("Invalid metadata item: " + item);
+            LOGGER.debug("Invalid metadata item: " + metadataItem);
             return null;
         }
     }

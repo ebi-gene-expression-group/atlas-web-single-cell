@@ -30,6 +30,8 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Service
 public class ExperimentPageContentService {
+    public static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_DB = "inferred cell type - ontology labels";
+    public static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB = "Inferred cell type - authors labels";
     private static final ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
             "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
@@ -37,6 +39,8 @@ public class ExperimentPageContentService {
             "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",
             "E-ANND-1", "E-ANND-2", "E-ANND-3", "E-ANND-4", "E-ANND-5");
     private static final String EXPERIMENT_TECHNOLOGY_TYPE_PREFIX = "smart-";
+    private static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_SOLR = "inferred_cell_type_-_ontology_labels";
+    private static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_SOLR = "inferred_cell_type_-_authors_labels";
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
@@ -90,7 +94,7 @@ public class ExperimentPageContentService {
 
         result.add("metadata", getMetadata(experimentAccession));
 
-        result.add("markerGeneMetadata", getMarkerGeneMetadata(result.getAsJsonArray("metadata"), experimentAccession));
+        result.add("markerGeneMetadata", getMarkerGeneMetadata(getMetadata(experimentAccession), experimentAccession));
 
         var units = new JsonArray();
         units.add("CPM");
@@ -248,33 +252,58 @@ public class ExperimentPageContentService {
         return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 
-    public JsonArray getMarkerGeneMetadata(JsonArray metadata, String experimentAccession) {
+    public JsonArray getMarkerGeneMetadata(JsonArray toUpdateMetadata, String experimentAccession) {
         JsonArray markerGenesArray = new JsonArray();
 
-        metadata.forEach(item -> {
-            JsonObject jsonObject = item.getAsJsonObject();
-            markerGenesArray.add(processMarkerGene(jsonObject, experimentAccession,
-                    "inferred_cell_type_-_ontology_labels",
-                    "inferred cell type - ontology labels"));
-            markerGenesArray.add( processMarkerGene(jsonObject, experimentAccession,
-                    "inferred_cell_type_-_authors_labels",
-                    "Inferred cell type - authors labels"));
-        });
+        toUpdateMetadata.forEach(item -> {
+            JsonObject metaDataObject = getAsJsonObject(item);
 
+            if (metaDataObject != null) {
+                String value = getValueAsString(metaDataObject);
+
+                if (INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_SOLR.equals(value)) {
+                    markerGenesArray.add(processMarkerGene(metaDataObject, experimentAccession,
+                            INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_DB));
+                } else if (INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_SOLR.equals(value)) {
+                    markerGenesArray.add(processMarkerGene(metaDataObject, experimentAccession,
+                            INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB));
+                } else {
+                    metaDataObject.addProperty("status", "false");
+                    markerGenesArray.add(metaDataObject);
+                }
+            }
+        });
         return markerGenesArray;
     }
 
-    private void processMarkerGene(JsonObject jsonObject, String experimentAccession,
-                                   String keyValue, String serviceLabel, JsonArray targetArray) {
-        if (containsValue(jsonObject, "value", keyValue)) {
-            boolean isAvailable = markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes(
-                    experimentAccession, serviceLabel) > 0;
-            jsonObject.addProperty("status", Boolean.toString(isAvailable));
-            targetArray.add(jsonObject);
+    private JsonObject processMarkerGene(JsonObject jsonObject, String experimentAccession, String dbLabel) {
+        boolean isAvailable = markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes(
+                experimentAccession, dbLabel) > 0;
+        jsonObject.addProperty("status", isAvailable ? "true" : "false");
+        return jsonObject;
+    }
+
+    private JsonObject getAsJsonObject(Object item) {
+        try {
+            return (JsonObject) item;
+        } catch (ClassCastException e) {
+            System.err.println("Invalid metadata item: " + item);
+            return null;
         }
     }
 
-    private boolean containsValue(JsonObject jsonObject, String key, Object value) {
+    private String getValueAsString(JsonObject jsonObject) {
+        try {
+            return jsonObject.has("value") ? jsonObject.get("value").getAsString() : "";
+        } catch (Exception e) {
+            System.err.println("Error extracting value from JsonObject: " + jsonObject);
+            return "";
+        }
+    }
+
+    private boolean containsValue(JsonObject jsonObject, Object value) {
+        var key = "value";
+
         if (jsonObject.has(key)) {
             try {
                 String jsonValue = jsonObject.get(key).getAsString();

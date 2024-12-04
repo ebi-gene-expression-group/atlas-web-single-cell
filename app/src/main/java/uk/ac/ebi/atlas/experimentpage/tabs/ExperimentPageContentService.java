@@ -7,6 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
@@ -32,6 +34,7 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 public class ExperimentPageContentService {
     public static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_DB = "inferred cell type - ontology labels";
     public static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB = "Inferred cell type - authors labels";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentPageContentService.class);
     private static final ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
             "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
@@ -281,7 +284,7 @@ public class ExperimentPageContentService {
         try {
             return (JsonObject) item;
         } catch (ClassCastException e) {
-            System.err.println("Invalid metadata item: " + item);
+            LOGGER.debug("Invalid metadata item: " + item);
             return null;
         }
     }
@@ -290,7 +293,7 @@ public class ExperimentPageContentService {
         try {
             return jsonObject.has("value") ? jsonObject.get("value").getAsString() : "";
         } catch (Exception e) {
-            System.err.println("Error extracting value from JsonObject: " + jsonObject);
+            LOGGER.debug("Error extracting value from JsonObject: " + jsonObject);
             return "";
         }
     }

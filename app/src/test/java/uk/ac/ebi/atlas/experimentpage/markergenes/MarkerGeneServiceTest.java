@@ -82,7 +82,7 @@ public class MarkerGeneServiceTest {
     void getMarkerGenesCountForInferredCellTypeAuthorsLabels() {
         when(markerGenesDaoMock.getMarkerGenesForTheInferredCellTypes(
                 "E-EHCA-2",
-                "Inferred cell type - authors labels"))
+                "inferred cell type - authors labels"))
                 .thenReturn(1);
         assertThat(subject.isMarkerGenesAvailableForTheInferredCellTypes(
                 "E-EHCA-2",

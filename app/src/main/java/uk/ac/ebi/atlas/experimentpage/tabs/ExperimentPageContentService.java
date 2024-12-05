@@ -276,7 +276,7 @@ public class ExperimentPageContentService {
     private JsonObject processMarkerGene(JsonObject jsonObject, String experimentAccession, String dbLabel) {
         boolean isAvailable = markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes(
                 experimentAccession, dbLabel) > 0;
-        jsonObject.addProperty("status", isAvailable ? "true" : "false");
+        jsonObject.addProperty("status", isAvailable);
         return jsonObject;
     }
 

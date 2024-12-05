@@ -190,10 +190,11 @@ class ExperimentPageContentServiceTest {
 
     @Test
     void givenInvalidExperiment_thenReturnsEmptyDefaultPlotMethodAndParams() {
-        when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("FooBar"))
+        String invalidExperimentAccession = "FooBar";
+        when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation(invalidExperimentAccession))
                 .thenReturn(ImmutableMap.of());
 
-        assertThat(subject.fetchDefaultPlotMethodAndParameterisation("FooBar")).isEmpty();
+        assertThat(subject.fetchDefaultPlotMethodAndParameterisation(invalidExperimentAccession)).isEmpty();
     }
 
     @Test

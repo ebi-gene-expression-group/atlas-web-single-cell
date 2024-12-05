@@ -189,7 +189,7 @@ class ExperimentPageContentServiceTest {
     }
 
     @Test
-    void getEmptyDefaultPlotMethodAndParamsForTheInvalidExperiment() {
+    void givenInvalidExperiment_thenReturnsEmptyDefaultPlotMethodAndParams() {
         when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("FooBar"))
                 .thenReturn(ImmutableMap.of());
 

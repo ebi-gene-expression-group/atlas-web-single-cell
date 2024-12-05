@@ -32,8 +32,8 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Service
 public class ExperimentPageContentService {
-    public static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_DB = "inferred cell type - ontology labels";
-    public static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB = "Inferred cell type - authors labels";
+    private static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_DB = "inferred cell type - ontology labels";
+    private static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB = "Inferred cell type - authors labels";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentPageContentService.class);
     private static final ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
             "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",

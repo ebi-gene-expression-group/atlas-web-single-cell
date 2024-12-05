@@ -145,7 +145,7 @@ class MarkerGenesDaoIT {
     }
 
     @Test
-    void getMarkerGenesCountZero_IfTheMarkerGenesDoesNotExistForTheAuthorsOrOntologyLabels() {
+    void whenMarkerGenesDoesNotExistForTheAuthorsOrOntologyLabels_thenMarkerGenesCountShouldBeZero() {
         var markerGenesRecordsCount = subject.getMarkerGenesForTheInferredCellTypes(
                 "foo", "inferred cell type - authors labels");
 

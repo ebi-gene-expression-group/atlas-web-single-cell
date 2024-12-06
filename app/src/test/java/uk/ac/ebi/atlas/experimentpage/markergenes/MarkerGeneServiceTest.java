@@ -68,7 +68,7 @@ public class MarkerGeneServiceTest {
     }
 
     @Test
-    void getMarkerGenesCountForTheInferredCelltypeOntologyLabels() {
+    void getMarkerGenesCountGreaterThanZero_IfTheMarkerGenesExistForTheInferredCellTypeOntologyLabels() {
         when(markerGenesDaoMock.getMarkerGenesForTheInferredCellTypes("E-EHCA-2",
                 "inferred cell type - ontology labels"))
                 .thenReturn(1);
@@ -79,15 +79,16 @@ public class MarkerGeneServiceTest {
     }
 
     @Test
-    void getMarkerGenesCountForInferredCellTypeAuthorsLabels() {
+    void getMarkerGenesCountGreaterThanZero_IfTheMarkerGenesExistForTheInferredCellTypeAuthorsLabels() {
         when(markerGenesDaoMock.getMarkerGenesForTheInferredCellTypes(
                 "E-EHCA-2",
                 "inferred cell type - authors labels"))
                 .thenReturn(1);
+
         assertThat(subject.isMarkerGenesAvailableForTheInferredCellTypes(
                 "E-EHCA-2",
                 "inferred cell type - authors labels"))
-                .isGreaterThan(0);
+                .isEqualTo(1);
     }
 
     @Test

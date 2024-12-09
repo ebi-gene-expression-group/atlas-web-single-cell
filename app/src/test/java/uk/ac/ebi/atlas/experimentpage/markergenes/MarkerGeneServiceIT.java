@@ -1,11 +1,7 @@
 package uk.ac.ebi.atlas.experimentpage.markergenes;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -116,7 +112,7 @@ class MarkerGeneServiceIT {
     }
 
     @Test
-    void getCellTypeMarkerGeneHeatmapForValidExperimentAccesion() {
+    void getCellTypeMarkerGeneHeatmapForValidExperimentAccession() {
         assertThat(subject.getCellTypeMarkerGeneHeatmapData(
                 "E-MTAB-5061", "inferred cell type - ontology labels"))
                 .isNotEmpty();
@@ -132,7 +128,7 @@ class MarkerGeneServiceIT {
     @Test
     void getMarkerGenesCountForTheInferredCellTypesAuthorsLabel() {
         assertThat(subject.isMarkerGenesAvailableForTheInferredCellTypes(
-"E-MTAB-5061", "inferred cell type - authors labels"))
+                "E-EHCA-2", "inferred cell type - authors labels"))
                 .isGreaterThan(0);
     }
 }

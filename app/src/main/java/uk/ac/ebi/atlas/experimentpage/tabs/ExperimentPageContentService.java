@@ -7,12 +7,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.experimentpage.ExternallyAvailableContentService;
 import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
+import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGeneService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.model.download.ExternallyAvailableContent;
@@ -29,6 +32,18 @@ import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Service
 public class ExperimentPageContentService {
+    private static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_DB = "inferred cell type - ontology labels";
+    private static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB = "Inferred cell type - authors labels";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentPageContentService.class);
+    private static final ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
+            "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
+            "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
+            "E-HCAD-8", "E-HCAD-10",
+            "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",
+            "E-ANND-1", "E-ANND-2", "E-ANND-3", "E-ANND-4", "E-ANND-5");
+    private static final String EXPERIMENT_TECHNOLOGY_TYPE_PREFIX = "smart-";
+    private static final String INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_SOLR = "inferred_cell_type_-_ontology_labels";
+    private static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_SOLR = "inferred_cell_type_-_authors_labels";
     private final ExperimentFileLocationService experimentFileLocationService;
     private final DataFileHub dataFileHub;
     private final TSnePlotSettingsService tsnePlotSettingsService;
@@ -36,13 +51,7 @@ public class ExperimentPageContentService {
     private final OntologyAccessionsSearchService ontologyAccessionsSearchService;
     private final ExperimentTrader experimentTrader;
     private final CellPlotService cellPlotService;
-
-    final static ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
-            "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
-            "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
-            "E-HCAD-8", "E-HCAD-10",
-            "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",
-            "E-ANND-1", "E-ANND-2", "E-ANND-3", "E-ANND-4", "E-ANND-5");
+    private final MarkerGeneService markerGeneService;
 
     public ExperimentPageContentService(ExperimentFileLocationService experimentFileLocationService,
                                         DataFileHub dataFileHub,
@@ -50,7 +59,7 @@ public class ExperimentPageContentService {
                                         CellMetadataService cellMetadataService,
                                         OntologyAccessionsSearchService ontologyAccessionsSearchService,
                                         ExperimentTrader experimentTrader,
-                                        CellPlotService cellPlotService) {
+                                        CellPlotService cellPlotService, MarkerGeneService markerGeneService) {
         this.experimentFileLocationService = experimentFileLocationService;
         this.dataFileHub = dataFileHub;
         this.tsnePlotSettingsService = tsnePlotSettingsService;
@@ -58,11 +67,17 @@ public class ExperimentPageContentService {
         this.ontologyAccessionsSearchService = ontologyAccessionsSearchService;
         this.experimentTrader = experimentTrader;
         this.cellPlotService = cellPlotService;
+        this.markerGeneService = markerGeneService;
+    }
+
+
+    private static boolean isSmartExperiment(Collection<String> technologyType) {
+        return technologyType.stream()
+                .anyMatch(type -> type.toLowerCase().startsWith(EXPERIMENT_TECHNOLOGY_TYPE_PREFIX));
     }
 
     public JsonObject getTsnePlotData(String experimentAccession) {
         var result = new JsonObject();
-
         result.add(
                 "ks",
                 GSON.toJsonTree(tsnePlotSettingsService.getAvailableKs(experimentAccession)));
@@ -81,6 +96,8 @@ public class ExperimentPageContentService {
                 GSON.toJsonTree(fetchDefaultPlotMethodAndParameterisation(experimentAccession)));
 
         result.add("metadata", getMetadata(experimentAccession));
+
+        result.add("markerGeneMetadata", getMarkerGeneMetadata(getMetadata(experimentAccession), experimentAccession));
 
         var units = new JsonArray();
         units.add("CPM");
@@ -164,12 +181,6 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    public JsonArray getPerplexities(String experimentAccession) {
-        var perplexityArray = new JsonArray();
-        tsnePlotSettingsService.getAvailablePerplexities(experimentAccession).forEach(perplexityArray::add);
-        return perplexityArray;
-    }
-
     public JsonArray getMetadata(String experimentAccession) {
         var metadataArray = new JsonArray();
         cellMetadataService
@@ -184,7 +195,6 @@ public class ExperimentPageContentService {
                 .map(x -> ImmutableMap.of("value", x, "label", StringUtil.snakeCaseToDisplayName(x)))
                 .collect(Collectors.toSet())
                 .forEach(metadata -> metadataArray.add(GSON.toJsonTree(metadata)));
-
         return metadataArray;
     }
 
@@ -235,13 +245,56 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    // Smart-Seq-like experiments will contain the substring “smart” in their technology types
-    private static boolean isSmartExperiment(Collection<String> technologyType) {
-        return technologyType.stream()
-                .anyMatch(type -> type.toLowerCase().matches("smart" + "-(?:.*)"));
+    public ImmutableMap fetchDefaultPlotMethodAndParameterisation(String experimentAccession) {
+        return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 
-    public ImmutableMap fetchDefaultPlotMethodAndParameterisation(String experimentAccession){
-        return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
+    public JsonArray getMarkerGeneMetadata(JsonArray metadata, String experimentAccession) {
+        JsonArray markerGenesArray = new JsonArray();
+
+        metadata.forEach(metadataObject -> {
+            JsonObject metaDataObject = getAsJsonObject(metadataObject);
+
+            if (metaDataObject != null) {
+                String value = getValueAsString(metaDataObject);
+
+                if (INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_SOLR.equals(value)) {
+                    markerGenesArray.add(processMarkerGene(metaDataObject, experimentAccession,
+                            INFERRED_CELL_TYPE_ONTOLOGY_LABELS_FROM_DB));
+                } else if (INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_SOLR.equals(value)) {
+                    markerGenesArray.add(processMarkerGene(metaDataObject, experimentAccession,
+                            INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB));
+                } else {
+                    metaDataObject.addProperty("status", "false");
+                    markerGenesArray.add(metaDataObject);
+                }
+            }
+        });
+        return markerGenesArray;
+    }
+
+    private JsonObject processMarkerGene(JsonObject jsonObject, String experimentAccession, String dbLabel) {
+        boolean isAvailable = markerGeneService.isMarkerGenesAvailableForTheInferredCellTypes(
+                experimentAccession, dbLabel) > 0;
+        jsonObject.addProperty("status", isAvailable);
+        return jsonObject;
+    }
+
+    private JsonObject getAsJsonObject(Object metadataItem) {
+        try {
+            return (JsonObject) metadataItem;
+        } catch (ClassCastException e) {
+            LOGGER.debug("Invalid metadata item: " + metadataItem);
+            return null;
+        }
+    }
+
+    private String getValueAsString(JsonObject jsonObject) {
+        try {
+            return jsonObject.has("value") ? jsonObject.get("value").getAsString() : "";
+        } catch (Exception e) {
+            LOGGER.debug("Error extracting value from JsonObject: " + jsonObject);
+            return "";
+        }
     }
 }

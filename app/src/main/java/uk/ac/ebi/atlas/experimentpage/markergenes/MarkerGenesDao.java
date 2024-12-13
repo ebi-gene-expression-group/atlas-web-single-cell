@@ -22,13 +22,13 @@ public class MarkerGenesDao {
                     "s.mean_expression, " +
                     "s.median_expression, " +
                     "e.expression_unit " +
-                    "FROM " +
+            "FROM " +
                     "scxa_cell_group_marker_gene_stats s, " +
                     "scxa_cell_group_marker_genes m, " +
                     "scxa_cell_group g, " +
                     "scxa_cell_group h, " +
                     "experiment e " +
-                    "WHERE " +
+            "WHERE " +
                     "s.cell_group_id = g.id AND " +
                     "s.marker_id = m.id AND " +
                     "m.cell_group_id = h.id AND " +
@@ -37,7 +37,7 @@ public class MarkerGenesDao {
                     "g.variable = :k AND " +
                     "s.expression_type = 0 AND " +
                     "e.accession = g.experiment_accession " +
-                    "ORDER BY " +
+            "ORDER BY " +
                     "m.marker_probability";
 
     private static final String SELECT_DISTINCT_KS_WITH_MARKER_GENES =
@@ -58,13 +58,13 @@ public class MarkerGenesDao {
                     "s.mean_expression, " +
                     "s.median_expression, " +
                     "e.expression_unit " +
-                    "FROM " +
+            "FROM " +
                     "scxa_cell_group_marker_gene_stats s, " +
                     "scxa_cell_group_marker_genes m, " +
                     "scxa_cell_group g, " +
                     "scxa_cell_group h, " +
                     "experiment e " +
-                    "WHERE " +
+            "WHERE " +
                     "s.cell_group_id = g.id AND " +
                     "s.marker_id = m.id AND " +
                     "m.cell_group_id = h.id AND " +
@@ -74,7 +74,7 @@ public class MarkerGenesDao {
                     "g.value IN (:values) AND " +
                     "s.expression_type = 0 AND " +
                     "e.accession = g.experiment_accession " +
-                    "ORDER BY " +
+            "ORDER BY " +
                     "m.marker_probability ";
 
     private static final String SELECT_MARKER_GENES_WITH_AVERAGES_PER_CELL_GROUP_ALL =
@@ -88,13 +88,13 @@ public class MarkerGenesDao {
                     "s.mean_expression, " +
                     "s.median_expression, " +
                     "e.expression_unit " +
-                    "FROM " +
+            "FROM " +
                     "scxa_cell_group_marker_gene_stats s, " +
                     "scxa_cell_group_marker_genes m, " +
                     "scxa_cell_group g, " +
                     "scxa_cell_group h, " +
                     "experiment e " +
-                    "WHERE " +
+            "WHERE " +
                     "s.cell_group_id = g.id AND " +
                     "s.marker_id = m.id AND " +
                     "m.cell_group_id = h.id AND " +
@@ -103,20 +103,20 @@ public class MarkerGenesDao {
                     "g.variable = :variable AND " +
                     "s.expression_type = 0 AND " +
                     "e.accession = g.experiment_accession " +
-                    "ORDER BY " +
+            "ORDER BY " +
                     "m.marker_probability ";
 
     private static final String SELECT_MARKER_GENES_FOR_INFERRED_CELL_TYPES =
             "SELECT count(m.gene_id) as marker_genes " +
-                    "FROM " +
+            "FROM " +
                     "scxa_cell_group_marker_genes m, " +
                     "scxa_cell_group h " +
-                    "WHERE " +
+            "WHERE " +
                     "m.cell_group_id = h.id AND " +
                     "h.experiment_accession = :experiment_accession AND " +
                     "m.marker_probability < 0.05 AND " +
                     "h.variable= :variable " +
-                    "LIMIT  1";
+            "LIMIT  1";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 

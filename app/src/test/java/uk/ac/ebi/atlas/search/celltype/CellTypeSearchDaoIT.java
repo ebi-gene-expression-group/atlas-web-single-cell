@@ -19,7 +19,6 @@ import uk.ac.ebi.atlas.testutils.JdbcUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
-
 import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -183,8 +182,8 @@ class CellTypeSearchDaoIT {
         var randomListOfCellIDs =
                 ImmutableSet.copyOf(
                         new HashSet<>(jdbcUtils.fetchRandomListOfCells(3)));
-        ImmutableSet<String> organismParts = solrUtils.fetchedRandomOrganismPartsByCellIDs(
-                randomListOfCellIDs, 1);
+        var organismParts = solrUtils.fetchedRandomOrganismPartsByCellIDs(
+            randomListOfCellIDs, 1);
 
         var cellTypes = subject.searchCellTypes(randomListOfCellIDs, organismParts);
 

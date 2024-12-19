@@ -31,6 +31,7 @@ public class SingleCellSolrUtils {
         SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder = new SolrQueryBuilder<>();
         queryBuilder
                 .addQueryFieldByTerm(CELL_ID, cellIDs)
+                .exists(CTW_CELL_TYPE)
                 .setFieldList(CTW_CELL_TYPE)
                 .setRows(MAX_ROWS);
 
@@ -44,6 +45,7 @@ public class SingleCellSolrUtils {
         SolrQueryBuilder<SingleCellAnalyticsCollectionProxy> queryBuilder = new SolrQueryBuilder<>();
         queryBuilder
                 .addQueryFieldByTerm(CELL_ID, cellIDs)
+                .exists(CTW_CELL_TYPE)
                 .setFieldList(CTW_ORGANISM_PART)
                 .setRows(MAX_ROWS);
 
@@ -59,7 +61,7 @@ public class SingleCellSolrUtils {
             String schemaFieldName,
             int numberOfCellTypes) {
         return Arrays.stream(new Random().ints(numberOfCellTypes, 0, solrDocumentList.size()).toArray())
-                .mapToObj(index -> solrDocumentList.get(index).getFieldValue(schemaFieldName).toString())
-                .collect(toImmutableSet());
+            .mapToObj(index -> solrDocumentList.get(index).getFieldValue(schemaFieldName).toString())
+            .collect(toImmutableSet());
     }
 }

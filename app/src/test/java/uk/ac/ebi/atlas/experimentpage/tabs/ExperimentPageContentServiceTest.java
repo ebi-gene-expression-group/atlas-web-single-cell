@@ -16,6 +16,7 @@ import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.download.IconType;
 import uk.ac.ebi.atlas.experimentpage.cellplot.CellPlotService;
+import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGeneService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experiments.ExperimentBuilder;
@@ -29,8 +30,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static uk.ac.ebi.atlas.experimentpage.tabs.ExperimentPageContentService.EXPERIMENTS_WITH_NO_ANATOMOGRAM;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,32 +44,23 @@ class ExperimentPageContentServiceTest {
     private static final String EXPERIMENT_FILES_URI_TEMPLATE =
             "experiment/abc/download?fileType=xyz&accessKey=efg";
     private static final String EXPERIMENT_ACCESSION = generateRandomExperimentAccession();
-    private static final String NON_ANATOMOGRAM_EXPERIMENT_ACCESSION =
-            EXPERIMENTS_WITH_NO_ANATOMOGRAM.asList().get(RNG.nextInt(EXPERIMENTS_WITH_NO_ANATOMOGRAM.size()));
-
+    private final JsonObject tpmsDownloadJsonObject = new JsonObject();
     @Mock
     private ExperimentFileLocationService experimentFileLocationServiceMock;
-
     @Mock
     private DataFileHub dataFileHubMock;
-
     @Mock
     private TSnePlotSettingsService tsnePlotSettingsServiceMock;
-
     @Mock
     private CellMetadataService cellMetadataServiceMock;
-
     @Mock
     private OntologyAccessionsSearchService ontologyAccessionsSearchService;
-
     @Mock
     private ExperimentTrader experimentTraderMock;
-
     @Mock
     private CellPlotService cellPlotServiceMock;
-
-    private final JsonObject tpmsDownloadJsonObject = new JsonObject();
-
+    @Mock
+    private MarkerGeneService markerGeneServiceMock;
     private ExperimentPageContentService subject;
 
     @BeforeEach
@@ -115,17 +107,17 @@ class ExperimentPageContentServiceTest {
                 "")
         ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
 
-        when(tsnePlotSettingsServiceMock.getAvailableKs(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+        when(tsnePlotSettingsServiceMock.getAvailableKs(anyString()))
                 .thenReturn(ImmutableList.of(1, 2, 3));
-        when(tsnePlotSettingsServiceMock.getKsWithMarkerGenes(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+        when(tsnePlotSettingsServiceMock.getKsWithMarkerGenes(anyString()))
                 .thenReturn(ImmutableList.of("1", "2"));
-        when(tsnePlotSettingsServiceMock.getExpectedClusters(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+        when(tsnePlotSettingsServiceMock.getExpectedClusters(anyString()))
                 .thenReturn(Optional.of(1));
-        when(tsnePlotSettingsServiceMock.getAvailablePerplexities(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
+        when(tsnePlotSettingsServiceMock.getAvailablePerplexities(anyString()))
                 .thenReturn(ImmutableList.of(1, 2, 3));
-        when(cellMetadataServiceMock.getMetadataTypes(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION))
-                .thenReturn(ImmutableSet.of("foo"));
-        when(cellMetadataServiceMock.getMetadataValuesForGivenType(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION, "foo"))
+        when(cellMetadataServiceMock.getMetadataTypes(anyString()))
+                .thenReturn(ImmutableSet.of("foo", "bar", "foo bar"));
+        when(cellMetadataServiceMock.getMetadataValuesForGivenType(anyString(), anyString()))
                 .thenReturn(ImmutableMap.of());
 
         subject = new ExperimentPageContentService(
@@ -135,7 +127,8 @@ class ExperimentPageContentServiceTest {
                 cellMetadataServiceMock,
                 ontologyAccessionsSearchService,
                 experimentTraderMock,
-                cellPlotServiceMock);
+                cellPlotServiceMock,
+                markerGeneServiceMock);
 
         tpmsDownloadJsonObject.addProperty("url", EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE);
         tpmsDownloadJsonObject.addProperty("type", IconType.TSV.getName());
@@ -150,7 +143,7 @@ class ExperimentPageContentServiceTest {
                 .withTechnologyType(ImmutableList.of("Smart-Seq", "10xV1"))
                 .build();
 
-        when(experimentTraderMock.getExperiment(EXPERIMENT_ACCESSION,"")).thenReturn(experiment);
+        when(experimentTraderMock.getExperiment(EXPERIMENT_ACCESSION, "")).thenReturn(experiment);
 
         var result = subject.getDownloads(EXPERIMENT_ACCESSION, "");
         assertThat(result)
@@ -173,7 +166,7 @@ class ExperimentPageContentServiceTest {
                 .withTechnologyType(ImmutableList.of("10xV1"))
                 .build();
 
-        when(experimentTraderMock.getExperiment(EXPERIMENT_ACCESSION,"")).thenReturn(experiment);
+        when(experimentTraderMock.getExperiment(EXPERIMENT_ACCESSION, "")).thenReturn(experiment);
 
         var result = subject.getDownloads(EXPERIMENT_ACCESSION, "");
         assertThat(result)
@@ -191,24 +184,24 @@ class ExperimentPageContentServiceTest {
 
     @Test
     void anatomogramDoesNotExistForValidExperiment() {
-        var result = this.subject.getTsnePlotData(NON_ANATOMOGRAM_EXPERIMENT_ACCESSION);
-
+        var result = this.subject.getTsnePlotData("E-CURD-10");
         assertThat(result.getAsJsonObject("anatomogram").size()).isEqualTo(0);
     }
 
     @Test
-    void getEmptyDefaultPlotMethodAndParamsForTheInvalidExperiment(){
-        when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("FooBar"))
+    void givenInvalidExperiment_thenReturnsEmptyDefaultPlotMethodAndParams() {
+        String invalidExperimentAccession = "FooBar";
+        when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation(invalidExperimentAccession))
                 .thenReturn(ImmutableMap.of());
 
-        assertThat(subject.fetchDefaultPlotMethodAndParameterisation("FooBar")).isEmpty();
+        assertThat(subject.fetchDefaultPlotMethodAndParameterisation(invalidExperimentAccession)).isEmpty();
     }
 
     @Test
-    void getEmptyDefaultPlotMethodAndParamsForTheValidExperiment(){
+    void getEmptyDefaultPlotMethodAndParamsForTheValidExperiment() {
         when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation("E-CURD-4"))
-                .thenReturn(ImmutableMap.of("umap",new Gson().fromJson("{\"n_neighbors\":100}",JsonObject.class),
-                                            "tsne",new Gson().fromJson("{\"perplexity\":50}",JsonObject.class)));
+                .thenReturn(ImmutableMap.of("umap", new Gson().fromJson("{\"n_neighbors\":100}", JsonObject.class),
+                        "tsne", new Gson().fromJson("{\"perplexity\":50}", JsonObject.class)));
 
         assertThat(subject.fetchDefaultPlotMethodAndParameterisation("E-CURD-4")).isNotEmpty();
     }

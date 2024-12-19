@@ -2,6 +2,7 @@
 <!-- In production environments set deployXML="false" in the relevant <Host> section in server.xml, and add gxa#sc.xml
      to e.g. $CATALINA_BASE/conf/Catalina/localhost to configure the location of properties files -->
 <Context>
+    <CookieProcessor useHttpOnly="true"/>
     <Resources className="org.apache.catalina.webresources.StandardRoot">
         <PreResources className="org.apache.catalina.webresources.DirResourceSet"
                       base="/webapp-properties"

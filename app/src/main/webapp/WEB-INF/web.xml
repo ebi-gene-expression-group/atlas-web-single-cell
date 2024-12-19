@@ -30,6 +30,10 @@
     </servlet-mapping>
 
     <listener>
+        <listener-class>uk.ac.ebi.atlas.configuration.HttpOnlyCookieConfigurator</listener-class>
+    </listener>
+
+    <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
@@ -76,6 +80,9 @@
 
     <!-- Disable JSessionID -->
     <session-config>
+        <cookie-config>
+            <http-only>true</http-only>
+        </cookie-config>
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 

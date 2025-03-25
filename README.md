@@ -331,3 +331,27 @@ re-run the `war` task (e.g. in the Gradle shell container) the web app will be a
 
 You can also set a Docker Compose *Run* configuration in IntelliJ IDEA with `SCHEMA_VERSION` in environment variables
 and `dev.env` in environment files.
+
+
+## Publish web application to remote server
+For the first step you can run the following script:
+```bash
+ ./compile-front-end-packages.sh -iu
+```
+
+The second step is simply:
+```bash
+./gradlew clean :app:war
+```
+
+The final step is to copy/paste the local war file to remote server. Developers can also download the latest successful war file of
+`develop` branch in [Jenkins Job](http://gene-expression.ebi.ac.uk/jenkins/job/Single%20Cell%20Expression%20Atlas%20%E2%80%93%20Develop/job/develop/).
+
+Go to the war file directory, copy the war file to remote server: 
+
+```bash
+curl -u [tomcat-username]:[tomcat-password] -i -X PUT 'http://wp-p1m2-99:8080/manager/text/deploy?path=/gxa/sc&update=true' --data-binary "@./gxa#sc.war"
+```
+
+Get the tomcat username and password in the corresponding remote server. Change the server name in the command as required.
+Bulk and single cell sever information can be found in EBI SOP [development environment page](https://www.ebi.ac.uk/seqdb/confluence/pages/viewpage.action?spaceKey=GXA&title=Atlas+development+environments).

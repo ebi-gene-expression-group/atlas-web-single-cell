@@ -1,0 +1,92 @@
+# This file is a template, and might need editing before it works on your project.
+# This is a sample GitLab CI/CD configuration file that should run without any modifications.
+# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
+# it uses echo commands to simulate the pipeline execution.
+#
+# A pipeline is composed of independent jobs that run scripts, grouped into stages.
+# Stages run in sequential order, but jobs within stages run in parallel.
+#
+# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+#
+# You can copy and paste this template into a new `.gitlab-ci.yml` file.
+# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+#
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+variables:
+  JENKINS_BUILD_NUMBER:
+      value: '140'
+      description: build number in jenkins
+  JENKINS_USER:
+      description: >
+        the username with which the jenkins artifact is
+        downloaded (eventually, this will be a project/group variable)
+  JENKINS_PASSWORD:
+      description: >
+        the password with which the jenkins artifact is
+        downloaded (eventually, this will be a project/group variable)
+  TOMCAT_USER:
+      description: >
+         the username with which the war is deployed to tomcat is
+        downloaded (eventually, this will be a project/group variable)
+  TOMCAT_PASSWORD:
+      description: >
+        the password with which the war is deployed to tomcat is
+        downloaded (eventually, this will be a project/group variable)   
+  
+      
+
+stages:         
+  - build
+  - deploy
+
+copy-war-from-jenkins:
+  stage: build
+  only:
+    - develop
+  variables:
+    JENKINS_URL: "http://gene-expression.ebi.ac.uk/jenkins"
+    JENKINS_JOB: "Single%20Cell%20Expression%20Atlas%20%E2%80%93%20Develop"
+    JENKINS_BRANCH: develop
+    
+  when: manual    
+  script:
+    - >
+      curl -u "${JENKINS_USER}:${JENKINS_PASSWORD}" 
+           "${JENKINS_URL}/job/${JENKINS_JOB}/job/${JENKINS_BRANCH}/${JENKINS_BUILD_NUMBER}/artifact/webapps/gxa%23sc.war" 
+           --output "./gxa#sc.war"
+
+deploy-test: 
+  variables:
+    ENVIRONMENT_NAME: test
+    TOMCAT_URL: "http://wp-np2-21:8080"
+  environment:
+    name: test
+    url: https://www-test.ebi.ac.uk/gxa/sc/
+  only:
+    - develop
+  when: manual
+  extends: .deploy-template
+
+deploy-staging: 
+  variables:
+    ENVIRONMENT_NAME: staging
+    TOMCAT_URL: "http://wp-p1m2-99:8080"
+  environment:
+    name: test
+    url: https://wwwdev.ebi.ac.uk/gxa/sc/
+  only:
+    - develop
+  when: manual
+  extends: .deploy-template
+
+.deploy-template:
+  stage: deploy
+  script:
+    - >
+      curl -u "${TOMCAT_USER}:${TOMCAT_PASSWORD}" 
+           -i -X PUT 
+           '${TOMCAT_URL}/manager/text/deploy?path=/gxa/sc&update=true' 
+           --data-binary "@./gxa#sc.war"

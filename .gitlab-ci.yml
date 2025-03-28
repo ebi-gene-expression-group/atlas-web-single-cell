@@ -13,7 +13,7 @@ variables:
         downloaded (eventually, this will be a project/group variable)
   TOMCAT_USER:
       description: >
-         the username with which the war is deployed to tomcat is
+        the username with which the war is deployed to tomcat is
         downloaded (eventually, this will be a project/group variable)
   TOMCAT_PASSWORD:
       description: >

@@ -19,8 +19,7 @@ variables:
       description: >
         the password with which the war is deployed to tomcat is
         downloaded (eventually, this will be a project/group variable)   
-  
-      
+
 
 stages:         
   - build
@@ -28,33 +27,33 @@ stages:
 
 copy-war-from-jenkins:
   stage: build
-  only:
-    - develop
+  tags: ["dind"]
+  image: alpine/curl:8.12.1
+
   variables:
     JENKINS_URL: "http://gene-expression.ebi.ac.uk/jenkins"
     JENKINS_JOB: "Single%20Cell%20Expression%20Atlas%20%E2%80%93%20Develop"
     JENKINS_BRANCH: develop
-    
   when: manual    
   script:
     - >
       curl -u "${JENKINS_USER}:${JENKINS_PASSWORD}" 
-           "${JENKINS_URL}/job/${JENKINS_JOB}/job/${JENKINS_BRANCH}/${JENKINS_BUILD_NUMBER}/artifact/webapps/gxa%23sc.war" 
-           --output "./gxa#sc.war"
+      "${JENKINS_URL}/job/${JENKINS_JOB}/job/${JENKINS_BRANCH}/${JENKINS_BUILD_NUMBER}/artifact/webapps/gxa%23sc.war" 
+      --output "./gxa#sc.war"
 
 deploy-test: 
+  tags: ["bash"]
   variables:
     ENVIRONMENT_NAME: test
     TOMCAT_URL: "http://wp-np2-21:8080"
   environment:
     name: test
     url: https://www-test.ebi.ac.uk/gxa/sc/
-  only:
-    - develop
   when: manual
   extends: .deploy-template
 
 deploy-staging: 
+  tags: ["bash"]
   variables:
     ENVIRONMENT_NAME: staging
     TOMCAT_URL: "http://wp-p1m2-99:8080"
@@ -68,9 +67,10 @@ deploy-staging:
 
 .deploy-template:
   stage: deploy
+  image: alpine/curl:8.12.1
   script:
     - >
       curl -u "${TOMCAT_USER}:${TOMCAT_PASSWORD}" 
-           -i -X PUT 
-           '${TOMCAT_URL}/manager/text/deploy?path=/gxa/sc&update=true' 
-           --data-binary "@./gxa#sc.war"
+      -i -X PUT 
+      "${TOMCAT_URL}/manager/text/deploy?path=/gxa/sc&update=true"
+      --data-binary "@./gxa#sc.war"

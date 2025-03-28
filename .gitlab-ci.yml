@@ -38,11 +38,14 @@ copy-war-from-jenkins:
   script:
     - >
       curl -u "${JENKINS_USER}:${JENKINS_PASSWORD}" 
+      --fail
       "${JENKINS_URL}/job/${JENKINS_JOB}/job/${JENKINS_BRANCH}/${JENKINS_BUILD_NUMBER}/artifact/webapps/gxa%23sc.war" 
       --output "./gxa#sc.war"
+  artifacts:
+    paths:
+      - "./gxa#sc.war"
 
 deploy-test: 
-  tags: ["bash"]
   variables:
     ENVIRONMENT_NAME: test
     TOMCAT_URL: "http://wp-np2-21:8080"
@@ -53,12 +56,11 @@ deploy-test:
   extends: .deploy-template
 
 deploy-staging: 
-  tags: ["bash"]
   variables:
     ENVIRONMENT_NAME: staging
     TOMCAT_URL: "http://wp-p1m2-99:8080"
   environment:
-    name: test
+    name: staging
     url: https://wwwdev.ebi.ac.uk/gxa/sc/
   only:
     - develop
@@ -67,10 +69,18 @@ deploy-staging:
 
 .deploy-template:
   stage: deploy
+  tags: ["dind"]
   image: alpine/curl:8.12.1
   script:
     - >
       curl -u "${TOMCAT_USER}:${TOMCAT_PASSWORD}" 
-      -i -X PUT 
+      -i --fail -X PUT 
       "${TOMCAT_URL}/manager/text/deploy?path=/gxa/sc&update=true"
-      --data-binary "@./gxa#sc.war"
+      --upload-file "./gxa#sc.war"
+    - >
+      curl -u "${TOMCAT_USER}:${TOMCAT_PASSWORD}" 
+      -i --fail 
+      "${TOMCAT_URL}/manager/text/list"
+      | grep "/gxa/sc" | grep running
+      || { echo "App /gxa/sc not found or not running"; exit 1; }
+

@@ -47,26 +47,47 @@ copy-war-from-jenkins:
 
 deploy-test: 
   variables:
-    ENVIRONMENT_NAME: test
     TOMCAT_URL: "http://wp-np2-21:8080"
   environment:
     name: test
     url: https://www-test.ebi.ac.uk/gxa/sc/
   when: manual
+  manual_confirmation: 'Are you sure you want to deploy to test?'
   extends: .deploy-template
 
 deploy-staging: 
   variables:
-    ENVIRONMENT_NAME: staging
     TOMCAT_URL: "http://wp-p1m2-99:8080"
   environment:
     name: staging
     url: https://wwwdev.ebi.ac.uk/gxa/sc/
-  only:
-    - develop
   when: manual
+  manual_confirmation: 'Are you sure you want to deploy to staging?'
   extends: .deploy-template
 
+deploy-fallback: 
+  parallel:
+    matrix:
+      TOMCAT_URL: ["http://wp-p2m-8e:8080", "http://wp-p2m-8f:8080"]
+  environment:
+    name: fallback/$TOMCAT_URL
+    url: $TOMCAT_URL/gxa/sc/
+  when: manual
+  manual_confirmation: 'Are you sure you want to deploy to fallback?'
+  extends: .deploy-template
+
+deploy-prod: 
+  parallel:
+    matrix:
+      TOMCAT_URL: ["http://wp-p1m-8e:8080", "http://wp-p1m-8f:8080"]
+  environment:
+    name: prod/$TOMCAT_URL
+    url: $TOMCAT_URL/gxa/sc/
+  when: manual
+  manual_confirmation: 'Are you sure you want to deploy to prod?'
+  extends: .deploy-template
+  
+  
 .deploy-template:
   stage: deploy
   tags: ["dind"]

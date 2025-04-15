@@ -35,7 +35,7 @@
     <ul style="list-style-type: none">
       <li>
         <span class="icon icon-fileformats icon-TSV"/>
-        Clustering file: Results of unsupervised louvain clustering at a range of resolution values.
+        Clustering file: Results of unsupervised leiden clustering at a range of resolution values.
       </li>
       <li>
         <span class="icon icon-fileformats icon-TSV"/>

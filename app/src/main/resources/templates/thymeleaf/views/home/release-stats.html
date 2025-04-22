@@ -1,0 +1,22 @@
+<div th:fragment="home-release-stats">
+  <div class="small-12 medium-6 columns text-left">
+    <h4>
+      <small>
+        Search across <strong><span th:text="${#numbers.formatInteger(numberOfSpecies,1,'COMMA')}"></span>&nbsp;species</strong>,
+        <strong><span th:text="${#numbers.formatInteger(numberOfStudies,1,'COMMA')}"></span>&nbsp;studies</strong>,
+        <strong th:if="${numberOfCells > 0}" th:text="${#numbers.formatInteger(numberOfCells)} + ' cells'"></strong>
+        <strong><span th:text="${#numbers.formatInteger(numberOfCells,1,'COMMA')}"></span>&nbsp;cells</strong>
+      </small>
+    </h4>
+  </div>
+  <div class="small-12 medium-6 columns hide-for-small-only text-right">
+    <h4>
+      <small>
+        Ensembl&nbsp;<span th:text="${ensembl}"></span>,
+        Ensembl&nbsp;Genomes&nbsp;<span th:text="${genomes}"></span>,
+        WormBase&nbsp;ParaSite&nbsp;<span th:text="${paraSite}"></span>,
+        EFO&nbsp;<span th:text="${efo}"></span>
+      </small>
+    </h4>
+  </div>
+</div>

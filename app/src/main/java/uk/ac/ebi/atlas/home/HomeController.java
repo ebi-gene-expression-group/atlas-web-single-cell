@@ -7,6 +7,8 @@ import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
+import java.util.Objects;
+
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.EFO;
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.EG;
 import static uk.ac.ebi.atlas.home.AtlasInformationDataType.ENSEMBL;
@@ -45,11 +47,11 @@ public class HomeController extends HtmlExceptionHandlingController {
 
         model.addAttribute("numberOfCells", cellStatsDao.get(FILTERED_CELLS));
 
-        model.addAttribute("info", atlasInformationDao.atlasInformation.get());
-        model.addAttribute("ensembl", ENSEMBL.getId());
-        model.addAttribute("genomes", EG.getId());
-        model.addAttribute("paraSite", WBPS.getId());
-        model.addAttribute("efo", EFO.getId());
+        var info = Objects.requireNonNull(atlasInformationDao.atlasInformation.get());
+        model.addAttribute("ensembl", info.get(ENSEMBL.getId()));
+        model.addAttribute("genomes", info.get(EG.getId()));
+        model.addAttribute("paraSite", info.get(WBPS.getId()));
+        model.addAttribute("efo", info.get(EFO.getId()));
 
         return "home";
     }

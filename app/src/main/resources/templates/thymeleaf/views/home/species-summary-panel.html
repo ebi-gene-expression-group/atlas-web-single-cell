@@ -1,14 +1,12 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
 <div id="species-summary-panel"></div>
 <div class="row expanded column text-center margin-top-medium">
-  <a class="button primary" href="${pageContext.request.contextPath}/experiments">Show experiments of all species</a>
+  <a class="button primary" th:href="@{/experiments}">Show experiments of all species</a>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js-bundles/homepageSpeciesSummaryPanel.bundle.js"></script>
+<script defer th:src="@{/resources/js-bundles/homepageSpeciesSummaryPanel.bundle.js}"></script>
 
-<!-- Set to http://localhost:8080/gxa/ or http://localhost:8080/gxa_sc/ -- Remember the trailing slash! -->
 <script>
-  document.addEventListener('DOMContentLoaded', function(event) {
+  document.addEventListener('DOMContentLoaded', function() {
     var sliderSettings = {
       dots: true,
       infinite: false,
@@ -48,7 +46,7 @@
     };
 
     homepageSpeciesSummaryPanel.render({
-        host: '${pageContext.request.contextPath}/',
+        host: '/',
         resource: 'json/species-summary?limit=100',
         carouselCardsRowProps: {
           className: 'row expanded small-up-2 medium-up-3 large-up-6',

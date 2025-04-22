@@ -2,11 +2,11 @@
 
 <script defer th:src="@{/resources/js-bundles/homepageExperimentsSummaryPanel.bundle.js}"></script>
 
-<script>
+<script th:with="contextPath=@{/}">
   document.addEventListener('DOMContentLoaded', function() {
     homepageExperimentsSummaryPanel.render(
       {
-        host: '/',
+        host: '$$contextPath',
         resource: 'json/experiments-summary',
         responsiveCardsRowProps: {
           className: 'row expanded small-up-2 medium-up-3 large-up-6',

@@ -1,11 +1,12 @@
 <div id="species-summary-panel"></div>
+
 <div class="row expanded column text-center margin-top-medium">
   <a class="button primary" th:href="@{/experiments}">Show experiments of all species</a>
 </div>
 
 <script defer th:src="@{/resources/js-bundles/homepageSpeciesSummaryPanel.bundle.js}"></script>
 
-<script>
+<script th:with="contextPath=@{/}">
   document.addEventListener('DOMContentLoaded', function() {
     var sliderSettings = {
       dots: true,
@@ -46,7 +47,7 @@
     };
 
     homepageSpeciesSummaryPanel.render({
-        host: '/',
+        host: '$contextPath',
         resource: 'json/species-summary?limit=100',
         carouselCardsRowProps: {
           className: 'row expanded small-up-2 medium-up-3 large-up-6',

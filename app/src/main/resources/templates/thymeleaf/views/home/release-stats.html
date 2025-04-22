@@ -4,7 +4,7 @@
       <small>
         Search across <strong><span th:text="${#numbers.formatInteger(numberOfSpecies,1,'COMMA')}"></span>&nbsp;species</strong>,
         <strong><span th:text="${#numbers.formatInteger(numberOfStudies,1,'COMMA')}"></span>&nbsp;studies</strong>,
-        <strong th:if="${numberOfCells > 0}" th:text="${#numbers.formatInteger(numberOfCells)} + ' cells'"></strong>
+        <strong th:if="${numberOfCells > 0}" th:text="${#numbers.formatInteger(numberOfCells,1)} + ' cells'"></strong>
         <strong><span th:text="${#numbers.formatInteger(numberOfCells,1,'COMMA')}"></span>&nbsp;cells</strong>
       </small>
     </h4>

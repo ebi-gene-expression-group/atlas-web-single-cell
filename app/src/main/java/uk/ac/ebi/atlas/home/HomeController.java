@@ -53,6 +53,8 @@ public class HomeController extends HtmlExceptionHandlingController {
         model.addAttribute("paraSite", info.get(WBPS.getId()));
         model.addAttribute("efo", info.get(EFO.getId()));
 
+        model.addAttribute("title", "Home");
+
         return "home";
     }
 }

@@ -1,8 +1,3 @@
-<%--@elvariable id="resourcesVersion" type="String"--%>
-<%--@elvariable id="geneId" type="String"--%>
-
-<%@ page contentType="text/html;charset=UTF-8" %>
-
 <ul class="tabs" data-tabs id="search-tabs">
     <li class="tabs-title is-active"><a href="#search-atlas" aria-selected="true">Search</a></li>
 </ul>
@@ -13,11 +8,11 @@
     </div>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js-bundles/geneSearchForm.bundle.js"></script>
-<script>
+<script defer th:src="@{/resources/js-bundles/geneSearchForm.bundle.js}"></script>
+<script th:with="contextPath=@{/}">
     document.addEventListener("DOMContentLoaded", function () {
         geneSearchForm.render({
-            host: '${pageContext.request.contextPath}/',
+            host: '$contextPath',
             resource: 'json/suggestions/species',
             defaultSpecies: ``,
             wrapperClassName: 'row expanded',
@@ -33,35 +28,35 @@
             searchExamples: [
                 {
                     text: 'CFTR (gene symbol)',
-                    url: '${pageContext.request.contextPath}/search?symbol=CFTR'
+                    url: '$contextPath/search?symbol=CFTR'
                 },
                 {
                     text: 'ENSG00000125798 (Ensembl ID)',
-                    url: '${pageContext.request.contextPath}/search?ensgene=ENSG00000125798'
+                    url: '$contextPath/search?ensgene=ENSG00000125798'
                 },
                 {
                     text: '657 (Entrez ID)',
-                    url: '${pageContext.request.contextPath}/search?entrezgene=657'
+                    url: '$contextPath/search?entrezgene=657'
                 },
                 {
                     text: 'MGI:98354 (MGI ID)',
-                    url: '${pageContext.request.contextPath}/search?mgi_id=MGI:98354'
+                    url: '$contextPath/search?mgi_id=MGI:98354'
                 },
                 {
                     text: 'FBgn0003062 (FlyBase ID)',
-                    url: '${pageContext.request.contextPath}/search?flybase_gene_id=FBgn0003062'
+                    url: '$contextPath/search?flybase_gene_id=FBgn0003062'
                 },
                 {
                     text: 'keratinocyte (cell type)',
-                    url: '${pageContext.request.contextPath}/search/metadata/keratinocyte'
+                    url: '$contextPath/search/metadata/keratinocyte'
                 },
                 {
                     text: 'liver (organ/organism part)',
-                    url: '${pageContext.request.contextPath}/search/metadata/liver'
+                    url: '$contextPath/search/metadata/liver'
                 },
                 {
                     text: 'lung cancer (disease/condition)',
-                    url: '${pageContext.request.contextPath}/search/metadata/lung cancer'
+                    url: '$contextPath/search/metadata/lung cancer'
                 }
             ]
         }, 'search-form')

@@ -10,7 +10,7 @@ public class DownloadController extends HtmlExceptionHandlingController {
 
     @RequestMapping(value = "/download", produces = "text/html;charset=UTF-8")
     public String getExperimentsListParameters(Model model) {
-        model.addAttribute("mainTitle", "Download ");
+        model.addAttribute("title", "Download ");
 
         return "download";
     }

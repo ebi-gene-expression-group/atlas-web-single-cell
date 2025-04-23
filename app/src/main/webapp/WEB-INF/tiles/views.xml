@@ -4,20 +4,6 @@
         "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 
 <tiles-definitions>
-    <definition name="home" extends="base">
-        <put-attribute name="title" value="Home &lt; "/>
-        <put-attribute name="content">
-            <definition template="/WEB-INF/jsp/tiles/views/home.jsp">
-                <put-attribute name="release-stats" value="/WEB-INF/jsp/tiles/views/home/release-stats.jsp"/>
-                <put-attribute name="search" value="/WEB-INF/jsp/tiles/views/home/search.jsp"/>
-                <put-attribute name="species-summary" value="/WEB-INF/jsp/tiles/views/home/species-summary.jsp"/>
-                <put-attribute name="experiments-summary-panel" value="/WEB-INF/jsp/tiles/views/home/experiments-summary-panel.jsp"/>
-                <put-attribute name="tools-box" value="/WEB-INF/jsp/tiles/views/home/tools.jsp"/>
-                <put-attribute name="publications-box" value="/WEB-INF/jsp/tiles/views/home/publications.jsp"/>
-            </definition>
-        </put-attribute>
-    </definition>
-
     <definition name="experiments" extends="base">
         <put-attribute name="title" value="Experiments &lt; "/>
         <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/experiments.jsp"/>

@@ -1,0 +1,91 @@
+<header th:fragment="global-masthead" id="masthead-black-bar" class="clearfix masthead-black-bar">
+    <script>
+        // Hack that solves https://github.com/ebiwd/EBI-Framework/pull/139 (I got tired of waiting)
+        window.addEventListener('load', function() {
+            $('#masthead-black-bar nav')[2].className='row expanded';
+        });
+    </script>
+</header>
+
+<div th:fragment="local-masthead">
+    <div class="row-expanded callout-background">
+        <div id="information-banner" class="columns small-8 small-centered margin-bottom-none text-large"></div>
+    </div>
+
+    <div data-sticky-container>
+        <header id="masthead" class="masthead" data-sticky data-sticky-on="large" data-top-anchor="content:top" data-btm-anchor="content:bottom">
+            <div class="masthead-inner row expanded">
+                <div class="small-12 large-8 columns">
+                    <a href="home" title="Back to Single Cell Expression Atlas homepage">
+                        <div class="media-object" id="local-title">
+                            <div class="media-object-section hide-for-small-only">
+                                <img th:src="@{/resources/images/logos/sc_atlas_logo.png}" alt="Single Cell Expression Atlas logo" style="height: 7em">
+                            </div>
+                            <div class="media-object-section">
+                                <h1>Single Cell Expression Atlas</h1>
+                                <h4 class="show-for-large">Single cell gene expression across species</h4>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="small-12 large-4 columns">
+                    <div class="media-object" style="display: flex; justify-content: flex-end; align-items: center;">
+                        <div class="media-object-section">
+                            <h4 class="show-for-large">Query bulk expression</h4>
+                            <a href="/gxa" title="To Expression Atlas" class="button" style="box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.5)"><i class="icon icon-functional" data-icon="<"></i> Back to Expression Atlas</a>
+                        </div>
+                        <div class="media-object-section show-for-large">
+                            <a href="https://wellcome.ac.uk/">
+                                <img th:src="@{/resources/images/logos/wellcome_trust_logo_black.png}" alt="Wellcome Trust logo" style="max-height: 5.5em; background: white">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <nav>
+                    <ul id="local-nav" class="dropdown menu float-left" data-description="navigational">
+                        <li id="local-nav-home"><a th:href="@{/home}"><i class="icon icon-generic padding-right-medium" data-icon="H"></i>Home</a></li>
+                        <li id="local-nav-experiments"><a th:href="@{/experiments}"><i class="icon icon-functional padding-right-medium" data-icon="C"></i>Browse experiments</a></li>
+                        <li id="local-nav-download"><a th:href="@{/download}"><i class="icon icon-functional padding-right-medium" data-icon="="></i>Download</a></li>
+                        <li id="local-nav-release-notes"><a th:href="@{/release-notes.html}"><i class="icon icon-generic padding-right-medium" data-icon=";"></i>Release notes</a></li>
+                        <li id="local-nav-help"><a th:href="@{/help.html?section=${section}}"><i class="icon icon-generic padding-right-medium" data-icon="?"></i>Help</a></li>
+                        <li id="local-nav-feedback"><a href="https://www.ebi.ac.uk/support/gxasc" target="_blank" data-icon="X"><i class="icon icon-generic padding-right-medium" data-icon="s"></i>Support</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+    </div>
+</div>
+
+<footer th:fragment="global-footer">
+    <div id="global-footer" class="global-footer">
+        <nav id="global-nav-expanded" class="global-nav row">
+        </nav>
+        <section id="ebi-footer-meta" class="ebi-footer-meta row">
+        </section>
+    </div>
+</footer>
+
+<footer th:fragment="local-footer" id="local-footer" class="local-footer" role="local-footer">
+    <div id="relationships" class="row">
+        <!-- https://www.ebi.ac.uk/style-lab/websites/patterns/banner-elixir.html -->
+        <div class="small-10 columns">
+            <div id="elixir-banner"
+                 data-color="none"
+                 data-use-cdr-logo="false"
+                 data-name="This service"
+                 data-description="Expression Atlas is an ELIXIR database service"
+                 data-more-information-link="https://www.elixir-europe.org/about-us/who-we-are/nodes/embl-ebi"
+                 data-use-basic-styles="false">
+            </div>
+        </div>
+        <div class="small-2 columns text-right padding-top-medium">
+            <a href="https://wellcome.ac.uk/" class="clear">
+                <img th:src="@{/resources/images/logos/wellcome_trust_logo_black.png}"
+                     alt="Wellcome Trust logo" style="height: 4em">
+            </a>
+        </div>
+    </div>
+
+    <script defer="defer" src="https://ebi.emblstatic.net/web_guidelines/EBI-Framework/v1.3/js/elixirBanner.js"></script>
+</footer>

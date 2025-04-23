@@ -1,0 +1,30 @@
+<div class="row expanded">
+    <div th:replace="~{views/home/release-stats}"></div>
+</div>
+
+<div class="row column margin-bottom-xlarge expanded">
+    <div th:replace="~{views/home/search}"></div>
+</div>
+
+<div class="row column margin-bottom-xlarge expanded">
+    <div th:replace="~{views/home/species-summary-panel}"></div>
+</div>
+
+<div class="row column margin-bottom-xlarge expanded">
+    <div th:replace="~{views/home/experiments-summary-panel}"></div>
+</div>
+
+<div class="row expanded margin-top-large" data-equalizer>
+    <div class="small-12 medium-12 large-6 columns">
+        <div th:replace="~{views/home/tools}"></div>
+    </div>
+    <div class="small-12 medium-12 large-6 columns">
+        <div th:replace="~{views/home/publications}"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("local-nav-home").className += ' active';
+    });
+</script>

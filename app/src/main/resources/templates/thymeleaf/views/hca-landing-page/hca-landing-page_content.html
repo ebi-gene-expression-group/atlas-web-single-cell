@@ -1,11 +1,9 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-
 <div class="row column margin-top-large">
     <div class="media-object">
         <div class="media-object-section middle hide-for-small-only padding-right-xlarge">
             <div class="thumbnail">
                 <img alt="Human Cell Atlas" style="max-width: 275px"
-                     src="${pageContext.request.contextPath}/resources/images/logos/human_cell_atlas.png"/>
+                     th:src="@{/resources/images/logos/human_cell_atlas.png}"/>
             </div>
         </div>
         <div class="media-object-section middle">
@@ -20,15 +18,15 @@
 </div>
 
 <div class="row column margin-top-xlarge">
-    <%@ include file="hca-landing-page/data.jsp" %>
+    <div th:replace="~{views/hca-landing-page/data}"></div>
 </div>
 
 <div class="row column margin-top-large">
-    <%@ include file="hca-landing-page/tools.jsp" %>
+    <div th:replace="~{views/hca-landing-page/tools}"></div>
 </div>
 
 <div class="row column margin-top-large">
-    <%@ include file="hca-landing-page/people.jsp" %>
+    <div th:replace="~{views/hca-landing-page/people}"></div>
 </div>
 
 

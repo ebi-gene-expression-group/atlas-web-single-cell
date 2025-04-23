@@ -88,8 +88,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public SpringTemplateEngine thymeleafTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.addTemplateResolver(rootThymeleafTemplateResolver());
         templateEngine.addTemplateResolver(viewsThymeleafTemplateResolver());
+        templateEngine.addTemplateResolver(rootThymeleafTemplateResolver());
         return templateEngine;
     }
 
@@ -103,7 +103,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
-        registry.viewResolver(thymeleafViewResolver());
         registry.viewResolver(urlBasedViewResolver());
+        registry.viewResolver(thymeleafViewResolver());
     }
 }

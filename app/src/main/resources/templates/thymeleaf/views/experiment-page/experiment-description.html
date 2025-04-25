@@ -1,0 +1,69 @@
+<div id="experimentDescription" class="row column expanded">
+    <div class="media-object stack-for-small" th:classappend="${#strings.startsWith(experimentAccession, 'E-ANND-')} ? 'anndata' : ''">
+        <div th:if="${#strings.startsWith(experimentAccession, 'E-EHCA-')}"
+             class="media-object-section middle paddin-right-medium">
+            <a class="clear padding-right-xlarge" href="https://preview.data.humancellatlas.org/">
+                <img alt="Human Cell Atlas" style="max-width: 275px"
+                     th:src="@{/resources/images/logos/human_cell_atlas.png}">
+            </a>
+        </div>
+
+        <div class="media-object-section middle">
+            <h3 id="goto-experiment" th:text="${experimentDesription}"></h3>
+
+            <h5 th:text="${type}"></h5>
+            <div>Number of cells: <span th:text="${#numbers.formatInteger(numberOfCells, 1)}"></span></div>
+
+            <div id="experimentOrganisms">Organism:
+                <span style="font-style:italic" th:text="${species}"></span>
+            </div>
+
+            <div th:if="${not #lists.isEmpty(publications)}" id="experimentReferences">
+                <span th:text="${#lists.size(publications) == 1} ? 'Publication:' : 'Publications:'"></span>
+
+                <ul>
+                    <li th:each="publication : ${publications}">
+                        <span th:if="${not #strings.isEmpty(publication.getAuthors())}"
+                              th:text="${publication.getAuthors() + ' (' + publication.getPublicationYear() + ')'}"></span>
+
+                        <i>
+                            <a class="pubmed-id" th:if="${not #strings.isEmpty(publication.getPubmedId())}"
+                               th:href="${not #strings.isEmpty(publication.getPubmedId())} ? 'https://europepmc.org/abstract/MED/' + ${publication.getPubmedId()} : 'https://doi.org/' + ${publication.getDoi()}"
+                               title="Read publication"
+                               target='_blank'
+                               th:text="${publication.getTitle()}"></a>
+                        </i>
+                    </li>
+                </ul>
+            </div>
+
+            <div th:if="${not #lists.isEmpty(dataProviderURL) and not #lists.isEmpty(dataProviderDescription)}"
+                 id="dataProvider">
+                Raw Data Provider:
+                <div th:each="dataProvider, i : ${dataProviderURL}">
+                    <a class="thick-link" title="Experiment Data Provider"
+                       th:href="${dataProvider}"
+                       th:text="${dataProviderDescription.asList.get(i.index)}">
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${not #lists.isEmpty(alternativeViews) and not #lists.isEmpty(alternativeViewDescriptions)}"
+                 id="alternativeViews">
+                See also:
+                <div th:each="alternativeViewAccession, i : ${alternativeViews}">
+                    <a class="thick-link" title="Alternative view"
+                       th:href="@{'/experiments/' + ${alternativeViewAccession}}"
+                    th:text="${alternativeViewDescriptions.get(i.index)}">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <a th:if="${#strings.startsWith(experimentAccession, 'E-ANND-')}" th:href="@{/help.html(section='external-data')}">
+            <div class="experiment-type-icon" title="Externally analysed data">
+                E
+            </div>
+        </a>
+    </div>
+</div>

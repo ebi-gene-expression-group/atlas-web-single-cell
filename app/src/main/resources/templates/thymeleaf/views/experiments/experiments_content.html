@@ -1,14 +1,13 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-
 <div id="experiments"></div>
 <div id="popup-placeholder"></div>
 <link rel="stylesheet" href="https://ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css" type="text/css"
       media="all"/>
 
-<script defer src="${pageContext.request.contextPath}/resources/js-bundles/experimentTable.bundle.js"></script>
+<script defer th:src="@{/resources/js-bundles/experimentTable.bundle.js}"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function (event) {
+<script th:inline="javascript" th:with="contextPath=@{/}">
+    const contextPath = /*[[${contextPath}]]*/ '';
+    document.addEventListener('DOMContentLoaded', function () {
         experimentTable.renderRouter(
             {
                 tableHeaders: [
@@ -94,9 +93,9 @@
                 },
                 sortColumnIndex: 0,
                 ascendingOrder: false,
-                host: '${pageContext.request.contextPath}/',
+                host: contextPath,
                 resource: 'json/experiments',
-                basename: '${pageContext.request.contextPath}'
+                basename: contextPath
             },
             'experiments');
     });

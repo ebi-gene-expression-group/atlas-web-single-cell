@@ -1,18 +1,12 @@
-<%--@elvariable id="hcaExperimentsCount" type="int"--%>
-<%--@elvariable id="humanExperimentsCount" type="int"--%>
-
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page contentType="text/html;charset=UTF-8" %>
-
 <div id="data" class="callout" data-equalizer-watch>
     <h3><span class="icon icon-functional" data-icon="A"></span> Data</h3>
     <hr>
 
     <p> Single Cell Expression Atlas provides access to the analysis results of
-        <fmt:formatNumber value="${hcaExperimentsCount}"/> data
-        ${hcaExperimentsCount > 1 ? "sets" : "set"} from the Human Cell Atlas
-        and <fmt:formatNumber value="${humanExperimentsCount}"/> data
-        ${humanExperimentsCount > 1 ? "sets" : "set"} in <i>Homo sapiens</i>
+        <span th:text="${#numbers.formatInteger(hcaExperimentsCount, 1)}"></span> data
+        <span th:text="${hcaExperimentsCount > 1 ? 'sets' : 'set'}"></span> from the Human Cell Atlas
+        and <span th:text="${#numbers.formatInteger(humanExperimentsCount, 1)}"></span> data
+        <span th:text="${humanExperimentsCount > 1 ? 'sets' : 'set'}"></span> in <i>Homo sapiens</i>
         from other studies.
     </p>
     <p>
@@ -24,12 +18,12 @@
     <div class="margin-top-xlarge" id="hca-card-container"></div>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js-bundles/homepageCards.bundle.js"></script>
+<script defer th:src="@{/resources/js-bundles/homepageCards.bundle.js}"></script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function(event) {
+<script th:with="contextPath=@{/}">
+  document.addEventListener("DOMContentLoaded", function() {
     homepageCards.render({
-      host: '${pageContext.request.contextPath}/',
+      host: '$contextPath',
       resource: 'json/hca',
       className: 'row small-up-2',
       cardContainerClassName: 'column',

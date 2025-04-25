@@ -48,7 +48,7 @@
                         <li id="local-nav-experiments"><a th:href="@{/experiments}"><i class="icon icon-functional padding-right-medium" data-icon="C"></i>Browse experiments</a></li>
                         <li id="local-nav-download"><a th:href="@{/download}"><i class="icon icon-functional padding-right-medium" data-icon="="></i>Download</a></li>
                         <li id="local-nav-release-notes"><a th:href="@{/release-notes.html}"><i class="icon icon-generic padding-right-medium" data-icon=";"></i>Release notes</a></li>
-                        <li id="local-nav-help"><a th:href="@{/help.html?section=${section}}"><i class="icon icon-generic padding-right-medium" data-icon="?"></i>Help</a></li>
+                        <li id="local-nav-help"><a th:href="@{'/help.html?section=' + ${section}}"><i class="icon icon-generic padding-right-medium" data-icon="?"></i>Help</a></li>
                         <li id="local-nav-feedback"><a href="https://www.ebi.ac.uk/support/gxasc" target="_blank" data-icon="X"><i class="icon icon-generic padding-right-medium" data-icon="s"></i>Support</a></li>
                     </ul>
                 </nav>

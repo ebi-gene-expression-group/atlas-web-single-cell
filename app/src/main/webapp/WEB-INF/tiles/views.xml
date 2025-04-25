@@ -13,9 +13,4 @@
         <put-attribute name="title" value=""/>
         <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/static-page.jsp"/>
     </definition>
-
-    <definition name="cell-type-wheel-experiment-heatmap" extends="base">
-        <put-attribute name="title" value="Cell Type Wheel Heatmap"/>
-        <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/cell-type-wheel-experiment-heatmap.jsp"/>
-    </definition>
 </tiles-definitions>

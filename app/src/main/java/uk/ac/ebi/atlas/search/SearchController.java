@@ -87,6 +87,8 @@ public class SearchController extends HtmlExceptionHandlingController {
             }
         }
 
+        model.addAttribute("title", "Search results");
+
         return "gene-search-results";
     }
 }

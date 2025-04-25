@@ -10,6 +10,8 @@ public class ExperimentsController extends HtmlExceptionHandlingController {
     @GetMapping(value = "/experiments", produces = "text/html;charset=UTF-8")
     public String
     getExperimentsListParameters(Model model) {
+        model.addAttribute("title", "Experiments");
+
         return "experiments";
     }
 }

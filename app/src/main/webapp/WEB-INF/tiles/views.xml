@@ -4,11 +4,6 @@
         "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 
 <tiles-definitions>
-    <definition name="experiments" extends="base">
-        <put-attribute name="title" value="Experiments &lt; "/>
-        <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/experiments.jsp"/>
-    </definition>
-
     <definition name="gene-search-results" extends="base">
         <put-attribute name="title" value="Search results &lt; "/>
         <put-attribute name="content" value="/WEB-INF/jsp/tiles/views/gene-search-results.jsp"/>

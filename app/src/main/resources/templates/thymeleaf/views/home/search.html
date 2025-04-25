@@ -9,10 +9,11 @@
 </div>
 
 <script defer th:src="@{/resources/js-bundles/geneSearchForm.bundle.js}"></script>
-<script th:with="contextPath=@{/}">
+<script th:inline="javascript" th:with="contextPath=@{/}">
+    const contextPath = /*[[${contextPath}]]*/ '';
     document.addEventListener("DOMContentLoaded", function () {
         geneSearchForm.render({
-            host: '$contextPath',
+            host: contextPath,
             resource: 'json/suggestions/species',
             defaultSpecies: ``,
             wrapperClassName: 'row expanded',
@@ -28,35 +29,35 @@
             searchExamples: [
                 {
                     text: 'CFTR (gene symbol)',
-                    url: '$contextPath/search?symbol=CFTR'
+                    url: contextPath + 'search?symbol=CFTR'
                 },
                 {
                     text: 'ENSG00000125798 (Ensembl ID)',
-                    url: '$contextPath/search?ensgene=ENSG00000125798'
+                    url: contextPath + 'search?ensgene=ENSG00000125798'
                 },
                 {
                     text: '657 (Entrez ID)',
-                    url: '$contextPath/search?entrezgene=657'
+                    url: contextPath + 'search?entrezgene=657'
                 },
                 {
                     text: 'MGI:98354 (MGI ID)',
-                    url: '$contextPath/search?mgi_id=MGI:98354'
+                    url: contextPath + 'search?mgi_id=MGI:98354'
                 },
                 {
                     text: 'FBgn0003062 (FlyBase ID)',
-                    url: '$contextPath/search?flybase_gene_id=FBgn0003062'
+                    url: contextPath + 'search?flybase_gene_id=FBgn0003062'
                 },
                 {
                     text: 'keratinocyte (cell type)',
-                    url: '$contextPath/search/metadata/keratinocyte'
+                    url: contextPath + 'search/metadata/keratinocyte'
                 },
                 {
                     text: 'liver (organ/organism part)',
-                    url: '$contextPath/search/metadata/liver'
+                    url: contextPath + 'search/metadata/liver'
                 },
                 {
                     text: 'lung cancer (disease/condition)',
-                    url: '$contextPath/search/metadata/lung cancer'
+                    url: contextPath + 'search/metadata/lung cancer'
                 }
             ]
         }, 'search-form')

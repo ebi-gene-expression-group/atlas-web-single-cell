@@ -1,0 +1,23 @@
+<div class="row margin-top-xxlarge margin-bottom-xxlarge">
+    <div class="small-6 small-centered columns">
+        <h4>Error:
+            <span style="color:indianred;font-weight: bold;" th:text="${statusCode}"></span>
+        </h4>
+
+        <div>
+            <h5 th:if="${exceptionMessage != null and exceptionMessage != ''}" th:text="${exceptionMessage}"></h5>
+            <h5 th:if="${statusCode == 404}">
+                Page not found. If you think a resource is missing, please get in touch with us through
+                <a href="https://www.ebi.ac.uk/support/gxasc">the EBI Support & feedback form</a>.
+            </h5>
+            <h5 th:unless="${exceptionMessage != null and exceptionMessage != '' or statusCode == 404}">
+                We are sorry - an unexpected error occurred. If it persists, please get in touch with us through
+                <a href="https://www.ebi.ac.uk/support/gxasc">the EBI Support & feedback form</a>.
+            </h5>
+        </div>
+
+        <h5 class="margin-top-xlarge">
+            Go back to <a th:href="@{/home}">Single Cell Expression Atlas home page</a>.
+        </h5>
+    </div>
+</div>

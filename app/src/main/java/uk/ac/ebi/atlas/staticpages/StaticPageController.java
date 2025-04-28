@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.support.ServletContextResourceLoader;
-import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 
 import javax.servlet.ServletContext;
 
 @Profile("!cli")
 @Controller
-public class StaticPageController extends HtmlExceptionHandlingController {
+public class StaticPageController {
     private final ServletContextResourceLoader servletContextResourceLoader;
 
     public StaticPageController(ServletContext servletContext) {

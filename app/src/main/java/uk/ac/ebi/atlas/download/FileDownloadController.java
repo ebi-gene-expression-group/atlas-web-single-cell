@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -34,7 +33,7 @@ import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @Controller
-public class FileDownloadController extends HtmlExceptionHandlingController {
+public class FileDownloadController {
     private final ExperimentFileLocationService experimentFileLocationService;
     private final ExperimentTrader experimentTrader;
     private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadController.class);

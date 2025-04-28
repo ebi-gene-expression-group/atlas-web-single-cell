@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.support.ServletContextResourceLoader;
+import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.controllers.ResourceNotFoundException;
 
@@ -30,12 +31,13 @@ public class StaticPageController extends HtmlExceptionHandlingController {
     }
 
     @RequestMapping("/help.html")
-    public String getHelpPage(@RequestParam String section, Model model) {
-        var pageName = "help";
-        checkPageExists(String.format("classpath:/templates/thymeleaf/views/%s.html", pageName), pageName);
-        model.addAttribute("section", section);
-        model.addAttribute("title", "Help");
-        return pageName;
+    public ModelAndView getHelpPage(@RequestParam(required = false) String section) {
+        var viewName = "help";
+        ModelAndView mav = new ModelAndView(viewName);
+        checkPageExists(String.format("classpath:/templates/thymeleaf/views/%s.html", viewName), viewName);
+        mav.addObject("section", section);
+        mav.addObject("title", "Help");
+        return mav;
     }
 
     private void checkPageExists(String path, String pageName) {

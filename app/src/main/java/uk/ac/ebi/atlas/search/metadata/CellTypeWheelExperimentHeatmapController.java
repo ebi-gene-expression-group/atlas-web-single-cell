@@ -15,6 +15,8 @@ public class CellTypeWheelExperimentHeatmapController extends HtmlExceptionHandl
                            Model model) {
         model.addAttribute("cellTypeWheelSearchTerm", term);
         model.addAttribute("species", species);
+        model.addAttribute("title", "Cell Type Wheel Heatmap");
+
         return "cell-type-wheel-experiment-heatmap";
     }
 }

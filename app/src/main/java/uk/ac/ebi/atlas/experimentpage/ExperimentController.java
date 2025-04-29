@@ -33,11 +33,12 @@ public class ExperimentController extends HtmlExceptionHandlingController {
 
         model.addAllAttributes(experimentAttributesService.getAttributes(experiment));
         model.addAttribute(
-                "content",
+                "experimentContent",
                 experimentPageContentSerializer.experimentPageContentForExperiment(experimentAccession, accessKey));
         model.addAttribute(
                 "numberOfCells",
                 experimentAttributesService.getCellCount(experimentAccession));
+        model.addAttribute("title", "Experiment");
 
         return "experiment-page";
     }

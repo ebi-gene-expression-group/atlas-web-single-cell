@@ -1,0 +1,27 @@
+<div th:replace="~{views/experiment-page/experiment-description}"></div>
+
+<div class="row column margin-top-large expanded">
+    <div id="experiment-page"></div>
+</div>
+
+<div id="feedback-button"></div>
+
+<link rel="stylesheet" th:href="@{/resources/css/react-popup.css}" type="text/css" media="all">
+<script defer th:src="@{/resources/js-bundles/feedbackForm.bundle.js}"></script>
+
+<script defer th:src="@{/resources/js-bundles/experimentPage.bundle.js}"></script>
+
+<script th:inline="javascript" th:with="contextPath=@{/}">
+  const contextPath = /*[[${contextPath}]]*/ '';
+  document.addEventListener("DOMContentLoaded", function() {
+    experimentPage.render({
+      atlasUrl: contextPath,
+      resourcesUrl: contextPath + 'resources/js-bundles/',
+      content: /*[(${experimentContent})]*/ {},
+    }, 'experiment-page');
+    feedbackForm.render({
+      feedbackFormLink: 'https://www.ebi.ac.uk/support/gxasc',
+      gaId: 'UA-37676851-3'
+    }, 'feedback-button');
+  });
+</script>

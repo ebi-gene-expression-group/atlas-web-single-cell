@@ -74,7 +74,7 @@ class ExperimentControllerWIT {
                 .andExpect(model().attribute("experimentAccession", experimentAccession))
                 .andExpect(model().attributeExists("type"))
                 .andExpect(model().attributeExists("numberOfCells"))
-                .andExpect(model().attributeExists("content"));
+                .andExpect(model().attributeExists("experimentContent"));
 
         var experimentTypeHumanDescription = mockMvc.perform(get(URL, experimentAccession))
                 .andReturn().getModelAndView().getModel().get("type");

@@ -3,7 +3,6 @@ package uk.ac.ebi.atlas.home;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.model.experiment.Experiment;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -16,7 +15,7 @@ import static uk.ac.ebi.atlas.home.AtlasInformationDataType.WBPS;
 import static uk.ac.ebi.atlas.home.CellStatsDao.CellStatsKey.FILTERED_CELLS;
 
 @Controller
-public class HomeController extends HtmlExceptionHandlingController {
+public class HomeController {
     private final LatestExperimentsService latestExperimentsService;
     private final ExperimentTrader experimentTrader;
     private final AtlasInformationDao atlasInformationDao;

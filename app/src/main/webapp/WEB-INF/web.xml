@@ -21,6 +21,10 @@
             <param-name>contextConfigLocation</param-name>
             <param-value>uk.ac.ebi.atlas.configuration.AppConfig</param-value>
         </init-param>
+        <init-param>
+            <param-name>throwExceptionIfNoHandlerFound</param-name>
+            <param-value>true</param-value>
+        </init-param>
         <!-- Uncomment if you want a slower start-up time but a faster first-page load -->
         <!--<load-on-startup>1</load-on-startup>-->
     </servlet>
@@ -99,12 +103,4 @@
         </cookie-config>
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
-
-    <welcome-file-list>
-        <welcome-file>/WEB-INF/jsp/index.jsp</welcome-file>
-    </welcome-file-list>
-
-    <error-page>
-        <location>/WEB-INF/jsp/error.jsp</location>
-    </error-page>
 </web-app>

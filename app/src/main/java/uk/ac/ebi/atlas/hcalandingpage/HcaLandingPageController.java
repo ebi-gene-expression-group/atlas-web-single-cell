@@ -3,7 +3,6 @@ package uk.ac.ebi.atlas.hcalandingpage;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.ac.ebi.atlas.controllers.HtmlExceptionHandlingController;
 import uk.ac.ebi.atlas.experiments.ExperimentSearchService;
 
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import static uk.ac.ebi.atlas.hcalandingpage.JsonHcaLandingPageController.HCA_AC
 import static uk.ac.ebi.atlas.utils.GsonProvider.GSON;
 
 @RestController
-public class HcaLandingPageController extends HtmlExceptionHandlingController {
+public class HcaLandingPageController {
     private ExperimentSearchService experimentSearchService;
 
     public HcaLandingPageController(ExperimentSearchService experimentSearchService) {

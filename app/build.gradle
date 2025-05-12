@@ -3,6 +3,14 @@ plugins {
     id 'war'
     id 'org.flywaydb.flyway' version '7.14.0'
     id "com.gorylenko.gradle-git-properties" version "2.4.1"
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.security:spring-security-bom:5.1.5.RELEASE'
+        mavenBom 'org.springframework:spring-framework-bom:5.1.6.RELEASE'
+    }
 }
 
 gitProperties {
@@ -25,10 +33,13 @@ def cache2kVersion = '1.2.4.Final'
 dependencies {
     implementation project(':atlas-web-core')
 
-    implementation 'org.springframework:spring-context:5.1.5.RELEASE'
-    implementation 'org.springframework:spring-web:5.1.5.RELEASE'
-    implementation 'org.springframework:spring-jdbc:5.1.5.RELEASE'
-    implementation 'org.springframework:spring-webmvc:5.1.5.RELEASE'
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-web'
+    implementation 'org.springframework:spring-jdbc'
+    implementation 'org.springframework:spring-webmvc'
+
+    implementation "org.springframework.security:spring-security-web"
+    implementation "org.springframework.security:spring-security-config"
 
     implementation 'javax.validation:validation-api:2.0.1.Final'
     // Jackson BOM is included in 'atlas-web-app.java-conventions' so no need to specify version
@@ -43,13 +54,10 @@ dependencies {
     implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
     implementation 'org.thymeleaf:thymeleaf-spring5:3.1.2.RELEASE'
 
-    runtimeOnly 'org.apache.tiles:tiles-extras:3.0.8'
     // For URL rewrite (see WEB-INF/web.xml), or your Filter will fail with the most confusing error messages
     runtimeOnly 'org.tuckey:urlrewritefilter:4.0.3'
-    runtimeOnly 'jstl:jstl:1.2'
 
     testImplementation 'commons-beanutils:commons-beanutils:1.9.3'
-    testImplementation 'javax.servlet.jsp:jsp-api:2.2'
 
     testImplementation 'com.zaxxer:HikariCP:3.3.1'
 }

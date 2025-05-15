@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'uk.ac.ebi.ge'
-version = '17.0.2'
+version = '17.0.3'
 
 sourceCompatibility = 11
 targetCompatibility = 11

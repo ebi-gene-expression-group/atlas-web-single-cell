@@ -31,6 +31,11 @@ public class HomeController {
         this.cellStatsDao = cellStatsDao;
     }
 
+    @RequestMapping(value = {"/", "/index"})
+    public String redirectHome() {
+        return "redirect:/home";
+    }
+
     @RequestMapping(value = "/home")
     public String getHomePage(Model model) {
         model.addAllAttributes(latestExperimentsService.fetchLatestExperimentsAttributes());

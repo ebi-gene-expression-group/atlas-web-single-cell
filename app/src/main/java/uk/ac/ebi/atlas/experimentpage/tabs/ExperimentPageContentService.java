@@ -24,6 +24,7 @@ import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,19 +126,27 @@ public class ExperimentPageContentService {
                 ImmutableList.of(
                         ExperimentFileType.EXPERIMENT_METADATA,
                         ExperimentFileType.EXPERIMENT_DESIGN);
+        List<ExperimentFileType> resultFiles = new ArrayList<>();
 
-        var resultFiles = isSmartExperiment(technologyType) ?
-                ImmutableList.of(
-                        ExperimentFileType.CLUSTERING,
-                        ExperimentFileType.QUANTIFICATION_FILTERED,
-                        ExperimentFileType.MARKER_GENES,
-                        ExperimentFileType.NORMALISED,
-                        ExperimentFileType.QUANTIFICATION_RAW) :
-                ImmutableList.of(
-                        ExperimentFileType.CLUSTERING,
-                        ExperimentFileType.MARKER_GENES,
-                        ExperimentFileType.NORMALISED,
-                        ExperimentFileType.QUANTIFICATION_RAW);
+        if (experimentAccession.startsWith("E-ANND-")) {
+            // Mandatory files
+            resultFiles.add(ExperimentFileType.MARKER_GENES);
+            resultFiles.add(ExperimentFileType.NORMALISED);
+            var clusterFilePath = experimentFileLocationService.getFilePath(experimentAccession, ExperimentFileType.CLUSTERING);
+            // Optional CLUSTERING
+            if (clusterFilePath != null) {
+                resultFiles.add(ExperimentFileType.CLUSTERING);
+            }
+        } else {
+            resultFiles.add(ExperimentFileType.CLUSTERING);
+            resultFiles.add(ExperimentFileType.MARKER_GENES);
+            resultFiles.add(ExperimentFileType.NORMALISED);
+            resultFiles.add(ExperimentFileType.QUANTIFICATION_RAW);
+
+            if (isSmartExperiment(technologyType)) {
+                resultFiles.add(ExperimentFileType.QUANTIFICATION_FILTERED);
+            }
+        }
 
         result.add(getDownloadSection("Metadata files", metadataFiles, experimentAccession, accessKey));
         result.add(getDownloadSection("Result files", resultFiles, experimentAccession, accessKey));

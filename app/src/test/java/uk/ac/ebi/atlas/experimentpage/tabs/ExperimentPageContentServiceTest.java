@@ -140,6 +140,29 @@ class ExperimentPageContentServiceTest {
         tpmsDownloadJsonObject.addProperty("isDownload", true);
     }
 
+    private void setupCommonExperimentMocks(String experimentAccession) {
+        for (var type : ImmutableList.of(
+                ExperimentFileType.EXPERIMENT_METADATA,
+                ExperimentFileType.EXPERIMENT_DESIGN,
+                ExperimentFileType.CLUSTERING,
+                ExperimentFileType.MARKER_GENES,
+                ExperimentFileType.NORMALISED
+        )) {
+            when(experimentFileLocationServiceMock.getFileUri(experimentAccession, type, ""))
+                    .thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
+        }
+    }
+
+    private void setupFileExistenceMock(String experimentAccession, boolean clusteringExists) {
+        var singleCellFilesMock = mock(SingleCellExperimentFiles.class);
+        var clustersTsvMock = mock(AtlasResource.class);
+
+        when(dataFileHubMock.getSingleCellExperimentFiles(experimentAccession))
+                .thenReturn(singleCellFilesMock);
+        when(singleCellFilesMock.getClustersTsv()).thenReturn(clustersTsvMock);
+        when(clustersTsvMock.exists()).thenReturn(clusteringExists);
+    }
+
     @Test
     void testGetDownloadsForANNDExperiment_withClustering() {
         var experimentAccession = "E-ANND-123";
@@ -149,45 +172,8 @@ class ExperimentPageContentServiceTest {
                 .build();
         when(experimentTraderMock.getExperiment(experimentAccession, "")).thenReturn(experiment);
 
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.EXPERIMENT_METADATA,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
-
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.EXPERIMENT_DESIGN,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
-
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.CLUSTERING,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.MARKER_GENES,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
-
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.NORMALISED,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
-
-        SingleCellExperimentFiles singleCellExperimentFilesMock = mock(SingleCellExperimentFiles.class);
-
-        AtlasResource<TsvStreamer> clustersTsvMock = mock(AtlasResource.class);
-
-        when(dataFileHubMock.getSingleCellExperimentFiles(experimentAccession))
-                .thenReturn(singleCellExperimentFilesMock);
-        when(singleCellExperimentFilesMock.getClustersTsv())
-                .thenReturn(clustersTsvMock);
-        when(clustersTsvMock.exists())
-                .thenReturn(true);
+        setupCommonExperimentMocks(experimentAccession);
+        setupFileExistenceMock(experimentAccession, true);
 
         var downloads = subject.getDownloads(experimentAccession, "");
 
@@ -212,45 +198,8 @@ class ExperimentPageContentServiceTest {
                 .build();
         when(experimentTraderMock.getExperiment(experimentAccession, "")).thenReturn(experiment);
 
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.EXPERIMENT_METADATA,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
-
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.EXPERIMENT_DESIGN,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
-
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.CLUSTERING,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.MARKER_GENES,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
-
-        when(experimentFileLocationServiceMock.getFileUri(
-                experimentAccession,
-                ExperimentFileType.NORMALISED,
-                "")
-        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
-
-        SingleCellExperimentFiles singleCellExperimentFilesMock = mock(SingleCellExperimentFiles.class);
-
-        AtlasResource<TsvStreamer> clustersTsvMock = mock(AtlasResource.class);
-
-        when(dataFileHubMock.getSingleCellExperimentFiles(experimentAccession))
-                .thenReturn(singleCellExperimentFilesMock);
-        when(singleCellExperimentFilesMock.getClustersTsv())
-                .thenReturn(clustersTsvMock);
-        when(clustersTsvMock.exists())
-                .thenReturn(false);
+        setupCommonExperimentMocks(experimentAccession);
+        setupFileExistenceMock(experimentAccession, false);
 
         var downloads = subject.getDownloads(experimentAccession, "");
 

@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.download.IconType;
@@ -20,7 +21,9 @@ import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGeneService;
 import uk.ac.ebi.atlas.experimentpage.metadata.CellMetadataService;
 import uk.ac.ebi.atlas.experimentpage.tsneplot.TSnePlotSettingsService;
 import uk.ac.ebi.atlas.experiments.ExperimentBuilder;
+import uk.ac.ebi.atlas.model.resource.AtlasResource;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.resource.DataFileHub.SingleCellExperimentFiles;
 import uk.ac.ebi.atlas.search.OntologyAccessionsSearchService;
 import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
@@ -32,6 +35,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(MockitoExtension.class)
@@ -134,6 +138,132 @@ class ExperimentPageContentServiceTest {
         tpmsDownloadJsonObject.addProperty("type", IconType.TSV.getName());
         tpmsDownloadJsonObject.addProperty("description", "Filtered TPMs files (MatrixMarket archive)");
         tpmsDownloadJsonObject.addProperty("isDownload", true);
+    }
+
+    @Test
+    void testGetDownloadsForANNDExperiment_withClustering() {
+        var experimentAccession = "E-ANND-123";
+        var experiment = new ExperimentBuilder.SingleCellBaselineExperimentBuilder()
+                .withExperimentAccession(experimentAccession)
+                .withTechnologyType(ImmutableList.of("Smart-Seq", "10xV1"))
+                .build();
+        when(experimentTraderMock.getExperiment(experimentAccession, "")).thenReturn(experiment);
+
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.EXPERIMENT_METADATA,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
+
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.EXPERIMENT_DESIGN,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
+
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.CLUSTERING,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.MARKER_GENES,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
+
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.NORMALISED,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
+
+        SingleCellExperimentFiles singleCellExperimentFilesMock = mock(SingleCellExperimentFiles.class);
+
+        AtlasResource<TsvStreamer> clustersTsvMock = mock(AtlasResource.class);
+
+        when(dataFileHubMock.getSingleCellExperimentFiles(experimentAccession))
+                .thenReturn(singleCellExperimentFilesMock);
+        when(singleCellExperimentFilesMock.getClustersTsv())
+                .thenReturn(clustersTsvMock);
+        when(clustersTsvMock.exists())
+                .thenReturn(true);
+
+        var downloads = subject.getDownloads(experimentAccession, "");
+
+        assertThat(downloads)
+                .hasSize(2)
+                .filteredOn(jsonElement -> jsonElement.getAsJsonObject().get("title").getAsString().equalsIgnoreCase("Result Files"))
+                .hasSize(1)
+                .extracting(jsonElement -> jsonElement.getAsJsonObject().get("files").getAsJsonArray())
+                .hasSize(1)
+                .first()
+                .satisfies(jsonArray -> {
+                    assertThat(jsonArray).hasSize(3);
+                });
+    }
+
+    @Test
+    void testGetDownloadsForANNDExperiment_withoutClustering() {
+        var experimentAccession = "E-ANND-123";
+        var experiment = new ExperimentBuilder.SingleCellBaselineExperimentBuilder()
+                .withExperimentAccession(experimentAccession)
+                .withTechnologyType(ImmutableList.of("Smart-Seq", "10xV1"))
+                .build();
+        when(experimentTraderMock.getExperiment(experimentAccession, "")).thenReturn(experiment);
+
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.EXPERIMENT_METADATA,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
+
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.EXPERIMENT_DESIGN,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
+
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.CLUSTERING,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_URI_TEMPLATE));
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.MARKER_GENES,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
+
+        when(experimentFileLocationServiceMock.getFileUri(
+                experimentAccession,
+                ExperimentFileType.NORMALISED,
+                "")
+        ).thenReturn(URI.create(EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE));
+
+        SingleCellExperimentFiles singleCellExperimentFilesMock = mock(SingleCellExperimentFiles.class);
+
+        AtlasResource<TsvStreamer> clustersTsvMock = mock(AtlasResource.class);
+
+        when(dataFileHubMock.getSingleCellExperimentFiles(experimentAccession))
+                .thenReturn(singleCellExperimentFilesMock);
+        when(singleCellExperimentFilesMock.getClustersTsv())
+                .thenReturn(clustersTsvMock);
+        when(clustersTsvMock.exists())
+                .thenReturn(false);
+
+        var downloads = subject.getDownloads(experimentAccession, "");
+
+        assertThat(downloads)
+                .hasSize(2)
+                .filteredOn(jsonElement -> jsonElement.getAsJsonObject().get("title").getAsString().equalsIgnoreCase("Result Files"))
+                .hasSize(1)
+                .extracting(jsonElement -> jsonElement.getAsJsonObject().get("files").getAsJsonArray())
+                .hasSize(1)
+                .first()
+                .satisfies(jsonArray -> {
+                    assertThat(jsonArray).hasSize(2);
+                });
     }
 
     @Test

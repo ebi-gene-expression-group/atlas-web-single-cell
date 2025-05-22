@@ -132,9 +132,8 @@ public class ExperimentPageContentService {
             // Mandatory files
             resultFiles.add(ExperimentFileType.MARKER_GENES);
             resultFiles.add(ExperimentFileType.NORMALISED);
-            var clusterFilePath = experimentFileLocationService.getFilePath(experimentAccession, ExperimentFileType.CLUSTERING);
             // Optional CLUSTERING
-            if (clusterFilePath != null) {
+            if (dataFileHub.getSingleCellExperimentFiles(experimentAccession).getClustersTsv().exists()) {
                 resultFiles.add(ExperimentFileType.CLUSTERING);
             }
         } else {

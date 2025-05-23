@@ -133,7 +133,9 @@ public class ExperimentPageContentService {
             resultFiles.add(ExperimentFileType.MARKER_GENES);
             resultFiles.add(ExperimentFileType.NORMALISED);
             // Optional CLUSTERING
-            if (dataFileHub.getSingleCellExperimentFiles(experimentAccession).getClustersTsv().exists()) {
+            if (dataFileHub.getSingleCellExperimentFiles(experimentAccession).getClustersTsv().exists() &&
+                    tsnePlotSettingsService.getAvailableKs(experimentAccession).size() > 0)
+            {
                 resultFiles.add(ExperimentFileType.CLUSTERING);
             }
         } else {

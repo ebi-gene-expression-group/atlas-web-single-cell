@@ -77,6 +77,10 @@ public class ExperimentPageContentService {
                 .anyMatch(type -> type.toLowerCase().startsWith(EXPERIMENT_TECHNOLOGY_TYPE_PREFIX));
     }
 
+    private static boolean isAnndataExperiment(String experimentAccession) {
+        return experimentAccession.startsWith("E-ANND-");
+    }
+
     public JsonObject getTsnePlotData(String experimentAccession) {
         var result = new JsonObject();
         result.add(
@@ -128,7 +132,7 @@ public class ExperimentPageContentService {
                         ExperimentFileType.EXPERIMENT_DESIGN);
         List<ExperimentFileType> resultFiles = new ArrayList<>();
 
-        if (experimentAccession.startsWith("E-ANND-")) {
+        if (isAnndataExperiment(experimentAccession)) {
             // Mandatory files
             resultFiles.add(ExperimentFileType.MARKER_GENES);
             resultFiles.add(ExperimentFileType.NORMALISED);

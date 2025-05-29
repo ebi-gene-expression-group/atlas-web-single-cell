@@ -107,7 +107,7 @@ class TSnePlotSettingsServiceIT {
     //Anndata experiments may not have Ks, we not throw errors for this, but return empty list instead
     @Test()
     void getClustersForInvalidAccessionThrowsException() {
-        List<Integer> result = subject.getAvailableKs(jdbcTestUtils.fetchRandomExperimentAccession());
+        List<Integer> result = subject.getAvailableKs("FOO");
 
         assertThat(result).isEmpty();
     }

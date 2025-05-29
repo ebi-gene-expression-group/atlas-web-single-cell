@@ -110,9 +110,7 @@ pipeline {
             stage('–– Build ––') {
               when {
                 anyOf {
-                  branch 'develop'
-                  branch 'main'
-                  branch 'release/*'
+                  branch 'develop'; branch 'main'; branch 'release/*'
                 }
               }
 

@@ -8,6 +8,7 @@ import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.model.resource.AtlasResource;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class TSnePlotSettingsService {
     }
 
     public List<Integer> getAvailableKs(String experimentAccession) {
-        var clustersTsv = dataFileHub.getSingleCellExperimentFiles(experimentAccession).clustersTsv;
+        var clustersTsv = getClusterTsvFile(experimentAccession);
 
         if (!clustersTsv.exists()) {
             return List.of();
@@ -54,10 +55,14 @@ public class TSnePlotSettingsService {
         return tSnePlotDao.fetchPerplexities(experimentAccession);
     }
 
+    private AtlasResource<TsvStreamer> getClusterTsvFile(String experimentAccession) {
+        return dataFileHub.getSingleCellExperimentFiles(experimentAccession).clustersTsv;
+    }
+
     @Cacheable("expectedClusters")
     public Optional<Integer> getExpectedClusters(String experimentAccession) {
         IdfParserOutput idfParserOutput = idfParser.parse(experimentAccession);
-        var clustersTsv = dataFileHub.getSingleCellExperimentFiles(experimentAccession).clustersTsv;
+        var clustersTsv = getClusterTsvFile(experimentAccession);
 
         // Check if expectedClusters is valid and among available Ks
         int expectedClusters = idfParserOutput.getExpectedClusters();

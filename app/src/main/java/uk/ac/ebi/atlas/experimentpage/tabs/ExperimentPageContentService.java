@@ -81,6 +81,11 @@ public class ExperimentPageContentService {
         return experimentAccession.startsWith("E-ANND-");
     }
 
+    private boolean hasClusterTsvFileAndKs(String experimentAccession) {
+        return dataFileHub.getSingleCellExperimentFiles(experimentAccession).getClustersTsv().exists() &&
+                tsnePlotSettingsService.getAvailableKs(experimentAccession).size() > 0;
+    }
+
     public JsonObject getTsnePlotData(String experimentAccession) {
         var result = new JsonObject();
         result.add(
@@ -137,8 +142,7 @@ public class ExperimentPageContentService {
             resultFiles.add(ExperimentFileType.MARKER_GENES);
             resultFiles.add(ExperimentFileType.NORMALISED);
             // Optional CLUSTERING
-            if (dataFileHub.getSingleCellExperimentFiles(experimentAccession).getClustersTsv().exists() &&
-                    tsnePlotSettingsService.getAvailableKs(experimentAccession).size() > 0)
+            if (hasClusterTsvFileAndKs(experimentAccession))
             {
                 resultFiles.add(ExperimentFileType.CLUSTERING);
             }

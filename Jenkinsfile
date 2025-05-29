@@ -30,7 +30,7 @@ pipeline {
 
     stage('–– Core lib ––') {
       steps {
-        lock(resource: 'build-lock', quantity: 2) {
+        lock(resource: 'build-lock', quantity: 5) {
           script {
             stage('Compile') {
               timeout(time: 1, unit: "HOURS") {
@@ -71,7 +71,7 @@ pipeline {
 
     stage('–– Web app ––') {
       steps {
-        lock(resource: 'build-lock', quantity: 2) {
+        lock(resource: 'build-lock', quantity: 5) {
           script {
             stage('Compile') {
               timeout(time: 1, unit: "HOURS") {
@@ -108,16 +108,29 @@ pipeline {
             }
 
             stage('–– Build ––') {
-              when {
-                anyOf {
-                  branch 'develop'; branch 'main'; branch 'release/*'
-                }
-              }
-
+              when { anyOf {
+                branch 'develop'; branch 'main'; branch 'release/*'
+              } }
               stages {
                 stage('Provision Node.js build environment') {
-                  timeout(time: 1, unit: "HOURS") {
+                  options {
+                    timeout (time: 1, unit: "HOURS")
+                  }
+                  steps {
+                    // To avoid the unpleasant:
+                    // Err:4 http://deb.debian.org/debian bullseye-updates InRelease
+                    //   Connection timed out [IP: 199.232.174.132 80]
                     sh 'echo \'APT::Acquire::Retries "10";\' > /etc/apt/apt.conf.d/80-retries'
+
+                    // Required by node_modules/cwebp-bin
+                    // /home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/node_modules/cwebp-bin/vendor/cwebp:
+                    // error while loading shared libraries: libGL.so.1: cannot open shared object file: No such file or directory
+                    //
+                    //  ⚠ cwebp pre-build test failed
+                    //  ℹ compiling from source
+                    //  ✖ Error: Command failed: /bin/sh -c ./configure --disable-shared --prefix="/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/vendor" --bindir="/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/vendor"
+                    // configure: error: in `/home/jenkins/agent/workspace/298051-test-and-build-in-jenkins/app/src/main/javascript/bundles/experiment-page/node_modules/cwebp-bin/2525557b-9d4c-4886-93b3-8cbfa3b76a32':
+                    // configure: error: no acceptable C compiler found in $PATH
                     sh 'apt update && apt install -y libglu1-mesa gcc'
                     sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash'
                     sh '. ~/.bashrc && nvm install 14 --lts'
@@ -126,14 +139,20 @@ pipeline {
                 }
 
                 stage('Update and build ES bundles') {
-                  timeout(time: 1, unit: "HOURS") {
+                  options {
+                    timeout (time: 1, unit: "HOURS")
+                  }
+                  steps {
                     sh 'if [ env.BRANCH_NAME = "develop" ]; then WEBPACK_OPTS=-i; else WEBPACK_OPTS=-ip; fi; ' +
-                        '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
+                            '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
                   }
                 }
 
                 stage('Assemble WAR file') {
-                  timeout(time: 1, unit: "HOURS") {
+                  options {
+                    timeout (time: 1, unit: "HOURS")
+                  }
+                  steps {
                     sh './gradlew --no-watch-fs :app:war'
                     archiveArtifacts artifacts: 'webapps/gxa#sc.war', fingerprint: true
                   }
@@ -146,10 +165,13 @@ pipeline {
     }
   }
 
+
+
   post {
     always {
       junit 'atlas-web-core/build/ut/**/*.xml'
       //junit 'atlas-web-core/build/it/**/*.xml'
+
       junit 'app/build/ut/**/*.xml'
       junit 'app/build/it/**/*.xml'
       junit 'app/build/e2e/**/*.xml'

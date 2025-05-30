@@ -8,6 +8,7 @@ import uk.ac.ebi.atlas.experimentimport.idf.IdfParser;
 import uk.ac.ebi.atlas.experimentimport.idf.IdfParserOutput;
 import uk.ac.ebi.atlas.experimentpage.markergenes.MarkerGenesDao;
 import uk.ac.ebi.atlas.resource.DataFileHub;
+import uk.ac.ebi.atlas.model.resource.AtlasResource;
 
 import java.util.List;
 import java.util.Map;
@@ -32,10 +33,15 @@ public class TSnePlotSettingsService {
     }
 
     public List<Integer> getAvailableKs(String experimentAccession) {
-        try (TsvStreamer clustersTsvStreamer =
-                     dataFileHub.getSingleCellExperimentFiles(experimentAccession).clustersTsv.get()) {
+        var clustersTsv = getClusterTsvFile(experimentAccession);
+
+        if (!clustersTsv.exists()) {
+            return List.of();
+        }
+
+        try (TsvStreamer clustersTsvStreamer = clustersTsv.get()) {
             return clustersTsvStreamer.get()
-                    .skip(1)
+                    .skip(1)  // skip header
                     .map(line -> Integer.parseInt(line[1]))
                     .collect(Collectors.toList());
         }
@@ -49,23 +55,32 @@ public class TSnePlotSettingsService {
         return tSnePlotDao.fetchPerplexities(experimentAccession);
     }
 
+    private AtlasResource<TsvStreamer> getClusterTsvFile(String experimentAccession) {
+        return dataFileHub.getSingleCellExperimentFiles(experimentAccession).clustersTsv;
+    }
+
     @Cacheable("expectedClusters")
     public Optional<Integer> getExpectedClusters(String experimentAccession) {
         IdfParserOutput idfParserOutput = idfParser.parse(experimentAccession);
+        var clustersTsv = getClusterTsvFile(experimentAccession);
 
-        // Only add preferred cluster property if it exists in the idf file and it is one of the available k values
-        if (idfParserOutput.getExpectedClusters() != 0 &&
-                getAvailableKs(experimentAccession).contains(idfParserOutput.getExpectedClusters())) {
-            return Optional.of(idfParserOutput.getExpectedClusters());
-        } else {
-            try (TsvStreamer clustersTsvStreamer =
-                         dataFileHub.getSingleCellExperimentFiles(experimentAccession).clustersTsv.get()) {
-                return clustersTsvStreamer.get()
-                        .skip(1)
-                        .filter(line -> line[0].equalsIgnoreCase("true"))
-                        .map(line -> Integer.parseInt(line[1]))
-                        .findFirst();
-            }
+        // Check if expectedClusters is valid and among available Ks
+        int expectedClusters = idfParserOutput.getExpectedClusters();
+        if (expectedClusters != 0 && getAvailableKs(experimentAccession).contains(expectedClusters)) {
+            return Optional.of(expectedClusters);
+        }
+
+        // Return empty if file doesn't exist
+        if (!clustersTsv.exists()) {
+            return Optional.empty();
+        }
+
+        try (TsvStreamer clustersTsvStreamer = clustersTsv.get()) {
+            return clustersTsvStreamer.get()
+                    .skip(1)
+                    .filter(line -> line[0].equalsIgnoreCase("true"))
+                    .map(line -> Integer.parseInt(line[1]))
+                    .findFirst();
         }
     }
 

@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import uk.ac.ebi.atlas.commons.readers.TsvStreamer;
 import uk.ac.ebi.atlas.download.ExperimentFileLocationService;
 import uk.ac.ebi.atlas.download.ExperimentFileType;
 import uk.ac.ebi.atlas.download.IconType;
@@ -41,8 +40,6 @@ import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperi
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ExperimentPageContentServiceTest {
-    private static final Random RNG = ThreadLocalRandom.current();
-
     private static final String EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE =
             "experiment/abc/download/zip?fileType=xyx&accessKey=efg";
     private static final String EXPERIMENT_FILES_URI_TEMPLATE =
@@ -159,7 +156,7 @@ class ExperimentPageContentServiceTest {
 
         when(dataFileHubMock.getSingleCellExperimentFiles(experimentAccession))
                 .thenReturn(singleCellFilesMock);
-        when(singleCellFilesMock.getClustersTsv()).thenReturn(clustersTsvMock);
+        when(singleCellFilesMock.clustersTsv).thenReturn(clustersTsvMock);
         when(clustersTsvMock.exists()).thenReturn(clusteringExists);
     }
 

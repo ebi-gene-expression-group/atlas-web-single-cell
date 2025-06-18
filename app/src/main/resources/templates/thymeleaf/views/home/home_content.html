@@ -8,6 +8,11 @@
             }
         );
     })
+
+    // Add custom CSS for the announcement banner
+    const style = document.createElement('style');
+    style.textContent = '.notifications-js { max-width: 100vw; }';
+    document.head.appendChild(style);
 </script>
 
 <div class="row expanded">

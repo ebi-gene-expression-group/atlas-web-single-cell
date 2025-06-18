@@ -82,7 +82,7 @@ public class ExperimentPageContentService {
     }
 
     private boolean hasClusterTsvFileAndKs(String experimentAccession) {
-        return dataFileHub.getSingleCellExperimentFiles(experimentAccession).getClustersTsv().exists() &&
+        return dataFileHub.getSingleCellExperimentFiles(experimentAccession).clustersTsv.exists() &&
                 !tsnePlotSettingsService.getAvailableKs(experimentAccession).isEmpty();
     }
 

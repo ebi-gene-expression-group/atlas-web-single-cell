@@ -25,7 +25,6 @@ import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,7 +71,7 @@ public class ExperimentPageContentService {
     }
 
 
-    private static boolean isSmartExperiment(Collection<String> technologyType) {
+    private static boolean isSmartExperiment(ImmutableSet<String> technologyType) {
         return technologyType.stream()
                 .anyMatch(type -> type.toLowerCase().startsWith(EXPERIMENT_TECHNOLOGY_TYPE_PREFIX));
     }
@@ -263,7 +262,7 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    public ImmutableMap fetchDefaultPlotMethodAndParameterisation(String experimentAccession) {
+    public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodAndParameterisation(String experimentAccession) {
         return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 

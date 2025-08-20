@@ -36,7 +36,7 @@ public class ExperimentPageContentService {
     private static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB = "Inferred cell type - authors labels";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentPageContentService.class);
     private static final ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
-            "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
+            "E-CURD-10", "E-CURD-11", "E-CURD-122", "E-CURD-126", "E-CURD-135",
             "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
             "E-HCAD-8", "E-HCAD-10",
             "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",

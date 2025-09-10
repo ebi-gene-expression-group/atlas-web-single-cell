@@ -62,6 +62,11 @@ public class JsonExperimentsSummaryController extends JsonExceptionHandlingContr
                         IMAGE,
                         getExperimentsSummaryImageUrl("discovair"),
                         getExperimentCollectionLink("discovAIR", "discovAIR"),
-                        ImmutableList.of()));
+                        ImmutableList.of()),
+                CardModel.create(
+                    IMAGE,
+                    getExperimentsSummaryImageUrl("hca"),
+                    getExperimentCollectionLink("Human Cell Atlas", "Human Cell Atlas"),
+                    ImmutableList.of()));
     }
 }

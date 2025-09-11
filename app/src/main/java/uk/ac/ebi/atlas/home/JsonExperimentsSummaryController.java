@@ -38,35 +38,35 @@ public class JsonExperimentsSummaryController extends JsonExceptionHandlingContr
 
     private ImmutableList<CardModel> featuredExperimentsCards() {
         return ImmutableList.of(
-                CardModel.create(
-                        IMAGE,
-                        getExperimentsSummaryImageUrl("fly-cell-atlas"),
-                        getExperimentCollectionLink("Fly Cell Atlas", "Fly Cell Atlas"),
-                        ImmutableList.of()),
-                CardModel.create(
-                        IMAGE,
-                        getExperimentsSummaryImageUrl("cz-biohub"),
-                        getExperimentCollectionLink("Chan Zuckerberg Biohub", "Chan Zuckerberg Biohub"),
-                        ImmutableList.of()),
-                CardModel.create(
-                        IMAGE,
-                        getExperimentsSummaryImageUrl("malaria-cell-atlas"),
-                        getExperimentCollectionLink("Malaria Cell Atlas", "Malaria Cell Atlas"),
-                        ImmutableList.of()),
-                CardModel.create(
-                        IMAGE,
-                        getExperimentsSummaryImageUrl("covid19-dp"),
-                        getExperimentCollectionLink("COVID-19 Data Portal", "COVID-19"),
-                        ImmutableList.of()),
-                CardModel.create(
-                        IMAGE,
-                        getExperimentsSummaryImageUrl("discovair"),
-                        getExperimentCollectionLink("discovAIR", "discovAIR"),
-                        ImmutableList.of()),
-                CardModel.create(
+            CardModel.create(
+                IMAGE,
+                getExperimentsSummaryImageUrl("hca-dp"),
+                getExperimentCollectionLink("Human Cell Atlas", "Human Cell Atlas - Data Portal"),
+                ImmutableList.of()),
+            CardModel.create(
                     IMAGE,
-                    getExperimentsSummaryImageUrl("hca-dp"),
-                    getExperimentCollectionLink("Human Cell Atlas", "Human Cell Atlas - Data Portal"),
+                    getExperimentsSummaryImageUrl("fly-cell-atlas"),
+                    getExperimentCollectionLink("Fly Cell Atlas", "Fly Cell Atlas"),
+                    ImmutableList.of()),
+            CardModel.create(
+                    IMAGE,
+                    getExperimentsSummaryImageUrl("cz-biohub"),
+                    getExperimentCollectionLink("Chan Zuckerberg Biohub", "Chan Zuckerberg Biohub"),
+                    ImmutableList.of()),
+            CardModel.create(
+                    IMAGE,
+                    getExperimentsSummaryImageUrl("malaria-cell-atlas"),
+                    getExperimentCollectionLink("Malaria Cell Atlas", "Malaria Cell Atlas"),
+                    ImmutableList.of()),
+            CardModel.create(
+                    IMAGE,
+                    getExperimentsSummaryImageUrl("covid19-dp"),
+                    getExperimentCollectionLink("COVID-19 Data Portal", "COVID-19"),
+                    ImmutableList.of()),
+            CardModel.create(
+                    IMAGE,
+                    getExperimentsSummaryImageUrl("discovair"),
+                    getExperimentCollectionLink("discovAIR", "discovAIR"),
                     ImmutableList.of()));
     }
 }

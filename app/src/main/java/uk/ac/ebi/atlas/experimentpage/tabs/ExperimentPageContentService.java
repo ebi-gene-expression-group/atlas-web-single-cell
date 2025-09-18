@@ -25,7 +25,6 @@ import uk.ac.ebi.atlas.trader.ExperimentTrader;
 import uk.ac.ebi.atlas.utils.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ public class ExperimentPageContentService {
     private static final String INFERRED_CELL_TYPE_AUTHORS_LABELS_FROM_DB = "Inferred cell type - authors labels";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentPageContentService.class);
     private static final ImmutableSet<String> EXPERIMENTS_WITH_NO_ANATOMOGRAM = ImmutableSet.of(
-            "E-CURD-10", "E-CURD-11", "E-CURD-126", "E-CURD-135",
+            "E-CURD-10", "E-CURD-11", "E-CURD-122", "E-CURD-126", "E-CURD-135",
             "E-GEOD-86618", "E-GEOD-114530", "E-GEOD-130473",
             "E-HCAD-8", "E-HCAD-10",
             "E-MTAB-6308", "E-MTAB-6653", "E-MTAB-7407", "E-MTAB-9067", "E-MTAB-10662",
@@ -72,7 +71,7 @@ public class ExperimentPageContentService {
     }
 
 
-    private static boolean isSmartExperiment(Collection<String> technologyType) {
+    private static boolean isSmartExperiment(ImmutableSet<String> technologyType) {
         return technologyType.stream()
                 .anyMatch(type -> type.toLowerCase().startsWith(EXPERIMENT_TECHNOLOGY_TYPE_PREFIX));
     }
@@ -263,7 +262,7 @@ public class ExperimentPageContentService {
         return result;
     }
 
-    public ImmutableMap fetchDefaultPlotMethodAndParameterisation(String experimentAccession) {
+    public ImmutableMap<String, JsonObject> fetchDefaultPlotMethodAndParameterisation(String experimentAccession) {
         return cellPlotService.fetchDefaultPlotMethodWithParameterisation(experimentAccession);
     }
 

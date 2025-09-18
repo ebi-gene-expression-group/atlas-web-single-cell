@@ -29,20 +29,16 @@ import uk.ac.ebi.atlas.trader.ExperimentTrader;
 
 import java.net.URI;
 import java.util.Optional;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.ac.ebi.atlas.testutils.RandomDataTestUtils.generateRandomExperimentAccession;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ExperimentPageContentServiceTest {
-    private static final Random RNG = ThreadLocalRandom.current();
-
     private static final String EXPERIMENT_FILES_ARCHIVE_URI_TEMPLATE =
             "experiment/abc/download/zip?fileType=xyx&accessKey=efg";
     private static final String EXPERIMENT_FILES_URI_TEMPLATE =
@@ -155,7 +151,9 @@ class ExperimentPageContentServiceTest {
 
     private void setupFileExistenceMock(String experimentAccession, boolean clusteringExists) {
         var singleCellFilesMock = mock(SingleCellExperimentFiles.class);
-        var clustersTsvMock = mock(AtlasResource.class);
+        @SuppressWarnings("unchecked")
+        AtlasResource<TsvStreamer> clustersTsvMock = mock(AtlasResource.class);
+
 
         when(dataFileHubMock.getSingleCellExperimentFiles(experimentAccession))
                 .thenReturn(singleCellFilesMock);
@@ -184,9 +182,7 @@ class ExperimentPageContentServiceTest {
                 .extracting(jsonElement -> jsonElement.getAsJsonObject().get("files").getAsJsonArray())
                 .hasSize(1)
                 .first()
-                .satisfies(jsonArray -> {
-                    assertThat(jsonArray).hasSize(3);
-                });
+                .satisfies(jsonArray -> assertThat(jsonArray).hasSize(3));
     }
 
     @Test
@@ -210,9 +206,7 @@ class ExperimentPageContentServiceTest {
                 .extracting(jsonElement -> jsonElement.getAsJsonObject().get("files").getAsJsonArray())
                 .hasSize(1)
                 .first()
-                .satisfies(jsonArray -> {
-                    assertThat(jsonArray).hasSize(2);
-                });
+                .satisfies(jsonArray -> assertThat(jsonArray).hasSize(2));
     }
 
     @Test
@@ -273,6 +267,7 @@ class ExperimentPageContentServiceTest {
         when(cellPlotServiceMock.fetchDefaultPlotMethodWithParameterisation(invalidExperimentAccession))
                 .thenReturn(ImmutableMap.of());
 
+        //noinspection
         assertThat(subject.fetchDefaultPlotMethodAndParameterisation(invalidExperimentAccession)).isEmpty();
     }
 
@@ -282,6 +277,7 @@ class ExperimentPageContentServiceTest {
                 .thenReturn(ImmutableMap.of("umap", new Gson().fromJson("{\"n_neighbors\":100}", JsonObject.class),
                         "tsne", new Gson().fromJson("{\"perplexity\":50}", JsonObject.class)));
 
+        //noinspection
         assertThat(subject.fetchDefaultPlotMethodAndParameterisation("E-CURD-4")).isNotEmpty();
     }
 }

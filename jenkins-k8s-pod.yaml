@@ -30,7 +30,7 @@ spec:
         limits:
           memory: "512Mi"
     - name: openjdk
-      image: openjdk:11
+      image: eclipse-temurin:11
       resources:
         requests:
           memory: "4.5Gi"

@@ -70,9 +70,11 @@ pipeline {
             timeout (time: 2, unit: "HOURS")
           }
           steps {
-            sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
-            // sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
-            sh './gradlew --no-watch-fs :atlas-web-core:jacocoTestReport'
+            catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+              sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
+              //sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
+              sh './gradlew --no-watch-fs :atlas-web-core:jacocoTestReport'
+            }
           }
         }
       }

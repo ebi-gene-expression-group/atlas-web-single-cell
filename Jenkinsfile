@@ -147,8 +147,8 @@ pipeline {
                 // configure: error: no acceptable C compiler found in $PATH
                 sh 'apt update && apt install -y libglu1-mesa gcc'
                 sh 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash'
-                sh '. ~/.bashrc && nvm install 14 --lts'
-                sh '. ~/.bashrc && npm install -g npm-check-updates'
+                sh 'bash -lc "source $HOME/.nvm/nvm.sh && nvm install 14 --lts"'
+                sh 'bash -lc "source $HOME/.nvm/nvm.sh && npm install -g npm-check-updates"'
               }
             }
 
@@ -158,7 +158,7 @@ pipeline {
               }
               steps {
                 sh 'if [ env.BRANCH_NAME = "develop" ]; then WEBPACK_OPTS=-i; else WEBPACK_OPTS=-ip; fi; ' +
-                        '. ~/.bashrc && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
+                        'source "$HOME/.nvm/nvm.sh" && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
               }
             }
 

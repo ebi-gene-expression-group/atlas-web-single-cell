@@ -18,6 +18,7 @@ pipeline {
 
   environment {
     ORG_GRADLE_PROJECT_buildNumber = "${env.BUILD_NUMBER}"
+    APP_NAME="scxa"
   }
 
   stages {
@@ -159,9 +160,9 @@ pipeline {
                 timeout (time: 1, unit: "HOURS")
               }
               steps {
-                sh 'if [ env.BRANCH_NAME = "develop" ]; then WEBPACK_OPTS=-i; else WEBPACK_OPTS=-ip; fi; ' +
-                        'source "$HOME/.nvm/nvm.sh" && ./compile-front-end-packages.sh ${WEBPACK_OPTS}'
-              }
+                sh 'bash -lc \'if [ "$BRANCH_NAME" = "develop" ]; then WEBPACK_OPTS=-i; else WEBPACK_OPTS=-ip; fi; ' +
+                        'source "$HOME/.nvm/nvm.sh"; ./compile-front-end-packages.sh ${WEBPACK_OPTS}\''
+               }
             }
 
             stage('Assemble WAR file') {

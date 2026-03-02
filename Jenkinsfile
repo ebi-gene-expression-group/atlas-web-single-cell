@@ -58,8 +58,8 @@ pipeline {
                     '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=gxa ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
-                    '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PzkHosts=${env.APP_NAME}-solrcloud-zookeeper-0.${env.APP_NAME}-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,${env.APP_NAME}-solrcloud-zookeeper-1.${env.APP_NAME}-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,${env.APP_NAME}-solrcloud-zookeeper-2.${env.APP_NAME}-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
+                    '-PsolrHosts=http://${env.APP_NAME}-solrcloud-0.${env.APP_NAME}-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://${env.APP_NAME}-solrcloud-1.${env.APP_NAME}-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
                     '-PsolrUser=solr ' +
                     '-PsolrPassword=SolrRocks ' +
                     ':atlas-web-core:testClasses'
@@ -73,7 +73,7 @@ pipeline {
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
               sh './gradlew --no-watch-fs -PtestResultsPath=ut :atlas-web-core:test --tests *Test'
-              //sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
+              sh './gradlew --no-watch-fs -PtestResultsPath=it :atlas-web-core:test --tests *IT'
               sh './gradlew --no-watch-fs :atlas-web-core:jacocoTestReport'
             }
           }
@@ -92,18 +92,18 @@ pipeline {
                     '-Pflyway.url=jdbc:postgresql://localhost:5432/postgres ' +
                     '-Pflyway.user=postgres ' +
                     '-Pflyway.password=postgres ' +
-                    '-Pflyway.locations=filesystem:./schemas/flyway/scxa ' +
-                    '-Pflyway.schemas=scxa ' +
+                    "-Pflyway.locations=filesystem:./schemas/flyway/${env.APP_NAME} " +
+                    "-Pflyway.schemas=${env.APP_NAME} " +
                     'flywayMigrate'
             sh './gradlew --no-watch-fs ' +
                     '-PdataFilesLocation=/test-data ' +
-                    '-PexperimentFilesLocation=/test-data/scxa ' +
+                    '-PexperimentFilesLocation=/test-data/${env.APP_NAME} ' +
                     '-PexperimentDesignLocation=/root/expdesign-rw ' +
-                    '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=scxa ' +
+                    '-PjdbcUrl=jdbc:postgresql://localhost:5432/postgres?currentSchema=${env.APP_NAME} ' +
                     '-PjdbcUsername=postgres ' +
                     '-PjdbcPassword=postgres ' +
-                    '-PzkHosts=scxa-solrcloud-zookeeper-0.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-1.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,scxa-solrcloud-zookeeper-2.scxa-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
-                    '-PsolrHosts=http://scxa-solrcloud-0.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://scxa-solrcloud-1.scxa-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
+                    '-PzkHosts=${env.APP_NAME}-solrcloud-zookeeper-0.${env.APP_NAME}-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,${env.APP_NAME}-solrcloud-zookeeper-1.${env.APP_NAME}-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181,${env.APP_NAME}-solrcloud-zookeeper-2.${env.APP_NAME}-solrcloud-zookeeper-headless.jenkins-gene-expression.svc.cluster.local:2181 ' +
+                    '-PsolrHosts=http://${env.APP_NAME}-solrcloud-0.${env.APP_NAME}-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr,http://${env.APP_NAME}-solrcloud-1.${env.APP_NAME}-solrcloud-headless.jenkins-gene-expression.svc.cluster.local:8983/solr ' +
                     '-PsolrUser=solr ' +
                     '-PsolrPassword=SolrRocks ' +
                     ':app:testClasses'
@@ -126,7 +126,7 @@ pipeline {
 
         stage('–– Build ––') {
           when { anyOf {
-            branch 'develop'; branch 'main'; branch 'release/*'; branch 'feature/*'
+            branch 'develop'; branch 'main'; branch 'release/*'; branch 'chore/*'; branch 'feature/*'
           } }
           stages {
             stage('Provision Node.js build environment') {

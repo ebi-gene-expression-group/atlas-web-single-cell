@@ -41,7 +41,7 @@ spec:
           memory: "6Gi"
       env:
       - name: GRADLE_OPTS
-        value: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+        value: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=4"
       - name: GRADLE_RO_DEP_CACHE
         value: "/root/gradle-ro-dep-cache"
       command: [ "/bin/sh" ]

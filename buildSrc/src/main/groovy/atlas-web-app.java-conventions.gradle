@@ -150,6 +150,7 @@ test {
 
   useJUnitPlatform()
   maxHeapSize = '4096m'
+  maxParallelForks = 2
 }
 
 jacocoTestReport {

@@ -1,6 +1,8 @@
 package uk.ac.ebi.atlas.experimentpage.cellplot;
 
 import com.google.common.collect.ImmutableMap;
+
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.atlas.controllers.JsonExceptionHandlingController;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,6 +61,8 @@ JsonCellPlotController extends JsonExceptionHandlingController {
 
     @GetMapping(value = "/clusters/k/{k}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Cacheable(cacheNames = "clusterPlotK", 
+               key = "{#experimentAccession, 'clusterPlotK'}", sync = true)
     public String clusterPlotK(@PathVariable String experimentAccession,
                                @PathVariable int k,
                                @RequestParam String plotMethod,
@@ -74,6 +77,8 @@ JsonCellPlotController extends JsonExceptionHandlingController {
 
     @GetMapping(value = "/clusters/metadata/{metadata}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Cacheable(cacheNames = "clusterPlotMetadata", 
+               key = "{#experimentAccession, 'clusterPlotMetadata'}", sync = true)
     public String clusterPlotMetadata(@PathVariable String experimentAccession,
                                       @PathVariable String metadata,
                                       @RequestParam String plotMethod,
@@ -88,6 +93,8 @@ JsonCellPlotController extends JsonExceptionHandlingController {
 
     @GetMapping(value = "/expression",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+                @Cacheable(
+                        cacheNames = "expressionPlot", key = "{#experimentAccession, 'expressionPlot'}", sync = true)
     public String expressionPlot(@PathVariable String experimentAccession,
                                  @RequestParam String plotMethod,
                                  @RequestParam Map<String,String> requestParams) {
@@ -103,6 +110,8 @@ JsonCellPlotController extends JsonExceptionHandlingController {
     // See also JsonBioentityInformationController.java
     @GetMapping(value = "/expression/{geneId:.+}",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Cacheable(cacheNames = "expressionPlotGeneId", 
+               key = "{#experimentAccession, 'expressionPlotGeneId'}", sync = true)
     public String expressionPlot(@PathVariable String experimentAccession,
                                  @PathVariable String geneId,
                                  @RequestParam String plotMethod,

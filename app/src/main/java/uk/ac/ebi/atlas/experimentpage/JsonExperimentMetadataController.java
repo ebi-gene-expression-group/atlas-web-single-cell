@@ -52,7 +52,13 @@ public class JsonExperimentMetadataController extends JsonExperimentController {
     @Caching(evict = {
             @CacheEvict(cacheNames = "experimentByAccession", allEntries = true),
             @CacheEvict(cacheNames = "experimentsByType", allEntries = true),
-            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}") })
+            @CacheEvict(cacheNames = "jsonExperimentMetadata", key = "{#experimentAccession, 'tSnePlot'}") ,
+            @CacheEvict(cacheNames = "clusterPlotK", key = "{#experimentAccession, 'clusterPlotK'}"),
+            @CacheEvict(cacheNames = "clusterPlotMetadata", key = "{#experimentAccession, 'clusterPlotMetadata'}"),
+            @CacheEvict(cacheNames = "expressionPlot", key = "{#experimentAccession, 'expressionPlot'}"),
+            @CacheEvict(cacheNames = "expressionPlotGeneId", key = "{#experimentAccession, 'expressionPlotGeneId'}"),
+            }
+        )
     @RequestMapping(value = "json/experiments/{experimentAccession}/metadata/tsneplot/clearcache",
                     method = RequestMethod.GET,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

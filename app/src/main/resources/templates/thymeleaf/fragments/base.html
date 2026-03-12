@@ -38,8 +38,8 @@
 
     <!-- If you have a custom header image or colour -->
     <meta name="ebi:masthead-color" content="rgb(0,124,130)" />
-    <meta name="ebi:masthead-image" th:content="@{/resources/images/cells_background.png}" />
-
+    <meta name="ebi:masthead-image" th:content="@{/resources/images/cells_background.png}" fetchpriority="high"/>
+    <link rel="preload" as="image" th:href="@{/resources/images/cells_background.png}" fetchpriority="high">
     <!-- you can replace this with theme-[projectname].css. See http://www.ebi.ac.uk/web/style/colour for details of how to do this -->
     <!-- also inform ES so we can host your colour palette file -->
     <!-- <link rel="stylesheet" href="https://dev.ebi.emblstatic.net/web_guidelines/EBI-Framework/v1.3/css/theme-embl-petrol.css" type="text/css" media="all" /> -->
@@ -83,7 +83,6 @@
 <script th:src="@{/resources/js/lib/url-search-params-polyfill.min.js}"></script>
 <script th:src="@{/resources/js/lib/append-polyfill.min.js}"></script>
 <script th:src="@{/resources/js-bundles/vendorCommons.bundle.js}"></script>
-<script th:src="@{/resources/js-bundles/informationBanner.bundle.js}"></script>
 
 <!-- JavaScript -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -104,9 +103,5 @@
 </script>
 <script async src="https://www.google-analytics.com/analytics.js"></script>
 <!-- End Google Analytics -->
-
-<!-- Display an optional informative message for our users -->
-<script>informationBanner.render({}, 'information-banner');</script>
-
 </body>
 </html>

@@ -21,7 +21,7 @@ pipeline {
   parameters {
     string(
       name: 'UPSTREAM_JOB',
-      defaultValue: 'Single Cell Expression Atlas – Develop/develop',
+      defaultValue: 'Single Cell Expression Atlas – Develop/feature%2F544-build-performance-improvements-for-sc',
       description: 'Upstream job name. Find it in Jenkins: click the main CI job, check the URL. For multibranch: JobName/branchName (e.g. gcxa/develop). If the branch name contains a slash, it needs to be url encoded, i.e. %2F'
     )
     string(
@@ -42,7 +42,7 @@ pipeline {
   }
 
   agent { node('dind') } 
-  
+
 
   environment {
     CREDENTIALS_ID = 'docker-container-registry-gitlab-scxa'

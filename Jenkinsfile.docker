@@ -21,8 +21,8 @@ pipeline {
   parameters {
     string(
       name: 'UPSTREAM_JOB',
-      defaultValue: 'atlas-web-single-cell/develop',
-      description: 'Upstream job name (e.g. atlas-web-single-cell/develop for multibranch)'
+      defaultValue: 'Single Cell Expression Atlas – Develop/develop',
+      description: 'Upstream job name. Find it in Jenkins: click the main CI job, check the URL. For multibranch: JobName/branchName (e.g. gcxa/develop). If the branch name contains a slash, it needs to be url encoded, i.e. %2F'
     )
     string(
       name: 'UPSTREAM_BUILD',
@@ -31,7 +31,7 @@ pipeline {
     )
     string(
       name: 'IMAGE_REGISTRY',
-      defaultValue: 'registry.gitlab.ebi.ac.uk/ebi-gene-expression-group/atlas-web-single-cell',
+      defaultValue: 'dockerhub.ebi.ac.uk/ebi-gene-expression/wip-atlas/atlas-web-single-cell',
       description: 'Full image repository (without tag)'
     )
     string(
@@ -41,7 +41,9 @@ pipeline {
     )
   }
 
-  agent any
+  agent {
+        node('slurm-codon-submitter')
+  }
 
   environment {
     CREDENTIALS_ID = 'docker-container-registry-gitlab-scxa'

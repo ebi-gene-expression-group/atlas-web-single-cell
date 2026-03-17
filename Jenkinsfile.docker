@@ -84,6 +84,7 @@ pipeline {
           def tag = params.IMAGE_TAG?.trim()
             ?: "build-${env.BUILD_NUMBER}"
           env.IMAGE_TAG_FINAL = tag
+          currentBuild.displayName = "#${env.BUILD_NUMBER} - ${env.IMAGE_TAG_FINAL}"
         }
         container('dind') {
           sh '''

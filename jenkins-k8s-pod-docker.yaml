@@ -23,9 +23,9 @@ spec:
         privileged: true
       resources:
         requests:
-          memory: "1Gi"
+          memory: "500Mi"
           cpu: "500m"
         limits:
-          memory: "2Gi"
-          cpu: "2"
+          memory: "1Gi"
+          cpu: "1"
       tty: true

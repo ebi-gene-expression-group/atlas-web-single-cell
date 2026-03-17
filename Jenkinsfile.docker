@@ -1,0 +1,109 @@
+// Docker build and push pipeline for atlas-web-single-cell.
+// This is a downstream job that copies the WAR from the main CI pipeline,
+// builds a Docker image, and pushes it to the GitLab container registry.
+//
+// Configure this as a separate Jenkins job (e.g. atlas-web-single-cell-docker)
+// with "Pipeline script from SCM" pointing to this file.
+//
+// Prerequisites:
+// - copyArtifacts plugin
+// - Docker available on the agent (or use a pod template with docker)
+// - GitLab registry credentials in Jenkins (docker-container-registry-gitlab-scxa)
+
+pipeline {
+  options {
+    buildDiscarder(logRotator(
+      numToKeepStr: '10',
+      artifactNumToKeepStr: '5',
+    ))
+  }
+
+  parameters {
+    string(
+      name: 'UPSTREAM_JOB',
+      defaultValue: 'atlas-web-single-cell/develop',
+      description: 'Upstream job name (e.g. atlas-web-single-cell/develop for multibranch)'
+    )
+    string(
+      name: 'UPSTREAM_BUILD',
+      defaultValue: '',
+      description: 'Optional: specific build number. Leave empty for last successful.'
+    )
+    string(
+      name: 'IMAGE_REGISTRY',
+      defaultValue: 'registry.gitlab.ebi.ac.uk/ebi-gene-expression-group/atlas-web-single-cell',
+      description: 'Full image repository (without tag)'
+    )
+    string(
+      name: 'IMAGE_TAG',
+      defaultValue: '',
+      description: 'Optional: image tag. Defaults to upstream build number or branch.'
+    )
+  }
+
+  agent any
+
+  environment {
+    CREDENTIALS_ID = 'docker-container-registry-gitlab-scxa'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Copy WAR artifact') {
+      steps {
+        script {
+          def selector = params.UPSTREAM_BUILD?.trim()
+            ? specific(params.UPSTREAM_BUILD)
+            : lastSuccessful()
+          copyArtifacts(
+            projectName: params.UPSTREAM_JOB,
+            selector: selector,
+            filter: 'webapps/gxa#sc.war',
+            target: '.',
+            flatten: false
+          )
+        }
+      }
+    }
+
+    stage('Build Docker image') {
+      steps {
+        script {
+          def tag = params.IMAGE_TAG?.trim()
+            ?: "build-${env.BUILD_NUMBER}"
+          env.IMAGE_TAG_FINAL = tag
+        }
+        sh '''
+          docker build -t "${IMAGE_REGISTRY}:${IMAGE_TAG_FINAL}" .
+        '''
+      }
+    }
+
+    stage('Push to registry') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: env.CREDENTIALS_ID,
+          usernameVariable: 'REGISTRY_USER',
+          passwordVariable: 'REGISTRY_PASSWORD'
+        )]) {
+          sh '''
+            REGISTRY_HOST=$(echo "${IMAGE_REGISTRY}" | cut -d/ -f1)
+            echo "${REGISTRY_PASSWORD}" | docker login -u "${REGISTRY_USER}" --password-stdin "${REGISTRY_HOST}"
+            docker push "${IMAGE_REGISTRY}:${IMAGE_TAG_FINAL}"
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "Image pushed: ${params.IMAGE_REGISTRY}:${env.IMAGE_TAG_FINAL}"
+    }
+  }
+}

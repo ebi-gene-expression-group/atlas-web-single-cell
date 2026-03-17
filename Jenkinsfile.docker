@@ -41,8 +41,13 @@ pipeline {
     )
   }
 
-  agent {
-        label 'docker'
+agent {
+    kubernetes {
+      cloud 'atlas-admin-2'
+      defaultContainer 'dind'
+      label 'docker'
+    }
+    label 'docker'
   }
 
   environment {

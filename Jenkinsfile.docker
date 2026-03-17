@@ -42,7 +42,7 @@ pipeline {
   }
 
   agent {
-        node('slurm-codon-submitter')
+        label 'docker'
   }
 
   environment {

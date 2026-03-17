@@ -41,14 +41,8 @@ pipeline {
     )
   }
 
-agent {
-    kubernetes {
-      cloud 'atlas-admin-2'
-      defaultContainer 'dind'
-      label 'docker'
-    }
-    label 'docker'
-  }
+  agent { node('dind') } 
+  
 
   environment {
     CREDENTIALS_ID = 'docker-container-registry-gitlab-scxa'

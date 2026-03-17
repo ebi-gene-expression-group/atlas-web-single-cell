@@ -41,7 +41,12 @@ pipeline {
     )
   }
 
-  agent { node('dind') } 
+  agent {
+    kubernetes {
+      cloud 'atlas-admin-2'
+      defaultContainer 'dind'
+    }
+  } 
 
 
   environment {
@@ -79,9 +84,11 @@ pipeline {
             ?: "build-${env.BUILD_NUMBER}"
           env.IMAGE_TAG_FINAL = tag
         }
-        sh '''
-          docker build -t "${IMAGE_REGISTRY}:${IMAGE_TAG_FINAL}" .
-        '''
+        container('dind') {
+          sh '''
+            docker build -t "${IMAGE_REGISTRY}:${IMAGE_TAG_FINAL}" .
+          '''
+        }
       }
     }
 
@@ -92,11 +99,13 @@ pipeline {
           usernameVariable: 'REGISTRY_USER',
           passwordVariable: 'REGISTRY_PASSWORD'
         )]) {
-          sh '''
-            REGISTRY_HOST=$(echo "${IMAGE_REGISTRY}" | cut -d/ -f1)
-            echo "${REGISTRY_PASSWORD}" | docker login -u "${REGISTRY_USER}" --password-stdin "${REGISTRY_HOST}"
-            docker push "${IMAGE_REGISTRY}:${IMAGE_TAG_FINAL}"
-          '''
+          container('dind') {
+            sh '''
+              REGISTRY_HOST=$(echo "${IMAGE_REGISTRY}" | cut -d/ -f1)
+              echo "${REGISTRY_PASSWORD}" | docker login -u "${REGISTRY_USER}" --password-stdin "${REGISTRY_HOST}"
+              docker push "${IMAGE_REGISTRY}:${IMAGE_TAG_FINAL}"
+            '''
+          }
         }
       }
     }

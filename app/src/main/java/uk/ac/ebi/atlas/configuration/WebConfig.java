@@ -36,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/")
-                .setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic());
+                .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic());
     }
 
     @Override

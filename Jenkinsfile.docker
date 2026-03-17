@@ -44,7 +44,9 @@ pipeline {
   agent {
     kubernetes {
       cloud 'atlas-admin-2'
+      label 'dind'
       defaultContainer 'dind'
+      yamlFile 'jenkins-k8s-pod-docker.yaml'
     }
   } 
 

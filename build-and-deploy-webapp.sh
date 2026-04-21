@@ -64,7 +64,7 @@ DOCKER_COMPOSE_COMMAND="docker compose \
 -f ./docker/docker-compose-tomcat.yml \
 -f ./docker/docker-compose-build${BUILD_POSTFIX}.yml"
 
-DOCKER_COMPOSE_COMMAND_VARS="SCHEMA_VERSION=latest"
+DOCKER_COMPOSE_COMMAND_VARS="SCHEMA_VERSION=latest FRONTEND_BUILD_FLAGS=${FRONTEND_BUILD_FLAGS:--i}"
 
 eval "${DOCKER_COMPOSE_COMMAND_VARS}" "${DOCKER_COMPOSE_COMMAND}" "up -d"
 

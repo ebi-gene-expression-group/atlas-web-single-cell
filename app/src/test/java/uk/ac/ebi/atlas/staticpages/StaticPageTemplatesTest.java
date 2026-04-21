@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StaticPageTemplatesTest {
     private static final String PRIVACY_NOTICE_URL =
-            "https://www.ebi.ac.uk/data-protection/privacy-notice/embl-ebi-public-website/";
+            "/data-protection/privacy-notice/embl-ebi-public-website/";
 
     @Test
     void privacyPolicyLinkIsInAboutTemplateAndNotInHelpTemplate() throws IOException {

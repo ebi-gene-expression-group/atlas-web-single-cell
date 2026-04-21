@@ -49,7 +49,7 @@ class StaticPageControllerTestWIT {
         this.mockMvc
                 .perform(get("/about.html"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("https://www.ebi.ac.uk/data-protection/privacy-notice/embl-ebi-public-website/")))
+                .andExpect(content().string(containsString("/data-protection/privacy-notice/embl-ebi-public-website/")))
                 .andExpect(content().string(containsString("Privacy Policy")));
     }
 
@@ -58,7 +58,7 @@ class StaticPageControllerTestWIT {
         this.mockMvc
                 .perform(get("/help.html"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(not(containsString("https://www.ebi.ac.uk/data-protection/privacy-notice/embl-ebi-public-website/"))))
+                .andExpect(content().string(not(containsString("/data-protection/privacy-notice/embl-ebi-public-website/"))))
                 .andExpect(content().string(not(containsString("Privacy Policy"))));
     }
 

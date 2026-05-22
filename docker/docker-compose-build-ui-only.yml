@@ -6,7 +6,7 @@ services:
     volumes:
       - ..:/root/project
     working_dir: /root/project
-    command: ["sh", "-c", "export CPPFLAGS=-DPNG_ARM_NEON_OPT=0 && npm install -g npm-check-updates && ./compile-front-end-packages.sh -ui" ]
+    command: ["sh", "-c", "set -e && export CPPFLAGS=-DPNG_ARM_NEON_OPT=0 && if echo \"${FRONTEND_BUILD_FLAGS:--i}\" | grep -q -- '^-u\\| -u'; then npm install -g npm-check-updates@16; fi && ./compile-front-end-packages.sh ${FRONTEND_BUILD_FLAGS:--i}" ]
 
   gradle-build:
     depends_on:

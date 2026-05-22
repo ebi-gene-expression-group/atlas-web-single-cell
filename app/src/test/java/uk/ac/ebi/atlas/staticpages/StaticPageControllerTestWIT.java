@@ -13,7 +13,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ebi.atlas.configuration.TestConfig;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -35,6 +38,33 @@ class StaticPageControllerTestWIT {
     @Test
     void help() throws Exception {
         var viewName = "help";
+        this.mockMvc
+                .perform(get("/" + viewName + ".html"))
+                .andExpect(status().isOk())
+                .andExpect(view().name(viewName));
+    }
+
+    @Test
+    void aboutContainsPrivacyNoticeLink() throws Exception {
+        this.mockMvc
+                .perform(get("/about.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("/data-protection/privacy-notice/embl-ebi-public-website/")))
+                .andExpect(content().string(containsString("Privacy Policy")));
+    }
+
+    @Test
+    void helpDoesNotContainPrivacyNoticeLink() throws Exception {
+        this.mockMvc
+                .perform(get("/help.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("/data-protection/privacy-notice/embl-ebi-public-website/"))))
+                .andExpect(content().string(not(containsString("Privacy Policy"))));
+    }
+
+    @Test
+    void about() throws Exception {
+        var viewName = "about";
         this.mockMvc
                 .perform(get("/" + viewName + ".html"))
                 .andExpect(status().isOk())

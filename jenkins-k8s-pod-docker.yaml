@@ -1,0 +1,31 @@
+# Pod template for Jenkins Docker build pipeline.
+# Used by Jenkinsfile.docker to build and push container images.
+#
+# The Jenkins Kubernetes plugin merges this with its default template and adds
+# the jnlp container. Steps run in the dind container (defaultContainer).
+#
+# Docker-in-Docker (dind) requires privileged mode to run the Docker daemon.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: jenkins-builders
+  labels:
+    app: jenkins-agent
+    component: docker-build
+spec:
+  securityContext:
+    fsGroup: 1000
+  containers:
+    - name: dind
+      image: docker:27-dind
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "500Mi"
+          cpu: "500m"
+        limits:
+          memory: "1Gi"
+          cpu: "1"
+      tty: true

@@ -1,0 +1,28 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "gradle",
+			"label": "unit tests for sc app",
+			"id": "scxa app:test",
+			"script": "app:test",
+			"description": "unit tests for sc app",
+			"group": "verification",
+			"project": "app",
+		
+			"rootProject": "atlas-web-single-cell",
+			"projectFolder": "/Users/amnon/dev/atlas-web-single-cell",
+			"workspaceFolder": "/Users/amnon/dev/atlas-web-single-cell",
+			"args": "--no-watch-fs -PtestResultsPath=ut :app:test --tests *Test'",
+			"javaDebug": false,
+			"options": {
+				"env": {
+					"GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=4"
+				}
+			},
+			"problemMatcher": [
+				"$gradle"
+			]
+		}
+	]
+}

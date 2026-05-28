@@ -33,13 +33,15 @@ spec:
       image: eclipse-temurin:11
       resources:
         requests:
-          memory: "3.5Gi"
-          ephemeral-storage: "5Gi"
+          memory: "4.5Gi"
+          cpu: "2"
+          ephemeral-storage: "6Gi"
         limits:
-          memory: "4Gi"
+          cpu: "2"
+          memory: "6Gi"
       env:
       - name: GRADLE_OPTS
-        value: "-Dorg.gradle.daemon=false"
+        value: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
       - name: GRADLE_RO_DEP_CACHE
         value: "/root/gradle-ro-dep-cache"
       command: [ "/bin/sh" ]

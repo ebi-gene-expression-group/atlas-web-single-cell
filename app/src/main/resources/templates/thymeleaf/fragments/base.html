@@ -62,6 +62,7 @@
 </div>
 
 <div th:replace="~{fragments/fragments :: global-masthead}"></div>
+<div th:replace="~{fragments/fragments :: retirement-banner}"></div>
 <div th:replace="~{fragments/fragments :: local-masthead}"></div>
 
 <div id="content">
@@ -102,5 +103,34 @@
 </script>
 <script async src="https://www.google-analytics.com/analytics.js"></script>
 <!-- End Google Analytics -->
+
+<!-- Retirement notice banner: shown once per browser via localStorage, links out to a Jira issue collector -->
+<script type="text/javascript" src="https://embl.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/-bxy8hv/b/1/c95134bc67d3a521bb3f4331beb9b804/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-GB&collectorId=cac41fb0"></script>
+<script type="text/javascript">
+    window.ATL_JQ_PAGE_PROPS = {
+        "triggerFunction": function(showCollectorDialog) {
+            jQuery("#myCustomTrigger").click(function(e) {
+                e.preventDefault();
+                localStorage.setItem("scxaRetirementBannerDismissed", "true");
+                showCollectorDialog();
+            });
+        }
+    };
+</script>
+<script type="text/javascript">
+    (function() {
+        var banner = document.getElementById("retirement-banner");
+        if (banner && localStorage.getItem("scxaRetirementBannerDismissed") !== "true") {
+            banner.style.display = "";
+        }
+        var closeButton = document.getElementById("retirement-banner-close");
+        if (closeButton) {
+            closeButton.addEventListener("click", function() {
+                localStorage.setItem("scxaRetirementBannerDismissed", "true");
+                banner.style.display = "none";
+            });
+        }
+    })();
+</script>
 </body>
 </html>

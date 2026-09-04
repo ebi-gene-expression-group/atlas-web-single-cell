@@ -7,6 +7,22 @@
     </script>
 </header>
 
+<div th:fragment="retirement-banner">
+    <div id="retirement-banner" class="row-expanded callout-background" style="display: none;">
+        <div class="columns small-10 small-centered margin-bottom-none text-large callout warning">
+            <p style="margin-bottom: 0;">
+                <strong>Single Cell Expression Atlas is being retired.</strong>
+                A new version of the app is in the works &mdash;
+                <a href="#" id="myCustomTrigger">share your email</a>
+                if you'd like to try the new app, or if you'd like this app to stay.
+            </p>
+            <button class="close-button" aria-label="Dismiss notification" type="button" id="retirement-banner-close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 <div th:fragment="local-masthead">
     <div class="row-expanded callout-background">
         <div id="information-banner" class="columns small-8 small-centered margin-bottom-none text-large"></div>

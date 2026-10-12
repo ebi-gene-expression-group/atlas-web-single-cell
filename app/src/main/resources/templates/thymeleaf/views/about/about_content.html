@@ -1,6 +1,6 @@
 <div class="row">
   <div class="small-12 columns">
-    <h2>About Single Cell Expression Atlas</h2>
+    <h2>Single Cell Expression Atlas is moving to FENIX Explorer</h2>
     <p>
       <a href="/data-protection/privacy-notice/embl-ebi-public-website/"
          target="_blank"
@@ -9,51 +9,57 @@
       </a>
     </p>
 
-    <div class="row">
-      <div class="small-12 medium-6 columns">
-        <h3>What is Single Cell Expression Atlas?</h3>
-        <p>
-          Single Cell Expression Atlas is an open resource for exploring gene expression at single-cell
-          resolution across species, tissues, and biological conditions.
-        </p>
-        <p>
-          The service brings together curated public datasets and presents harmonised analysis outputs in a
-          consistent interface for exploration, comparison, and download.
-        </p>
-      </div>
-      <div class="small-12 medium-6 columns">
-        <h3>What can you do here?</h3>
-        <ul>
-          <li>Search for a gene and review where it is expressed across experiments.</li>
-          <li>Browse experiments by species and metadata attributes.</li>
-          <li>Inspect marker genes and cluster-level patterns from re-analysed studies.</li>
-          <li>Download metadata and result files for further analysis.</li>
-        </ul>
-      </div>
-    </div>
+    <p>
+      We are developing the Functional Genomics Index, FENIX, as a unified platform for discovering, exploring and, in future, contributing functional genomics data at EMBL-EBI. Its first public component, FENIX Explorer, will replace the data exploration interface currently provided by Single Cell Expression Atlas (SCEA).
+    </p>
+    <p>
+      We plan to launch FENIX Explorer in public beta in November 2026. SCEA will remain available while eligible datasets are migrated and validated and its retirement date will be announced in advance on this page.
+    </p>
 
-    <hr>
+    <h3>What you can do in FENIX Explorer</h3>
+    <p>
+      FENIX Explorer combines metadata and gene search with interactive visualisation powered by <a href="https://vitessce.io/">Vitessce</a>. Four dashboard views allow you to explore individual genes, examine several genes together, view expression patterns in a heatmap and explore cells in a UMAP embedding.
+    </p>
+    <p>
+      The beta will include prioritised single-cell RNA-seq datasets from SCEA alongside compatible datasets available through CELLxGENE. Spatial data exploration is planned for a subsequent release early 2027.
+    </p>
 
-    <div class="row">
-      <div class="small-12 medium-6 columns">
-        <h3>Data curation and re-analysis</h3>
-        <p>
-          Experiments are selected from public archives, curated by domain experts, and processed through a
-          standard analysis workflow to support cross-study comparability.
-        </p>
-        <p>
-          Some datasets are included as externally analysed submissions and are clearly labelled so users can
-          distinguish them from Atlas re-analysed studies.
-        </p>
-      </div>
-      <div class="small-12 medium-6 columns">
-        <h3>Search and visualisation</h3>
-        <p>
-          Single Cell Expression Atlas supports discovery through gene search and metadata-driven exploration,
-          including interactive visualisations of clusters, expression, and marker-gene summaries.
-        </p>
-      </div>
-    </div>
+    <h3>What happens to existing SCEA datasets?</h3>
+    <p>
+      We are migrating SCEA datasets in phases. For the beta, we are prioritising datasets from species not currently represented in CELLxGENE, alongside some of the most frequently accessed SCEA datasets. Other datasets will follow after launch, subject to necessary schema extensions for some species.
+    </p>
+    <p>
+      FENIX Explorer requires cell type annotations for interactive exploration. SCEA datasets without cell type labels will therefore not be migrated. If you generated one of these datasets and would like to explore how it could be included, please contact our <a href="mailto:gene-expression@ebi.ac.uk">helpdesk</a>. The raw data for these datasets will remain available from the archives where they were deposited, under those archives’ access arrangements. SCEA-generated processed outputs are currently available through our FTP service. We will publish arrangements for access after retirement, including any retention limits, on this page before SCEA closes.
+    </p>
+
+    <h3>Adopting the scFAIR standard</h3>
+    <p>
+      We are adopting the <a href="https://github.com/scFAIR/scFAIR_schema/blob/main/schema/7.1.0/README.md">scFAIR community standard</a> to improve interoperability between single-cell data resources. As part of the scFAIR community, we are adapting our processing pipelines and outputs so that eligible SCEA datasets can be explored in FENIX Explorer.
+    </p>
+    <p>
+      A shared standard also helps us include compatible datasets prepared by other resources. The beta will include selected datasets available through CELLxGENE, and we aim to extend coverage to other compatible sources, including Bgee. Dataset provenance will identify the source and processing information relevant to each resource.
+    </p>
+
+    <h3>Contributing compatible datasets?</h3>
+    <p>
+      Researchers interested in making a compatible dataset available through FENIX Explorer can contact our helpdesk to discuss inclusion. The <a href="https://asap.epfl.ch/compliance/file-check">ASAP compliance tool</a> can help check a dataset against the scFAIR schema and identify changes needed for compatibility.
+    </p>
+    <p>
+      The beta does not include a self-service submission interface. Please continue to deposit underlying raw data through the appropriate archive (e.g. submitting through <a href="https://www.ebi.ac.uk/fg/annotare/login/">Annotare</a>) and contact us about making the processed dataset available for exploration.
+    </p>
+
+    <h3>The wider FENIX programme</h3>
+    <p>
+      Future phases of FENIX will improve the pathways through which functional genomics data are submitted, archived and made available for exploration. Our aim is to connect raw-data archiving, structured metadata and interactive visualisation more closely, creating comprehensive, reusable records and helping researchers present datasets in the context intended by their authors.
+    </p>
+    <p>
+      The wider FENIX project is supported by the Biotechnology and Biological Sciences Research Council through its Bioinformatics and Biological Resources Fund (BBSRC BBR), alongside support from Wellcome for the development of the data exploration interface.
+    </p>
+
+    <p style="display: flex; flex-wrap: wrap; gap: 0.5em 2em;">
+      <a href="https://forms.gle/ixQgzHq5iPrPeRcP7">Register for beta updates</a>
+      <a href="https://forms.gle/ixQgzHq5iPrPeRcP7">Contact the helpdesk</a>
+    </p>
 
   </div>
 </div>

@@ -8,15 +8,16 @@
 </header>
 
 <div th:fragment="retirement-banner">
-    <div id="retirement-banner" class="row-expanded callout-background" style="display: none;">
-        <div class="columns small-10 small-centered margin-bottom-none text-large callout warning">
-            <p style="margin-bottom: 0;">
-                <strong>Single Cell Expression Atlas is being retired.</strong>
-                A new version of the app is in the works &mdash;
-                <a href="#" id="myCustomTrigger">share your email</a>
-                if you'd like to try the new app, or if you'd like this app to stay.
+    <div id="retirement-banner" class="row-expanded callout-background">
+        <div class="columns small-12 margin-bottom-none text-large callout warning" style="position: relative; padding-right: 3em;">
+            <p>
+                Single Cell Expression Atlas is moving to FENIX Explorer, our new platform for discovering and exploring single-cell data. We are migrating eligible datasets in phases. SCEA remains available during the transition and will be retired once it is complete.
             </p>
-            <button class="close-button" aria-label="Dismiss notification" type="button" id="retirement-banner-close">
+            <p style="margin-bottom: 0; display: flex; flex-wrap: wrap; gap: 0.5em 2em;">
+                <a th:href="@{/about.html}">Learn about the transition</a>
+                <a href="https://forms.gle/ixQgzHq5iPrPeRcP7">Register interest in beta access</a>
+            </p>
+            <button class="close-button" aria-label="Dismiss notification" type="button" id="retirement-banner-close" style="position: absolute; top: 0.5em; right: 1em;">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
